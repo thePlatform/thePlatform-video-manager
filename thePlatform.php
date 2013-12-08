@@ -3,7 +3,7 @@
 Plugin Name: thePlatform Video Manager
 Plugin URI: http://theplatform.com/
 Description: Manage video assets hosted in thePlatform MPX from within WordPress.
-Version: 1.0.0
+Version: 1.1.0
 Author: thePlatform for Media, Inc.
 Author URI: http://theplatform.com/
 License: GPL2
@@ -25,6 +25,18 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
+
+// $tp_publisher_cap = apply_filters('tp_publisher_cap', 'upload_files');
+// $tp_editor_cap = apply_filters('tp_editor_cap', 'edit_posts');
+// $tp_admin_cap = apply_filters('tp_editor_cap', 'manage_options');
+
+register_activation_hook(__FILE__, 'tp_activation_hook' );
+
+function tp_activation_hook() {	}
+
+ $preferences_options_key = 'theplatform_preferences_options';
+ $metadata_options_key = 'theplatform_metadata_options';
+ $upload_options_key = 'theplatform_upload_options';
 
 class ThePlatform_Plugin {
 
@@ -52,26 +64,24 @@ class ThePlatform_Plugin {
 	/**
 	 * Constructor
 	 */
-	function __construct() {
-	
-		
-		require_once(dirname(__FILE__) . '/thePlatform-options.php' );
+	function __construct() {	
 		require_once(dirname(__FILE__) . '/thePlatform-API.php' );
 		require_once( dirname( __FILE__ ) . '/thePlatform-proxy.php' );
-
+			
 		$this->tp_api = new ThePlatform_API;
 				
 		$this->plugin_base_dir = plugin_dir_path(__FILE__);
 		$this->plugin_base_url = plugins_url('/', __FILE__);
 		
-		add_action('admin_menu', array(&$this, 'add_media_page'));
-		add_action('admin_init', array(&$this, 'register_scripts'));		
-		add_action('media_buttons', array(&$this, 'theplatform_embed_button'), 100);	
-
-
-		add_action('wp_ajax_initialize_media_upload', array($this->tp_api, 'initialize_media_upload'));
-		add_action( 'wp_ajax_theplatform_embed', array(&$this, 'embed')); 	
-
+		if (is_admin()) {
+			add_action('admin_menu', array(&$this, 'add_media_page'));	
+			add_action('admin_menu', array(&$this, 'add_admin_page'));
+			add_action('admin_init', array(&$this, 'register_scripts'));		
+			add_action('media_buttons', array(&$this, 'theplatform_embed_button'), 100);	
+			add_action('wp_ajax_initialize_media_upload', array($this->tp_api, 'initialize_media_upload'));
+			add_action('wp_ajax_get_subaccounts', array($this->tp_api, 'get_subaccounts'));
+			add_action('wp_ajax_theplatform_embed', array(&$this, 'embed')); 	
+		}	
 
 		add_shortcode('theplatform', array(&$this, 'shortcode'));
 	}
@@ -80,20 +90,20 @@ class ThePlatform_Plugin {
 		require_once( $this->plugin_dir . 'thePlatform-embed.php' );
 		die();
 	}
-	
+
 	/**
 	 * Registers javascripts and css
 	 */
-	function register_scripts() {
+	function register_scripts() {		
 		wp_register_script('theplatform_js', plugins_url('/js/theplatform.js', __FILE__), array('jquery'));
 		wp_register_script('nprogress_js', plugins_url('/js/nprogress.js', __FILE__), array('jquery'));
 
 		wp_localize_script('theplatform_js', 'theplatform', array(
 			'ajax_url' => admin_url( 'admin-ajax.php' ),
 			'plugin_base_url' => plugins_url('images/', __FILE__),
-			'tp_nonce' => wp_create_nonce('plugin-name-action_tpnonce')
+			'tp_nonce' => wp_create_nonce('theplatform-ajax-nonce')
 		));
-
+		
 		wp_register_style('theplatform_css', plugins_url('/css/thePlatform.css', __FILE__ ));
 		wp_register_style('nprogress_css', plugins_url('/css/nprogress.css', __FILE__ ));
 	}
@@ -102,7 +112,8 @@ class ThePlatform_Plugin {
 	 * Add media page (library view, detail view, media uploader)
 	 */
 	function add_media_page() {
-		add_media_page('thePlatform', 'thePlatform Video', 'upload_files', 'theplatform-media', array( &$this, 'media_page' ));
+		$tp_editor_cap = apply_filters('tp_editor_cap', 'upload_files');
+		add_media_page('thePlatform', 'thePlatform Video', $tp_editor_cap, 'theplatform-media', array( &$this, 'media_page' ));
 	}
 
 	function media_page() {
@@ -110,21 +121,28 @@ class ThePlatform_Plugin {
 	}
 
 	/**
+	 * Add admin page 
+	 */
+	function add_admin_page() {
+		$tp_admin_cap = apply_filters('tp_admin_cap', 'manage_options');
+		add_options_page( 'thePlatform Plugin Settings', 'thePlatform', $tp_admin_cap, 'theplatform', array( &$this, 'admin_page' ) );
+	}
+
+	function admin_page() {		
+		require_once(dirname(__FILE__) . '/thePlatform-options.php' );	
+	}
+
+	/**
 	 * Adds thePlatform media embed button to the media upload
 	 */
 	function theplatform_embed_button() {
-
 		global $post_ID, $temp_ID;
 		$iframe_post_id = (int) ( 0 == $post_ID ? $temp_ID : $post_ID );
-
 		$title = 'Embed Video from thePlatform';
 		$image_url = plugins_url('/images/embed_button.png', __FILE__);
- 		$site_url = admin_url("/admin-ajax.php?post_id=$iframe_post_id&theplatform=popup&action=theplatform_embed&TB_iframe=true&"); 
+ 		$site_url = admin_url("/admin-ajax.php?post_id=$iframe_post_id&theplatform=popup&action=theplatform_embed&TB_iframe=true&width=720"); 
 		echo '<a href="' . esc_url($site_url) . '&id=add_form" class="thickbox button" title="' . esc_attr($title) . '"><img src="' . esc_url($image_url) . '" alt="' . esc_attr($title) . '" width="20" height="20" />thePlatform</a>';
-
 	}
-
-	
 	
 	/**
 	 * Shortcode Callback
@@ -194,6 +212,8 @@ class ThePlatform_Plugin {
 		} else {
 			$output = '[Sorry. This video cannot be displayed in this feed. <a href="'.get_permalink().'">View your video here.]</a>';
 		}
+		
+		$output = apply_filter('tp_embed_code', $output);
 
 		return $output;
 	}
@@ -224,6 +244,8 @@ class ThePlatform_Plugin {
 		
 		
 		$url = 'http://player.theplatform.com/p/' . urlencode($accountPID) . '/' . urlencode($playerPID);
+
+		$url = apply_filter('tp_embed_url', $url);
 		
 		if ($type == 'embed') {
 			$url .= '/embed';
@@ -255,11 +277,12 @@ class ThePlatform_Plugin {
 
 }
 
-	
-
 // Instantiate thePlatform plugin on WordPress init
 add_action('init', array( 'ThePlatform_Plugin', 'init' ) );
 
+/**
+ *	Catch JSON decode errors
+ */
 function decode_json_from_server($input, $assoc, $die_on_error = TRUE) {
 
 
@@ -270,6 +293,10 @@ function decode_json_from_server($input, $assoc, $die_on_error = TRUE) {
 
 		if (is_null($response) && wp_remote_retrieve_response_code($input) != "200") {						
 			wp_die('<p>'.__('There was an error getting data from MPX, if the error persists please contact thePlatform.').'</p>');
+		}
+
+		if (is_null($response) && wp_remote_retrieve_response_code($input) == "200") {	
+			return $response;
 		}
 
 		if ( is_wp_error($response) ) {
@@ -284,5 +311,89 @@ function decode_json_from_server($input, $assoc, $die_on_error = TRUE) {
 		return $response;
 		
 }
+add_action('wp_ajax_verify_account', 'verify_account_settings');
 
+	/**
+	 *	AJAX callback for account verification button
+	 */
+	function verify_account_settings() {
+		//User capability check
+		check_admin_referer('theplatform-ajax-nonce'); 	
+		$hash = $_POST['auth_hash'];
 
+		$response = ThePlatform_API_HTTP::get(TP_API_SIGNIN_URL, array('headers' => array('Authorization' => 'Basic ' . $hash)));
+	
+		$payload = decode_json_from_server($response, TRUE);
+
+		if (!array_key_exists('isException', $payload)) {						
+			$account_is_verified = TRUE;		
+			echo "success";
+		} else {						
+			$account_is_verified = FALSE;
+			echo "failed";
+		}				
+	
+		die();		
+	}
+
+add_action('admin_init', 'register_plugin_settings' );
+
+function register_plugin_settings() {
+	$preferences_options_key = 'theplatform_preferences_options';
+	$metadata_options_key = 'theplatform_metadata_options';
+	$upload_options_key = 'theplatform_upload_options';
+	register_setting( $preferences_options_key, $preferences_options_key, 'connection_options_validate'); 
+	register_setting( $metadata_options_key, $metadata_options_key, 'dropdown_options_validate'); 
+	register_setting( $upload_options_key, $upload_options_key, 'dropdown_options_validate'); 
+}
+
+function dropdown_options_validate($input) {	
+	foreach ($input as $key => $value) {	
+		if ($value != "allow" && $value != "omit") {
+			$input[$key] = "allow";
+		}			
+	}
+	return $input;
+}
+function connection_options_validate($input) {	
+	if ( ! is_array( $input ) ) 
+	{
+		return array(
+			'mpx_account_id' => '',
+			'mpx_username' => 'mpx/',				
+			'mpx_password' => '',
+			'videos_per_page' => 16,
+			'default_sort' => 'id',
+			'video_type' => 'embed',				
+			'mpx_account_pid' => '',
+			'default_player_name' => '',
+			'default_player_pid' => '',
+			'mpx_server_id' => '',
+			'default_publish_id' => '',
+			'user_id_customfield' => '',
+			'filter_by_user_id' => 'FALSE'
+		);;
+	}
+
+	if (strpos($input['mpx_account_id'], '|') !== FALSE) {
+		$ids = explode('|', $input['mpx_account_id']);
+		$input['mpx_account_id'] = $ids[0];
+		$input['mpx_account_pid'] = $ids[1];
+	}
+
+	if (strpos($input['default_player_name'], '|') !== FALSE) {
+		$ids = explode('|', $input['default_player_name']);
+		$input['default_player_name'] = $ids[0];
+		$input['default_player_pid'] = $ids[1];
+	}
+
+	foreach ($input as $key => $value) {
+		if ($key == 'videos_per_page') {
+			$input[$key] = intval($value);
+		}
+		else {
+			$input[$key] = strval($value);
+		}
+	}
+	return $input;
+}	

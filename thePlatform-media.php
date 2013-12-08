@@ -4,10 +4,6 @@ if (!class_exists( 'ThePlatform_API' )) {
 	require_once( dirname(__FILE__) . '/thePlatform-API.php' );
 }
 
-if (!current_user_can('upload_files')) {
-		wp_die('<p>'.__('You do not have sufficient permissions to modify MPX Media').'</p>');
-}
-
 $preferences = get_option('theplatform_preferences_options');	
 
 if (strcmp($preferences['mpx_account_id'], "") == 0) {			
@@ -39,8 +35,6 @@ wp_enqueue_style('jquery-ui-progressbar');
 	<h2><div style="clear:both;"></div> </h2>
 	<?php
 	
-	
-
 	$tp_api = new ThePlatform_API;
 	$metadata = $tp_api->get_metadata_fields();
 	
@@ -49,17 +43,20 @@ wp_enqueue_style('jquery-ui-progressbar');
 	
 	//Update media handler
 	if ( isset( $_POST['submit'] ) && $_POST['submit'] == 'Save Changes' ) {
-
-		check_admin_referer('plugin-name-action_tpnonce'); 
-		if (!current_user_can('upload_files')) {	 		
-			wp_die('<p>'.__('You do not have sufficient permissions to edit Media.').'</p>');
-		}
 		// Update media item in detail view		
 
-		unset($_GET['edit']);
+		check_admin_referer('theplatform-ajax-nonce'); 		
 
-		$payload = array(
-			'$xmlns' => array(
+		//Check if a user can edit MPX Media
+		$tp_editor_cap = apply_filters('tp_editor_cap', 'upload_files');
+		if (!current_user_can($tp_editor_cap)) {
+				wp_die('<p>'.__('You do not have sufficient permissions to modify MPX Media').'</p>');
+		}
+
+		unset($_GET['edit']);
+		
+		$fields = array('id' => $_POST['edit_id']);
+		$namespaces = array('$xmlns' => array(
 				"dcterms" => "http://purl.org/dc/terms/",
 				"media" => "http://search.yahoo.com/mrss/",
 				"pl" => "http://xml.theplatform.com/data/object",
@@ -67,21 +64,67 @@ wp_enqueue_style('jquery-ui-progressbar');
 				"plmedia" => "http://xml.theplatform.com/media/data/Media",
 				"plfile" => "http://xml.theplatform.com/media/data/MediaFile",
 				"plrelease" => "http://xml.theplatform.com/media/data/Release"				
-			),
-			'id' => $_POST['edit_id']
+			)
 		);
-		
-		if (isset($_POST['media$categories'])) {
-			$_POST['media$categories'] = array(array('media$name' => sanitize_text_field($_POST['media$categories'])));
-		}				
-		
+
+		$payload = array();			
+					
 		$upload_options = get_option('theplatform_upload_options');
-		
-		foreach ($upload_options as $upload_field => $val) {
-			if ($val == 'allow')
-				$payload[$upload_field] = sanitize_text_field($_POST[$upload_field]);
+		$metadata_options = get_option('theplatform_metadata_options');		
+								
+		$html = '';
+
+		if (isset($preferences['user_id_customfield'])) {
+
+			$user_id_customfield = $tp_api->get_customfield_info($preferences['user_id_customfield']);
+			var_dump($user_id_customfield);
+			$metadata_info = $user_id_customfield['entries'][0];
+			
+			$fieldName = $metadata_info['plfield$namespacePrefix'] . '$' . $metadata_info['plfield$fieldName'];
+			$fields[$fieldName] = $_POST[$preferences['user_id_customfield']];			
 		}
-		
+
+		foreach ($metadata_options as $custom_field => $val) {
+			if ($val !== 'allow')
+				continue;
+
+			$metadata_info = NULL;
+			foreach ($metadata as $entry) {
+				if (array_search($custom_field, $entry)) {
+					$metadata_info = $entry;
+					break;
+				}
+			}	
+
+			if (is_null($metadata_info))
+				continue;								
+			
+			$fieldName = $metadata_info['plfield$namespacePrefix'] . '$' . $metadata_info['plfield$fieldName'];
+			$namespaces['$xmlns'][$metadata_info['plfield$namespacePrefix']] = $metadata_info['plfield$namespace'];
+			$fields[$fieldName] = $_POST[$fieldName];			
+		}	
+
+		foreach ($upload_options as $upload_field => $val) {
+			if ($val == 'allow') {
+				if ($upload_field == 'media$categories') {
+					$i=0;
+					$categories = array();
+					while (isset($_POST['media$categories-' . $i])) {
+						if ($_POST['media$categories-' . $i] !== '(None)')
+							array_push($categories, array('media$name' => $_POST['media$categories-' . $i]));
+						$i++;
+					}
+					$fields['media$categories'] = $categories;
+				}
+				else 
+					$fields[$upload_field] = sanitize_text_field($_POST[$upload_field]);	
+							
+			}
+		}
+							
+		$payload = array_merge($payload, $namespaces);
+		$payload = array_merge($payload, $fields);		
+
 		$payloadJSON = json_encode($payload, JSON_UNESCAPED_SLASHES);
 	
  		$tp_api->update_media($payloadJSON);
@@ -93,52 +136,51 @@ wp_enqueue_style('jquery-ui-progressbar');
 	
 	if ( !empty( $_GET['edit'] ) ) {
 		// Detail view + Media editor
-		$response = $tp_api->get_video_by_id(sanitize_text_field($_GET['edit']));
+		$video = $tp_api->get_video_by_id(sanitize_text_field($_GET['edit']));
 		
 		if ( is_wp_error( $response ) )
 			echo '<div id="message" class="error below-h2"><p>' . esc_html($response->get_error_message()) . '</p></div>';
 	} else {
 		// Search Results
-	
+		$page = isset( $_GET['tppage'] ) ? sanitize_text_field( $_GET['tppage'] ) : '1';
+
 		if (isset($_GET['s'])) {
-			$key_word = isset( $_GET['s'] ) ? sanitize_text_field( $_GET['s'] ) : '';
-			$field = isset( $_GET['theplatformsearchfield'] ) ? sanitize_text_field( $_GET['theplatformsearchfield'] ) : '';
+			
+			$key_word = isset( $_GET['s'] ) ? sanitize_text_field( $_GET['s'] ) : '';						
+			$field = isset( $_GET['theplatformsearchfield'] ) ? sanitize_text_field( $_GET['theplatformsearchfield'] ) : '';			
 			$sort = isset( $_GET['theplatformsortfield'] ) ? sanitize_text_field( $_GET['theplatformsortfield'] ) : '';
 
-					
-			if ($field == 'byTitle') {	
-				$response = $tp_api->get_videos($field . '=' . urlencode($key_word), $sort);
-			} else if ($field == 'q') {
-				$response = $tp_api->get_videos($field . '=' . urlencode($key_word));
-			} else if ($field == 'All' && $sort != '') {
-				$response = $tp_api->get_videos('', $sort);
-			} else {
-			 	$query = '{' . $field . '}{' . $key_word . '}';
-				$response = $tp_api->get_videos('byCustomValue' . '=' . urlencode($query), $sort);
-			}
+			$query = array();
+			if ($key_word !== '')
+				array_push($query, $field. '=' . $key_word);
+						
+			if (isset($_GET['filter-by-userid']) && $preferences['user_id_customfield'] !== '')
+			 	array_push($query, 'byCustomValue=' . urlencode('{' . $preferences['user_id_customfield'] . '}{' . wp_get_current_user()->ID . '}'));
 			
-			if ( is_wp_error( $response ) )
-				echo '<div id="message" class="error below-h2"><p>' . esc_html($response->get_error_message()) . '</p></div>';		
+			if ($field !== 'q')
+				$videos = $tp_api->get_videos(implode('&', $query), $sort, $page);
+			else
+				$videos = $tp_api->get_videos(implode('&', $query), '', $page);
+			
 		} else {
-			// Library View	
-
-			$response = $tp_api->get_videos();
-
-			if ( is_wp_error( $response ) )
-				echo '<div id="message" class="error below-h2"><p>' . esc_html($response->get_error_message()) . '</p></div>';			
+			// Library View				
+			if ($preferences['filter_by_user_id'] === 'TRUE' && $preferences['user_id_customfield'] !== '')
+			 		$videos = $tp_api->get_videos('byCustomValue=' . urlencode('{' . $preferences['user_id_customfield'] . '}{' . wp_get_current_user()->ID . '}'), '', $page);
+			else
+				$videos = $tp_api->get_videos('','',$page);			
 		}
+		$count = $videos['totalResults'];
+		$pages = ceil(intval($count)/intval($preferences['videos_per_page']));		
+		$videos = $videos['entries'];	
 
 	} ?>
 
 
-	<?php if ( !is_wp_error( $response ) ) {
-		$videos = decode_json_from_server($response, TRUE);
-		$videos = stripslashes_deep( $videos );
-		if (empty( $videos['entries']) )
-			echo 'No media present.';
+	<?php 
+	if ( !is_wp_error( $response ) ) {		
 
 		if ( !empty( $_GET['edit'] ) ) : 
-			$video = $videos['entries'][0];			
+			
 			$embed_id = NULL;
 				if (is_array($video['media$content'])) {			
 					foreach ($video['media$content'] as $value) {
@@ -151,9 +193,15 @@ wp_enqueue_style('jquery-ui-progressbar');
 					}	
 				}	
 			?>
+
 			<form id="theplatform-edit-media" method="post" action="<?php echo menu_page_url( 'theplatform-media', false ); ?>">
-				<?php wp_nonce_field( 'plugin-name-action_tpnonce' ); ?>
+				<?php 
+					wp_nonce_field( 'theplatform-ajax-nonce' ); 
+					if ($preferences['user_id_customfield'] !== '') 
+						echo '<input type="hidden" name="' . esc_attr($preferences['user_id_customfield']) . '" class="custom_field" value="' . wp_get_current_user()->ID . '" />';
+				?>
 				<input type="hidden" name="edit_id" value="<?php echo esc_attr( $video['id'] ); ?>" />
+
 				<span class="theplatform-media-edit">
 					<div class="theplatform-media-thumbnail">
 						<div class="photo">
@@ -162,7 +210,7 @@ wp_enqueue_style('jquery-ui-progressbar');
 								echo '<img src="' . esc_url($video['plmedia$defaultThumbnailUrl']) . '">';
 							else {
 								$url = 'http://player.theplatform.com/p/' . $preferences['mpx_account_pid'] . '/' .  $preferences['default_player_pid'] . '/embed/select/' .  $embed_id . '?form=html';
-								echo '<iframe src="' . esc_url($url) . '" width="256" height="176" frameBorder="0" seamless="seamless" allowFullScreen></iframe>';
+								echo '<iframe src="' . esc_url($url) . '" width="491" height="272" frameBorder="0" seamless="seamless" allowFullScreen></iframe>';
 							}
 							?>
 						</div>
@@ -171,6 +219,8 @@ wp_enqueue_style('jquery-ui-progressbar');
 						<table class="form-table">
 						<tbody>
 							<?php
+								$metadata_options = get_option('theplatform_metadata_options');
+
 								$upload_options = get_option('theplatform_upload_options');
 								$html = '';
 
@@ -191,15 +241,20 @@ wp_enqueue_style('jquery-ui-progressbar');
 										
 											if (!is_wp_error($response)) {
 												$categories = decode_json_from_server($response, TRUE);
-										
-												$html = '<tr valign="top"><th scope="row">Category</th><td><select class="upload_field" id="theplatform_upload_' . esc_attr($field) . '" name="' . esc_attr($upload_field) . '">';
-			
-												foreach ($categories['entries'] as $category) {
-													$selected = $category['plcategory$fullTitle'] == $video[$upload_field][0]['media$name'] ? ' selected="selected"' : '';
-													$html .= '<option value="' . esc_attr($category['plcategory$fullTitle']) . '" ' . esc_attr($selected) . '>' . esc_html($category['title']) . '</option>';
+												$i = 0;
+												$html = '<tr valign="top"><th scope="row">Category</th><td>';
+												
+												foreach ($video[$upload_field] as $mediaCategory) {																										
+													$html .= '<select class="category_field" id="theplatform_upload_' . esc_attr($upload_field) . '" name="' . esc_attr($upload_field) . '-' . $i++ . '">';
+													$html .= '<option value="(None)">No category</option>';
+													foreach ($categories['entries'] as $category) {
+														$selected = $category['plcategory$fullTitle'] == $mediaCategory['media$name'] ? ' selected="selected"' : '';
+														$html .= '<option value="' . esc_attr($category['plcategory$fullTitle']) . '" ' . esc_attr($selected) . '>' . esc_html($category['plcategory$fullTitle']) . '</option>';
+													}
+													$html .= '</select>';													
 												}
-			
-												$html .= '</select></td></tr>';
+												$html .= '<input type="button" class="button" id="upload_add_category" value="+"/></td></tr>';
+																								
 												echo $html;
 											}
 										} else {											
@@ -208,6 +263,34 @@ wp_enqueue_style('jquery-ui-progressbar');
 											echo $html;
 										}
 									}
+								}	
+
+								$metadata_options = get_option('theplatform_metadata_options');
+								
+								$html = '';
+						
+								foreach ($metadata_options as $custom_field => $val) {
+									if ($val !== 'allow')
+										continue;
+
+									$metadata_info = NULL;
+									foreach ($metadata as $entry) {
+										if (array_search($custom_field, $entry)) {
+											$metadata_info = $entry;
+											break;
+										}
+									}	
+
+									if (is_null($metadata_info))
+										continue;								
+							
+									$field_title = $metadata_info['plfield$fieldName'];
+									$field_prefix = $metadata_info['plfield$namespacePrefix'];
+									$field_namespace = $metadata_info['plfield$namespace'];
+									$field_value = $video[$field_prefix . '$' . $field_title];																						
+									$html = '<tr valign="top"><th scope="row">' . esc_html(ucfirst($field_title)) . '</th><td><input name="' . esc_attr($field_prefix . '$' . $field_title) . '" id="theplatform_upload_' . esc_attr($field_prefix . '$' . $field_title) . '" class="edit_custom_field" type="text" value="' . esc_attr($field_value) . '"/></td></tr>';
+									echo $html;										
+
 								}							
 							?>
 						</tbody>
@@ -224,12 +307,15 @@ wp_enqueue_style('jquery-ui-progressbar');
 			
 		<?php else : ?>
 			<div id="media-mpx-upload-form" style="display: none;">
-					<input type="hidden" name="page" value="theplatform-media" />
+					<input type="hidden" name="page" value="theplatform-media" />					
      				<table class="form-table">
      					<?php
      						$upload_options = get_option('theplatform_upload_options');
      						$html = '';
      						
+     						if ($preferences['user_id_customfield'] !== '') 
+     							echo '<input type="hidden" name="' . esc_attr($preferences['user_id_customfield']) . '" class="custom_field" value="' . wp_get_current_user()->ID . '" />';
+
      						foreach ($upload_options as $upload_field => $val) {
      							$field_title = (strstr($upload_field, '$') !== false) ? substr(strstr($upload_field, '$'), 1) : $upload_field;
      						
@@ -248,13 +334,14 @@ wp_enqueue_style('jquery-ui-progressbar');
      									if (!is_wp_error($response)) {
      										$categories = decode_json_from_server($response, TRUE);
      									
-											$html = '<tr valign="top"><th scope="row">Category</th><td><select class="upload_field" id="theplatform_upload_' . esc_attr($field) . '" name="' . esc_attr($upload_field) . '">';
-			
+											$html = '<tr valign="top"><th scope="row">Category</th><td><select class="category_field" id="theplatform_upload_' . esc_attr($upload_field) . '" name="' . esc_attr($upload_field) . '">';
+											$html .= '<option value="(None)">No category</option>';
 											foreach ($categories['entries'] as $category) {
-												$html .= '<option value="' . esc_attr($category['plcategory$fullTitle']) . '">' . esc_html($category['title']) . '</option>';
+												$html .= '<option value="' . esc_attr($category['plcategory$fullTitle']) . '">' . esc_html($category['plcategory$fullTitle']) . '</option>';
 											}
 			
-											$html .= '</select></td></tr>';
+											$html .= '</select><input type="button" class="button" id="upload_add_category" value="+"/></td></tr>';
+
 											echo $html;
 										}
      								} else {
@@ -263,6 +350,31 @@ wp_enqueue_style('jquery-ui-progressbar');
      								}
      							}
      						}
+
+     						$metadata_options = get_option('theplatform_metadata_options');
+								
+								$html = '';
+						
+								foreach ($metadata_options as $custom_field => $val) {
+									$metadata_info = NULL;
+									foreach ($metadata as $entry) {
+										if (array_search($custom_field, $entry)) {
+											$metadata_info = $entry;
+											break;
+										}
+									}	
+
+									if (is_null($metadata_info))
+										continue;								
+							
+									$field_title = $metadata_info['plfield$fieldName'];
+									$field_prefix = $metadata_info['plfield$namespacePrefix'];
+									if ($val == 'allow') {										
+											$field_value = $video[$field_prefix . '$' . $field_title];																						
+											$html = '<tr valign="top"><th scope="row">' . esc_html(ucfirst($field_title)) . '</th><td><input name="' . esc_attr($field_title) . '" id="theplatform_upload_' . esc_attr($field_prefix . '$' . $field_title) . '" class="custom_field" type="text" value="' . esc_attr($field_value) . '"/></td></tr>';
+											echo $html;										
+									}
+								}					
      						
      					?>
      					<tr valign="top"><th scope="row">Publishing Profile</th>
@@ -300,27 +412,20 @@ wp_enqueue_style('jquery-ui-progressbar');
 						<button id="media-mpx-upload-button" type="button">Upload Media</button>
 		
 						<label id="search-label"> Search </label>
-						<form class="search-form" id="theplatform-search" name="library-search" method="get" action="<?php echo menu_page_url( 'theplatform-media', false ); ?>">
-							<?php
-								//nonce check 								
-								wp_nonce_field('plugin-name-action_tpnonce');
-							?>
+						<form class="search-form" id="theplatform-search" name="library-search" method="get" action="#">
+							<?php wp_nonce_field('theplatform-ajax-nonce'); ?>
           					<input type="hidden" name="page" value="theplatform-media" />
 							<span class="nav-sprite" id="search-by" style="width: auto;">
 							  <span id="search-by-content" style="width: auto; overflow: visible;">
-								Title
+								Title Prefix
 							  </span>
 							  <span class="search-down-arrow nav-sprite"></span>
 							  <select title="Search by" class="search-select" id="search-dropdown" name="theplatformsearchfield" data-nav-selected="0" style="top: 0px;">
 									<?php
-										echo '<option value="byTitle" selected="selected">Title</option>';  
+										echo '<option value="byTitlePrefix" selected="selected">Title Prefix</option>'; 
+										echo '<option value="byTitle">Full Title</option>';  
 										echo '<option value="byDescription">Description</option>';
-										echo '<option value="byCategories">Categories</option>';  
-										foreach ($metadata as $field) {
-											if ($field['plfield$dataType'] == 'String') {
-												echo '<option value="' . esc_attr($field['plfield$fieldName']) . '">' . esc_html($field['title']) . '</option>';  
-											}
-										}
+										echo '<option value="byCategories">Categories</option>';  										
 									?>
 								<option value="q">q</option>
 							  </select>
@@ -341,6 +446,21 @@ wp_enqueue_style('jquery-ui-progressbar');
 							  </select>
 							</span>
 
+							<?php 
+								if ($preferences['user_id_customfield'] !== '') { ?>
+									<span id="filter-by">
+										<input name="filter-by-userid" id="filter-cb" type="checkbox" <?php 
+										if (!isset($_GET['s']) && $preferences['filter_by_user_id'] === 'TRUE') { 
+											echo 'checked="checked"'; 
+										} 
+										if (isset($_GET['filter-by-userid'])) {
+											echo 'checked="checked"';
+										} ?>
+										/>
+                                		<label id="filter-label" for="filter-cb">My Media</label>
+								</span>
+							<?php } ?>							
+
 							<div class="searchfield-outer nav-sprite">
 							  <div class="searchfield-inner nav-sprite">
 								<div class="searchfield-width" style="padding-left: 44px;">
@@ -360,6 +480,8 @@ wp_enqueue_style('jquery-ui-progressbar');
 							<?php if (isset($_GET['s'])) { ?>
 								<button id="media-mpx-show-all-button" type="button">Show All</button>
 					  		<?php } ?>
+							
+					  		 	
 					  </form>
 
 						  
@@ -372,7 +494,11 @@ wp_enqueue_style('jquery-ui-progressbar');
 		<?php	
 			$output = '<div id="theplatform-media-library-view" class="wrap">';
 
-			foreach ( $videos['entries'] as $video ) {
+			foreach ( $videos as $video ) {
+
+				$thumbnail_url = $video['plmedia$defaultThumbnailUrl'];
+				if ($thumbnail_url === '')					
+					$thumbnail_url = plugins_url('/images/notavailable.gif', __FILE__);
 				$edit_url = add_query_arg( 'edit', substr($video['id'], strrpos($video['id'], '/')+1), menu_page_url( 'theplatform-media', false ) );
 				$output .= '
 				<div id="theplatform-media-' . esc_attr( substr($video['id'], strrpos($video['id'], '/')+1) ) . '" class="theplatform-media">
@@ -384,14 +510,37 @@ wp_enqueue_style('jquery-ui-progressbar');
 					<input type="hidden" name="description" id="description" value="' . esc_attr($video['description']) . '"/>
 					
 					<div class="photo">
-						<a href="' . esc_url( $edit_url ) . '" title="' . esc_attr( $video['id'] ) .'" class="use-shortcode"><img src="' . esc_url($video['plmedia$defaultThumbnailUrl']) . '"></a>
+						<a href="' . esc_url( $edit_url ) . '" title="' . esc_attr( $video['id'] ) .'" class="use-shortcode"><img src="' . esc_url($thumbnail_url) . '"></a>
 					</div>
 					<div class="item-title"><a href="' . esc_url( $edit_url ) . '" title="' . esc_attr( $video['id']) .'" class="use-shortcode">' . esc_html( $video['title'] ) .'</a></div>
 				
 				</div>';
 			}
-			$output.='</div><div style="clear:both;"></div></div>';			
+			$output.='</div><div style="clear:both;"></div>';	
+
+			//Pagination
+			$output .= '<ul id="pagination">';
+
+			if (!isset($_GET['tppage']) || $_GET['tppage'] === '1')
+				$output .= '<li class="previous-off">«Previous</li>';
+			else
+				$output .= '<li><a href="' . esc_url(add_query_arg(array('tppage'=> intval($_GET['tppage'])-1))) . '">«Previous</a></li><li>';
+
+			for ($i=1; $i <= $pages; $i++) { 
+				if ($i == $page)
+					$output .= '<li class="active">' . $page . '</li>';
+				else
+					$output .= '<li><a href="' . esc_url(add_query_arg(array('tppage'=> $i))) . '">' . $i . '</a></li>';
+			}
+
+			if ($_GET['tppage'] != $pages)
+				$output .= '<li><a href="' . esc_url(add_query_arg(array('tppage'=> isset($_GET['tppage']) ? intval($_GET['tppage'])+1 : 2))) . '">Next »</a></li>';
+			else
+				$output .= '<li class="next-off">Next »</li><li>';
+				
+			$output .= '</ul></div>';
+			
 			echo $output;
 		endif; 
 	} ?>
-</div> 
+</div>

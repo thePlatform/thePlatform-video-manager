@@ -424,7 +424,7 @@ TheplatformUploader = (function() {
 	 @function constructor Inform the API proxy to create placeholder media assets in MPX and begin uploading
 	 @param {File} file - The media file to upload
 	*/
-    function TheplatformUploader(file, fields, profile) {
+    function TheplatformUploader(file, fields, custom_fields, profile) {
     	var me = this;
     	this.file = file;
     	
@@ -440,6 +440,7 @@ TheplatformUploader = (function() {
 			filetype: file.type,
 			filename: jQuery("#theplatform_upload_file").val().replace("C:\\fakepath\\", ""),
 			fields: fields,
+			custom_fields: custom_fields,
 			profile: profile
 		};
 	
@@ -518,17 +519,53 @@ var error_nag = function(msg, fade) {
 		jQuery('#error_nag').delay(4000).fadeOut(6000);
 	}
 }
-			
+
 jQuery(document).ready(function() {
+
+	if (document.title.indexOf('thePlatform Plugin Settings') != -1) {
+		// Hide PID option fields
+		jQuery('#mpx_account_pid').parent().parent().hide();
+		jQuery('#default_player_pid').parent().parent().hide();
+
+		if (jQuery('#mpx_account_id option:selected').length != 0) {
+			
+			jQuery('#mpx_account_pid').val(jQuery('#mpx_account_id option:selected').val().split('|')[1]);
+		}
+		else 
+			jQuery('#mpx_account_id').parent().parent().hide();
+
+		if (jQuery('#default_player_name option:selected').length != 0) {			
+			jQuery('#default_player_pid').val(jQuery('#default_player_name option:selected').val().split('|')[1]);	
+		}
+		else
+			jQuery('#default_player_name').parent().parent().hide();
+
+		if (jQuery('#mpx_server_id option:selected').length == 0) {			
+			jQuery('#mpx_server_id').parent().parent().hide();
+		}
+
+
+		
+	}	
+	
+	jQuery('#upload_add_category').click(function(e) {
+		var categories = jQuery(this).prev().clone()
+		var name = categories.attr('name');
+		if (name.indexOf('-') != -1) {
+			name = name.split('-')[0] + '-' + (parseInt(name.split('-')[1])+1)
+		}
+			
+		jQuery(this).before(categories.attr('name',name));
+	});
 
 	// Fade in the upload form and fade out the media library view
 	jQuery('#media-mpx-upload-button').click(function($) {
-		jQuery('#theplatform-library-view').fadeOut(1000, function() {
-			jQuery('#media-mpx-upload-form').fadeIn(1000);
+		jQuery('#theplatform-library-view').fadeOut(500, function() {
+			jQuery('#media-mpx-upload-form').fadeIn(500);
 		});
 	});
 
-	//Set up the PID for users
+	//Set up the PID for users	
 	jQuery('#mpx_account_id').change(function(e) {
 			jQuery('#mpx_account_pid').val(jQuery('#mpx_account_id option:selected').val().split('|')[1]);
 	})
@@ -558,9 +595,9 @@ jQuery(document).ready(function() {
 			}
 			
 			if (response.indexOf('success') != -1 ) {
-				jQuery('#verify-account').append('<img id="verification_image" src="' + images + 'checkmark.png" />');
+				jQuery('#verify-account').append('<img id="verification_image" src="' + images + 'checkmark.png" />');											
 			} else {
-				jQuery('#verify-account').append('<img id="verification_image" src="' + images + 'xmark.png" />');
+				jQuery('#verify-account').append('<img id="verification_image" src="' + images + 'xmark.png" />');				
 			}
 		});	
 	});
@@ -569,6 +606,13 @@ jQuery(document).ready(function() {
 		var validation_error = false;
 	
 		jQuery('.edit_field').each(function() {
+		   if (jQuery(this).val().match(/<(\w+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/)) {
+			  jQuery(this).css({border: 'solid 1px #FF0000'}); 
+			  validation_error = true;
+		   }
+		});
+
+		jQuery('.edit_custom_field').each(function() {
 		   if (jQuery(this).val().match(/<(\w+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/)) {
 			  jQuery(this).css({border: 'solid 1px #FF0000'}); 
 			  validation_error = true;
@@ -590,8 +634,16 @@ jQuery(document).ready(function() {
 		
 		var validation_error = false;
 		var params = {};
+		var custom_params = {}
 	
 		jQuery('.upload_field').each(function() {
+		   if (jQuery(this).val().match(/<(\w+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/)) {
+			  jQuery(this).css({border: 'solid 1px #FF0000'}); 
+			  validation_error = true;
+		   }
+		});
+
+		jQuery('.custom_field').each(function() {
 		   if (jQuery(this).val().match(/<(\w+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/)) {
 			  jQuery(this).css({border: 'solid 1px #FF0000'}); 
 			  validation_error = true;
@@ -612,10 +664,27 @@ jQuery(document).ready(function() {
 			if (jQuery(this).val().length != 0)
 				params[jQuery(this).attr('name')] = jQuery(this).val();
 		});
+
+		var categories = []
+		jQuery('.category_field').each(function(i){
+			if (jQuery(this).val() != '(None)') {
+				var cat = {};
+				cat['media$name'] = jQuery(this).val();
+				categories.push(cat);
+			}
+						
+		});
+		
+		params['media$categories'] = categories;
+
+		jQuery('.custom_field').each(function(i){
+			if (jQuery(this).val().length != 0) 
+				custom_params[jQuery(this).attr('name')] = jQuery(this).val();
+		});
 		
 		var profile = jQuery('.upload_profile');
 		
-		var theplatformUploader = new TheplatformUploader(file, JSON.stringify(params), profile.val());
+		var theplatformUploader = new TheplatformUploader(file, JSON.stringify(params), JSON.stringify(custom_params), profile.val());
 	});
 
 	// Reload media viewer with no search queries

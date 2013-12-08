@@ -1,4 +1,5 @@
 <?php
+
 if ( !class_exists( 'ThePlatform_API' ) )
 	require_once( dirname(__FILE__) . '/thePlatform-API.php' );
 
@@ -8,27 +9,28 @@ if ( !isset( $tp_api ) )
 if ( !isset( $preferences ) ) 
 	$preferences = get_option('theplatform_preferences_options');
 
-
 add_action('wp_ajax_startUpload', 'MPXProxy::startUpload');
 add_action('wp_ajax_uploadStatus', 'MPXProxy::uploadStatus');
 add_action('wp_ajax_publishMedia', 'MPXProxy::publishMedia');
 add_action('wp_ajax_publishStatus', 'MPXProxy::publishStatus');
 add_action('wp_ajax_cancelUpload', 'MPXProxy::cancelUpload');
 
-
 class MPXProxy {
 
-
+	public static function check_nonce_and_permissions() {
+		check_admin_referer('theplatform-ajax-nonce');
+		$tp_publisher_cap = apply_filters('tp_publisher_cap', 'upload_files');
+		if (!current_user_can($tp_publisher_cap)) {
+      		wp_die('<p>'.__('You do not have sufficient permissions to modify MPX Media').'</p>');
+      	}
+	}
 	/**
 	 * Initiate a file upload
 	 *
 	 * @return mixed JSON response or instance of WP_Error
 	 */
 	public static function startUpload() {
-		check_admin_referer('plugin-name-action_tpnonce');
-		if (!current_user_can('upload_files')) {
-      		wp_die('<p>'.__('You do not have sufficient permissions to modify MPX Media').'</p>');
-      	}
+		MPXProxy::check_nonce_and_permissions();		
 
 		$ret = array();
 
@@ -72,10 +74,8 @@ class MPXProxy {
 	 * @return mixed JSON response or instance of WP_Error
 	 */
 	public static function uploadStatus() {
-		check_admin_referer('plugin-name-action_tpnonce');
-		if (!current_user_can('upload_files')) {
-      		wp_die('<p>'.__('You do not have sufficient permissions to modify MPX Media').'</p>');
-      	}
+		MPXProxy::check_nonce_and_permissions();
+		
 		$ret = array();
 
 		$url = $_POST['upload_base'] . '/data/UploadStatus';
@@ -111,10 +111,8 @@ class MPXProxy {
 	 * @return mixed JSON response or instance of WP_Error
 	 */
 	public static function publishMedia() {
-		check_admin_referer('plugin-name-action_tpnonce');
-		if (!current_user_can('upload_files')) {
-      		wp_die('<p>'.__('You do not have sufficient permissions to modify MPX Media').'</p>');
-      	}		
+		MPXProxy::check_nonce_and_permissions();
+
 		$ret = array();
 
 		$url = TP_API_PUBLISH_PROFILE_ENDPOINT;
@@ -189,10 +187,8 @@ class MPXProxy {
 	 * @return mixed JSON response or instance of WP_Error
 	 */
 	public static function publishStatus() {
-		check_admin_referer('plugin-name-action_tpnonce');
-		if (!current_user_can('upload_files')) {
-      		wp_die('<p>'.__('You do not have sufficient permissions to modify MPX Media').'</p>');
-      	}		
+		MPXProxy::check_nonce_and_permissions();
+
 		$ret = array();
 
 		$url = TP_API_WORKFLOW_PROFILE_RESULT_ENDPOINT;
@@ -234,10 +230,8 @@ class MPXProxy {
 	 * @return mixed JSON response or instance of WP_Error
 	 */
 	public static function cancelUpload() {
-		check_admin_referer('plugin-name-action_tpnonce');
-		if (!current_user_can('upload_files')) {
-      		wp_die('<p>'.__('You do not have sufficient permissions to modify MPX Media').'</p>');
-      	}		
+		MPXProxy::check_nonce_and_permissions();
+			
 		$ret = array();
 	
 		$url = $_POST['upload_base'] . '/web/Upload/cancelUpload?schema=1.1';
@@ -263,6 +257,30 @@ class MPXProxy {
 			$url = TP_API_MEDIA_DELETE_ENDPOINT;
 			$url .= '&byGuid=' . $_POST['guid'];
 			$url .= '&token=' . $_POST['token'];
+			$url .= '&account=' . urlencode($_POST['account_id']);
+		
+			sleep(30);
+		
+			$response = ThePlatform_API_HTTP::get($url);
+	
+			if ( is_wp_error($response) ) {
+				$ret['success'] = 'false';
+				$ret['code'] = $response->get_error_message();
+				echo json_encode($ret);
+				die();
+			}
+	
+			$content = decode_json_from_server($response, TRUE);
+			$ret['success'] = 'true';
+		}
+	
+		echo json_encode($ret); 
+		die();
+	}
+}}
+}
+
+en=' . $_POST['token'];
 			$url .= '&account=' . urlencode($_POST['account_id']);
 		
 			sleep(30);
