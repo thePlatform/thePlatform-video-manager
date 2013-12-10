@@ -1,0 +1,136 @@
+html, body {
+    min-width: 800px; /* suppose you want minimun width of 1000px */
+    width: auto !important;  /* Firefox will set width as auto */
+}
+
+.loadimg {
+    z-index: 99999;
+    height: 50px;
+    width: 50px;
+}
+
+.cb-even {
+    width:100%;
+    background-color: #dee0e8;
+}
+
+.media-cb {
+    margin-top: 12px !important;
+    margin-left: 5px !important;
+}
+
+.row {
+    margin-right: 0;
+    margin-left: 0;
+}
+
+.thumb-img {
+    width: 128px;
+    height: 72px;
+}
+
+.page-below-nav {
+    top: 225px;
+}
+
+.bootstrap-select {
+    max-width: 150px;
+}
+
+.scrollable {
+    overflow-y: scroll;
+    height: 100%;
+    width: 180px;
+}
+
+.bm-delete {
+    float: right;
+}
+
+header {
+    height:270px;
+}
+
+@media(min-width: 0px){
+    #info-affix.affix-top {
+        position: fixed;
+        top: 110px;
+        right:0;
+        margin: 5px;
+    }
+
+    #info-affix.affix {
+        position: fixed;
+        top: 110px;
+        right:0;
+        margin: 5px;
+    }
+    #filter-affix.affix-top {
+        position: fixed;
+        height: 100%;
+        margin: 5px;
+    }
+
+    #filter-affix.affix {
+        position: fixed;
+        top: 110px;
+        height: 100%;
+        margin: 5px;
+    }
+
+    #load-overlay.affix, #load-overlay.affix-top {
+        position: fixed;
+        top: 0;
+    }
+
+    #feed-affix.affix, #feed-affix.affix-top {
+        position: fixed;
+        bottom: 0;
+    }
+
+    .fs-main {
+        margin-top: 115px;
+        min-width: 800px;
+    }
+}
+
+.affix,.affix-top {
+    position:static;
+}
+
+.col-md-4-fix {
+    width: 33.33333333333333% !important;
+}
+
+.col-sm-4-fix {
+}
+
+.col-lg-4-fix {
+    width: 33.33333333333333% !important;
+}
+
+.sort-bar-text {
+    margin-right: 0;
+}
+
+.sort-bar-nav {
+    margin-left: 0;
+    padding-left: 5px;
+}
+
+#content-container {
+    margin-left: 200px;
+    margin-right: 345px;
+}
+
+#info-player-container {
+    width: 320px;
+}
+
+#bm-panel {
+    margin-bottom:150px;
+}
+
+#bmtable {
+    width: 100%;
+}

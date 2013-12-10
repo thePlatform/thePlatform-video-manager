@@ -13,20 +13,25 @@ if (strcmp($preferences['mpx_account_id'], "") == 0) {
 /*
  * Load scripts and styles 
  */
-wp_enqueue_script('jquery');
-wp_enqueue_script('theplatform_js');
-wp_enqueue_script('nprogress_js');
-wp_enqueue_script('set-post-thumbnail');
-wp_enqueue_script('jquery-ui-progressbar');
-wp_enqueue_script('thickbox');
+// wp_enqueue_script('jquery');
+// wp_enqueue_script('theplatform_js');
+// wp_enqueue_script('nprogress_js');
+// wp_enqueue_script('bootstrap_js');
+wp_enqueue_script('localscript_js');
+wp_enqueue_script('infinitescroll_js');
+// wp_enqueue_script('set-post-thumbnail');
+// wp_enqueue_script('jquery-ui-progressbar');
+// wp_enqueue_script('thickbox');
 
-wp_enqueue_style('theplatform_css');
-wp_enqueue_style('nprogress_css');
-wp_enqueue_style('global');
-wp_enqueue_style('media');
-wp_enqueue_style('wp-admin');
-wp_enqueue_style('colors');
-wp_enqueue_style('jquery-ui-progressbar');
+// wp_enqueue_style('theplatform_css');
+wp_enqueue_style('bootstrap_css');
+wp_enqueue_style('localstyle_css');
+// wp_enqueue_style('nprogress_css');
+// wp_enqueue_style('global');
+// wp_enqueue_style('media');
+// wp_enqueue_style('wp-admin');
+// wp_enqueue_style('colors');
+// wp_enqueue_style('jquery-ui-progressbar');
 
 ?>
 
@@ -35,12 +40,21 @@ wp_enqueue_style('jquery-ui-progressbar');
 	<h2><div style="clear:both;"></div> </h2>
 	<?php
 	
+
 	$tp_api = new ThePlatform_API;
+
+	// if (!isset($_GET['token'])) {
+	// 	echo add_query_arg(array( 
+	// 			'token' => $tp_api->mpx_signin(),				
+	// 			'account' => $preferences['mpx_account_id']
+	// 		));
+	// }
+
 	$metadata = $tp_api->get_metadata_fields();
 	
 	if ( is_wp_error( $metadata ) )
 		echo '<div id="message" class="error below-h2"><p>' . esc_html($metadata->get_error_message()) . '</p></div>';
-	
+
 	//Update media handler
 	if ( isset( $_POST['submit'] ) && $_POST['submit'] == 'Save Changes' ) {
 		// Update media item in detail view		
@@ -175,369 +189,592 @@ wp_enqueue_style('jquery-ui-progressbar');
 
 	} ?>
 
+	<nav class="navbar navbar-default" role="navigation">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">VAN Dashboard</a>
+        </div>
 
-	<?php 
-	if ( !is_wp_error( $response ) ) {		
+            <ul class="nav navbar-nav">
+                <li><a id="btn-add-bm"><span class="glyphicon glyphicon-star-empty"></span></a></li>
+            </ul>
+            <form class="navbar-form navbar-left" role="search" onsubmit="return false;"><!--TODO: Add seach functionality on Enter -->
+                <div class="form-group">
+                    <input id="input-search" type="text" class="form-control" placeholder="Keywords">
+                </div>
+                <button id="btn-feed-preview" type="button" class="btn btn-default">Search</button>
+            </form>
+            <p class="navbar-text sort-bar-text">Sort:</p>
+            <form class="navbar-form navbar-left sort-bar-nav" role="sort">
+                <select id="selectpick-sort" class="form-control">
+                    <option>Added</option>
+                    <option>Title</option>
+                    <option>Updated</option>
+                </select>
+            </form>
 
-		if ( !empty( $_GET['edit'] ) ) : 
-			
-			$embed_id = NULL;
-				if (is_array($video['media$content'])) {			
-					foreach ($video['media$content'] as $value) {
-						foreach ($value['plfile$releases'] as $key => $value) {
-							if ($value['plrelease$delivery'] == "streaming") {
-								$embed_id = $value['plrelease$pid'];							
-							}		
-						break;						
-						}					
-					}	
-				}	
-			?>
-
-			<form id="theplatform-edit-media" method="post" action="<?php echo menu_page_url( 'theplatform-media', false ); ?>">
-				<?php 
-					wp_nonce_field( 'theplatform-ajax-nonce' ); 
-					if ($preferences['user_id_customfield'] !== '') 
-						echo '<input type="hidden" name="' . esc_attr($preferences['user_id_customfield']) . '" class="custom_field" value="' . wp_get_current_user()->ID . '" />';
-				?>
-				<input type="hidden" name="edit_id" value="<?php echo esc_attr( $video['id'] ); ?>" />
-
-				<span class="theplatform-media-edit">
-					<div class="theplatform-media-thumbnail">
-						<div class="photo">
-							<?php
-							if (is_null($embed_id)) 
-								echo '<img src="' . esc_url($video['plmedia$defaultThumbnailUrl']) . '">';
-							else {
-								$url = 'http://player.theplatform.com/p/' . $preferences['mpx_account_pid'] . '/' .  $preferences['default_player_pid'] . '/embed/select/' .  $embed_id . '?form=html';
-								echo '<iframe src="' . esc_url($url) . '" width="491" height="272" frameBorder="0" seamless="seamless" allowFullScreen></iframe>';
-							}
-							?>
-						</div>
-					</div>
-					<div style="float: left; margin: 4px 4px 4px 40px; padding-left: 40px; border-left: 1px solid #DFDFDF;">
-						<table class="form-table">
-						<tbody>
-							<?php
-								$metadata_options = get_option('theplatform_metadata_options');
-
-								$upload_options = get_option('theplatform_upload_options');
-								$html = '';
-
-								foreach ($upload_options as $upload_field => $val) {
-									$field_title = (strstr($upload_field, '$') !== false) ? substr(strstr($upload_field, '$'), 1) : $upload_field;
-							
-									if ($val == 'allow') {
-										if ($upload_field == 'media$categories') {
-											$params = array(
-												'token' => $tp_api->mpx_signin(),
-												'fields' => 'title,fullTitle',
-												'account' => $preferences['mpx_account_id']
-											);
-									
-											$response = $tp_api->query('MediaCategory', 'get', $params);
-										
-											$tp_api->mpx_signout($params['token']);
-										
-											if (!is_wp_error($response)) {
-												$categories = decode_json_from_server($response, TRUE);
-												$i = 0;
-												$html = '<tr valign="top"><th scope="row">Category</th><td>';
-												
-												foreach ($video[$upload_field] as $mediaCategory) {																										
-													$html .= '<select class="category_field" id="theplatform_upload_' . esc_attr($upload_field) . '" name="' . esc_attr($upload_field) . '-' . $i++ . '">';
-													$html .= '<option value="(None)">No category</option>';
-													foreach ($categories['entries'] as $category) {
-														$selected = $category['plcategory$fullTitle'] == $mediaCategory['media$name'] ? ' selected="selected"' : '';
-														$html .= '<option value="' . esc_attr($category['plcategory$fullTitle']) . '" ' . esc_attr($selected) . '>' . esc_html($category['plcategory$fullTitle']) . '</option>';
-													}
-													$html .= '</select>';													
-												}
-												$html .= '<input type="button" class="button" id="upload_add_category" value="+"/></td></tr>';
-																								
-												echo $html;
-											}
-										} else {											
-											$field_value = $video[$upload_field];																						
-											$html = '<tr valign="top"><th scope="row">' . esc_html(ucfirst($field_title)) . '</th><td><input name="' . esc_attr($upload_field) . '" id="theplatform_upload_' . esc_attr($upload_field) . '" class="edit_field" type="text" value="' . esc_attr($field_value) . '"/></td></tr>';
-											echo $html;
-										}
-									}
-								}	
-
-								$metadata_options = get_option('theplatform_metadata_options');
-								
-								$html = '';
-						
-								foreach ($metadata_options as $custom_field => $val) {
-									if ($val !== 'allow')
-										continue;
-
-									$metadata_info = NULL;
-									foreach ($metadata as $entry) {
-										if (array_search($custom_field, $entry)) {
-											$metadata_info = $entry;
-											break;
-										}
-									}	
-
-									if (is_null($metadata_info))
-										continue;								
-							
-									$field_title = $metadata_info['plfield$fieldName'];
-									$field_prefix = $metadata_info['plfield$namespacePrefix'];
-									$field_namespace = $metadata_info['plfield$namespace'];
-									$field_value = $video[$field_prefix . '$' . $field_title];																						
-									$html = '<tr valign="top"><th scope="row">' . esc_html(ucfirst($field_title)) . '</th><td><input name="' . esc_attr($field_prefix . '$' . $field_title) . '" id="theplatform_upload_' . esc_attr($field_prefix . '$' . $field_title) . '" class="edit_custom_field" type="text" value="' . esc_attr($field_value) . '"/></td></tr>';
-									echo $html;										
-
-								}							
-							?>
-						</tbody>
-						</table>
-					</div>
-				</span>
-				<div style="clear:both;"></div>
-				 <p class="submit">
-					<button id="theplatform_edit_submit_button" class="button button-primary" type="submit" name="submit" value="Save Changes">Save Changes</button>
-					<button id="theplatform_cancel_edit_button" class="button" type="button" name="theplatform-cancel-edit-button">Cancel</button>
-				</p>
-					
-			</form>
-			
-		<?php else : ?>
-			<div id="media-mpx-upload-form" style="display: none;">
-					<input type="hidden" name="page" value="theplatform-media" />					
-     				<table class="form-table">
-     					<?php
-     						$upload_options = get_option('theplatform_upload_options');
-     						$html = '';
-     						
-     						if ($preferences['user_id_customfield'] !== '') 
-     							echo '<input type="hidden" name="' . esc_attr($preferences['user_id_customfield']) . '" class="custom_field" value="' . wp_get_current_user()->ID . '" />';
-
-     						foreach ($upload_options as $upload_field => $val) {
-     							$field_title = (strstr($upload_field, '$') !== false) ? substr(strstr($upload_field, '$'), 1) : $upload_field;
-     						
-     							if ($val == 'allow') {
-     								if ($upload_field == 'media$categories') {
-     									$params = array(
-											'token' => $tp_api->mpx_signin(),
-											'fields' => 'title,fullTitle',
-											'account' => $preferences['mpx_account_id']
-										);
-     								
-     									$response = $tp_api->query('MediaCategory', 'get', $params);
-
-     									$tp_api->mpx_signout($params['token']);
-     									
-     									if (!is_wp_error($response)) {
-     										$categories = decode_json_from_server($response, TRUE);
-     									
-											$html = '<tr valign="top"><th scope="row">Category</th><td><select class="category_field" id="theplatform_upload_' . esc_attr($upload_field) . '" name="' . esc_attr($upload_field) . '">';
-											$html .= '<option value="(None)">No category</option>';
-											foreach ($categories['entries'] as $category) {
-												$html .= '<option value="' . esc_attr($category['plcategory$fullTitle']) . '">' . esc_html($category['plcategory$fullTitle']) . '</option>';
-											}
-			
-											$html .= '</select><input type="button" class="button" id="upload_add_category" value="+"/></td></tr>';
-
-											echo $html;
-										}
-     								} else {
-     									$html = '<tr valign="top"><th scope="row">' . esc_html(ucfirst($field_title)) . '</th><td><input name="' . esc_attr($upload_field) . '" id="theplatform_upload_' . esc_attr($upload_field) . '" class="upload_field" type="text" /></td></tr>';
-     									echo $html;
-     								}
-     							}
-     						}
-
-     						$metadata_options = get_option('theplatform_metadata_options');
-								
-								$html = '';
-						
-								foreach ($metadata_options as $custom_field => $val) {
-									$metadata_info = NULL;
-									foreach ($metadata as $entry) {
-										if (array_search($custom_field, $entry)) {
-											$metadata_info = $entry;
-											break;
-										}
-									}	
-
-									if (is_null($metadata_info))
-										continue;								
-							
-									$field_title = $metadata_info['plfield$fieldName'];
-									$field_prefix = $metadata_info['plfield$namespacePrefix'];
-									if ($val == 'allow') {										
-											$field_value = $video[$field_prefix . '$' . $field_title];																						
-											$html = '<tr valign="top"><th scope="row">' . esc_html(ucfirst($field_title)) . '</th><td><input name="' . esc_attr($field_title) . '" id="theplatform_upload_' . esc_attr($field_prefix . '$' . $field_title) . '" class="custom_field" type="text" value="' . esc_attr($field_value) . '"/></td></tr>';
-											echo $html;										
-									}
-								}					
-     						
-     					?>
-     					<tr valign="top"><th scope="row">Publishing Profile</th>
-     						<td>
-     							<?php     								
-     									$profiles = $tp_api->get_publish_profiles();     								
-     									$html = '<select name="profile" id="publishing_profile" name="publishing_profile" class="upload_profile">';  											
-     									$html .= '<option value="tp_wp_none">Do not publish</option>'; 
-											foreach($profiles as $entry) {
-												if ($entry['title'] == $preferences['default_publish_id'])													
-													$html .= '<option value="' . esc_attr($entry['title']) . '" selected="selected">' . esc_html($entry['title']) . '</option>'; 
-												else
-													$html .= '<option value="' . esc_attr($entry['title']) . '">' . esc_html($entry['title']) . '</option>'; 
-											}
-										$html .= '</select>';
-										echo $html;
-     								
-     								
-     							?>
-     						</td>
-     					</tr>
-     					<tr valign="top"><th scope="row">File</th><td><input type="file" accept="video/*" id="theplatform_upload_file" /></td></tr>
-     				</table>
-     				<p class="submit">
-     					<button id="theplatform_upload_button" class="button button-primary" type="button" name="theplatform-upload-button">Upload Video</button>
-     					<button id="theplatform_cancel_upload_button" class="button" type="button" name="theplatform-cancel-upload-button">Cancel</button>
-     				</p>
-     			</div>
-		
-			<div id="theplatform-library-view">
-		
-			<div id="search-bar-outer">
-				<div id="search-bar-inner" class="nav-sprite">
-					<div>
-						<button id="media-mpx-upload-button" type="button">Upload Media</button>
-		
-						<label id="search-label"> Search </label>
-						<form class="search-form" id="theplatform-search" name="library-search" method="get" action="#">
-							<?php wp_nonce_field('theplatform-ajax-nonce'); ?>
-          					<input type="hidden" name="page" value="theplatform-media" />
-							<span class="nav-sprite" id="search-by" style="width: auto;">
-							  <span id="search-by-content" style="width: auto; overflow: visible;">
-								Title Prefix
-							  </span>
-							  <span class="search-down-arrow nav-sprite"></span>
-							  <select title="Search by" class="search-select" id="search-dropdown" name="theplatformsearchfield" data-nav-selected="0" style="top: 0px;">
-								<option value="byTitlePrefix" <?php echo $_GET['theplatformsearchfield'] == 'byTitlePrefix' ? 'selected="selected"' : '' ?>>Title Prefix</option>
-								<option value="byTitle" <?php echo $_GET['theplatformsearchfield'] == 'byTitle' ? 'selected="selected"' : '' ?>>Full Title</option>								
-								<option value="byCategories" <?php echo $_GET['theplatformsearchfield'] == 'byCategories' ? 'selected="selected"' : '' ?>>Categories</option>
-								<option value="q" <?php echo $_GET['theplatformsearchfield'] == 'q' ? 'selected="selected"' : '' ?>>q</option>
-							  </select>
-							</span>
-							
-							<span class="nav-sprite" id="sort-by" style="width: auto;">
-							  <span id="sort-by-content" style="width: auto; overflow: visible;">
-								Sort by..
-							  </span>
-							  <span class="sort-down-arrow nav-sprite"></span>
-							  <select title="Sort by" class="sort-select" id="sort-dropdown" name="theplatformsortfield" data-nav-selected="0" style="top: 0px;">
-							  	<option value="title" <?php echo $_GET['theplatformsortfield'] == 'title' ? 'selected="selected"' : '' ?>>Title: Ascending</option>
-								<option value="title|desc" <?php echo $_GET['theplatformsortfield'] == 'title|desc' ? 'selected="selected"' : '' ?>>Title: Descending</option>
-								<option value="added" <?php echo $_GET['theplatformsortfield'] == 'added' ? 'selected="selected"' : '' ?>>Date Added: Ascending</option>
-								<option value="added|desc" <?php echo $_GET['theplatformsortfield'] == 'added|desc' ? 'selected="selected"' : '' ?>>Date Added: Descending</option>
-								<option value="author" <?php echo $_GET['theplatformsortfield'] == 'author' ? 'selected="selected"' : '' ?>>Author: Ascending</option>
-								<option value="author|desc" <?php echo $_GET['theplatformsortfield'] == 'author|desc' ? 'selected="selected"' : '' ?>>Author: Descending</option>
-							  </select>
-							</span>
-
-							<?php 
-								if ($preferences['user_id_customfield'] !== '') { ?>
-									<span id="filter-by">
-										<input name="filter-by-userid" id="filter-cb" type="checkbox" <?php 
-										if (!isset($_GET['s']) && $preferences['filter_by_user_id'] === 'TRUE') { 
-											echo 'checked="checked"'; 
-										} 
-										if (isset($_GET['filter-by-userid'])) {
-											echo 'checked="checked"';
-										} ?>
-										/>
-                                		<label id="filter-label" for="filter-cb">My Media</label>
-								</span>
-							<?php } ?>							
-
-							<div class="searchfield-outer nav-sprite">
-							  <div class="searchfield-inner nav-sprite">
-								<div class="searchfield-width" style="padding-left: 44px;">
-								  <div id="search-input-container">
-									<input type="text" autocomplete="off" name="s" value="<?php echo $_GET['s'] ?>" title="Search For" id="search-input" style="padding-right: 1px;">
-								  </div>
-								</div>
-							  </div>
-							</div>
+            <div id="my-content" class="navbar-left">
+                <p class="navbar-text sort-bar-text"><input type="checkbox"> My Content</p>
+            </div>
 
 
-							<div class="search-submit-button nav-sprite">
-							  <input type="submit" title="Go" class="search-submit-input" value="Go">
-							</div>
-						
-						
-							<?php if (isset($_GET['s'])) { ?>
-								<button id="media-mpx-show-all-button" type="button">Show All</button>
-					  		<?php } ?>
-							
-					  		 	
-					  </form>
+            <img id="load-overlay" src="img/loading.gif" class="loadimg navbar-right">
 
-						  
-					  </div>
-							
-				</div>	
-				
-			</div>
+                <form class="navbar-form navbar-left" role="feedurl">
+                    <div class="input-group input-group form">
+                        <span class="input-group-addon">Feed Url:</span>
+                        <input id="text-feedurl" type="text" class="form-control">
+                    </div>
+                </form>
+    </nav>
 
-		<?php	
-			$output = '<div id="theplatform-media-library-view" class="wrap">';
+    <div class="fs-main">
+        <div id="filter-container">
+            <div id="filter-affix">
+                <div class="scrollable">
+                    <div id="list-categories" class="list-group">
+                        <a class="list-group-item active">
+                            Categories
+                        </a>
+                        <a href="#" class="list-group-item cat-list-selector">All Videos</a>
 
-			foreach ( $videos as $video ) {
+                        <?php 
+                        	$categories = $tp_api->get_categories();
+                        	foreach ($categories as $category) {
+                        		echo '<a href="#" class="list-group-item cat-list-selector">' . $category['title'] . '</a>';
+                        	}            
+                        ?>
+                    </div>
 
-				$thumbnail_url = $video['plmedia$defaultThumbnailUrl'];
-				if ($thumbnail_url === '')					
-					$thumbnail_url = plugins_url('/images/notavailable.gif', __FILE__);
-				$edit_url = add_query_arg( 'edit', substr($video['id'], strrpos($video['id'], '/')+1), menu_page_url( 'theplatform-media', false ) );
-				$output .= '
-				<div id="theplatform-media-' . esc_attr( substr($video['id'], strrpos($video['id'], '/')+1) ) . '" class="theplatform-media">
-					<input type="hidden" name="guid" id="guid" value="' . esc_attr($video['guid']) . '"/>
-					<input type="hidden" name="added" id="added" value="' . esc_attr($video['added']) . '"/>
-					<input type="hidden" name="keywords" id="keywords" value="' . esc_attr($video['keywords']) . '"/>
-					<input type="hidden" name="author" id="author" value="' . esc_attr($video['author']) . '"/>
-					<input type="hidden" name="title" id="title" value="' . esc_attr($video['title']) . '"/>
-					<input type="hidden" name="description" id="description" value="' . esc_attr($video['description']) . '"/>
-					
-					<div class="photo">
-						<a href="' . esc_url( $edit_url ) . '" title="' . esc_attr( $video['id'] ) .'" class="use-shortcode"><img src="' . esc_url($thumbnail_url) . '"></a>
-					</div>
-					<div class="item-title"><a href="' . esc_url( $edit_url ) . '" title="' . esc_attr( $video['id']) .'" class="use-shortcode">' . esc_html( $video['title'] ) .'</a></div>
-				
-				</div>';
-			}
-			$output.='</div><div style="clear:both;"></div>';	
+                    <div class="bm-list panel-group">
+                        <div id="bm-panel" class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+                                        My Feeds
+                                    </a>
+                                </h4>
+                            </div>
 
-			//Pagination
-			$output .= '<ul id="pagination">';
+                            <div id="collapseOne" class="panel-collapse collapse in">
+                                <div id="bm-list-panel" class="panel-body"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-			if (!isset($_GET['tppage']) || $_GET['tppage'] === '1')
-				$output .= '<li class="previous-off">«Previous</li>';
-			else
-				$output .= '<li><a href="' . esc_url(add_query_arg(array('tppage'=> intval($_GET['tppage'])-1))) . '">«Previous</a></li><li>';
+        <div id="content-container">
+            <div id="media-list"></div>
+        </div>
+        <div id="info-container">
+            <div id="info-affix">
+                <div id="info-player-container">
+                        <div id="modal-player" class="marketplacePlayer">
+                            <iframe id="player" width="320px" height="180px" frameBorder="0" seamless="seamless" src="http://player.theplatform.com/p/van-dev/cHE28glAlb_M/embed/"
+                                    webkitallowfullscreen mozallowfullscreen msallowfullscreen allowfullscreen></iframe>
+                        </div>
+                    <br>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Metadata</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <strong>Title:</strong>
+                                <span id="media-title"></span>
+                            </div>
+                            <div class="row">
+                                <strong>Description:</strong>
+                                <span id="media-description"></span>
+                            </div>
+                            <div class="row">
+                                <strong>Categories:</strong>
+                                <span id="media-categories"></span>
+                            </div>
+                            <div class="row">
+                                <strong>Addl. Categories:</strong>
+                                <span id="media-addl-categories"></span>
+                            </div>
+                            <div class="row">
+                                <strong>Keywords:</strong>
+                                <span id="media-keywords"></span>
+                            </div>
+                            <div class="row">
+                                <strong>Source:</strong>
+                                <span id="media-provider"></span>
+                            </div>
+                            <div class="row">
+                                <strong>Embargoes:</strong>
+                                <span id="media-embargoes"></span>
+                            </div>
+                            <div class="row">
+                                <strong>Publish Date:</strong>
+                                <span id="media-added"></span>
+                            </div>
+                            <div class="row">
+                                <strong>Updated Date:</strong>
+                                <span id="media-updated"></span>
+                            </div>
+                            <div class="row">
+                                <strong>Expiration Date:</strong>
+                                <span id="media-expiration"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <script type="text/javascript">
+    jQuery(document).ready(function(){
+        //$pdk.bind("player");
+        jQuery('#load-overlay').hide();
+        var queryParams = getParameters();
+        localStorage.baseFeedUrl = 'http://feed.theplatform.com/f/van-dev/van-dev-player';
+        localStorage.token = <?php echo '"' . $tp_api->mpx_signin() . '"'; ?>;
+        localStorage.provider = queryParams.provider;
+        localStorage.account = <?php echo '"' . $preferences['mpx_account_id'] . '"'; ?>;
+        localStorage.feedEndRange = 0;
 
-			for ($i=1; $i <= $pages; $i++) { 
-				if ($i == $page)
-					$output .= '<li class="active">' . $page . '</li>';
-				else
-					$output .= '<li><a href="' . esc_url(add_query_arg(array('tppage'=> $i))) . '">' . $i . '</a></li>';
-			}
+        getCategoryList(localStorage.baseFeedUrl,buildCategoryAccordion);
 
-			if ($_GET['tppage'] != $pages)
-				$output .= '<li><a href="' . esc_url(add_query_arg(array('tppage'=> isset($_GET['tppage']) ? intval($_GET['tppage'])+1 : 2))) . '">Next »</a></li>';
-			else
-				$output .= '<li class="next-off">Next »</li><li>';
-				
-			$output .= '</ul></div>';
-			
-			echo $output;
-		endif; 
-	} ?>
-</div>
+        //Initial feed call
+        setFeedUrl(localStorage.baseFeedUrl,localStorage.baseFeedUrl.appendParams({ sort: getSort() }));
+
+        if (localStorage.token != 'undefined' && localStorage.account != 'undefined')
+            getBookmarks(displayBookmarks);
+        else jQuery('#btn-bookmark').prop('disabled',true);
+
+        jQuery('#list-categories').on('mouseover',function(){
+            jQuery('body')[0].style.overflowY = 'none';
+        });
+        jQuery('#list-categories').on('mouseout',function(){
+            jQuery('body')[0].style.overflowY = 'auto';
+        });
+
+        jQuery('#btn-feed-preview').click(function(){
+            refreshView();
+        });
+
+        //Turn on infinite scrolling.
+        jQuery('#media-list').infiniteScroll({
+            threshold: 100,
+            onEnd: function() {
+                //No more results
+            },
+            onBottom: function(callback) {
+                jQuery('#load-overlay').show(); // show loading before we call getFeed
+                var feed = jQuery('#text-feedurl').data('feed');
+                var theRange = parseInt(localStorage.feedEndRange);
+                theRange = theRange +'-'+(theRange+20);
+                getFeed(feed.appendParams({ range: theRange  }),function(resp){
+                    if (resp['isException']){
+                        jQuery('#load-overlay').hide();
+                        //what do we do on error?
+                    }
+
+                    localStorage.feedResultCount = resp['totalResults'];
+                    localStorage.feedStartRange = resp['startIndex'];
+                    localStorage.feedEndRange = 0;
+                    if (resp['entryCount'] > 0)
+                        localStorage.feedEndRange = resp['startIndex'] + resp['entryCount'] - 1;
+
+                    var entries = resp['entries'];
+                    for (var i = 0; i < entries.length; i++ )
+                        addMediaObject(entries[i]);
+
+                    jQuery('#load-overlay').hide();
+                    callback(parseInt(localStorage.feedEndRange) < parseInt(localStorage.feedResultCount)); //True if there are still more results.
+                });
+            }
+        });
+
+        jQuery('#text-feedurl').tooltip(
+                {
+                    title:copyMessage(navigator.platform),
+                    trigger: 'mouseup',
+                    placement: 'bottom',
+                    delay: { hide: 200}
+                });
+
+        jQuery('#text-feedurl').blur(function(){
+            jQuery(this).val(jQuery(this).data('feed'));
+        });
+
+        jQuery('#text-feedurl').mouseup(function(){
+            jQuery(this).select();
+        });
+
+        jQuery('.scrollable').on('DOMMouseScroll mousewheel', function(ev) {
+            var $this = jQuery(this),
+                    scrollTop = this.scrollTop,
+                    scrollHeight = this.scrollHeight,
+                    height = $this.height(),
+                    delta = (ev.type == 'DOMMouseScroll' ?
+                            ev.originalEvent.detail * -40 :
+                            ev.originalEvent.wheelDelta),
+                    up = delta > 0;
+
+            var prevent = function() {
+                ev.stopPropagation();
+                ev.preventDefault();
+                ev.returnValue = false;
+                return false;
+            };
+
+            if (!up && -delta > scrollHeight - height - scrollTop) {
+                // Scrolling down, but this will take us past the bottom.
+                $this.scrollTop(scrollHeight);
+                return prevent();
+            } else if (up && delta > scrollTop) {
+                // Scrolling up, but this will take us past the top.
+                $this.scrollTop(0);
+                return prevent();
+            }
+        });
+
+        jQuery('#feed-affix').affix({
+            offset: {
+                top: 0
+            }
+        });
+
+        jQuery('#info-affix').affix({
+            offset: {
+                top: 0
+            }
+        });
+
+        jQuery('#filter-affix').affix({
+            offset: {
+                top: 0
+            }
+        });
+
+        jQuery('#btn-feed-reset').click(function(){
+            getBookmarkFeed(localStorage.baseFeedUrl);
+        });
+
+        jQuery('#btn-add-bm').popover({
+            placement: 'bottom',
+            html: true,
+            content: '<div style="width: 210px;"><input id="bm-new-title" type="text" maxlength="15" placeholder="Bookmark Title" style="margin-right:5px;"><button id="btn-save-bm" class="btn btn-sm btn-primary">Save</button></div>'
+        });
+
+        jQuery('input:checkbox','#my-content').click(function(){
+            refreshView();
+        });
+
+        jQuery('#selectpick-sort').on('change',function(){
+            refreshView();
+        });
+
+        jQuery('#input-search').keyup(function(event){
+           if (event.keyCode == 13)
+            refreshView();
+        });
+
+    });
+
+    //Need this event to handle saving bookmarks because the button doesn't exist until the popup is created.
+    jQuery(document).on('click','#btn-save-bm',function(){
+        var bookmarkFeed = jQuery('#text-feedurl').data('feed');
+        var bmTitle = jQuery('#bm-new-title').val();
+
+        if (bookmarkFeed && bmTitle)
+            saveBookmark(bmTitle,bookmarkFeed,function(){
+                getBookmarks(displayBookmarks);
+                jQuery('#bm-new-title').val('');
+                jQuery('#btn-add-bm').popover('hide');
+            });
+    });
+
+
+    jQuery(document).on('change','.media > [type="checkbox"]',function(){
+        var feedUrl = buildFeedQuery(localStorage.baseFeedUrl,{
+            category: localStorage.selectedCategory,
+            selectedGuids: getSelectedGuids()
+        });
+        setFeedUrl(feedUrl,'');
+    });
+
+    jQuery(document).on('click','.media',function(){
+        updateContentPane(jQuery(this).data('media'));
+        localStorage.currentRelease = jQuery(this).data('release');
+        //$pdk.controller.loadReleaseURL(localStorage.currentRelease);
+        //$pdk.controller.setReleaseURL('');
+    });
+
+    jQuery(document).on('mouseover','.media',function(){
+        $this = jQuery(this);
+        $this.attr('style','background-color: #D8E8FF;');
+    });
+
+    jQuery(document).on('mouseleave','.media',function(){
+        $this = jQuery(this);
+        $this.attr('style','');
+    });
+
+    function refreshView(){
+        var $mediaList = jQuery('#media-list');
+        //TODO: If sorting clear search?
+        var queryObject = {
+            search: jQuery('#input-search').val(),
+            category: localStorage.selectedCategory,
+            sort: getSort(),
+            desc: jQuery('#sort-desc').data('sort'),
+            myContent: jQuery('input:checkbox','#my-content').prop('checked'),
+            selectedGuids: getSelectedGuids()
+        };
+
+        var newFeed = buildFeedQuery(localStorage.baseFeedUrl,queryObject);
+
+        delete queryObject.selectedGuids;
+        var dataFeed = buildFeedQuery(localStorage.baseFeedUrl,queryObject);
+
+        setFeedUrl(newFeed,dataFeed);
+
+        displayMessage('');
+
+        localStorage.feedEndRange = 0;
+        $mediaList.empty();
+        $mediaList.infiniteScroll('reset');
+    }
+
+    //TODO: Should make bookmark field name a variable.
+    function displayBookmarks(bmResp){
+        var $bmPanelList = jQuery('#bm-list-panel');
+        var bmEntry = bmResp['entries'][0]; //TODO: This is dirty.
+        localStorage.bookmarkNmsp = JSON.stringify({ '$xmlns' : bmResp['$xmlns']});
+        localStorage.bookmarkId = bmEntry.id;
+
+
+        var bmObject;
+        for (var key in bmEntry)
+            if (key.indexOf('vanDashboardBookmarks') > -1){
+                bmObject = bmEntry[key];
+                var storageObject = {};
+                    storageObject[key] = bmObject;
+                localStorage.bookMarks = JSON.stringify(storageObject);
+                break;
+            }
+
+        $bmPanelList.empty();
+        var bmTable = jQuery('<table id="bmtable"></table>');
+        for (key in bmObject)
+            bmTable.append('<tr><td><a class="bm-launch" href="#" bm-data="'+bmObject[key]+'" >'+key+'</a></td><td><button value="'+key+'" class="btn btn-danger btn-xs bm-delete"><span class="glyphicon glyphicon-remove"></span></button></td></tr>');
+        $bmPanelList.append(bmTable);
+
+        jQuery('.bm-delete', bmTable).click(function(){
+            var $this = jQuery(this);
+            deleteBookmark($this.val(),function(){
+                getBookmarks(displayBookmarks);
+            });
+        });
+
+        jQuery('.bm-launch',bmTable).click(function(){
+            var $this = jQuery(this);
+            getBookmarkFeed($this.attr('bm-data'));
+        });
+    }
+
+    function setFeedUrl(url,dataurl){
+        var $feedUrl = jQuery('#text-feedurl');
+        $feedUrl.val(url);
+        if (dataurl && dataurl.length > 0)
+            $feedUrl.data('feed',dataurl);
+        else
+            $feedUrl.data('feed',url);
+    }
+
+    function getBookmarkFeed(feed){
+        var baseUrl = feed.split('?').shift();
+        var query = feed.split('?').pop();
+        var $mediaList = jQuery('#media-list');
+        localStorage.baseFeedUrl = baseUrl;
+
+        displayMessage('');
+
+        setFieldsFromQuery(query);
+        setFeedUrl(feed);
+
+        localStorage.feedEndRange = 0;
+        $mediaList.empty();
+        $mediaList.infiniteScroll('reset');
+    }
+
+    function getSort(){
+    	var sortMethod = jQuery('option:selected','#selectpick-sort').val();
+    	    	
+    	switch (sortMethod) {
+    		case "Added": 
+	    		sortMethod = "added|desc";
+	    		break;
+	    	case "Updated":
+	    		sortMethod = "updated|desc";
+	    		break;
+	    	case "Title":
+	    		sortMethod = "title";
+	    		break;	
+    	}
+ 		
+        return sortMethod || "added";
+    }
+
+    function setSort(val){
+        var $sortBox = jQuery('#selectpick-sort');
+        switch (val.toLowerCase()) {
+            case "updated":
+                $sortBox.val('Updated');
+                break;
+            case "title":
+                $sortBox.val('Title');
+                break;
+            default:
+                $sortBox.val('Added');
+        }
+    }
+
+    function getSearch(){
+        return jQuery('#input-search').val();
+    }
+
+    function buildCategoryAccordion(resp){
+        jQuery('.cat-list-selector','#list-categories').click(function(){
+            localStorage.selectedCategory = jQuery(this).text();
+            jQuery.each(jQuery('.cat-list-selector.active'),function(index, value) {
+            	jQuery(value).removeClass('active');
+            })
+            jQuery(this).addClass('active');
+            if (localStorage.selectedCategory == "All Videos")
+                localStorage.selectedCategory = '';
+            jQuery('#input-search').val(''); //Clear the searching when we choose a category
+            refreshView();
+        });
+    }
+
+    function getSelectedGuids(){
+        var mediaList = jQuery('#media-list').children();
+        var guids = '';
+        for (var i =0; i < mediaList.length; i++)
+            if ( jQuery('input',mediaList[i]).is(':checked') ){
+                if (guids.length > 0) guids += '|';
+
+                guids += jQuery(mediaList[i]).data('guid');
+            }
+        localStorage.selectedGuids = guids;
+        return guids;
+    }
+
+    function buildFeedPreview(data){
+        var entries = data['entries'];
+        jQuery('#load-overlay').hide(); // Hide the loading overlay
+        //Reset the media list.
+        jQuery('#media-list').empty();
+
+        //Add each media to the list.
+        for (var idx in entries)
+            addMediaObject(entries[idx]);
+    }
+
+    function addMediaObject(media){
+       var newMedia = '<div class="media"><input type="checkbox" class="pull-left media-cb">'+
+                '<img class="media-object pull-left thumb-img" data-src="holder.js/128x72" alt="128x72" src="'+media.defaultThumbnailUrl+'">'+
+                '<button class="btn btn-xs media-embed pull-right"><></button>'+
+                '<div class="media-body">'+
+                '<strong class="media-heading">'+media.title+'</strong>'+
+                '<br/>'+(media['cnn-video$source'] || media['cnn-video$videoSource'])+
+                '<br/>'+media.description +
+                //'<br/><small>added: '+new Date(media.added).toLocaleString() + '</small>'+
+                '</div>'+
+                '</div>';
+
+        newMedia = jQuery(newMedia);
+        newMedia.data('guid',media.guid);
+        newMedia.data('media',media);
+        var previewUrl = extractVideoUrlfromFeed(media);
+        newMedia.data('release',previewUrl[0].appendParams({mbr: true}));
+        //newMedia.data('release',media['content'][0]['releases'][0]['url']);
+
+        if (localStorage.selectedGuids && $.inArray(media.guid, localStorage.selectedGuids.split('|')) > -1)
+            jQuery('input:checkbox',newMedia).prop('checked',true);
+
+        //TODO: update this with actual embed?
+        jQuery('.media-embed',newMedia).popover({
+            html: true,
+            title: 'Embed Tag',
+            content: 'Something To copy',
+            placement: 'left'
+         });
+
+        jQuery('#media-list').append(newMedia);
+
+    }
+
+    function updateContentPane(mediaItem){
+        var i, catArray, catList;
+        jQuery('#media-title').text(mediaItem.title);
+        jQuery('#media-description').text(mediaItem.description);
+
+        if (mediaItem.categories){
+            catArray = mediaItem.categories;
+            catList = '';
+            for (i = 0; i < catArray.length; i++){
+                if (catList.length > 0) catList += ', ';
+                catList += catArray[i].name;
+            }
+
+            jQuery('#media-categories').text(catList);
+        }
+
+        //TODO: Figure out how to store namespacing?
+        if(mediaItem['cnn-video$additionalCategories']){
+            catArray = mediaItem['cnn-video$additionalCategories'];
+            catList = '';
+            for (i = 0; i < catArray.length; i++){
+                if (catList.length > 0) catList += ', ';
+                catList += catArray[i];
+            }
+            jQuery('#media-addl-categories').text(catList);
+        }
+
+        if (mediaItem['cnn-video$source'] || mediaItem['cnn-video$videoSource'])
+            jQuery('#media-provider').text(mediaItem['cnn-video$source'] || mediaItem['cnn-video$videoSource']);
+
+        if (mediaItem['cnn-video$embargoes'])
+        jQuery('#media-embargoes').text(mediaItem['cnn-video$embargoes']);
+
+        if (mediaItem.keywords)
+            jQuery('#media-keywords').text(mediaItem.keywords.split(',').join(', '));
+
+        if (mediaItem.added > 0)
+            jQuery('#media-added').text(new Date(mediaItem.added).toLocaleString());
+
+        if(mediaItem.updated > 0)
+            jQuery('#media-updated').text(new Date(mediaItem.updated).toLocaleString());
+            
+        if(mediaItem.expirationDate > 0)
+            jQuery('#media-expiration').text(new Date(mediaItem.expirationDate).toLocaleString());
+
+    }
+
+    function displayMessage(msg){
+        jQuery('#msg').text(msg);
+    }
+
+    function setFieldsFromQuery(query){
+        var displayMap = parseParameters(query);
+
+        if (displayMap.sort)
+            setSort(displayMap.sort.split('|').shift());
+
+        if (displayMap.q) //Search
+            jQuery('#input-search').val(displayMap.q);
+        else
+            jQuery('#input-search').val('');
+
+        jQuery('input:checkbox','#my-content').prop('checked',!!(displayMap.byProvider));
+    }
+
+    </script>
+    </div>

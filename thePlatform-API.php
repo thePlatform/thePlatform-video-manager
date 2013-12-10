@@ -567,6 +567,29 @@ class ThePlatform_API {
 		
 		return $data['entries'][0];
 	}
+
+	/**
+	 * Query MPX for categories
+	 *
+	 * @param string $id The Media ID associated with the asset we are requesting 
+	 * @return array The Media data service response
+	*/
+	function get_categories() {
+		$token = $this->mpx_signin();
+		
+		if (!$this->preferences)
+			$this->preferences = get_option($this->preferences_options_key);
+
+		$url = TP_API_MEDIA_CATEGORY_ENDPOINT . '&fields=id,title&token=' . $token . '&account=' . $this->preferences['mpx_account_id'];
+								
+		$response = ThePlatform_API_HTTP::get($url);
+		
+		$data = decode_json_from_server($response, TRUE);
+
+		$this->mpx_signout($token);
+		
+		return $data['entries'];
+	}
 	
 	/**
 	 * Query MPX for players 
@@ -780,26 +803,6 @@ class ThePlatform_API {
 
 		$ret = $data['entries'];
 	
-		$this->mpx_signout($token);
-			
-		return $ret;
-	}
-};NT . '&fields=' . $fields . '&token=' . $token . '&sort=title';
-		
-		if (!empty($this->preferences['mpx_account_id'])) {
-			$url .= '&account=' . urlencode($this->preferences['mpx_account_id']);
-		}
-
-		$response = ThePlatform_API_HTTP::get($url);
-	
-		$data = decode_json_from_server($response, TRUE);
-		
-		if ( !empty( $data['isException'] ) ) {
-			$ret = new WP_Error('ThePlatform_API::get_publish_profiles', $data['title']);
-		} else {
-			$ret = $data['entries'];
-		}
-				
 		$this->mpx_signout($token);
 			
 		return $ret;
