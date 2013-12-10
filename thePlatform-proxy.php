@@ -277,29 +277,4 @@ class MPXProxy {
 		echo json_encode($ret); 
 		die();
 	}
-}}
 }
-
-en=' . $_POST['token'];
-			$url .= '&account=' . urlencode($_POST['account_id']);
-		
-			sleep(30);
-		
-			$response = ThePlatform_API_HTTP::get($url);
-	
-			if ( is_wp_error($response) ) {
-				$ret['success'] = 'false';
-				$ret['code'] = $response->get_error_message();
-				echo json_encode($ret);
-				die();
-			}
-	
-			$content = decode_json_from_server($response, TRUE);
-			$ret['success'] = 'true';
-		}
-	
-		echo json_encode($ret); 
-		die();
-	}
-}
-

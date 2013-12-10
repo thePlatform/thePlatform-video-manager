@@ -784,24 +784,4 @@ class ThePlatform_API {
 			
 		return $ret;
 	}
-};NT . '&fields=' . $fields . '&token=' . $token . '&sort=title';
-		
-		if (!empty($this->preferences['mpx_account_id'])) {
-			$url .= '&account=' . urlencode($this->preferences['mpx_account_id']);
-		}
-
-		$response = ThePlatform_API_HTTP::get($url);
-	
-		$data = decode_json_from_server($response, TRUE);
-		
-		if ( !empty( $data['isException'] ) ) {
-			$ret = new WP_Error('ThePlatform_API::get_publish_profiles', $data['title']);
-		} else {
-			$ret = $data['entries'];
-		}
-				
-		$this->mpx_signout($token);
-			
-		return $ret;
-	}
 };
