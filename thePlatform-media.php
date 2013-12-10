@@ -421,13 +421,10 @@ wp_enqueue_style('jquery-ui-progressbar');
 							  </span>
 							  <span class="search-down-arrow nav-sprite"></span>
 							  <select title="Search by" class="search-select" id="search-dropdown" name="theplatformsearchfield" data-nav-selected="0" style="top: 0px;">
-									<?php
-										echo '<option value="byTitlePrefix" selected="selected">Title Prefix</option>'; 
-										echo '<option value="byTitle">Full Title</option>';  
-										echo '<option value="byDescription">Description</option>';
-										echo '<option value="byCategories">Categories</option>';  										
-									?>
-								<option value="q">q</option>
+								<option value="byTitlePrefix" <?php echo $_GET['theplatformsearchfield'] == 'byTitlePrefix' ? 'selected="selected"' : '' ?>>Title Prefix</option>
+								<option value="byTitle" <?php echo $_GET['theplatformsearchfield'] == 'byTitle' ? 'selected="selected"' : '' ?>>Full Title</option>								
+								<option value="byCategories" <?php echo $_GET['theplatformsearchfield'] == 'byCategories' ? 'selected="selected"' : '' ?>>Categories</option>
+								<option value="q" <?php echo $_GET['theplatformsearchfield'] == 'q' ? 'selected="selected"' : '' ?>>q</option>
 							  </select>
 							</span>
 							
@@ -437,12 +434,12 @@ wp_enqueue_style('jquery-ui-progressbar');
 							  </span>
 							  <span class="sort-down-arrow nav-sprite"></span>
 							  <select title="Sort by" class="sort-select" id="sort-dropdown" name="theplatformsortfield" data-nav-selected="0" style="top: 0px;">
-							  	<option value="title" selected="selected">Title: Ascending</option>
-								<option value="title|desc" selected="selected">Title: Descending</option>
-								<option value="added" selected="selected">Date Added: Ascending</option>
-								<option value="added|desc" selected="selected">Date Added: Descending</option>
-								<option value="author" selected="selected">Author: Ascending</option>
-								<option value="author|desc" selected="selected">Author: Descending</option>
+							  	<option value="title" <?php echo $_GET['theplatformsortfield'] == 'title' ? 'selected="selected"' : '' ?>>Title: Ascending</option>
+								<option value="title|desc" <?php echo $_GET['theplatformsortfield'] == 'title|desc' ? 'selected="selected"' : '' ?>>Title: Descending</option>
+								<option value="added" <?php echo $_GET['theplatformsortfield'] == 'added' ? 'selected="selected"' : '' ?>>Date Added: Ascending</option>
+								<option value="added|desc" <?php echo $_GET['theplatformsortfield'] == 'added|desc' ? 'selected="selected"' : '' ?>>Date Added: Descending</option>
+								<option value="author" <?php echo $_GET['theplatformsortfield'] == 'author' ? 'selected="selected"' : '' ?>>Author: Ascending</option>
+								<option value="author|desc" <?php echo $_GET['theplatformsortfield'] == 'author|desc' ? 'selected="selected"' : '' ?>>Author: Descending</option>
 							  </select>
 							</span>
 
@@ -465,7 +462,7 @@ wp_enqueue_style('jquery-ui-progressbar');
 							  <div class="searchfield-inner nav-sprite">
 								<div class="searchfield-width" style="padding-left: 44px;">
 								  <div id="search-input-container">
-									<input type="text" autocomplete="off" name="s" value="" title="Search For" id="search-input" style="padding-right: 1px;">
+									<input type="text" autocomplete="off" name="s" value="<?php echo $_GET['s'] ?>" title="Search For" id="search-input" style="padding-right: 1px;">
 								  </div>
 								</div>
 							  </div>

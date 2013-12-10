@@ -711,5 +711,8 @@ jQuery(document).ready(function() {
 	// Handle sort dropdown text
 	jQuery('#sort-dropdown').change(function() {
 		jQuery('#sort-by-content').text(jQuery(this).find(":selected").text());
-	});
+	});	
+
+	jQuery('#search-by-content').text(jQuery('.search-select').find(":selected").text());
+	jQuery('#sort-by-content').text(jQuery('.sort-select').find(":selected").text());
 });

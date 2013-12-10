@@ -12,6 +12,7 @@
 <html <?php language_attributes(); ?>>
 <head>
 <meta charset="<?php bloginfo( 'charset' ); ?>" />
+
 <title>thePlatform Video Library</title>
 <?php 			
 	wp_print_scripts(array('jquery', 'theplatform_js', 'thickbox'));
@@ -31,7 +32,7 @@
 	
 	$preferences = get_option('theplatform_preferences_options');
 	
-	$page = isset( $_POST['tppage'] ) ? sanitize_text_field( $_POST['tppage'] ) : '1';	
+	$page = isset( $_POST['tppage'] ) ? sanitize_text_field( $_POST['tppage'] ) : '1';		
 
 	if (isset($_POST['s'])) {
 		check_admin_referer('theplatform-ajax-nonce'); 
@@ -59,6 +60,7 @@
 			$videos = $tp_api->get_videos('','',$page);	
 	}
 	$count = $videos['totalResults'];	
+	$pages = ceil(intval($count)/intval($preferences['videos_per_page']));
 	$videos = $videos['entries'];	
 ?>
 
@@ -89,6 +91,15 @@ jQuery(document).ready(function() {
 		return false;
 	});
 
+	jQuery('.mpx-media-page').click(function(e) {
+		e.preventDefault();
+		jQuery('#form-page-field').val(jQuery(this).data('page'));
+		jQuery('#theplatform-search').submit();
+	});
+
+	jQuery('#search-by-content').text(jQuery('.search-select').find(":selected").text());
+	jQuery('#sort-by-content').text(jQuery('.sort-select').find(":selected").text());
+
 });
 
 </script>
@@ -105,18 +116,17 @@ jQuery(document).ready(function() {
 						<form class="search-form-embed" id="theplatform-search" name="library-search" method="POST" action="#">							
 							<?php wp_nonce_field('theplatform-ajax-nonce'); ?>
           					<input type="hidden" name="page" value="theplatform-media" />
-          					<input type="hidden" name="tppage" value="<?php $page ?>" />
+          					<input type="hidden" id="form-page-field" name="tppage" value="1" />
 							<span class="nav-sprite" id="search-by" style="width: auto;">
 							  <span id="search-by-content" style="width: auto; overflow: visible;">
 								Title Prefix
 							  </span>
 							  <span class="search-down-arrow nav-sprite"></span>
 							  <select title="Search by" class="search-select" id="search-dropdown" name="theplatformsearchfield" data-nav-selected="0" style="top: 0px;">
-							  	<option value="byTitlePrefix" selected="selected">Title Prefix</option>
-								<option value="byTitle">Full Title</option>
-								<option value="byDescription">Description</option>
-								<option value="byCategories">Categories</option>
-								<option value="q">q</option>
+							  	<option value="byTitlePrefix" <?php echo $_POST['theplatformsearchfield'] == 'byTitlePrefix' ? 'selected="selected"' : '' ?>>Title Prefix</option>
+								<option value="byTitle" <?php echo $_POST['theplatformsearchfield'] == 'byTitle' ? 'selected="selected"' : '' ?>>Full Title</option>								
+								<option value="byCategories" <?php echo $_POST['theplatformsearchfield'] == 'byCategories' ? 'selected="selected"' : '' ?>>Categories</option>
+								<option value="q" <?php echo $_POST['theplatformsearchfield'] == 'q' ? 'selected="selected"' : '' ?>>q</option>
 							  </select>
 							</span>
 							
@@ -124,14 +134,14 @@ jQuery(document).ready(function() {
 							  <span id="sort-by-content" style="width: auto; overflow: visible;">
 								Sort by..
 							  </span>
-							  <span class="sort-down-arrow nav-sprite"></span>
+							  <span class="sort-down-arrow nav-sprite"></span>							  
 							  <select title="Sort by" class="sort-select" id="sort-dropdown" name="theplatformsortfield" data-nav-selected="0" style="top: 0px;">
-							  	<option value="title" selected="selected">Title: Ascending</option>
-								<option value="title|desc" selected="selected">Title: Descending</option>
-								<option value="added" selected="selected">Date Added: Ascending</option>
-								<option value="added|desc" selected="selected">Date Added: Descending</option>
-								<option value="author" selected="selected">Author: Ascending</option>
-								<option value="author|desc" selected="selected">Author: Descending</option>
+							  	<option value="title" <?php echo $_POST['theplatformsortfield'] == 'title' ? 'selected="selected"' : '' ?>>Title: Asc</option>
+								<option value="title|desc" <?php echo $_POST['theplatformsortfield'] == 'title|desc' ? 'selected="selected"' : '' ?>>Title: Desc</option>
+								<option value="added" <?php echo $_POST['theplatformsortfield'] == 'added' ? 'selected="selected"' : '' ?>>Date Added: Asc</option>
+								<option value="added|desc" <?php echo $_POST['theplatformsortfield'] == 'added|desc' ? 'selected="selected"' : '' ?>>Date Added: Desc</option>
+								<option value="author" <?php echo $_POST['theplatformsortfield'] == 'author' ? 'selected="selected"' : '' ?>>Author: Asc</option>
+								<option value="author|desc" <?php echo $_POST['theplatformsortfield'] == 'author|desc' ? 'selected="selected"' : '' ?>>Author: Desc</option>
 							  </select>
 							</span>
 
@@ -156,7 +166,7 @@ jQuery(document).ready(function() {
 							  <div class="searchfield-inner nav-sprite">
 								<div class="searchfield-width" style="padding-left: 44px;">
 								  <div id="search-input-container">
-									<input type="text" autocomplete="off" name="s" value="" title="Search For" id="search-input" style="padding-right: 1px;">
+									<input type="text" autocomplete="off" name="s" value="<?php echo $_POST['s'] ?>" title="Search For" id="search-input" style="padding-right: 1px;">
 								  </div>
 								</div>
 							  </div>
@@ -198,6 +208,10 @@ jQuery(document).ready(function() {
 
 						$output = '<div style="clear:both;"></div><div style="align: center;"><div class="wrap" >';
 						foreach ( $videos as $video ) {	
+
+							$thumbnail_url = $video['plmedia$defaultThumbnailUrl'];
+							if ($thumbnail_url === '')					
+								$thumbnail_url = plugins_url('/images/notavailable.gif', __FILE__);
 							$embed_id = null;			
 							if (!is_array($video['media$content'])) 
 								continue;	
@@ -223,7 +237,7 @@ jQuery(document).ready(function() {
 							$output .= '
 							<div id="theplatform-media-embed-wrapper" class="theplatform-media">
 							<div id="' . esc_attr($embed_id) . '" class="photo embed-photo">
-							<img src="' . esc_url($video['plmedia$defaultThumbnailUrl']) . '">
+							<img src="' . esc_url($thumbnail_url) . '">
 							</div>
 							<div class="item-title">' . esc_html( $video['title'] ) .'</div>
 							</div>';
@@ -231,7 +245,27 @@ jQuery(document).ready(function() {
 
 						$output.='</div><div style="clear:both;"></div>';
 
-					
+						$output .= '<ul id="pagination">';
+
+						if (!isset($_POST['tppage']) || $_POST['tppage'] === '1')
+							$output .= '<li class="previous-off">«Previous</li>';
+						else
+							$output .= '<li><a class="mpx-media-page" href="#" data-page="' . (intval($_POST['tppage'])-1) . '">«Previous</a></li><li>';
+
+						for ($i=1; $i <= $pages; $i++) { 
+							if ($i == $page)
+								$output .= '<li class="active">' . $page . '</li>';
+							else
+								$output .= '<li><a class="mpx-media-page" href="#" data-page="' . $i . '">' . $i . '</a></li>';
+						}
+
+						if ($_POST['tppage'] != $pages)
+							$output .= '<li><a class="mpx-media-page" href="#" data-page="' . (isset($_POST['tppage']) ? intval($_POST['tppage'])+1 : 2) . '">Next »</a></li>';
+						else
+							$output .= '<li class="next-off">Next »</li><li>';
+							
+						$output .= '</ul>';
+		
 					}
 					echo $output;
 				?>
@@ -239,23 +273,4 @@ jQuery(document).ready(function() {
 		</div>
 	</div>
 </body>
-</html>	else
-		$output .= '<li class="next-off">Next »</li><li>';
-		
-	$output .= '</ul></div>';
-
-}
-
-echo $output;
-?>
-					
-					
-		      	</div>
-		        
-			
-	</div>
-
-</body>
 </html>
-
-

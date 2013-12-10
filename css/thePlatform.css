@@ -310,7 +310,7 @@ border:solid 1px #0e509e
     font-size: 11px;
     height: 27px;
     line-height: 27px;
-    margin: 0 25px 0 6px;
+    margin: 0 6px 0 6px;
     text-indent: 1px;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -443,7 +443,7 @@ border:solid 1px #0e509e
     display: inline-block;
     height: 27px;
     left: 100%;
-    margin-left: 110px;
+    margin-left: 140px;
     padding-right: 5px;
     padding-left: 5px;
     overflow: hidden;
