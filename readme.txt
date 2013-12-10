@@ -1,8 +1,8 @@
 === thePlatform Video Manager ===
-Developed By: True North Scientific Inc.
+Developed By: thePlatform for Media, Inc.
 Tags: embedding, video, embed, portal, theplatform, shortcode
 Requires at least: 3.0
-Tested up to: 3.5.2
+Tested up to: 3.7.1
 Stable tag: 1.0.0
 
 Manage your content hosted by thePlatform and embed media in WordPress posts.
@@ -31,7 +31,4 @@ Copy the folder "thePlatform-video-manager" with all included files into the "wp
 
 == Configuration ==
 
-Ensure that an appropriate account exists in MPX with sufficient privileges to access your desired media and to
-upload new media. Additionally, you must configure a publishing profile in MPX names "Wordpress". This publishing
-profile should be capable of creating streaming media and generating appropriate thumbnail images. Refer to pertinent
-MPX documentation to learn more about this. 
+This plugin requires an account with thePlatform's MPX. Please contact your Account Manager for additional information.
