@@ -160,7 +160,8 @@ class ThePlatform_Plugin {
 			'mute' => '',
 			'autoplay' => '',
 			'loop' => '',
-			'form' => ''
+			'form' => '',
+			'params' => ''
 			), $atts
 		));
 
@@ -199,22 +200,16 @@ class ThePlatform_Plugin {
 		if ( empty( $player ) )
 			return '<!--Syntax Error: Required Player parameter missing. -->';
 
+
 		if ( !is_feed() ) {
 			$preferences = get_option('theplatform_preferences_options');
 			$accountPID = $preferences['mpx_account_pid'];
-			$response = $this->get_embed_shortcode($accountPID, $media, $player, $width, $height, $loop, $autoplay, $mute, $form);
-			
-			if ( is_wp_error($response) ) {
-				$output = $response->get_error_message();;
-			} else {
-				$output = $response;
-			}
+			$output = $this->get_embed_shortcode($accountPID, $media, $player, $width, $height, $loop, $autoplay, $mute, $form, $params);
+			$output = apply_filters('tp_embed_code', $output);							
 		} else {
 			$output = '[Sorry. This video cannot be displayed in this feed. <a href="'.get_permalink().'">View your video here.]</a>';
 		}
 		
-		$output = apply_filter('tp_embed_code', $output);
-
 		return $output;
 	}
 
@@ -231,7 +226,7 @@ class ThePlatform_Plugin {
 	 * @param boolean $mute Whether or not to mute the audio channel of the embedded media asset
 	 * @return string An iframe tag sourced from the selected media embed URL
 	*/ 
-	function get_embed_shortcode($accountPID, $releasePID, $playerPID, $player_width, $player_height, $loop = false, $autoplay = false, $mute = false, $form = "iframe") {
+	function get_embed_shortcode($accountPID, $releasePID, $playerPID, $player_width, $player_height, $loop = false, $autoplay = false, $mute = false, $form = "iframe", $params) {
 
 		if (!$this->preferences)
 			$this->preferences = get_option($this->preferences_options_key);
@@ -245,7 +240,7 @@ class ThePlatform_Plugin {
 		
 		$url = 'http://player.theplatform.com/p/' . urlencode($accountPID) . '/' . urlencode($playerPID);
 
-		$url = apply_filter('tp_embed_url', $url);
+		$url = apply_filters('tp_base_embed_url', $url);
 		
 		if ($type == 'embed') {
 			$url .= '/embed';
@@ -265,13 +260,18 @@ class ThePlatform_Plugin {
 		if ( $mute != "false" ) {
 			$url .= "&mute=true";
 		}
+
+		if ($params !== '')
+			$url .= '&' . $params;
 		
+		$url = apply_filters('tp_full_embed_url', $url);
+
 		if ($form == "script") {		
 			return '<div style="width:' . (int)$player_width . 'px; height:' . (int)$player_height . 'px"><script type="text/javascript" src="' . esc_url($url . "&form=javascript") . '"></script></div>';
 		}
 		else { //Assume iframe			
 			return '<iframe src="' . esc_url($url) . '" height=' . (int)$player_height . ' width=' . (int)$player_width . '></iframe>';
-		}
+		}	
 
 	}
 
