@@ -74,13 +74,14 @@ class ThePlatform_Plugin {
 		$this->plugin_base_url = plugins_url('/', __FILE__);
 		
 		if (is_admin()) {
-			add_action('admin_menu', array(&$this, 'add_media_page'));	
+			add_action('admin_menu', array(&$this, 'add_media_page'));				
 			add_action('admin_menu', array(&$this, 'add_admin_page'));
 			add_action('admin_init', array(&$this, 'register_scripts'));		
 			add_action('media_buttons', array(&$this, 'theplatform_embed_button'), 100);	
 			add_action('wp_ajax_initialize_media_upload', array($this->tp_api, 'initialize_media_upload'));
 			add_action('wp_ajax_get_subaccounts', array($this->tp_api, 'get_subaccounts'));
 			add_action('wp_ajax_theplatform_embed', array(&$this, 'embed')); 	
+			add_action('wp_ajax_theplatform_upload', array(&$this, 'upload'));	
 		}	
 
 		add_shortcode('theplatform', array(&$this, 'shortcode'));
@@ -88,6 +89,11 @@ class ThePlatform_Plugin {
 	
 	function embed() {
 		require_once( $this->plugin_dir . 'thePlatform-embed.php' );
+		die();
+	}
+
+	function upload() {
+		require_once( $this->plugin_dir . 'thePlatform-uploader.php' );
 		die();
 	}
 
@@ -131,7 +137,7 @@ class ThePlatform_Plugin {
 	function admin_page() {		
 		require_once(dirname(__FILE__) . '/thePlatform-options.php' );	
 	}
-
+	
 	/**
 	 * Adds thePlatform media embed button to the media upload
 	 */
