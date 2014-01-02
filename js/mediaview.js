@@ -1,321 +1,17 @@
-<?php 
-
-if (!class_exists( 'ThePlatform_API' )) {
-	require_once( dirname(__FILE__) . '/thePlatform-API.php' );
-}
-
-$preferences = get_option('theplatform_preferences_options');	
-
-if (strcmp($preferences['mpx_account_id'], "") == 0) {			
-			wp_die('MPX Account ID is not set, please configure the plugin before attempting to manage media');
-}
-	
-/*
- * Load scripts and styles 
- */
-// wp_enqueue_script('jquery');
-// wp_enqueue_script('theplatform_js');
-// wp_enqueue_script('nprogress_js');
-// wp_enqueue_script('bootstrap_js');
-wp_enqueue_script('localscript_js');
-wp_enqueue_script('infinitescroll_js');
-// wp_enqueue_script('set-post-thumbnail');
-// wp_enqueue_script('jquery-ui-progressbar');
-// wp_enqueue_script('thickbox');
-
-// wp_enqueue_style('theplatform_css');
-wp_enqueue_style('bootstrap_css');
-wp_enqueue_style('localstyle_css');
-// wp_enqueue_style('nprogress_css');
-// wp_enqueue_style('global');
-// wp_enqueue_style('media');
-// wp_enqueue_style('wp-admin');
-// wp_enqueue_style('colors');
-// wp_enqueue_style('jquery-ui-progressbar');
-
-?>
-
-<div class="wrap">
-	<?php screen_icon('theplatform'); ?>	
-	<h2><div style="clear:both;"></div> </h2>
-	<?php
-	
-
-	$tp_api = new ThePlatform_API;
-
-	// if (!isset($_GET['token'])) {
-	// 	echo add_query_arg(array( 
-	// 			'token' => $tp_api->mpx_signin(),				
-	// 			'account' => $preferences['mpx_account_id']
-	// 		));
-	// }
-
-	$metadata = $tp_api->get_metadata_fields();
-	
-	if ( is_wp_error( $metadata ) )
-		echo '<div id="message" class="error below-h2"><p>' . esc_html($metadata->get_error_message()) . '</p></div>';
-
-	//Update media handler
-	if ( isset( $_POST['submit'] ) && $_POST['submit'] == 'Save Changes' ) {
-		// Update media item in detail view		
-
-		check_admin_referer('theplatform-ajax-nonce'); 		
-
-		//Check if a user can edit MPX Media
-		$tp_editor_cap = apply_filters('tp_editor_cap', 'upload_files');
-		if (!current_user_can($tp_editor_cap)) {
-				wp_die('<p>'.__('You do not have sufficient permissions to modify MPX Media').'</p>');
-		}
-
-		unset($_GET['edit']);
-		
-		$fields = array('id' => $_POST['edit_id']);
-		$namespaces = array('$xmlns' => array(
-				"dcterms" => "http://purl.org/dc/terms/",
-				"media" => "http://search.yahoo.com/mrss/",
-				"pl" => "http://xml.theplatform.com/data/object",
-				"pla" => "http://xml.theplatform.com/data/object/admin",
-				"plmedia" => "http://xml.theplatform.com/media/data/Media",
-				"plfile" => "http://xml.theplatform.com/media/data/MediaFile",
-				"plrelease" => "http://xml.theplatform.com/media/data/Release"				
-			)
-		);
-
-		$payload = array();			
-					
-		$upload_options = get_option('theplatform_upload_options');
-		$metadata_options = get_option('theplatform_metadata_options');		
-								
-		$html = '';
-
-		if (isset($preferences['user_id_customfield'])) {
-
-			$user_id_customfield = $tp_api->get_customfield_info($preferences['user_id_customfield']);
-			var_dump($user_id_customfield);
-			$metadata_info = $user_id_customfield['entries'][0];
-			
-			$fieldName = $metadata_info['plfield$namespacePrefix'] . '$' . $metadata_info['plfield$fieldName'];
-			$fields[$fieldName] = $_POST[$preferences['user_id_customfield']];			
-		}
-
-		foreach ($metadata_options as $custom_field => $val) {
-			if ($val !== 'allow')
-				continue;
-
-			$metadata_info = NULL;
-			foreach ($metadata as $entry) {
-				if (array_search($custom_field, $entry)) {
-					$metadata_info = $entry;
-					break;
-				}
-			}	
-
-			if (is_null($metadata_info))
-				continue;								
-			
-			$fieldName = $metadata_info['plfield$namespacePrefix'] . '$' . $metadata_info['plfield$fieldName'];
-			$namespaces['$xmlns'][$metadata_info['plfield$namespacePrefix']] = $metadata_info['plfield$namespace'];
-			$fields[$fieldName] = $_POST[$fieldName];			
-		}	
-
-		foreach ($upload_options as $upload_field => $val) {
-			if ($val == 'allow') {
-				if ($upload_field == 'media$categories') {
-					$i=0;
-					$categories = array();
-					while (isset($_POST['media$categories-' . $i])) {
-						if ($_POST['media$categories-' . $i] !== '(None)')
-							array_push($categories, array('media$name' => $_POST['media$categories-' . $i]));
-						$i++;
-					}
-					$fields['media$categories'] = $categories;
-				}
-				else 
-					$fields[$upload_field] = sanitize_text_field($_POST[$upload_field]);	
-							
-			}
-		}
-							
-		$payload = array_merge($payload, $namespaces);
-		$payload = array_merge($payload, $fields);		
-
-		$payloadJSON = json_encode($payload, JSON_UNESCAPED_SLASHES);
-	
- 		$tp_api->update_media($payloadJSON);
-		
-		$response = $tp_api->get_videos();
-		if ( is_wp_error( $response ) )
-			echo '<div id="message" class="error below-h2"><p>' . esc_html($response->get_error_message()) . '</p></div>';
-	} 
-	
-	if ( !empty( $_GET['edit'] ) ) {
-		// Detail view + Media editor
-		$video = $tp_api->get_video_by_id(sanitize_text_field($_GET['edit']));
-		
-		if ( is_wp_error( $response ) )
-			echo '<div id="message" class="error below-h2"><p>' . esc_html($response->get_error_message()) . '</p></div>';
-	} else {
-		// Search Results
-		$page = isset( $_GET['tppage'] ) ? sanitize_text_field( $_GET['tppage'] ) : '1';
-
-		if (isset($_GET['s'])) {
-			
-			$key_word = isset( $_GET['s'] ) ? sanitize_text_field( $_GET['s'] ) : '';						
-			$field = isset( $_GET['theplatformsearchfield'] ) ? sanitize_text_field( $_GET['theplatformsearchfield'] ) : '';			
-			$sort = isset( $_GET['theplatformsortfield'] ) ? sanitize_text_field( $_GET['theplatformsortfield'] ) : '';
-
-			$query = array();
-			if ($key_word !== '')
-				array_push($query, $field. '=' . $key_word);
-						
-			if (isset($_GET['filter-by-userid']) && $preferences['user_id_customfield'] !== '')
-			 	array_push($query, 'byCustomValue=' . urlencode('{' . $preferences['user_id_customfield'] . '}{' . wp_get_current_user()->ID . '}'));
-			
-			if ($field !== 'q')
-				$videos = $tp_api->get_videos(implode('&', $query), $sort, $page);
-			else
-				$videos = $tp_api->get_videos(implode('&', $query), '', $page);
-			
-		} else {
-			// Library View				
-			if ($preferences['filter_by_user_id'] === 'TRUE' && $preferences['user_id_customfield'] !== '')
-			 		$videos = $tp_api->get_videos('byCustomValue=' . urlencode('{' . $preferences['user_id_customfield'] . '}{' . wp_get_current_user()->ID . '}'), '', $page);
-			else
-				$videos = $tp_api->get_videos('','',$page);			
-		}
-		$count = $videos['totalResults'];
-		$pages = ceil(intval($count)/intval($preferences['videos_per_page']));		
-		$videos = $videos['entries'];	
-
-	} ?>
-<div class="tp">
-	<nav class="navbar navbar-default" role="navigation">
-        <div class="navbar-header">
-            <a class="navbar-brand" href="#">VAN Dashboard</a>
-        </div>
-
-            <ul class="nav navbar-nav">
-                <li><a id="btn-add-bm"><span class="glyphicon glyphicon-star-empty"></span></a></li>
-            </ul>
-            <form class="navbar-form navbar-left" role="search" onsubmit="return false;"><!--TODO: Add seach functionality on Enter -->
-                <div class="form-group">
-                    <input id="input-search" type="text" class="form-control" placeholder="Keywords">
-                </div>
-                <button id="btn-feed-preview" type="button" class="btn btn-default">Search</button>
-            </form>
-            <p class="navbar-text sort-bar-text">Sort:</p>
-            <form class="navbar-form navbar-left sort-bar-nav" role="sort">
-                <select id="selectpick-sort" class="form-control">
-                    <option>Added</option>
-                    <option>Title</option>
-                    <option>Updated</option>
-                </select>
-            </form>
-
-            <div id="my-content" class="navbar-left">
-                <p class="navbar-text sort-bar-text"><input type="checkbox"> My Content</p>
-            </div>
-
-
-            <img id="load-overlay" src="images/loading.gif" class="loadimg navbar-right">
-
-               <!--  <form class="navbar-form navbar-left" role="feedurl">
-                    <div class="input-group input-group form">
-                        <span class="input-group-addon">Feed Url:</span>
-                        <input id="text-feedurl" type="text" class="form-control">
-                    </div>
-                </form> -->
-    </nav>
-
-    <div class="fs-main">
-        <div id="filter-container">
-            <div id="filter-affix">
-                <div class="scrollable">
-                    <div id="list-categories" class="list-group">
-                        <a class="list-group-item active">
-                            Categories
-                        </a>
-                        <a href="#" class="list-group-item cat-list-selector active">All Videos</a>                        
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
-        <div id="content-container">
-            <div id="media-list"></div>
-        </div>
-        <div id="info-container">
-            <div id="info-affix">
-                <div id="info-player-container">
-                        <div id="modal-player" class="marketplacePlayer">
-                            <iframe id="player" width="320px" height="180px" frameBorder="0" seamless="seamless" src="http://player.theplatform.com/p/van-dev/cHE28glAlb_M/embed/"
-                                    webkitallowfullscreen mozallowfullscreen msallowfullscreen allowfullscreen></iframe>
-                        </div>
-                    <br>
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">Metadata</h3>
-                        </div>
-                        <div class="panel-body">
-                            <div class="row">
-                                <strong>Title:</strong>
-                                <span id="media-title"></span>
-                            </div>
-                            <div class="row">
-                                <strong>Description:</strong>
-                                <span id="media-description"></span>
-                            </div>
-                            <div class="row">
-                                <strong>Categories:</strong>
-                                <span id="media-categories"></span>
-                            </div>
-                            <div class="row">
-                                <strong>Addl. Categories:</strong>
-                                <span id="media-addl-categories"></span>
-                            </div>
-                            <div class="row">
-                                <strong>Keywords:</strong>
-                                <span id="media-keywords"></span>
-                            </div>
-                            <div class="row">
-                                <strong>Source:</strong>
-                                <span id="media-provider"></span>
-                            </div>
-                            <div class="row">
-                                <strong>Embargoes:</strong>
-                                <span id="media-embargoes"></span>
-                            </div>
-                            <div class="row">
-                                <strong>Publish Date:</strong>
-                                <span id="media-added"></span>
-                            </div>
-                            <div class="row">
-                                <strong>Updated Date:</strong>
-                                <span id="media-updated"></span>
-                            </div>
-                            <div class="row">
-                                <strong>Expiration Date:</strong>
-                                <span id="media-expiration"></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script type="text/javascript">
-    jQuery(document).ready(function(){
+jQuery(document).ready(function(){
         //$pdk.bind("player");
         jQuery('#load-overlay').hide();
         var queryParams = getParameters();
-        // localStorage.baseFeedUrl = 'http://feed.theplatform.com/f/van-dev/van-dev-player';
+        localStorage.baseFeedUrl = 'http://feed.theplatform.com/f/van-dev/van-dev-player';
         localStorage.token = <?php echo '"' . $tp_api->mpx_signin() . '"'; ?>;
         localStorage.provider = queryParams.provider;
         localStorage.account = <?php echo '"' . $preferences['mpx_account_id'] . '"'; ?>;
         localStorage.feedEndRange = 0;
 
-        getCategoryList(buildCategoryAccordion);        
+        getCategoryList(localStorage.baseFeedUrl,buildCategoryAccordion);
+
+        //Initial feed call
+        setFeedUrl(localStorage.baseFeedUrl,localStorage.baseFeedUrl.appendParams({ sort: getSort() }));
 
         if (localStorage.token != 'undefined' && localStorage.account != 'undefined')
             getBookmarks(displayBookmarks);
@@ -333,18 +29,17 @@ wp_enqueue_style('localstyle_css');
         });
 
         //Turn on infinite scrolling.
-        jQuery('#media-list').infiniteScroll({            
+        jQuery('#media-list').infiniteScroll({
             threshold: 100,
             onEnd: function() {
                 //No more results
             },
             onBottom: function(callback) {
-            	console.log('bottom');
-                jQuery('#load-overlay').show(); // show loading before we call getVideos
-                var queryParams = getQueryParams();
+                jQuery('#load-overlay').show(); // show loading before we call getFeed
+                var feed = jQuery('#text-feedurl').data('feed');
                 var theRange = parseInt(localStorage.feedEndRange);
-                theRange = theRange +'-'+(theRange+5);
-                getVideos(queryParams, theRange,function(resp){
+                theRange = theRange +'-'+(theRange+20);
+                getFeed(feed.appendParams({ range: theRange  }),function(resp){
                     if (resp['isException']){
                         jQuery('#load-overlay').hide();
                         //what do we do on error?
@@ -429,7 +124,7 @@ wp_enqueue_style('localstyle_css');
         });
 
         jQuery('#btn-feed-reset').click(function(){
-            // getBookmarkFeed(localStorage.baseFeedUrl);
+            getBookmarkFeed(localStorage.baseFeedUrl);
         });
 
         jQuery('#btn-add-bm').popover({
@@ -468,10 +163,11 @@ wp_enqueue_style('localstyle_css');
 
 
     jQuery(document).on('change','.media > [type="checkbox"]',function(){
-        var feedUrl = buildVideoQuery({
+        var feedUrl = buildFeedQuery(localStorage.baseFeedUrl,{
             category: localStorage.selectedCategory,
             selectedGuids: getSelectedGuids()
-        });        
+        });
+        setFeedUrl(feedUrl,'');
     });
 
     jQuery(document).on('click','.media',function(){
@@ -491,23 +187,25 @@ wp_enqueue_style('localstyle_css');
         $this.attr('style','');
     });
 
-    function getQueryParams() {
+    function refreshView(){
+        var $mediaList = jQuery('#media-list');
+        //TODO: If sorting clear search?
         var queryObject = {
             search: jQuery('#input-search').val(),
-            category: encodeURI(localStorage.selectedCategory),
+            category: localStorage.selectedCategory,
             sort: getSort(),
             desc: jQuery('#sort-desc').data('sort'),
             myContent: jQuery('input:checkbox','#my-content').prop('checked'),
             selectedGuids: getSelectedGuids()
         };
-        delete queryObject.selectedGuids;  
-        return buildVideoQuery(queryObject);
 
-    }
-    function refreshView(){
-        var $mediaList = jQuery('#media-list');
-        //TODO: If sorting clear search?
-             
+        var newFeed = buildFeedQuery(localStorage.baseFeedUrl,queryObject);
+
+        delete queryObject.selectedGuids;
+        var dataFeed = buildFeedQuery(localStorage.baseFeedUrl,queryObject);
+
+        setFeedUrl(newFeed,dataFeed);
+
         displayMessage('');
 
         localStorage.feedEndRange = 0;
@@ -552,15 +250,25 @@ wp_enqueue_style('localstyle_css');
         });
     }
 
+    function setFeedUrl(url,dataurl){
+        var $feedUrl = jQuery('#text-feedurl');
+        $feedUrl.val(url);
+        if (dataurl && dataurl.length > 0)
+            $feedUrl.data('feed',dataurl);
+        else
+            $feedUrl.data('feed',url);
+    }
+
     function getBookmarkFeed(feed){
         var baseUrl = feed.split('?').shift();
         var query = feed.split('?').pop();
         var $mediaList = jQuery('#media-list');
-        // localStorage.baseFeedUrl = baseUrl;
+        localStorage.baseFeedUrl = baseUrl;
 
         displayMessage('');
 
-        setFieldsFromQuery(query);        
+        setFieldsFromQuery(query);
+        setFeedUrl(feed);
 
         localStorage.feedEndRange = 0;
         $mediaList.empty();
@@ -604,12 +312,6 @@ wp_enqueue_style('localstyle_css');
     }
 
     function buildCategoryAccordion(resp){
-    	var entries = resp['entries'];
-        for (var idx in entries){
-            var entryTitle = entries[idx]['title'];
-            jQuery('#list-categories').append('<a href="#" class="list-group-item cat-list-selector">'+entryTitle+'</a>');
-        }
-
         jQuery('.cat-list-selector','#list-categories').click(function(){
             localStorage.selectedCategory = jQuery(this).text();
             jQuery.each(jQuery('.cat-list-selector.active'),function(index, value) {
@@ -648,17 +350,13 @@ wp_enqueue_style('localstyle_css');
     }
 
     function addMediaObject(media){
-    	var id = media.id.split('/');
-    	id = id[id.length-1];
-
-    	if (jQuery('#' + id).length > 0)
-    		return;
-       var newMedia = '<div class="media" id="' + id +'"><input type="checkbox" class="pull-left media-cb">'+
+       var newMedia = '<div class="media"><input type="checkbox" class="pull-left media-cb">'+
                 '<img class="media-object pull-left thumb-img" data-src="holder.js/128x72" alt="128x72" src="'+media.defaultThumbnailUrl+'">'+
                 '<button class="btn btn-xs media-embed pull-right"><></button>'+
                 '<div class="media-body">'+
-                '<strong class="media-heading">'+media.title.escape()+'</strong>'+             
-                '<br/>'+media.description.escape() +
+                '<strong class="media-heading">'+media.title+'</strong>'+
+                '<br/>'+(media['cnn-video$source'] || media['cnn-video$videoSource'])+
+                '<br/>'+media.description +
                 //'<br/><small>added: '+new Date(media.added).toLocaleString() + '</small>'+
                 '</div>'+
                 '</div>';
@@ -666,8 +364,8 @@ wp_enqueue_style('localstyle_css');
         newMedia = jQuery(newMedia);
         newMedia.data('guid',media.guid);
         newMedia.data('media',media);
-       // var previewUrl = extractVideoUrlfromFeed(media);
-        //newMedia.data('release',previewUrl[0].appendParams({mbr: true}));
+        var previewUrl = extractVideoUrlfromFeed(media);
+        newMedia.data('release',previewUrl[0].appendParams({mbr: true}));
         //newMedia.data('release',media['content'][0]['releases'][0]['url']);
 
         if (localStorage.selectedGuids && $.inArray(media.guid, localStorage.selectedGuids.split('|')) > -1)
@@ -749,6 +447,3 @@ wp_enqueue_style('localstyle_css');
 
         jQuery('input:checkbox','#my-content').prop('checked',!!(displayMap.byProvider));
     }
-
-    </script>
-    </div>

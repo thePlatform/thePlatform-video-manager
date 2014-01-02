@@ -6,123 +6,126 @@ var feedFields = {
 var IDM_DS = 'https://identity.auth.theplatform.com/idm'
 ,   MDS_DS = 'http://data.media.theplatform.com/media';
 
-function getFeed(feed,callback){
-    jQuery.ajaxSetup({cache:true});
-    jQuery.getJSON(feed.appendParams({callback: '?',count: true}).appendParams(feedFields),
-    {
-        form: 'cjson'
-    }
-    ,function(data){
-        if (data.isException)
-            displayMessage(data.description);
+function getVideos(query,range,callback){
+    var data = {
+        action: 'getVideos',
+        _wpnonce: theplatform.tp_nonce,    
+        token: localStorage.token,
+        account: localStorage.account,
+        range: range,
+        query: query    
+    };
+    jQuery.post(ajaxurl, data, function(resp){
+        if (resp.isException)
+            displayMessage(resp.description);
         else{
-           callback(data);
+           callback(JSON.parse(resp));
         }
     });
 }
 
 function getBookmarks(callback){
-   var requestUrl = MDS_DS + '/data/AccountSettings';
+   // var requestUrl = MDS_DS + '/data/AccountSettings';
 
-    jQuery.ajaxSetup({cache:true});
-    jQuery.getJSON(requestUrl.appendParams({callback:'?'}),
-        {
-            token: localStorage.token,
-            account: localStorage.account,
-            fields: 'id,:',
-            range: '-1',
-            form: 'cjson',
-            schema: '1.6.0',
-            sort: 'added|desc'
-        },function(resp){
-            if (resp.isException)
-                displayMessage(resp.description);
-            else
-                callback(resp);
-        });
+   //  jQuery.ajaxSetup({cache:true});
+   //  jQuery.getJSON(requestUrl.appendParams({callback:'?'}),
+   //      {
+   //          token: localStorage.token,
+   //          account: localStorage.account,
+   //          fields: 'id,:',
+   //          range: '-1',
+   //          form: 'cjson',
+   //          schema: '1.6.0',
+   //          sort: 'added|desc'
+   //      },function(resp){
+   //          if (resp.isException)
+   //              displayMessage(resp.description);
+   //          else
+   //              callback(resp);
+   //      });
 
 }
 
 function saveBookmark(title,feed,callback){
-    var jsonBookmarks = JSON.parse(localStorage.bookMarks);
-    var jsonBMParent;
-    for (var key in jsonBookmarks){
-        //if there is more than one we have issues.
-        jsonBMParent = key;
-        break;
-    }
+    // var jsonBookmarks = JSON.parse(localStorage.bookMarks);
+    // var jsonBMParent;
+    // for (var key in jsonBookmarks){
+    //     //if there is more than one we have issues.
+    //     jsonBMParent = key;
+    //     break;
+    // }
 
-    jsonBookmarks[jsonBMParent][title] = feed;
-    localStorage.bookMarks = JSON.stringify(jsonBookmarks);
+    // jsonBookmarks[jsonBMParent][title] = feed;
+    // localStorage.bookMarks = JSON.stringify(jsonBookmarks);
 
-    var updateData = JSON.parse(localStorage.bookmarkNmsp);
-    updateData['id'] = localStorage.bookmarkId;
-    jQuery.extend(updateData, JSON.parse(localStorage.bookMarks));
+    // var updateData = JSON.parse(localStorage.bookmarkNmsp);
+    // updateData['id'] = localStorage.bookmarkId;
+    // jQuery.extend(updateData, JSON.parse(localStorage.bookMarks));
 
-    setBookmarks(updateData,callback);
+    // setBookmarks(updateData,callback);
 
 }
 
 function deleteBookmark(title,callback){
-    var jsonBookmarks = JSON.parse(localStorage.bookMarks);
-    var jsonBMParent;
-    for (var key in jsonBookmarks){
-        //if there is more than one we have issues.
-        jsonBMParent = key;
-        break;
-    }
+    // var jsonBookmarks = JSON.parse(localStorage.bookMarks);
+    // var jsonBMParent;
+    // for (var key in jsonBookmarks){
+    //     //if there is more than one we have issues.
+    //     jsonBMParent = key;
+    //     break;
+    // }
 
-    delete jsonBookmarks[jsonBMParent][title];
+    // delete jsonBookmarks[jsonBMParent][title];
 
-    if (!jsonBookmarks[jsonBMParent]) //Allow us to still put an update to delete the last bookmark
-        jsonBookmarks[jsonBMParent]  = '';
+    // if (!jsonBookmarks[jsonBMParent]) //Allow us to still put an update to delete the last bookmark
+    //     jsonBookmarks[jsonBMParent]  = '';
 
-    localStorage.bookMarks = JSON.stringify(jsonBookmarks);
+    // localStorage.bookMarks = JSON.stringify(jsonBookmarks);
 
-    var updateData = JSON.parse(localStorage.bookmarkNmsp);
-    updateData['id'] = localStorage.bookmarkId;
-    jQuery.extend(updateData, JSON.parse(localStorage.bookMarks));
+    // var updateData = JSON.parse(localStorage.bookmarkNmsp);
+    // updateData['id'] = localStorage.bookmarkId;
+    // jQuery.extend(updateData, JSON.parse(localStorage.bookMarks));
 
-    setBookmarks(updateData,callback);
+    // setBookmarks(updateData,callback);
 }
 
 function setBookmarks(data,callback){
-    var requestUrl = MDS_DS + "/data/AccountSettings/"
-    ,   opts = {};
+    // var requestUrl = MDS_DS + "/data/AccountSettings/"
+    // ,   opts = {};
 
 
-    //Here we take in a media object (json) in data, and parse into a put-able get request.
-    for (var i in data){
-        if (typeof(data[i]) == "undefined" || data[i] == "" || data[i] == null )
-            continue;
+    // //Here we take in a media object (json) in data, and parse into a put-able get request.
+    // for (var i in data){
+    //     if (typeof(data[i]) == "undefined" || data[i] == "" || data[i] == null )
+    //         continue;
 
-        if (jQuery.isArray(data[i]))
-            jQuery.extend(opts, parseArray(i,data[i]));
-        else if (typeof (data[i]) === "object")
-            jQuery.extend(opts, parseMap(i,data[i]));
-        else
-            opts['_'+i] = data[i];
-    }
+    //     if (jQuery.isArray(data[i]))
+    //         jQuery.extend(opts, parseArray(i,data[i]));
+    //     else if (typeof (data[i]) === "object")
+    //         jQuery.extend(opts, parseMap(i,data[i]));
+    //     else
+    //         opts['_'+i] = data[i];
+    // }
 
-    //Add params for the get request
-    opts['form'] = 'cjson';
-    opts['token'] = localStorage.token;
-    opts['schema'] = '1.6.0';
-    opts['account'] = localStorage.account;
-    opts['method'] = 'put';
+    // //Add params for the get request
+    // opts['form'] = 'cjson';
+    // opts['token'] = localStorage.token;
+    // opts['schema'] = '1.6.0';
+    // opts['account'] = localStorage.account;
+    // opts['method'] = 'put';
 
-    jQuery.ajaxSetup({cache:true});
-    jQuery.getJSON(requestUrl.appendParams({callback: '?'}),opts,function(resp){
-        if (resp.isException)
-            displayMessage(resp.description);
-        else
-            callback();
-            //displayMessage('Bookmark Added!');
-    });
+    // jQuery.ajaxSetup({cache:true});
+    // jQuery.getJSON(requestUrl.appendParams({callback: '?'}),opts,function(resp){
+    //     if (resp.isException)
+    //         displayMessage(resp.description);
+    //     else
+    //         callback();
+    //         //displayMessage('Bookmark Added!');
+    // });
 
 }
 
-function buildFeedQuery(feed,data){
+function buildVideoQuery(data){
 
     var queryParams = '';
     if (data.category)
@@ -144,22 +147,21 @@ function buildFeedQuery(feed,data){
     if (data.selectedGuids)
         queryParams = queryParams.appendParams({byGuid: data.selectedGuids});
 
-    if (queryParams.length > 1)
-        return feed + queryParams;
-
-    return feed;
+    return queryParams;
 }
 
-function getCategoryList(feed,callback){
-    jQuery.ajaxSetup({cache:true});
-    jQuery.getJSON((feed + '/categories').appendParams({callback: '?', sort: 'order', fields: 'title'}),
-        {
-            form: 'cjson'
-        },
-        function(resp){
-            callback(resp);
-        });
+function getCategoryList(callback){
+    var data = {
+        action: 'getCategories',
+        _wpnonce: theplatform.tp_nonce,    
+        token: localStorage.token,
+        account: localStorage.account        
+    };
 
+    jQuery.post(ajaxurl, data,
+    function(resp){
+        callback(JSON.parse(resp));
+    });
 }
 
 //Retrieve parameters from the original request.
@@ -226,12 +228,23 @@ String.prototype.appendParams = function (params){
         if (updatedString.indexOf(key+'=') > -1)
             continue;
 
-        if (updatedString.indexOf('?') > -1)
+        // if (updatedString.indexOf('?') > -1)
             updatedString += '&'+key+'='+params[key];
-        else
-            updatedString += '?'+key+'='+params[key];
+        // else
+            // updatedString += '?'+key+'='+params[key];
     }
     return updatedString;
+};
+
+String.prototype.escape = function() {
+    var tagsToReplace = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;'
+    };
+    return this.replace(/[&<>]/g, function(tag) {
+        return tagsToReplace[tag] || tag;
+    });
 };
 
 //Parse an array into a put-able get

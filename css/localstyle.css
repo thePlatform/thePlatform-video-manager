@@ -68,7 +68,7 @@ header {
     #filter-affix.affix-top {
         position: fixed;
         height: 100%;
-        margin: 5px;
+        margin: 0px 5px 5px 5px;
     }
 
     #filter-affix.affix {
@@ -89,7 +89,7 @@ header {
     }
 
     .fs-main {
-        margin-top: 115px;
+        /*margin-top: 115px;*/
         min-width: 800px;
     }
 }
