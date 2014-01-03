@@ -542,7 +542,6 @@ class ThePlatform_API {
 		$response = ThePlatform_API_HTTP::get($url);
 		
 		$ret = decode_json_from_server($response, TRUE);
-		// var_dump($ret['entries']);
 		$this->mpx_signout($token);				
 
 		return $ret;

@@ -373,7 +373,7 @@ border:solid 1px #0e509e
     height: 27px;
     color: black;
     left: 100%;
-    margin-left: 180px;
+    margin-left: 220px;
     padding: 5px;
     overflow: hidden;
     position: absolute;
@@ -449,7 +449,7 @@ border:solid 1px #0e509e
     overflow: hidden;
     position: absolute;
     top: 4px;
-    width: 65px;
+    width: 75px;
 }
 
 #filter-cb {
@@ -457,16 +457,56 @@ border:solid 1px #0e509e
     display: inline-block;
     vertical-align: middle;
     font-family: "arial","sans-serif";
-    font-size: 11px;
-    height: 27px;
+    font-size: 11px;    
     color: black;        
     padding: 5px;    
-    top: 4px;    
-    border: 0px;
+    top: 4px;        
     background: transparent;
 }
 
 #filter-label {
+    cursor: pointer;
+    display: inline-block;
+    vertical-align: middle;
+    color: #777777;
+    display: inline-block;
+    font-family: "arial","sans-serif";
+    font-size: 11px;
+}
+
+#filter-by-embed {        
+  border-left: 1px solid #DDDDDD;
+    border-right: 1px solid #DDDDDD;
+    border-top: 1px solid #DDDDDD;
+    border-bottom: 1px solid #DDDDDD;
+    display: inline-block;
+    height: 27px;
+    left: 100%;
+    margin-left: 100px;
+    padding-right: 5px;
+    padding-left: 5px;
+    overflow: hidden;
+    position: absolute;
+    top: 4px;
+    width: 75px;
+}
+
+#filter-cb-embed {
+    cursor: pointer;
+    display: inline-block;
+    vertical-align: middle;
+    font-family: "arial","sans-serif";
+    font-size: 11px;    
+    color: black;        
+    padding: 5px;    
+    top: 4px;        
+    background: transparent;
+    height: 16px;
+    width: 16px;
+    border: 0px;
+}
+
+#filter-label-embed {
     cursor: pointer;
     display: inline-block;
     vertical-align: middle;

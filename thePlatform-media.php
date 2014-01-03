@@ -15,19 +15,14 @@ if (strcmp($preferences['mpx_account_id'], "") == 0) {
  */
 wp_enqueue_script('jquery');
 wp_enqueue_script('theplatform_js');
-wp_enqueue_script('nprogress_js');
 wp_enqueue_script('set-post-thumbnail');
-wp_enqueue_script('jquery-ui-progressbar');
 wp_enqueue_script('thickbox');
 
 wp_enqueue_style('theplatform_css');
-wp_enqueue_style('nprogress_css');
 wp_enqueue_style('global');
 wp_enqueue_style('media');
 wp_enqueue_style('wp-admin');
 wp_enqueue_style('colors');
-wp_enqueue_style('jquery-ui-progressbar');
-
 ?>
 
 <div class="wrap">
@@ -77,11 +72,13 @@ wp_enqueue_style('jquery-ui-progressbar');
 		if (isset($preferences['user_id_customfield'])) {
 
 			$user_id_customfield = $tp_api->get_customfield_info($preferences['user_id_customfield']);
-			var_dump($user_id_customfield);
+
 			$metadata_info = $user_id_customfield['entries'][0];
 			
 			$fieldName = $metadata_info['plfield$namespacePrefix'] . '$' . $metadata_info['plfield$fieldName'];
-			$fields[$fieldName] = $_POST[$preferences['user_id_customfield']];			
+			$fields[$fieldName] = $_POST[$preferences['user_id_customfield']];	
+
+			$namespaces['$xmlns'] = array_merge($namespaces['$xmlns'], array($metadata_info['plfield$namespacePrefix'] => $metadata_info['plfield$namespace']));
 		}
 
 		foreach ($metadata_options as $custom_field => $val) {
@@ -126,7 +123,7 @@ wp_enqueue_style('jquery-ui-progressbar');
 		$payload = array_merge($payload, $fields);		
 
 		$payloadJSON = json_encode($payload, JSON_UNESCAPED_SLASHES);
-	
+				
  		$tp_api->update_media($payloadJSON);
 		
 		$response = $tp_api->get_videos();

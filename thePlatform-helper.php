@@ -3,7 +3,7 @@
 function dropdown_options_validate($input) {	
 	foreach ($input as $key => $value) {	
 		if ($value != "allow" && $value != "omit") {
-			$input[$key] = "allow";
+			$input[$key] = "omit";
 		}			
 	}
 	return $input;

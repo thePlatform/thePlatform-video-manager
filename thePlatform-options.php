@@ -149,8 +149,8 @@ class ThePlatform_Options {
 		add_settings_field( 'videos_per_page_option', 'Number of Videos Per Page', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_preferences_options', array('field' => 'videos_per_page') );
 		add_settings_field( 'default_sort_order_option', 'Default Sort Order', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_preferences_options', array('field' => 'default_sort') );
  		add_settings_field( 'video_type_option', 'Default Video Type', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_preferences_options', array('field' => 'video_type') );
-		add_settings_field( 'filter_by_user_id', 'Filter users own videos', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_preferences_options', array('field' => 'filter_by_user_id') );
- 		add_settings_field( 'user_id_customfield', 'User ID Custom field', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_preferences_options', array('field' => 'user_id_customfield') ); 		
+		add_settings_field( 'filter_by_user_id', 'Filter Users Own Videos', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_preferences_options', array('field' => 'filter_by_user_id') );
+ 		add_settings_field( 'user_id_customfield', 'User ID Custom Field', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_preferences_options', array('field' => 'user_id_customfield') ); 		
  		add_settings_field( 'mpx_server_id', 'Default Upload Server', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_preferences_options', array('field' => 'mpx_server_id') );
  		add_settings_field( 'default_publish_id', 'Default Publishing Profile', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_preferences_options', array('field' => 'default_publish_id') ); 		
  		

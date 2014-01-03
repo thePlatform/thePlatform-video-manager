@@ -15,8 +15,8 @@
 
 <title>thePlatform Video Library</title>
 <?php 			
-	wp_print_scripts(array('jquery', 'theplatform_js', 'thickbox'));
-	wp_print_styles(array('theplatform_css', 'global', 'media', 'wp-admin', 'colors', 'thickbox'));
+	wp_print_scripts(array('jquery', 'theplatform_js', 'thickbox', 'jquery-ui-dialog'));
+	wp_print_styles(array('theplatform_css', 'global', 'media', 'wp-admin', 'colors', 'thickbox', 'jquery-ui-dialog'));
 	
 	$tp_api = new ThePlatform_API;  
 
@@ -148,8 +148,8 @@ jQuery(document).ready(function() {
 							<?php 
 							// add_query_arg(array('filter_by_user_id' => 'TRUE'))
 								if ($preferences['user_id_customfield'] !== '') { ?>
-									<span id="filter-by">
-										<input name="filter-by-userid" id="filter-cb" type="checkbox" <?php 
+									<span id="filter-by-embed">
+										<input name="filter-by-userid" id="filter-cb-embed" type="checkbox" <?php 
 										if (!isset($_POST['s']) && $preferences['filter_by_user_id'] === 'TRUE') { 
 											echo 'checked="checked"'; 											
 										} 
@@ -157,7 +157,7 @@ jQuery(document).ready(function() {
 											echo 'checked="checked"';
 										} ?>
 										/>
-                                		<label id="filter-label" for="filter-cb">My Media</label>
+                                		<label id="filter-label-embed" for="filter-cb-embed">My Media</label>
 								</span>
 							<?php } ?>	
 
@@ -273,4 +273,5 @@ jQuery(document).ready(function() {
 		</div>
 	</div>
 </body>
+
 </html>
