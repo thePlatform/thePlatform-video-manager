@@ -283,11 +283,14 @@ wp_enqueue_style('jquery-ui-progressbar');
 
 									if (is_null($metadata_info))
 										continue;								
-							
+									
 									$field_title = $metadata_info['plfield$fieldName'];
 									$field_prefix = $metadata_info['plfield$namespacePrefix'];
 									$field_namespace = $metadata_info['plfield$namespace'];
-									$field_value = $video[$field_prefix . '$' . $field_title];																						
+									
+									$field_value="";
+									if (array_key_exists($field_prefix . '$' . $field_title, $video))
+										$field_value = $video[$field_prefix . '$' . $field_title];
 									$html = '<tr valign="top"><th scope="row">' . esc_html(ucfirst($field_title)) . '</th><td><input name="' . esc_attr($field_prefix . '$' . $field_title) . '" id="theplatform_upload_' . esc_attr($field_prefix . '$' . $field_title) . '" class="edit_custom_field" type="text" value="' . esc_attr($field_value) . '"/></td></tr>';
 									echo $html;										
 
