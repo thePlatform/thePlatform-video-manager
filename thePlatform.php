@@ -26,18 +26,21 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-// $tp_publisher_cap = apply_filters('tp_publisher_cap', 'upload_files');
-// $tp_editor_cap = apply_filters('tp_editor_cap', 'edit_posts');
-// $tp_admin_cap = apply_filters('tp_editor_cap', 'manage_options');
 
-register_activation_hook(__FILE__, 'tp_activation_hook' );
-
+/**
+ * Placeholder for the plugin activation hook.
+ * @return type
+ */
 function tp_activation_hook() {	}
+register_activation_hook(__FILE__, 'tp_activation_hook' );
+$preferences_options_key = 'theplatform_preferences_options';
+$metadata_options_key = 'theplatform_metadata_options';
+$upload_options_key = 'theplatform_upload_options';
 
- $preferences_options_key = 'theplatform_preferences_options';
- $metadata_options_key = 'theplatform_metadata_options';
- $upload_options_key = 'theplatform_upload_options';
-
+/**
+ * Main class
+ * @package default
+ */
 class ThePlatform_Plugin {
 
 	var $plugin_base_dir;
@@ -88,11 +91,19 @@ class ThePlatform_Plugin {
 		add_shortcode('theplatform', array(&$this, 'shortcode'));
 	}
 	
+	/**
+	 * Calls the Embed template in a thickbox
+	 * @return void
+	 */
 	function embed() {
 		require_once( $this->plugin_dir . 'thePlatform-embed.php' );
 		die();
 	}
 
+	/**
+	 * Calls the Uploader template in a popup
+	 * @return void
+	 */
 	function upload() {
 		require_once( $this->plugin_dir . 'thePlatform-uploader.php' );
 		die();
@@ -123,6 +134,10 @@ class ThePlatform_Plugin {
 		add_media_page('thePlatform', 'thePlatform Video', $tp_editor_cap, 'theplatform-media', array( &$this, 'media_page' ));
 	}
 
+	/**
+	 * Calls the Media Manager template
+	 * @return type
+	 */
 	function media_page() {
 		require_once( dirname( __FILE__ ) . '/thePlatform-media.php' );
 	}
@@ -135,6 +150,10 @@ class ThePlatform_Plugin {
 		add_options_page( 'thePlatform Plugin Settings', 'thePlatform', $tp_admin_cap, 'theplatform', array( &$this, 'admin_page' ) );
 	}
 
+	/**
+	 * Calls the plugin's options page template
+	 * @return type
+	 */
 	function admin_page() {		
 		require_once(dirname(__FILE__) . '/thePlatform-options.php' );	
 	}
@@ -222,7 +241,7 @@ class ThePlatform_Plugin {
 
 	/**
 	 * Called by the plugin shortcode callback function to construct a media embed iframe.
-	 *
+	 * 
 	 * @param string $account_id Account of the user embedding the media asset
 	 * @param string $media_id Identifier of the media object to embed
 	 * @param string $player_id Identifier of the player to display the embedded media asset in
@@ -287,6 +306,10 @@ add_action('init', array( 'ThePlatform_Plugin', 'init' ) );
 add_action('wp_ajax_verify_account', 'verify_account_settings');
 add_action('admin_init', 'register_plugin_settings' );
 
+/**
+ * Registers initial plugin settings during initalization
+ * @return type
+ */
 function register_plugin_settings() {
 	$preferences_options_key = 'theplatform_preferences_options';
 	$metadata_options_key = 'theplatform_metadata_options';

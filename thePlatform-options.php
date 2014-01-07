@@ -5,7 +5,6 @@ class ThePlatform_Options {
 	private $preferences_options_key = 'theplatform_preferences_options';
 	private $metadata_options_key = 'theplatform_metadata_options';
 	private $upload_options_key = 'theplatform_upload_options';
-
 	private $account_is_verified;
 	
 	/*
@@ -55,6 +54,10 @@ class ThePlatform_Options {
 		wp_enqueue_style('theplatform_css');
 	}
 	
+	/**
+	 * Used to verify the account server settings on the server side
+	 * @return type
+	 */
 	function internal_verify_account_settings()
 	{		
 		$username = trim($this->preferences['mpx_username']);
@@ -175,7 +178,7 @@ class ThePlatform_Options {
 		
 		foreach ($this->metadata_fields as $field) {
 			if (!array_key_exists($field['id'], $this->metadata_options)) {
-				$this->metadata_options[$field['id']] = 'allow';
+				$this->metadata_options[$field['id']] = 'omit';
 			}
 			
 			update_option($this->metadata_options_key, $this->metadata_options);
@@ -240,6 +243,7 @@ class ThePlatform_Options {
 	function section_upload_desc() { 
 		echo 'Select the fields that you would like to be allowed or omitted when uploading media to MPX.'; 
 	}
+	
 	/*
 	 * MPX Account Option field callbacks.
 	 */

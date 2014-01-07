@@ -274,7 +274,7 @@ TheplatformUploader = (function() {
     		success: function(response) {    			
     			me.frags_uploaded++;    			
     			if (me.frags_uploaded == 1) {
-    				NProgress.configure({ trickle: false, showSpinner: false });
+    				NProgress.configure({ trickle: true, trickleRate: 0.01, trickleSpeed: 2000, showSpinner: false });
 					NProgress.start();							
     			}
     			else

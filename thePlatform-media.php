@@ -69,17 +69,13 @@ wp_enqueue_style('colors');
 								
 		$html = '';
 
-		if (isset($preferences['user_id_customfield'])) {
-
+		if (!empty($preferences['user_id_customfield'])) {
 			$user_id_customfield = $tp_api->get_customfield_info($preferences['user_id_customfield']);
-
-			$metadata_info = $user_id_customfield['entries'][0];
-			
-			$fieldName = $metadata_info['plfield$namespacePrefix'] . '$' . $metadata_info['plfield$fieldName'];
-			$fields[$fieldName] = $_POST[$preferences['user_id_customfield']];	
-
+			$metadata_info = $user_id_customfield['entries'][0];			
+			$fieldName = $metadata_info['plfield$namespacePrefix'] . '$' . $metadata_info['plfield$fieldName'];			
+			$fields[$fieldName] = $_POST[$preferences['user_id_customfield']];				
 			$namespaces['$xmlns'] = array_merge($namespaces['$xmlns'], array($metadata_info['plfield$namespacePrefix'] => $metadata_info['plfield$namespace']));
-		}
+		}		
 
 		foreach ($metadata_options as $custom_field => $val) {
 			if ($val !== 'allow')
@@ -92,6 +88,10 @@ wp_enqueue_style('colors');
 					break;
 				}
 			}	
+
+			$field_title = $metadata_info['plfield$fieldName'];
+			if ($field_title === $preferences['user_id_customfield'])
+				continue;
 
 			if (is_null($metadata_info))
 				continue;								
@@ -120,10 +120,9 @@ wp_enqueue_style('colors');
 		}
 							
 		$payload = array_merge($payload, $namespaces);
-		$payload = array_merge($payload, $fields);		
-
+		$payload = array_merge($payload, $fields);				
 		$payloadJSON = json_encode($payload, JSON_UNESCAPED_SLASHES);
-				
+
  		$tp_api->update_media($payloadJSON);
 		
 		$response = $tp_api->get_videos();
@@ -280,11 +279,14 @@ wp_enqueue_style('colors');
 
 									if (is_null($metadata_info))
 										continue;								
-									
+
 									$field_title = $metadata_info['plfield$fieldName'];
 									$field_prefix = $metadata_info['plfield$namespacePrefix'];
 									$field_namespace = $metadata_info['plfield$namespace'];
 									
+									if ($field_title === $preferences['user_id_customfield'])
+										continue;
+
 									$field_value="";
 									if (array_key_exists($field_prefix . '$' . $field_title, $video))
 										$field_value = $video[$field_prefix . '$' . $field_title];

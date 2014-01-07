@@ -47,15 +47,15 @@ define('TP_API_FMS_BASE_URL', 'http://fms.theplatform.com/web/FileManagement/');
 define('TP_API_FMS_GET_UPLOAD_URLS_ENDPOINT', TP_API_FMS_BASE_URL . 'getUploadUrls?schema=1.4&form=json');
 
 /**
- * Wrapper class around cURL HTTP methods
+ * Wrapper class around Wordpress HTTP methods
  */ 
 class ThePlatform_API_HTTP {
 
 	/**
-	 * Perform cURL's GET method
-	 *
-	 * @param string $url URL to query
-	 * @return string|WP_Error Response text or error
+	 * HTTP GET wrapper
+	 * @param string $url URL to make the request to
+	 * @param array $data Data to send with the request, default is a blank array
+	 * @return wp_response Results of the GET request
 	 */
 	static function get($url, $data = array()) {
 		$url = esc_url_raw($url);
@@ -64,23 +64,22 @@ class ThePlatform_API_HTTP {
 	}
 	
 	/**
-	 * Perform cURL's PUT method
-	 *
-	 * @param string $url URL to query
-	 * @param array $data Paylod to accompany the PUT request
-	 * @return string|WP_Error Response text or error 
+	 * HTTP PUT wrapper
+	 * @param string $url URL to make the request to
+	 * @param array $data Data to send with the request, default is a blank array
+	 * @return wp_response Results of the GET request
 	 */
 	static function put($url, $data = array()) {
 		return ThePlatform_API_HTTP::post($url, $data, TRUE, 'PUT');		
 	}
 	
 	/**
-	 * Perform cURL's POST method
-	 *
-	 * @param string $url URL to query
-	 * @param Array $data Paylod to accompany the PUT request
-	 * @param boolean $isJSON Whether or not the request payload is JSON encoded
-	 * @return string|WP_Error Response text or error
+	 * HTTP POST wrapper
+	 * @param string $url URL to make the request to
+	 * @param array $data Data to send with the request, default is a blank array
+	 * @param boolean $isJSON Whether our data is JSON encoded or not, default is FALSE
+	 * @param string $method Sets the header HTTP request method, default is POST
+	 * @return wp_response Results of the GET request
 	 */
 	static function post($url, $data, $isJSON = FALSE, $method='POST') {
 		$url = esc_url_raw($url);
@@ -100,54 +99,9 @@ class ThePlatform_API_HTTP {
 }
 
 /**
- * A utility class
+ * Wrapper for MPX's API calls
+ * @package default
  */
-class ThePlatform_API_Util {
-	
-	/**
-	 * Generate a random GUID string
-	 *
-	 * @param int $length Length of GUID string to create
-	 * @return string GUID
-	 */
-	static function random_guid($length) {
-		$pool = 'abcdefghijklmnopqrstuvwxyz1234567890';
-		$ret = '';
-
-	    $pool_size = strlen($pool);
-
-	    for ($i = 0; $i < $length; $i++) {
-			$ret .= $pool[mt_rand(1, $pool_size)-1];
-		}
-
-	    return $ret;
-	}
-	
-	/**
-	 * Convert a MIME type to an MPX-compliant format identifier
-	 *
-	 * @param string $mime A MIME-type string
-	 * @return string MPX-compliant format string
-	 */
-	static function get_format($mime) {
-		
-		$response = ThePlatform_API_HTTP::get(TP_API_FORMATS_XML_URL);
-
-		$xmlString = "<?xml version='1.0'?>" . wp_remote_retrieve_body($response);		
-
-		$formats = simplexml_load_string($xmlString);		
-				
-		foreach ($formats->format as $format) {			
-			foreach ($format->mimeTypes->mimeType as $mimetype) {
-				if ($mimetype == $mime)
-					return $format;
-			}
-		}
-		
-		return 'Unknown';
-	}
-}
-
 class ThePlatform_API {
 
 	private $auth;
@@ -198,6 +152,30 @@ class ThePlatform_API {
 		
 		return $args;
 	}
+
+	/**
+	 * Convert a MIME type to an MPX-compliant format identifier
+	 *
+	 * @param string $mime A MIME-type string
+	 * @return string MPX-compliant format string
+	 */
+	function get_format($mime) {
+		
+		$response = ThePlatform_API_HTTP::get(TP_API_FORMATS_XML_URL);
+
+		$xmlString = "<?xml version='1.0'?>" . wp_remote_retrieve_body($response);		
+
+		$formats = simplexml_load_string($xmlString);		
+				
+		foreach ($formats->format as $format) {			
+			foreach ($format->mimeTypes->mimeType as $mimetype) {
+				if ($mimetype == $mime)
+					return $format;
+			}
+		}
+		
+		return 'Unknown';
+	}
 	
 	/**
 	 * Query an MPX endpoint
@@ -205,8 +183,8 @@ class ThePlatform_API {
 	 * @param string $endpoint A string representing the endpoint to query, e.g. 'MediaFile', 'AccessAccount'
 	 * @param string $method The HTTP method to use. Accepts 'post', 'put', and 'get'
 	 * @param array $params The URL parameters to pass to the endpoint
-	 * @param mixed $payload PUT or POST payload data
-	 * @param boolean $isJson Whether or not the $payload parameter is already JSON encoded
+	 * @param mixed $payload PUT or POST payload data, default NULL
+	 * @param boolean $isJson Whether or not the $payload parameter is already JSON encoded, default FALSE
 	 * @return array|WP_Error A response array on success, or a WP_Error instance on failure 
 	 */
 	function query($endpoint, $method, $params, $payload = NULL, $isJson = false) {
@@ -249,7 +227,7 @@ class ThePlatform_API {
 	/**
 	 * Signs into MPX and retrieves an access token.
 	 *
-	 * @return An access token
+	 * @return string An access token
 	*/ 
 	function mpx_signin() {
 		$response = ThePlatform_API_HTTP::get(TP_API_SIGNIN_URL, $this->basicAuthHeader());		
@@ -265,6 +243,7 @@ class ThePlatform_API {
 	 * Deactivates an MPX access token.
 	 *
 	 * @param string $token The token to deactivate
+	 * @return WP_Error|array The response or WP_Error on failure.
 	*/ 
 	function mpx_signout($token) {
 		$response = ThePlatform_API_HTTP::get(TP_API_SIGNOUT_URL . $token);		
@@ -288,8 +267,7 @@ class ThePlatform_API {
 		);
 				
 		$response = $this->query('Media', 'put', $params, $payload, true);
-				
-		
+						
 		$this->mpx_signout($params['token']);
 		
 		if( is_wp_error( $response ) ) {
@@ -445,7 +423,7 @@ class ThePlatform_API {
 		$media_guid = $response['guid'];
 		$media_id = $response['id'];
 		
-		$format = ThePlatform_API_Util::get_format($args['filetype']);
+		$format = $this->get_format($args['filetype']);
 			
 		$upload_server_id = $this->preferences['mpx_server_id'];
 	
@@ -470,9 +448,12 @@ class ThePlatform_API {
 		echo json_encode($params);
 		die();
 	}
-	
-	
-	
+
+	/**
+	 * Get the first Streaming Release form MPX based on a Media ID
+	 * @param string $media_id the MPX Media ID
+	 * @return string The Release PID
+	 */
 	function get_release_by_id($media_id) {
 
 		$token = $this->mpx_signin();
@@ -497,9 +478,9 @@ class ThePlatform_API {
 	/**
 	 * Query MPX for videos 
 	 *
-	 * @param string $query Query fields to append to the request URL
-	 * @param string $sort Sort parameters to pass to the data service
-	 * @param array $fields Optional set of fields to request from the data service
+	 * @param string $query Query fields to append to the request URL, default empty
+	 * @param string $sort Sort parameters to pass to the data service, default empty
+	 * @param array $fields Optional set of fields to request from the data service, default empty
 	 * @return array The Media data service response
 	*/
 	function get_videos($query = '', $sort = '', $startPage = '', $fields = array()) {			

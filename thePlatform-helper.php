@@ -1,5 +1,10 @@
 <?php 
 
+/**
+ * Validate the allow/omit dropdown options
+ * @param array $input Passed by Wordpress, an Array of upload/metadata options
+ * @return array A clean copy of the array, invalid values will be returned as "omit"
+ */
 function dropdown_options_validate($input) {	
 	foreach ($input as $key => $value) {	
 		if ($value != "allow" && $value != "omit") {
@@ -8,6 +13,12 @@ function dropdown_options_validate($input) {
 	}
 	return $input;
 }
+
+/**
+ * Validate MPX Settings for invalid input
+ * @param array $input Passed by Wordpress, an Array of MPX options
+ * @return array A cleaned up copy of the array, invalid values will be cleared.
+ */
 function connection_options_validate($input) {	
 	if ( ! is_array( $input ) ) 
 	{
@@ -78,7 +89,6 @@ function verify_account_settings() {
  *	Catch JSON decode errors
  */
 function decode_json_from_server($input, $assoc, $die_on_error = TRUE) {
-
 
 	$response = json_decode(wp_remote_retrieve_body($input), $assoc);		
 

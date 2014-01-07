@@ -15,6 +15,10 @@ add_action('wp_ajax_publishMedia', 'MPXProxy::publishMedia');
 add_action('wp_ajax_publishStatus', 'MPXProxy::publishStatus');
 add_action('wp_ajax_cancelUpload', 'MPXProxy::cancelUpload');
 
+/**
+ * This class is responsible for uploading and publishing Media to MPX
+ * @package default
+ */
 class MPXProxy {
 
 	public static function check_nonce_and_permissions() {
