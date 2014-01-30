@@ -243,9 +243,8 @@ wp_enqueue_style('colors');
 												foreach ($video[$upload_field] as $mediaCategory) {																										
 													$html .= '<select class="category_field" id="theplatform_upload_' . esc_attr($upload_field) . '" name="' . esc_attr($upload_field) . '-' . $i++ . '">';
 													$html .= '<option value="(None)">No category</option>';
-													foreach ($categories['entries'] as $category) {
-														$selected = $category['plcategory$fullTitle'] == $mediaCategory['media$name'] ? ' selected="selected"' : '';
-														$html .= '<option value="' . esc_attr($category['plcategory$fullTitle']) . '" ' . esc_attr($selected) . '>' . esc_html($category['plcategory$fullTitle']) . '</option>';
+													foreach ($categories['entries'] as $category) {														
+														$html .= '<option value="' . esc_attr($category['plcategory$fullTitle']) . '" ' . selected($category['plcategory$fullTitle'], $mediaCategory['media$name'], false) . '>' . esc_html($category['plcategory$fullTitle']) . '</option>';
 													}
 													$html .= '</select>';													
 												}
@@ -385,11 +384,8 @@ wp_enqueue_style('colors');
      									$profiles = $tp_api->get_publish_profiles();     								
      									$html = '<select name="profile" id="publishing_profile" name="publishing_profile" class="upload_profile">';  											
      									$html .= '<option value="tp_wp_none">Do not publish</option>'; 
-											foreach($profiles as $entry) {
-												if ($entry['title'] == $preferences['default_publish_id'])													
-													$html .= '<option value="' . esc_attr($entry['title']) . '" selected="selected">' . esc_html($entry['title']) . '</option>'; 
-												else
-													$html .= '<option value="' . esc_attr($entry['title']) . '">' . esc_html($entry['title']) . '</option>'; 
+											foreach($profiles as $entry) {																		
+												$html .= '<option value="' . esc_attr($entry['title']) . '"' . selected($entry['title'], $preferences['default_publish_id'], false) . '>' . esc_html($entry['title']) . '</option>'; 												
 											}
 										$html .= '</select>';
 										echo $html;
@@ -423,10 +419,10 @@ wp_enqueue_style('colors');
 							  </span>
 							  <span class="search-down-arrow nav-sprite"></span>
 							  <select title="Search by" class="search-select" id="search-dropdown" name="theplatformsearchfield" data-nav-selected="0" style="top: 0px;">
-								<option value="byTitlePrefix" <?php echo $_GET['theplatformsearchfield'] == 'byTitlePrefix' ? 'selected="selected"' : '' ?>>Title Prefix</option>
-								<option value="byTitle" <?php echo $_GET['theplatformsearchfield'] == 'byTitle' ? 'selected="selected"' : '' ?>>Full Title</option>								
-								<option value="byCategories" <?php echo $_GET['theplatformsearchfield'] == 'byCategories' ? 'selected="selected"' : '' ?>>Categories</option>
-								<option value="q" <?php echo $_GET['theplatformsearchfield'] == 'q' ? 'selected="selected"' : '' ?>>q</option>
+								<option value="byTitlePrefix" <?php echo selected($_GET['theplatformsearchfield'], 'byTitlePrefix') ?>>Title Prefix</option>
+								<option value="byTitle" <?php echo selected($_GET['theplatformsearchfield'], 'byTitle') ?>>Full Title</option>								
+								<option value="byCategories" <?php echo selected($_GET['theplatformsearchfield'], 'byCategories') ?>>Categories</option>
+								<option value="q" <?php echo selected($_GET['theplatformsearchfield'], 'q') ?>>q</option>
 							  </select>
 							</span>
 							
@@ -436,25 +432,23 @@ wp_enqueue_style('colors');
 							  </span>
 							  <span class="sort-down-arrow nav-sprite"></span>
 							  <select title="Sort by" class="sort-select" id="sort-dropdown" name="theplatformsortfield" data-nav-selected="0" style="top: 0px;">
-							  	<option value="title" <?php echo $_GET['theplatformsortfield'] == 'title' ? 'selected="selected"' : '' ?>>Title: Ascending</option>
-								<option value="title|desc" <?php echo $_GET['theplatformsortfield'] == 'title|desc' ? 'selected="selected"' : '' ?>>Title: Descending</option>
-								<option value="added" <?php echo $_GET['theplatformsortfield'] == 'added' ? 'selected="selected"' : '' ?>>Date Added: Ascending</option>
-								<option value="added|desc" <?php echo $_GET['theplatformsortfield'] == 'added|desc' ? 'selected="selected"' : '' ?>>Date Added: Descending</option>
-								<option value="author" <?php echo $_GET['theplatformsortfield'] == 'author' ? 'selected="selected"' : '' ?>>Author: Ascending</option>
-								<option value="author|desc" <?php echo $_GET['theplatformsortfield'] == 'author|desc' ? 'selected="selected"' : '' ?>>Author: Descending</option>
+							  	<option value="title" <?php echo selected($_GET['theplatformsortfield'], 'title') ?>>Title: Ascending</option>
+								<option value="title|desc" <?php echo selected($_GET['theplatformsortfield'], 'title|desc') ?>>Title: Descending</option>
+								<option value="added" <?php echo selected($_GET['theplatformsortfield'], 'added') ?>>Date Added: Ascending</option>
+								<option value="added|desc" <?php echo selected($_GET['theplatformsortfield'], 'added|desc') ?>>Date Added: Descending</option>
+								<option value="author" <?php echo selected($_GET['theplatformsortfield'], 'author') ?>>Author: Ascending</option>
+								<option value="author|desc" <?php echo selected($_GET['theplatformsortfield'], 'author|desc') ?>>Author: Descending</option>
 							  </select>
 							</span>
 
 							<?php 
 								if ($preferences['user_id_customfield'] !== '') { ?>
 									<span id="filter-by">
-										<input name="filter-by-userid" id="filter-cb" type="checkbox" <?php 
-										if (!isset($_GET['s']) && $preferences['filter_by_user_id'] === 'TRUE') { 
-											echo 'checked="checked"'; 
-										} 
-										if (isset($_GET['filter-by-userid'])) {
-											echo 'checked="checked"';
-										} ?>
+										<input name="filter-by-userid" id="filter-cb" type="checkbox" 
+											<?php 
+												checked(!isset($_GET['s']) && $preferences['filter_by_user_id'] === 'TRUE' );
+												checked(isset($_GET['filter-by-userid'])); 
+											?>
 										/>
                                 		<label id="filter-label" for="filter-cb">My Media</label>
 								</span>
@@ -464,7 +458,7 @@ wp_enqueue_style('colors');
 							  <div class="searchfield-inner nav-sprite">
 								<div class="searchfield-width" style="padding-left: 44px;">
 								  <div id="search-input-container">
-									<input type="text" autocomplete="off" name="s" value="<?php echo $_GET['s'] ?>" title="Search For" id="search-input" style="padding-right: 1px;">
+									<input type="text" autocomplete="off" name="s" value="<?php echo esc_attr($_GET['s']) ?>" title="Search For" id="search-input" style="padding-right: 1px;">
 								  </div>
 								</div>
 							  </div>

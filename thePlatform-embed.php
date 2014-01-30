@@ -123,10 +123,10 @@ jQuery(document).ready(function() {
 							  </span>
 							  <span class="search-down-arrow nav-sprite"></span>
 							  <select title="Search by" class="search-select" id="search-dropdown" name="theplatformsearchfield" data-nav-selected="0" style="top: 0px;">
-							  	<option value="byTitlePrefix" <?php echo $_POST['theplatformsearchfield'] == 'byTitlePrefix' ? 'selected="selected"' : '' ?>>Title Prefix</option>
-								<option value="byTitle" <?php echo $_POST['theplatformsearchfield'] == 'byTitle' ? 'selected="selected"' : '' ?>>Full Title</option>								
-								<option value="byCategories" <?php echo $_POST['theplatformsearchfield'] == 'byCategories' ? 'selected="selected"' : '' ?>>Categories</option>
-								<option value="q" <?php echo $_POST['theplatformsearchfield'] == 'q' ? 'selected="selected"' : '' ?>>q</option>
+							  	<option value="byTitlePrefix" <?php selected($_POST['theplatformsearchfield'], 'byTitlePrefix')?>>Title Prefix</option>
+								<option value="byTitle" <?php selected($_POST['theplatformsearchfield'], 'byTitle')?>>Full Title</option>								
+								<option value="byCategories" <?php selected($_POST['theplatformsearchfield'], 'byCategories')?>>Categories</option>
+								<option value="q" <?php selected($_POST['theplatformsearchfield'], 'q')?>>q</option>
 							  </select>
 							</span>
 							
@@ -136,12 +136,12 @@ jQuery(document).ready(function() {
 							  </span>
 							  <span class="sort-down-arrow nav-sprite"></span>							  
 							  <select title="Sort by" class="sort-select" id="sort-dropdown" name="theplatformsortfield" data-nav-selected="0" style="top: 0px;">
-							  	<option value="title" <?php echo $_POST['theplatformsortfield'] == 'title' ? 'selected="selected"' : '' ?>>Title: Asc</option>
-								<option value="title|desc" <?php echo $_POST['theplatformsortfield'] == 'title|desc' ? 'selected="selected"' : '' ?>>Title: Desc</option>
-								<option value="added" <?php echo $_POST['theplatformsortfield'] == 'added' ? 'selected="selected"' : '' ?>>Date Added: Asc</option>
-								<option value="added|desc" <?php echo $_POST['theplatformsortfield'] == 'added|desc' ? 'selected="selected"' : '' ?>>Date Added: Desc</option>
-								<option value="author" <?php echo $_POST['theplatformsortfield'] == 'author' ? 'selected="selected"' : '' ?>>Author: Asc</option>
-								<option value="author|desc" <?php echo $_POST['theplatformsortfield'] == 'author|desc' ? 'selected="selected"' : '' ?>>Author: Desc</option>
+							  	<option value="title" <?php selected($_POST['theplatformsortfield'], 'title')?>>Title: Asc</option>
+								<option value="title|desc" <?php selected($_POST['theplatformsortfield'], 'title|desc')?>>Title: Desc</option>
+								<option value="added" <?php selected($_POST['theplatformsortfield'], 'added')?>>Date Added: Asc</option>
+								<option value="added|desc" <?php selected( $_POST['theplatformsortfield'], 'added|desc')?>>Date Added: Desc</option>
+								<option value="author" <?php selected($_POST['theplatformsortfield'], 'author')?>>Author: Asc</option>
+								<option value="author|desc" <?php selected($_POST['theplatformsortfield'], 'author|desc')?>>Author: Desc</option>
 							  </select>
 							</span>
 
@@ -149,13 +149,11 @@ jQuery(document).ready(function() {
 							// add_query_arg(array('filter_by_user_id' => 'TRUE'))
 								if ($preferences['user_id_customfield'] !== '') { ?>
 									<span id="filter-by-embed">
-										<input name="filter-by-userid" id="filter-cb-embed" type="checkbox" <?php 
-										if (!isset($_POST['s']) && $preferences['filter_by_user_id'] === 'TRUE') { 
-											echo 'checked="checked"'; 											
-										} 
-										if (isset($_POST['filter-by-userid'])) {
-											echo 'checked="checked"';
-										} ?>
+										<input name="filter-by-userid" id="filter-cb-embed" type="checkbox" 
+											<?php 
+												checked(!isset($_POST['s']) && $preferences['filter_by_user_id'] === 'TRUE'); 
+												checked(isset($_POST['filter-by-userid']));
+											?>
 										/>
                                 		<label id="filter-label-embed" for="filter-cb-embed">My Media</label>
 								</span>
@@ -166,7 +164,7 @@ jQuery(document).ready(function() {
 							  <div class="searchfield-inner nav-sprite">
 								<div class="searchfield-width" style="padding-left: 44px;">
 								  <div id="search-input-container">
-									<input type="text" autocomplete="off" name="s" value="<?php echo $_POST['s'] ?>" title="Search For" id="search-input" style="padding-right: 1px;">
+									<input type="text" autocomplete="off" name="s" value="<?php echo esc_attr($_POST['s']) ?>" title="Search For" id="search-input" style="padding-right: 1px;">
 								  </div>
 								</div>
 							  </div>
@@ -183,11 +181,8 @@ jQuery(document).ready(function() {
 							<?php
 								$html = '<select id="embed_player" name="embed_player_select">';  
 								
-								foreach ($players as $player) {
-									if ($player['plplayer$pid'] == $preferences['default_player_pid'])
-										$html .= '<option value="' . esc_attr($player['plplayer$pid']) . '" selected="selected">' . esc_html($player['title']) . '</option>';  
-									else
-										$html .= '<option value="' . esc_attr($player['plplayer$pid']) . '">' . esc_html($player['title']) . '</option>';  
+								foreach ($players as $player) {																		
+ 									$html .= '<option value="' . esc_attr($player['plplayer$pid']) . '"' . selected($player['plplayer$pid'], $preferences['default_player_pid'], false) . '>' . esc_html($player['title']) . '</option>';      								
 								}
 								 $html .= '</select>';  
 								echo $html;
