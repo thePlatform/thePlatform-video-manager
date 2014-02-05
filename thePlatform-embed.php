@@ -249,9 +249,9 @@ jQuery(document).ready(function() {
 
 						for ($i=1; $i <= $pages; $i++) { 
 							if ($i == $page)
-								$output .= '<li class="active">' . $page . '</li>';
+								$output .= '<li class="active">' . esc_html($page) . '</li>';
 							else
-								$output .= '<li><a class="mpx-media-page" href="#" data-page="' . $i . '">' . $i . '</a></li>';
+								$output .= '<li><a class="mpx-media-page" href="#" data-page="' . esc_attr($i) . '">' . esc_attr($i) . '</a></li>';
 						}
 
 						if ($_POST['tppage'] != $pages)

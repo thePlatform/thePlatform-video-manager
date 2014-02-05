@@ -521,9 +521,9 @@ wp_enqueue_style('colors');
 
 			for ($i=1; $i <= $pages; $i++) { 
 				if ($i == $page)
-					$output .= '<li class="active">' . $page . '</li>';
+					$output .= '<li class="active">' . esc_html($page) . '</li>';
 				else
-					$output .= '<li><a href="' . esc_url(add_query_arg(array('tppage'=> $i))) . '">' . $i . '</a></li>';
+					$output .= '<li><a href="' . esc_url(add_query_arg(array('tppage'=> $i))) . '">' . esc_html($i) . '</a></li>';
 			}
 
 			if ($_GET['tppage'] != $pages)

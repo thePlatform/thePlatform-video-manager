@@ -104,12 +104,12 @@ function decode_json_from_server($input, $assoc, $die_on_error = TRUE) {
 	}
 
 	if ( is_wp_error($response) ) {
-		wp_die('<p>'.__('There was an error getting data from MPX, if the error persists please contact thePlatform. ' . $response->get_error_message()).'</p>');
+		wp_die('<p>'.__('There was an error getting data from MPX, if the error persists please contact thePlatform. ' . esc_html($response->get_error_message()) ) . '</p>');
 
 	}
 
 	if (array_key_exists('isException', $response)) {
-		wp_die('<p>'.__('There was an error getting data from MPX, if the error persists please contact thePlatform. ' . $response['description']).'</p>');			
+		wp_die('<p>'.__('There was an error getting data from MPX, if the error persists please contact thePlatform. ' . esc_html($response['description'])) . '</p>');			
 	}
 
 	return $response;
