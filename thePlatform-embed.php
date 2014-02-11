@@ -1,20 +1,22 @@
 <?php
-if ( ! class_exists( 'ThePlatform_API' ) )
-	require_once( dirname(__FILE__) . '/thePlatform-API.php' );
-?>
+	$tp_embedder_cap = apply_filters('tp_embedder_cap', 'edit_posts');
+	if (!current_user_can($tp_embedder_cap)) {
+		wp_die('<p>'.__('You do not have sufficient permissions to embed videos').'</p>');
+	}
+
+	if ( ! class_exists( 'ThePlatform_API' ) )
+		require_once( dirname(__FILE__) . '/thePlatform-API.php' );
+	?>
 
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
 <head>
 <meta charset="<?php bloginfo( 'charset' ); ?>" />
+
 <title>thePlatform Video Library</title>
 <?php 			
-	if (!current_user_can('manage_options')) {
-		wp_die('<p>'.__('You do not have sufficient permissions to manage this plugin').'</p>');
-	}
-
-	wp_print_scripts(array('jquery', 'theplatform_js', 'thickbox'));
-	wp_print_styles(array('theplatform_css', 'global', 'media', 'wp-admin', 'colors', 'thickbox'));
+	wp_print_scripts(array('jquery', 'theplatform_js', 'thickbox', 'jquery-ui-dialog'));
+	wp_print_styles(array('theplatform_css', 'global', 'media', 'wp-admin', 'colors', 'thickbox', 'jquery-ui-dialog'));
 	
 	$tp_api = new ThePlatform_API;  
 
@@ -30,32 +32,36 @@ if ( ! class_exists( 'ThePlatform_API' ) )
 	
 	$preferences = get_option('theplatform_preferences_options');
 	
-	if (isset($_POST['s'])) {
-		check_admin_referer('plugin-name-action_tpnonce'); 
-		$key_word = isset( $_POST['s'] ) ? sanitize_text_field( $_POST['s'] ) : '';
-		$field = isset( $_POST['theplatformsearchfield'] ) ? sanitize_text_field( $_POST['theplatformsearchfield'] ) : '';
-		$sort = isset( $_POST['theplatformsortfield'] ) ? sanitize_text_field( $_POST['theplatformsortfield'] ) : '';
-				
-		if ($field == 'byTitle') {	
-			$response = $tp_api->get_videos($field . '=' . urlencode($key_word), $sort);
-		} else if ($field == 'q') {
-			$response = $tp_api->get_videos($field . '=' . urlencode($key_word));
-		} else if ($field == 'All' && $sort != '') {
-			$response = $tp_api->get_videos('', $sort);
-		} else {
-			$query = '{' . $field . '}{' . $key_word . '}';
-			$response = $tp_api->get_videos('byCustomValue' . '=' . urlencode($query), $sort);
-		}
-		
-		if ( is_wp_error( $response ) )
-			echo '<div id="message" class="error below-h2"><p>' . $response->get_error_message() . '</p></div>';		
-	} else {
-		$response = $tp_api->get_videos();
-		
-		if ( is_wp_error( $response ) )
-			echo '<div id="message" class="error below-h2"><p>' . $response->get_error_message() . '</p></div>';
-	}
+	$page = isset( $_POST['tppage'] ) ? sanitize_text_field( $_POST['tppage'] ) : '1';		
 
+	if (isset($_POST['s'])) {
+		check_admin_referer('theplatform-ajax-nonce'); 
+		$key_word = isset( $_POST['s'] ) ? sanitize_text_field( $_POST['s'] ) : '';						
+		$field = isset( $_POST['theplatformsearchfield'] ) ? sanitize_text_field( $_POST['theplatformsearchfield'] ) : '';			
+		$sort = isset( $_POST['theplatformsortfield'] ) ? sanitize_text_field( $_POST['theplatformsortfield'] ) : '';
+
+		$query = array();
+		if ($key_word !== '')
+			array_push($query, $field. '=' . $key_word);
+					
+		if (isset($_POST['filter-by-userid']) && $preferences['user_id_customfield'] !== '')
+		 	array_push($query, 'byCustomValue=' . urlencode('{' . $preferences['user_id_customfield'] . '}{' . wp_get_current_user()->ID . '}'));
+		
+		if ($field !== 'q')
+			$videos = $tp_api->get_videos(implode('&', $query), $sort, $page);
+		else
+			$videos = $tp_api->get_videos(implode('&', $query), '', $page);		
+	} 
+	else {
+		// Library View				
+		if ($preferences['filter_by_user_id'] === 'TRUE' && $preferences['user_id_customfield'] !== '') 
+				$videos = $tp_api->get_videos('byCustomValue=' . urlencode('{' . $preferences['user_id_customfield'] . '}{' . wp_get_current_user()->ID . '}'), '', $page);
+		else
+			$videos = $tp_api->get_videos('','',$page);	
+	}
+	$count = $videos['totalResults'];	
+	$pages = ceil(intval($count)/intval($preferences['videos_per_page']));
+	$videos = $videos['entries'];	
 ?>
 
 <script type='text/javascript'>
@@ -85,6 +91,15 @@ jQuery(document).ready(function() {
 		return false;
 	});
 
+	jQuery('.mpx-media-page').click(function(e) {
+		e.preventDefault();
+		jQuery('#form-page-field').val(jQuery(this).data('page'));
+		jQuery('#theplatform-search').submit();
+	});
+
+	jQuery('#search-by-content').text(jQuery('.search-select').find(":selected").text());
+	jQuery('#sort-by-content').text(jQuery('.sort-select').find(":selected").text());
+
 });
 
 </script>
@@ -92,36 +107,26 @@ jQuery(document).ready(function() {
 </head>
 
 <body>
-
 	<div>
 		<div>
-		<div id="search-bar-outer-embed">
+			<div id="search-bar-outer-embed">
 				<div id="search-bar-inner-embed" class="nav-sprite">
 					<div>
 						<label id="search-label-embed"> Search </label>
 						<form class="search-form-embed" id="theplatform-search" name="library-search" method="POST" action="#">							
-							<?php
-								//nonce check 
-								wp_nonce_field('plugin-name-action_tpnonce');
-							?>
+							<?php wp_nonce_field('theplatform-ajax-nonce'); ?>
           					<input type="hidden" name="page" value="theplatform-media" />
+          					<input type="hidden" id="form-page-field" name="tppage" value="1" />
 							<span class="nav-sprite" id="search-by" style="width: auto;">
 							  <span id="search-by-content" style="width: auto; overflow: visible;">
-								Title
+								Title Prefix
 							  </span>
 							  <span class="search-down-arrow nav-sprite"></span>
 							  <select title="Search by" class="search-select" id="search-dropdown" name="theplatformsearchfield" data-nav-selected="0" style="top: 0px;">
-							  	<option value="byTitle" selected="selected">Title</option>  
-								<option value="byDescription">Description</option>
-								<option value="byCategories">Categories</option>
-<?php
-	foreach ($metadata as $field) {
-		if ($field['plfield$dataType'] == 'String') {
-			echo '<option value="' . esc_attr($field['plfield$fieldName']) . '">' . esc_html($field['title']) . '</option>';  
-		}
-	}
-?>
-								<option value="q">q</option>
+							  	<option value="byTitlePrefix" <?php selected($_POST['theplatformsearchfield'], 'byTitlePrefix')?>>Title Prefix</option>
+								<option value="byTitle" <?php selected($_POST['theplatformsearchfield'], 'byTitle')?>>Full Title</option>								
+								<option value="byCategories" <?php selected($_POST['theplatformsearchfield'], 'byCategories')?>>Categories</option>
+								<option value="q" <?php selected($_POST['theplatformsearchfield'], 'q')?>>q</option>
 							  </select>
 							</span>
 							
@@ -129,22 +134,37 @@ jQuery(document).ready(function() {
 							  <span id="sort-by-content" style="width: auto; overflow: visible;">
 								Sort by..
 							  </span>
-							  <span class="sort-down-arrow nav-sprite"></span>
+							  <span class="sort-down-arrow nav-sprite"></span>							  
 							  <select title="Sort by" class="sort-select" id="sort-dropdown" name="theplatformsortfield" data-nav-selected="0" style="top: 0px;">
-							  	<option value="title" selected="selected">Title: Ascending</option>
-								<option value="title|desc" selected="selected">Title: Descending</option>
-								<option value="added" selected="selected">Date Added: Ascending</option>
-								<option value="added|desc" selected="selected">Date Added: Descending</option>
-								<option value="author" selected="selected">Author: Ascending</option>
-								<option value="author|desc" selected="selected">Author: Descending</option>
+							  	<option value="title" <?php selected($_POST['theplatformsortfield'], 'title')?>>Title: Asc</option>
+								<option value="title|desc" <?php selected($_POST['theplatformsortfield'], 'title|desc')?>>Title: Desc</option>
+								<option value="added" <?php selected($_POST['theplatformsortfield'], 'added')?>>Date Added: Asc</option>
+								<option value="added|desc" <?php selected( $_POST['theplatformsortfield'], 'added|desc')?>>Date Added: Desc</option>
+								<option value="author" <?php selected($_POST['theplatformsortfield'], 'author')?>>Author: Asc</option>
+								<option value="author|desc" <?php selected($_POST['theplatformsortfield'], 'author|desc')?>>Author: Desc</option>
 							  </select>
 							</span>
+
+							<?php 
+							// add_query_arg(array('filter_by_user_id' => 'TRUE'))
+								if ($preferences['user_id_customfield'] !== '') { ?>
+									<span id="filter-by-embed">
+										<input name="filter-by-userid" id="filter-cb-embed" type="checkbox" 
+											<?php 
+												checked(!isset($_POST['s']) && $preferences['filter_by_user_id'] === 'TRUE'); 
+												checked(isset($_POST['filter-by-userid']));
+											?>
+										/>
+                                		<label id="filter-label-embed" for="filter-cb-embed">My Media</label>
+								</span>
+							<?php } ?>	
+
 
 							<div class="searchfield-outer nav-sprite">
 							  <div class="searchfield-inner nav-sprite">
 								<div class="searchfield-width" style="padding-left: 44px;">
 								  <div id="search-input-container">
-									<input type="text" autocomplete="off" name="s" value="" title="Search For" id="search-input" style="padding-right: 1px;">
+									<input type="text" autocomplete="off" name="s" value="<?php echo esc_attr($_POST['s']) ?>" title="Search For" id="search-input" style="padding-right: 1px;">
 								  </div>
 								</div>
 							  </div>
@@ -154,79 +174,99 @@ jQuery(document).ready(function() {
 							<div class="search-submit-button nav-sprite">
 							  <input type="submit" title="Go" class="search-submit-input" value="Go">
 							</div>
-				   </form>
-				  	<div id="embed-player-select">
-						<span> Player </span>
-<?php
-	$html = '<select id="embed_player" name="embed_player_select">';  
-	
-	foreach ($players as $player) {
-		if ($player['plplayer$pid'] == $preferences['default_player_pid'])
-			$html .= '<option value="' . esc_attr($player['plplayer$pid']) . '" selected="selected">' . esc_html($player['title']) . '</option>';  
-		else
-			$html .= '<option value="' . esc_attr($player['plplayer$pid']) . '">' . esc_html($player['title']) . '</option>';  
-	}
-	$html .= '</select>';  
-	echo $html;
-?>
+				   		</form>
+
+				  		<div id="embed-player-select">
+							<span> Player </span>
+							<?php
+								$html = '<select id="embed_player" name="embed_player_select">';  
+								
+								foreach ($players as $player) {																		
+ 									$html .= '<option value="' . esc_attr($player['plplayer$pid']) . '"' . selected($player['plplayer$pid'], $preferences['default_player_pid'], false) . '>' . esc_html($player['title']) . '</option>';      								
+								}
+								 $html .= '</select>';  
+								echo $html;
+							?>
 						</div>
-	 
-					  </div>
-							
+					</div>		
 				</div>	
-				
 			</div>
 
 			<div id="response-div">
 					
-<?php			  
+				<?php			  
 
-if ( !is_wp_error( $response ) ) {
-	$videos = decode_json_from_server($response, TRUE);
-	$videos = stripslashes_deep( $videos );
+					if ( !is_wp_error( $response ) ) {
 
-	if (empty( $videos['entries']) )
-		echo 'No media present.';
+						if (empty( $videos) )
+							echo 'No media present.';
 
-	$output = '<div style="clear:both;"></div><div style="align: center;"><div class="wrap" >';
+						$output = '<div style="clear:both;"></div><div style="align: center;"><div class="wrap" >';
+						foreach ( $videos as $video ) {	
 
-	foreach ( $videos['entries'] as $video ) {		
-			if (is_array($video['media$content'])) {			
-				foreach ($video['media$content'] as $value) {
-					foreach ($value['plfile$releases'] as $key => $value) {
-						if ($value['plrelease$delivery'] == "streaming") {
-							$embed_id = $value['plrelease$pid'];							
-						}		
-					break;						
-				}					
-			}												
-		}
-		if (is_null($embed_id))
-			continue;
+							$thumbnail_url = $video['plmedia$defaultThumbnailUrl'];
+							if ($thumbnail_url === '')					
+								$thumbnail_url = plugins_url('/images/notavailable.gif', __FILE__);
+							$embed_id = null;			
+							if (!is_array($video['media$content'])) 
+								continue;	
 
-		$edit_url = add_query_arg( 'edit', substr($video['id'], strrpos($video['id'], '/')+1), menu_page_url( 'theplatform-media', false ) );		
-		$output .= '
-		<div id="theplatform-media-embed-wrapper" class="theplatform-media">
-		<div id="' . esc_attr($embed_id) . '" class="photo embed-photo">
-		<img src="' . esc_url($video['plmedia$defaultThumbnailUrl']) . '">
+							foreach ($video['media$content'] as $content) {			
+								if (!is_array($content['plfile$releases'])) 
+									continue;
+								
+								foreach ($content['plfile$releases'] as $release) {
+									if ($release['plrelease$delivery'] == "streaming") {
+										$embed_id = $release['plrelease$pid'];	
+										break;
+									}						
+								}					
+							}
+
+							if (is_null($embed_id)) {
+								$count--;
+								continue;
+							}
+							
+								
+							$output .= '
+							<div id="theplatform-media-embed-wrapper" class="theplatform-media">
+							<div id="' . esc_attr($embed_id) . '" class="photo embed-photo">
+							<img src="' . esc_url($thumbnail_url) . '">
+							</div>
+							<div class="item-title">' . esc_html( $video['title'] ) .'</div>
+							</div>';
+						}
+
+						$output.='</div><div style="clear:both;"></div>';
+
+						$output .= '<ul id="pagination">';
+
+						if (!isset($_POST['tppage']) || $_POST['tppage'] === '1')
+							$output .= '<li class="previous-off">«Previous</li>';
+						else
+							$output .= '<li><a class="mpx-media-page" href="#" data-page="' . (intval($_POST['tppage'])-1) . '">«Previous</a></li><li>';
+
+						for ($i=1; $i <= $pages; $i++) { 
+							if ($i == $page)
+								$output .= '<li class="active">' . esc_html($page) . '</li>';
+							else
+								$output .= '<li><a class="mpx-media-page" href="#" data-page="' . esc_attr($i) . '">' . esc_attr($i) . '</a></li>';
+						}
+
+						if ($_POST['tppage'] != $pages)
+							$output .= '<li><a class="mpx-media-page" href="#" data-page="' . (isset($_POST['tppage']) ? intval($_POST['tppage'])+1 : 2) . '">Next »</a></li>';
+						else
+							$output .= '<li class="next-off">Next »</li><li>';
+							
+						$output .= '</ul>';
+		
+					}
+					echo $output;
+				?>
+	      	</div>
 		</div>
-		<div class="item-title">' . esc_html( $video['title'] ) .'</div>
-		</div>';
-	}
-
-	$output.='</div><div style="clear:both;"></div></div>';
-}
-
-echo $output;
-?>
-					
-					
-		      	</div>
-		        
-			
 	</div>
-
 </body>
+
 </html>
-
-
