@@ -14,9 +14,11 @@ add_action('wp_ajax_uploadStatus', 'MPXProxy::uploadStatus');
 add_action('wp_ajax_publishMedia', 'MPXProxy::publishMedia');
 add_action('wp_ajax_publishStatus', 'MPXProxy::publishStatus');
 add_action('wp_ajax_cancelUpload', 'MPXProxy::cancelUpload');
-add_action('wp_ajax_getCategories', 'MPXProxy::getCategories');
-add_action('wp_ajax_getVideos', 'MPXProxy::getVideos');
 
+/**
+ * This class is responsible for uploading and publishing Media to MPX
+ * @package default
+ */
 class MPXProxy {
 
 	public static function check_nonce_and_permissions() {
@@ -46,6 +48,8 @@ class MPXProxy {
 		$url .= '&_fileSize=' . $_POST['file_size'];
 		$url .= '&_mediaFileInfo.format=' . $_POST['format'];
 		$url .= '&_serverId=' . urlencode($_POST['server_id']);
+
+
 
 		$response = ThePlatform_API_HTTP::put($url);
 
@@ -134,8 +138,9 @@ class MPXProxy {
 		if ($response['data'] === false) {
 			$ret['success'] = 'false';
 			$ret['code'] = $response['status']['http_code'];
-		}
-		else {
+		} else {
+			
+
 			$content = decode_json_from_server($response, TRUE);
 		
 			if ($content['entryCount'] == 0) {
@@ -274,46 +279,6 @@ class MPXProxy {
 		}
 	
 		echo json_encode($ret); 
-		die();
-	}
-
-	/**
-	 * Initiate a file upload
-	 *
-	 * @return mixed JSON response or instance of WP_Error
-	 */
-	public static function getCategories() {
-		MPXProxy::check_nonce_and_permissions();		
-		
-		$token = $_POST['token'];
-		$account = $_POST['account'];
-
-		$url = TP_API_MEDIA_CATEGORY_ENDPOINT . '&fields=title&sort=title&token=' . $token . '&account=' . $account;
-		$response = ThePlatform_API_HTTP::get($url);		
-
-		echo wp_remote_retrieve_body($response);
-
-		die();
-	}
-
-	/**
-	 * Initiate a file upload
-	 *
-	 * @return mixed JSON response or instance of WP_Error
-	 */
-	public static function getVideos() {
-		MPXProxy::check_nonce_and_permissions();		
-		
-		$token = $_POST['token'];
-		$account = $_POST['account'];
-		$range = $_POST['range'];
-		$query = $_POST['query'];
-
-		$url = str_replace('json', 'cjson', TP_API_MEDIA_ENDPOINT) . '&count=true&range=' . $range . '&sort=title&token=' . $token . '&account=' . $account . $query;
-		$response = ThePlatform_API_HTTP::get($url);		
-
-		echo wp_remote_retrieve_body($response);
-
 		die();
 	}
 }

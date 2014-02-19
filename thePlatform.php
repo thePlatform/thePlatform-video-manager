@@ -26,18 +26,21 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-// $tp_publisher_cap = apply_filters('tp_publisher_cap', 'upload_files');
-// $tp_editor_cap = apply_filters('tp_editor_cap', 'edit_posts');
-// $tp_admin_cap = apply_filters('tp_editor_cap', 'manage_options');
 
-register_activation_hook(__FILE__, 'tp_activation_hook' );
-
+/**
+ * Placeholder for the plugin activation hook.
+ * @return type
+ */
 function tp_activation_hook() {	}
+register_activation_hook(__FILE__, 'tp_activation_hook' );
+$preferences_options_key = 'theplatform_preferences_options';
+$metadata_options_key = 'theplatform_metadata_options';
+$upload_options_key = 'theplatform_upload_options';
 
- $preferences_options_key = 'theplatform_preferences_options';
- $metadata_options_key = 'theplatform_metadata_options';
- $upload_options_key = 'theplatform_upload_options';
-
+/**
+ * Main class
+ * @package default
+ */
 class ThePlatform_Plugin {
 
 	var $plugin_base_dir;
@@ -66,6 +69,7 @@ class ThePlatform_Plugin {
 	 */
 	function __construct() {	
 		require_once(dirname(__FILE__) . '/thePlatform-API.php' );
+		require_once(dirname(__FILE__) . '/thePlatform-helper.php' );
 		require_once( dirname( __FILE__ ) . '/thePlatform-proxy.php' );
 			
 		$this->tp_api = new ThePlatform_API;
@@ -74,20 +78,37 @@ class ThePlatform_Plugin {
 		$this->plugin_base_url = plugins_url('/', __FILE__);
 		
 		if (is_admin()) {
-			add_action('admin_menu', array(&$this, 'add_media_page'));	
+			add_action('admin_menu', array(&$this, 'add_media_page'));				
 			add_action('admin_menu', array(&$this, 'add_admin_page'));
 			add_action('admin_init', array(&$this, 'register_scripts'));		
 			add_action('media_buttons', array(&$this, 'theplatform_embed_button'), 100);	
 			add_action('wp_ajax_initialize_media_upload', array($this->tp_api, 'initialize_media_upload'));
 			add_action('wp_ajax_get_subaccounts', array($this->tp_api, 'get_subaccounts'));
 			add_action('wp_ajax_theplatform_embed', array(&$this, 'embed')); 	
+			add_action('wp_ajax_theplatform_upload', array(&$this, 'upload'));	
+
+			add_action('wp_ajax_get_categories', array($this->tp_api, 'get_categories'));
+			add_action('wp_ajax_get_videos', array($this->tp_api, 'get_videos'));	
 		}	
 
 		add_shortcode('theplatform', array(&$this, 'shortcode'));
 	}
 	
+	/**
+	 * Calls the Embed template in a thickbox
+	 * @return void
+	 */
 	function embed() {
 		require_once( $this->plugin_dir . 'thePlatform-embed.php' );
+		die();
+	}
+
+	/**
+	 * Calls the Uploader template in a popup
+	 * @return void
+	 */
+	function upload() {
+		require_once( $this->plugin_dir . 'thePlatform-uploader.php' );
 		die();
 	}
 
@@ -95,11 +116,14 @@ class ThePlatform_Plugin {
 	 * Registers javascripts and css
 	 */
 	function register_scripts() {		
-		// wp_register_script('theplatform_js', plugins_url('/js/theplatform.js', __FILE__), array('jquery'));		
-		wp_register_script('bootstrap_js', "//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js", array('jquery'));
-		wp_register_script('localscript_js', plugins_url('/js/localscript.js', __FILE__), array('jquery', 'bootstrap_js'));		
-		wp_register_script('infinitescroll_js', plugins_url('/js/jquery.infinitescroll.min.js', __FILE__), array('jquery'));
+		wp_register_script('theplatform_js', plugins_url('/js/theplatform.js', __FILE__), array('jquery'));
+		wp_register_script('localscript_js', plugins_url('/js/localscript.js', __FILE__), array('jquery'));
 		wp_register_script('mediaview_js', plugins_url('/js/mediaview.js', __FILE__), array('jquery'));
+		wp_register_script('bootstrap_js', plugins_url('/js/bootstrap.min.js', __FILE__), array('jquery'));
+		wp_register_script('pdk_external_controller', "http://pdk.theplatform.com/pdk/tpPdkController.js");
+		wp_register_script('infiniscroll_js', plugins_url('/js/jquery.infinitescroll.min.js', __FILE__), array('jquery'));
+
+		wp_register_script('nprogress_js', plugins_url('/js/nprogress.js', __FILE__), array('jquery'));
 
 		wp_localize_script('theplatform_js', 'theplatform', array(
 			'ajax_url' => admin_url( 'admin-ajax.php' ),
@@ -107,16 +131,17 @@ class ThePlatform_Plugin {
 			'tp_nonce' => wp_create_nonce('theplatform-ajax-nonce')
 		));
 
-		wp_localize_script('localscript_js', 'theplatform', array(
-			'ajax_url' => admin_url( 'admin-ajax.php' ),
-			'plugin_base_url' => plugins_url('images/', __FILE__),
+		wp_localize_script('localscript_js', 'localscript', array(
+			'ajaxurl' => admin_url( 'admin-ajax.php' ),			
 			'tp_nonce' => wp_create_nonce('theplatform-ajax-nonce')
 		));
+
+
 		
-		// wp_register_style('theplatform_css', plugins_url('/css/thePlatform.css', __FILE__ ));		
-		wp_register_style('bootstrap_css', plugins_url("/css/bootstrap.min.css", __FILE__));
-		wp_register_style('localstyle_css', plugins_url('/css/localstyle.css', __FILE__ ), array('bootstrap_css'));
-		// wp_register_style('nprogress_css', plugins_url('/css/nprogress.css', __FILE__ ));
+		wp_register_style('theplatform_css', plugins_url('/css/thePlatform.css', __FILE__ ));
+		wp_register_style('localstyle_css', plugins_url('/css/localstyle.css', __FILE__ ));
+		wp_register_style('bootstrap_tp_css', plugins_url('/css/bootstrap_tp.min.css', __FILE__ ));
+		wp_register_style('nprogress_css', plugins_url('/css/nprogress.css', __FILE__ ));
 	}
 	
 	/**
@@ -127,6 +152,10 @@ class ThePlatform_Plugin {
 		add_media_page('thePlatform', 'thePlatform Video', $tp_editor_cap, 'theplatform-media', array( &$this, 'media_page' ));
 	}
 
+	/**
+	 * Calls the Media Manager template
+	 * @return type
+	 */
 	function media_page() {
 		require_once( dirname( __FILE__ ) . '/thePlatform-media.php' );
 	}
@@ -139,10 +168,14 @@ class ThePlatform_Plugin {
 		add_options_page( 'thePlatform Plugin Settings', 'thePlatform', $tp_admin_cap, 'theplatform', array( &$this, 'admin_page' ) );
 	}
 
+	/**
+	 * Calls the plugin's options page template
+	 * @return type
+	 */
 	function admin_page() {		
 		require_once(dirname(__FILE__) . '/thePlatform-options.php' );	
 	}
-
+	
 	/**
 	 * Adds thePlatform media embed button to the media upload
 	 */
@@ -151,9 +184,11 @@ class ThePlatform_Plugin {
 		$iframe_post_id = (int) ( 0 == $post_ID ? $temp_ID : $post_ID );
 		$title = 'Embed Video from thePlatform';
 		$image_url = plugins_url('/images/embed_button.png', __FILE__);
- 		$site_url = admin_url("/admin-ajax.php?post_id=$iframe_post_id&theplatform=popup&action=theplatform_embed&TB_iframe=true&width=720"); 
-		echo '<a href="' . esc_url($site_url) . '&id=add_form" class="thickbox button" title="' . esc_attr($title) . '"><img src="' . esc_url($image_url) . '" alt="' . esc_attr($title) . '" width="20" height="20" />thePlatform</a>';
-	}
+ 		$site_url = admin_url("/admin-ajax.php?post_id=$iframe_post_id&action=theplatform_embed"); 
+		echo '<a href="#" class="button tp-embed" title="' . esc_attr($title) . '"><div id="tp-embed-dialog"></div><img src="' . esc_url($image_url) . '" alt="' . esc_attr($title) . '" width="20" height="20" />thePlatform</a>';
+
+		echo '<script type="text/javascript">jQuery(".tp-embed").click(function() {jQuery("#tp-embed-dialog").html(\'<iframe src="/wp-tp/wp-admin/admin-ajax.php?action=theplatform_embed" height="100%" width="100%">\').dialog({dialogClass: "wp-dialog", modal: true, resizable: true, minWidth: 1024, width: 1200, height: 1024}).css("overflow-y","hidden");});</script>';				
+	}	
 	
 	/**
 	 * Shortcode Callback
@@ -171,7 +206,8 @@ class ThePlatform_Plugin {
 			'mute' => '',
 			'autoplay' => '',
 			'loop' => '',
-			'form' => ''
+			'form' => '',
+			'params' => ''
 			), $atts
 		));
 
@@ -210,28 +246,22 @@ class ThePlatform_Plugin {
 		if ( empty( $player ) )
 			return '<!--Syntax Error: Required Player parameter missing. -->';
 
+
 		if ( !is_feed() ) {
 			$preferences = get_option('theplatform_preferences_options');
 			$accountPID = $preferences['mpx_account_pid'];
-			$response = $this->get_embed_shortcode($accountPID, $media, $player, $width, $height, $loop, $autoplay, $mute, $form);
-			
-			if ( is_wp_error($response) ) {
-				$output = $response->get_error_message();;
-			} else {
-				$output = $response;
-			}
+			$output = $this->get_embed_shortcode($accountPID, $media, $player, $width, $height, $loop, $autoplay, $mute, $form, $params);
+			$output = apply_filters('tp_embed_code', $output);							
 		} else {
 			$output = '[Sorry. This video cannot be displayed in this feed. <a href="'.get_permalink().'">View your video here.]</a>';
 		}
 		
-		$output = apply_filter('tp_embed_code', $output);
-
 		return $output;
 	}
 
 	/**
 	 * Called by the plugin shortcode callback function to construct a media embed iframe.
-	 *
+	 * 
 	 * @param string $account_id Account of the user embedding the media asset
 	 * @param string $media_id Identifier of the media object to embed
 	 * @param string $player_id Identifier of the player to display the embedded media asset in
@@ -242,7 +272,7 @@ class ThePlatform_Plugin {
 	 * @param boolean $mute Whether or not to mute the audio channel of the embedded media asset
 	 * @return string An iframe tag sourced from the selected media embed URL
 	*/ 
-	function get_embed_shortcode($accountPID, $releasePID, $playerPID, $player_width, $player_height, $loop = false, $autoplay = false, $mute = false, $form = "iframe") {
+	function get_embed_shortcode($accountPID, $releasePID, $playerPID, $player_width, $player_height, $loop = false, $autoplay = false, $mute = false, $form = "iframe", $params) {
 
 		if (!$this->preferences)
 			$this->preferences = get_option($this->preferences_options_key);
@@ -256,7 +286,7 @@ class ThePlatform_Plugin {
 		
 		$url = 'http://player.theplatform.com/p/' . urlencode($accountPID) . '/' . urlencode($playerPID);
 
-		$url = apply_filter('tp_embed_url', $url);
+		$url = apply_filters('tp_base_embed_url', $url);
 		
 		if ($type == 'embed') {
 			$url .= '/embed';
@@ -276,79 +306,30 @@ class ThePlatform_Plugin {
 		if ( $mute != "false" ) {
 			$url .= "&mute=true";
 		}
+
+		if ($params !== '')
+			$url .= '&' . $params;
 		
+		$url = apply_filters('tp_full_embed_url', $url);
+
 		if ($form == "script") {		
 			return '<div style="width:' . (int)$player_width . 'px; height:' . (int)$player_height . 'px"><script type="text/javascript" src="' . esc_url($url . "&form=javascript") . '"></script></div>';
 		}
 		else { //Assume iframe			
 			return '<iframe src="' . esc_url($url) . '" height=' . (int)$player_height . ' width=' . (int)$player_width . '></iframe>';
-		}
-
+		}	
 	}
-
 }
 
 // Instantiate thePlatform plugin on WordPress init
 add_action('init', array( 'ThePlatform_Plugin', 'init' ) );
-
-/**
- *	Catch JSON decode errors
- */
-function decode_json_from_server($input, $assoc, $die_on_error = TRUE) {
-
-
-		$response = json_decode(wp_remote_retrieve_body($input), $assoc);		
-
-		if (!$die_on_error)
-			return $response;
-
-		if (is_null($response) && wp_remote_retrieve_response_code($input) != "200") {						
-			wp_die('<p>'.__('There was an error getting data from MPX, if the error persists please contact thePlatform.').'</p>');
-		}
-
-		if (is_null($response) && wp_remote_retrieve_response_code($input) == "200") {	
-			return $response;
-		}
-
-		if ( is_wp_error($response) ) {
-			wp_die('<p>'.__('There was an error getting data from MPX, if the error persists please contact thePlatform. ' . $response->get_error_message()).'</p>');
-				
-		}
-
-		if (array_key_exists('isException', $response)) {
-			wp_die('<p>'.__('There was an error getting data from MPX, if the error persists please contact thePlatform. ' . $response['description']).'</p>');			
-		}
-
-		return $response;
-		
-}
 add_action('wp_ajax_verify_account', 'verify_account_settings');
-
-	/**
-	 *	AJAX callback for account verification button
-	 */
-	function verify_account_settings() {
-		//User capability check
-		check_admin_referer('theplatform-ajax-nonce'); 	
-		$hash = $_POST['auth_hash'];
-
-		$response = ThePlatform_API_HTTP::get(TP_API_SIGNIN_URL, array('headers' => array('Authorization' => 'Basic ' . $hash)));
-	
-		$payload = decode_json_from_server($response, TRUE);
-
-		if (!array_key_exists('isException', $payload)) {						
-			$account_is_verified = TRUE;		
-			echo "success";
-		} else {						
-			$account_is_verified = FALSE;
-			echo "failed";
-		}				
-	
-		die();		
-	}
-
 add_action('admin_init', 'register_plugin_settings' );
 
+/**
+ * Registers initial plugin settings during initalization
+ * @return type
+ */
 function register_plugin_settings() {
 	$preferences_options_key = 'theplatform_preferences_options';
 	$metadata_options_key = 'theplatform_metadata_options';
@@ -358,53 +339,3 @@ function register_plugin_settings() {
 	register_setting( $upload_options_key, $upload_options_key, 'dropdown_options_validate'); 
 }
 
-function dropdown_options_validate($input) {	
-	foreach ($input as $key => $value) {	
-		if ($value != "allow" && $value != "omit") {
-			$input[$key] = "allow";
-		}			
-	}
-	return $input;
-}
-function connection_options_validate($input) {	
-	if ( ! is_array( $input ) ) 
-	{
-		return array(
-			'mpx_account_id' => '',
-			'mpx_username' => 'mpx/',				
-			'mpx_password' => '',
-			'videos_per_page' => 16,
-			'default_sort' => 'id',
-			'video_type' => 'embed',				
-			'mpx_account_pid' => '',
-			'default_player_name' => '',
-			'default_player_pid' => '',
-			'mpx_server_id' => '',
-			'default_publish_id' => '',
-			'user_id_customfield' => '',
-			'filter_by_user_id' => 'FALSE'
-		);;
-	}
-
-	if (strpos($input['mpx_account_id'], '|') !== FALSE) {
-		$ids = explode('|', $input['mpx_account_id']);
-		$input['mpx_account_id'] = $ids[0];
-		$input['mpx_account_pid'] = $ids[1];
-	}
-
-	if (strpos($input['default_player_name'], '|') !== FALSE) {
-		$ids = explode('|', $input['default_player_name']);
-		$input['default_player_name'] = $ids[0];
-		$input['default_player_pid'] = $ids[1];
-	}
-
-	foreach ($input as $key => $value) {
-		if ($key == 'videos_per_page') {
-			$input[$key] = intval($value);
-		}
-		else {
-			$input[$key] = strval($value);
-		}
-	}
-	return $input;
-}	
