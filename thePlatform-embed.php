@@ -9,7 +9,7 @@
     <meta name="tp:EnableExternalController" content="true" />
 <?php 
 
-$IS_EMBED = $_GET['page'] === 'theplatform-media' ? "false" : "true";
+
 
 if (!class_exists( 'ThePlatform_API' )) {
 	require_once( dirname(__FILE__) . '/thePlatform-API.php' );
@@ -62,6 +62,19 @@ $preferences = get_option('theplatform_preferences_options');
 if (strcmp($preferences['mpx_account_id'], "") == 0) {			
 			wp_die('MPX Account ID is not set, please configure the plugin before attempting to manage media');
 }
+
+//Embed only stuff
+$players = $tp_api->get_players();
+$IS_EMBED = strpos($_SERVER['QUERY_STRING'], '&embed=true') !== false ? true : false;
+
+function writePlayers($players, $preferences) {		
+	$html = '<p class="navbar-text sort-bar-text">Player:</p><form class="navbar-form navbar-left sort-bar-nav" role="sort"><select id="selectpick-player" class="form-control">';
+	foreach ($players as $player) {																		
+		$html .= '<option value="' . esc_attr($player['pid']) . '"' . selected($player['pid'], $preferences['default_player_pid'], false) . '>' . esc_html($player['title']) . '</option>';      								
+	}
+    $html .= '</select></form>';	
+	echo $html;
+}
 	
 /*
  * Load scripts and styles 
@@ -94,8 +107,8 @@ wp_print_styles('jquery-ui-dialog');
 <div class="tp">
 	<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
         <div class="row">
-        <div class="navbar-header">
-            <a class="navbar-brand" href="#">thePlatform</a>
+        <div class="navbar-header" style="margin-left: 15px">
+            <a class="navbar-brand" href="#"><img height="25px" width="25px" src="<?php echo plugins_url('/images/embed_button.png', __FILE__);?>"> thePlatform</a>
         </div>            
             <form class="navbar-form navbar-left" role="search" onsubmit="return false;"><!--TODO: Add seach functionality on Enter -->
                 <div class="form-group">
@@ -113,10 +126,24 @@ wp_print_styles('jquery-ui-dialog');
             </form>
 
             <div id="my-content" class="navbar-left">
-                <p class="navbar-text sort-bar-text"><input type="checkbox"> My Content</p>
+                <p class="navbar-text sort-bar-text">
+                <!-- Render My Content checkbox -->
+    				<?php if ($preferences['user_id_customfield'] !== '') { ?>
+						<input type="checkbox" id="my-content-cb"
+						<?php 
+									checked($preferences['filter_by_user_id'] === 'TRUE'); 									
+						?>
+								/>
+						<label for="my-content-cb" style="font-weight: normal">My Content</label>													
+                	<?php } ?>
+                <!-- End My Content Checkbox -->	
+                </p>
             </div>
+            <?php if ($IS_EMBED) writePlayers($players, $preferences); ?>    
             <img id="load-overlay" src="<?php echo plugins_url('/images/loading.gif', __FILE__)?>" class="loadimg navbar-right">
-        </div>       
+        </div>   
+
+        
     </nav>
 
     <div class="fs-main">
@@ -138,7 +165,7 @@ wp_print_styles('jquery-ui-dialog');
             <div id="info-affix" class="scrollable affix-top">
                 <div id="info-player-container">
                         <div id="modal-player" class="marketplacePlayer">
-                            <iframe id="player" width="320px" height="180px" frameBorder="0" seamless="seamless" src="http://player.theplatform.com/p/van-dev/cHE28glAlb_M/embed/"
+                            <iframe id="player" width="320px" height="180px" frameBorder="0" seamless="seamless" src="http://player.theplatform.com/p/<?php echo $preferences['mpx_account_pid'] . '/' .  $preferences['default_player_pid'];?>/embed/"
                                     webkitallowfullscreen mozallowfullscreen msallowfullscreen allowfullscreen></iframe>
                         </div>
                     <br>

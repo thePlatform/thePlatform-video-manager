@@ -269,7 +269,7 @@ class ThePlatform_Options {
 				if ($this->account_is_verified) {					
 					$subaccounts = $this->tp_api->get_subaccounts();
 					foreach ($subaccounts as $account) {
-						$html .= '<option value="' . esc_attr($account['id']) . '|' . esc_attr($account['placcount$pid']) . '"' . selected( $opts[$field], $account['id'], false) . '>' . esc_html($account['title']) . '</option>';
+						$html .= '<option value="' . esc_attr($account['id']) . '|' . esc_attr($account['pid']) . '"' . selected( $opts[$field], $account['id'], false) . '>' . esc_html($account['title']) . '</option>';
 					}
 				}	
 
@@ -311,7 +311,7 @@ class ThePlatform_Options {
 				if ($this->preferences['mpx_account_id'] !== '') {
 					$players = $this->tp_api->get_players();
 					foreach ($players as $player) {
-						$html .= '<option value="' . esc_attr($player['id']) . '|' . esc_attr($player['plplayer$pid']) . '"' . selected( $opts[$field], $player['id'], false) . '>' . esc_html($player['title']) . '</option>';
+						$html .= '<option value="' . esc_attr($player['id']) . '|' . esc_attr($player['pid']) . '"' . selected( $opts[$field], $player['id'], false) . '>' . esc_html($player['title']) . '</option>';
 					}
 				}
 

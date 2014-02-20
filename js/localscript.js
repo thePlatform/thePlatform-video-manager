@@ -17,7 +17,8 @@ var mpxHelper = {
             action: 'get_videos',
             range: range,
             query: localStorage.queryString,
-            fields: localStorage.fields
+            fields: localStorage.fields,
+            myContent: jQuery('#my-content-cb').prop('checked')
         };
     
         jQuery.post(ajaxurl, data, function(resp){
@@ -45,10 +46,7 @@ var mpxHelper = {
             var sortValue = data.sort + (data.desc ? '|desc' : '');
             queryParams = queryParams.appendParams({sort: sortValue});
         }
-
-        if (data.myContent &&  (localStorage.provider != 'undefined')) // There should be a better way to validate.
-            queryParams = queryParams.appendParams({byCustomValue: encodeURIComponent('{source}{'+localStorage.provider+'}')});
-
+    
         if (data.selectedGuids)
             queryParams = queryParams.appendParams({byGuid: data.selectedGuids});
 

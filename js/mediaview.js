@@ -185,7 +185,7 @@ function refreshView() {
         category: localStorage.selectedCategory,
         sort: getSort(),
         desc: jQuery('#sort-desc').data('sort'),
-        myContent: jQuery('input:checkbox', '#my-content').prop('checked'),
+        myContent: jQuery('#my-content-cb').prop('checked'),
         selectedGuids: getSelectedGuids()
     };
 
@@ -293,7 +293,10 @@ function addMediaObject(media) {
     if (document.getElementById(media.guid) != null) //Can't use jquery because of poor guid format convention.
     return;
 
-    var newMedia = '<div class="media" id="' + media.guid + '"><img class="media-object pull-left thumb-img" data-src="holder.js/128x72" alt="128x72" src="' + media.defaultThumbnailUrl + '">' + '<button class="btn btn-xs media-embed pull-right"><></button>' + '<div class="media-body">' + '<div id="head"><strong class="media-heading"></strong></div>' + '<div id="source"></div>' + '<div id="desc"></div>' + '</div>' + '</div>';
+    var newMedia = '<div class="media" id="' + media.guid + '"><img class="media-object pull-left thumb-img" data-src="holder.js/128x72" alt="128x72" src="' + media.defaultThumbnailUrl + '">'
+    if (location.search.indexOf('&embed=true') != -1)
+        newMedia += '<button class="btn btn-xs media-embed pull-right" data-toggle="tooltip" data-placement="bottom" title="Embed this Media"><></button>';
+    newMedia += '<div class="media-body">' + '<div id="head"><strong class="media-heading"></strong></div>' + '<div id="source"></div>' + '<div id="desc"></div>' + '</div>' + '</div>';
 
     newMedia = jQuery(newMedia);
 
@@ -315,11 +318,17 @@ function addMediaObject(media) {
         newMedia.data('release', previewUrl.pop())
     else
         return;
-    
+    jQuery('.media-embed', newMedia).hover(function() {
+        jQuery(this).tooltip();
+    }, function() {
+        jQuery(this).attr('title', 'Embed this Media').tooltip('fixTitle');
+    });
+
     jQuery('.media-embed', newMedia).click(function() {
 
-        var player = jQuery('#embed_player').val();
-    
+        var player = jQuery('#selectpick-player').val();
+        jQuery(this).attr('title', 'Media Embedded').tooltip('fixTitle').tooltip('show');
+
         if (newMedia != '') {
             var shortcode = '[theplatform media="' + newMedia.data('release') + '" player="' + player + '"]';
         
@@ -339,19 +348,19 @@ function addMediaObject(media) {
 
     });
 
-    //Handle showing popovers when clicking <>, added some logic to hide all others etc.
-    jQuery('.btn', newMedia).click(function () {
-        var $this = jQuery(this);
-        var media = jQuery(this).parent();
-        var $popover = jQuery(jQuery('.popover', media)[0]);
+    // //Handle showing popovers when clicking <>, added some logic to hide all others etc.
+    // jQuery('.btn', newMedia).click(function () {
+    //     var $this = jQuery(this);
+    //     var media = jQuery(this).parent();
+    //     var $tooltip = jQuery(jQuery('.tooltip', media)[0]);
 
-        if ($popover && $popover.hasClass('in')) $this.popover('hide');
-        else {
-            hideAllMediaPopover(media.attr('id'));
-            $this.popover('show');
-        }
+    //     if ($tooltip && $tooltip.hasClass('in')) $this.tooltip('hide');
+    //     else {
+    //         hideAllMediaPopover(media.attr('id'));
+    //         $this.tooltip('show');
+    //     }
 
-    });
+    // });
 
     jQuery('#media-list').append(newMedia);
 

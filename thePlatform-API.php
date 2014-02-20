@@ -492,7 +492,11 @@ class ThePlatform_API {
 
 				
 		$url = TP_API_MEDIA_ENDPOINT . '&count=true&byAvailabilityState=available&byApproved=true&count=true&types=variable&byContent=byReleases=byDelivery%253Dstreaming&fields=' . $_POST['fields'] . '&token=' . $token . '&range=' . $_POST['range'];
-				
+
+		if (!empty($_POST['myContent']) && $_POST['myContent'] === 'true') {
+			$url .= '&byCustomValue=' . urlencode('{' . $this->preferences['user_id_customfield'] . '}{' . wp_get_current_user()->ID . '}');
+		}	
+
 		if (!empty($this->preferences['mpx_account_id'])) {
 			$url .= '&account=' . urlencode($this->preferences['mpx_account_id']);
 		}
@@ -506,7 +510,7 @@ class ThePlatform_API {
 		
 		if (!empty($sort)) {
 			$url .= '&sort=' . $sort;
-		}		
+		}
 
 		$response = ThePlatform_API_HTTP::get($url);		
 		echo(wp_remote_retrieve_body($response));
