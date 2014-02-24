@@ -43,7 +43,7 @@ jQuery(document).ready(function () {
         onBottom: function (callback) {
             jQuery('#load-overlay').show(); // show loading before we call getFeed
             var theRange = parseInt(localStorage.feedEndRange);
-            theRange = (theRange + 1) + '-' + (theRange + 10);
+            theRange = (theRange + 1) + '-' + (theRange + 20);
             mpxHelper.getFeed(theRange, function (resp) {
                 if (resp['isException']) {
                     jQuery('#load-overlay').hide();

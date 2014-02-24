@@ -184,10 +184,10 @@ class ThePlatform_Plugin {
 		$iframe_post_id = (int) ( 0 == $post_ID ? $temp_ID : $post_ID );
 		$title = 'Embed Video from thePlatform';
 		$image_url = plugins_url('/images/embed_button.png', __FILE__);
- 		$site_url = admin_url("/admin-ajax.php?post_id=$iframe_post_id&action=theplatform_embed&embed=true"); 
+ 		$site_url = admin_url("admin-ajax.php?post_id=$iframe_post_id&action=theplatform_embed&embed=true"); 
 		echo '<a href="#" class="button tp-embed" title="' . esc_attr($title) . '"><div id="tp-embed-dialog"></div><img src="' . esc_url($image_url) . '" alt="' . esc_attr($title) . '" width="20" height="20" />thePlatform</a>';
 
-		echo '<script type="text/javascript">jQuery(".tp-embed").click(function() {jQuery("#tp-embed-dialog").html(\'<iframe src="/wp-tp/wp-admin/admin-ajax.php?action=theplatform_embed&embed=true" height="100%" width="100%">\').dialog({dialogClass: "wp-dialog", modal: true, resizable: true, minWidth: 1024, width: 1200, height: 1024}).css("overflow-y","hidden");});</script>';				
+		echo '<script type="text/javascript">jQuery(".tp-embed").click(function() {jQuery("#tp-embed-dialog").html(\'<iframe src="' . $site_url . '" height="100%" width="100%">\').dialog({dialogClass: "wp-dialog", modal: true, resizable: true, minWidth: 1024, width: 1200, height: 1024}).css("overflow-y","hidden");});</script>';				
 	}	
 	
 	/**
