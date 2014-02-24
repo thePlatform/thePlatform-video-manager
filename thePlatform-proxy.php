@@ -14,6 +14,8 @@ add_action('wp_ajax_uploadStatus', 'MPXProxy::uploadStatus');
 add_action('wp_ajax_publishMedia', 'MPXProxy::publishMedia');
 add_action('wp_ajax_publishStatus', 'MPXProxy::publishStatus');
 add_action('wp_ajax_cancelUpload', 'MPXProxy::cancelUpload');
+add_action('wp_ajax_uploadFragment', 'MPXProxy::uploadFragment');
+add_action('wp_ajax_establishSession', 'MPXProxy::establishSession');
 
 /**
  * This class is responsible for uploading and publishing Media to MPX
@@ -126,7 +128,7 @@ class MPXProxy {
 			$url .= '&byTitle=' . urlencode($_POST['profile']);
 		$url .= '&token=' . $_POST['token'];							
 
-		$response = ThePlatform_API_HTTP::get($url);
+		$response = ThePlatform_API_HTTP::get($url);		
 
 		if ( is_wp_error($response) ) {
 			$ret['success'] = 'false';
@@ -140,7 +142,7 @@ class MPXProxy {
 			$ret['code'] = $response['status']['http_code'];
 		} else {
 			
-
+			
 			$content = decode_json_from_server($response, TRUE);
 		
 			if ($content['entryCount'] == 0) {
@@ -158,9 +160,9 @@ class MPXProxy {
 			$url .= '&account=' . urlencode($_POST['account_id']); 
 			$url .= '&_mediaId=' . urlencode($mediaId);
 			$url .= '&_profileId=' . urlencode($profileId); 
-		
+
 			$response = ThePlatform_API_HTTP::get($url);
-		
+							
 			if ( is_wp_error($response) ) {
 				$ret['success'] = 'false';
 				$ret['code'] = $response->get_error_message();
@@ -279,6 +281,49 @@ class MPXProxy {
 		}
 	
 		echo json_encode($ret); 
+		die();
+	}
+
+	/**
+	 * Retrieve the current publishing status of a newly uploaded media asset
+	 *
+	 * @return mixed JSON response or instance of WP_Error
+	 */
+	public static function establishSession() {
+		MPXProxy::check_nonce_and_permissions();
+
+		$ret = array();
+
+		$url = $_POST['url'];
+	
+		$response = ThePlatform_API_HTTP::get($url);
+		
+		var_dump($response);	
+		die();
+	}
+
+	/**
+	 * Retrieve the current publishing status of a newly uploaded media asset
+	 *
+	 * @return mixed JSON response or instance of WP_Error
+	 */
+	public static function uploadFragment() {
+		echo "hi";
+		die();
+		MPXProxy::check_nonce_and_permissions();
+
+		$ret = array();
+
+		$url = $_POST['url'];
+		
+		$data = array(
+			'data' => $_POST['fragment'],			
+			);
+
+	echo "hi";			
+		$response = ThePlatform_API_HTTP::put($url, $data);
+		
+		echo "hi";			
 		die();
 	}
 }

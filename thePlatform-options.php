@@ -10,7 +10,7 @@ class ThePlatform_Options {
 	/*
 	 * WP Option key
 	 */
-	private $plugin_options_key = 'theplatform';
+	private $plugin_options_key = 'theplatform-settings';
 	
 	/*
 	 * An array of tabs representing the admin settings interface.
@@ -201,9 +201,9 @@ class ThePlatform_Options {
 		$upload_fields = array(
 			'title',			
 			'description',			
-			'media$categories',
+			'categories',
 			'author',
-			'media$keywords',
+			'keywords',
 			'link',
 			'guid'
 		);

@@ -108,7 +108,7 @@ class ThePlatform_Plugin {
 	 * @return void
 	 */
 	function upload() {
-		require_once( $this->plugin_dir . 'thePlatform-uploader.php' );
+		require_once( $this->plugin_dir . 'thePlatform-upload-window.php' );
 		die();
 	}
 
@@ -117,6 +117,8 @@ class ThePlatform_Plugin {
 	 */
 	function register_scripts() {		
 		wp_register_script('theplatform_js', plugins_url('/js/theplatform.js', __FILE__), array('jquery'));
+		wp_register_script('theplatform_uploader_js', plugins_url('/js/theplatform-uploader.js', __FILE__), array('jquery'));
+		wp_register_script('uploading_js', plugins_url('/js/uploading.js', __FILE__), array('jquery'));
 		wp_register_script('localscript_js', plugins_url('/js/localscript.js', __FILE__), array('jquery'));
 		wp_register_script('mediaview_js', plugins_url('/js/mediaview.js', __FILE__), array('jquery'));
 		wp_register_script('bootstrap_js', plugins_url('/js/bootstrap.min.js', __FILE__), array('jquery'));
@@ -128,12 +130,12 @@ class ThePlatform_Plugin {
 		wp_localize_script('theplatform_js', 'theplatform', array(
 			'ajax_url' => admin_url( 'admin-ajax.php' ),
 			'plugin_base_url' => plugins_url('images/', __FILE__),
-			'tp_nonce' => wp_create_nonce('theplatform-ajax-nonce')
+			'tp_nonce' => wp_create_nonce('theplatform-ajax-nonce')			
 		));
 
 		wp_localize_script('localscript_js', 'localscript', array(
 			'ajaxurl' => admin_url( 'admin-ajax.php' ),			
-			'tp_nonce' => wp_create_nonce('theplatform-ajax-nonce')
+			'tp_nonce' => wp_create_nonce('theplatform-ajax-nonce')			
 		));
 
 
@@ -148,8 +150,9 @@ class ThePlatform_Plugin {
 	 * Add media page (library view, detail view, media uploader)
 	 */
 	function add_media_page() {
-		$tp_editor_cap = apply_filters('tp_editor_cap', 'upload_files');
-		add_media_page('thePlatform', 'thePlatform Video', $tp_editor_cap, 'theplatform-media', array( &$this, 'media_page' ));
+		// $tp_editor_cap = apply_filters('tp_editor_cap', 'upload_files');
+		// add_media_page('thePlatform', 'thePlatform Video', $tp_editor_cap, 'theplatform-media', array( &$this, 'media_page' ));
+		// add_media_page('thePlatform', 'thePlatform Video Upload', $tp_editor_cap, 'theplatform-uploader', array( &$this, 'upload_page' ));
 	}
 
 	/**
@@ -161,11 +164,26 @@ class ThePlatform_Plugin {
 	}
 
 	/**
+	 * Calls the Media Manager template
+	 * @return type
+	 */
+	function upload_page() {
+		require_once( dirname( __FILE__ ) . '/thePlatform-uploader.php' );
+	}
+
+	/**
 	 * Add admin page 
 	 */
 	function add_admin_page() {
+		
 		$tp_admin_cap = apply_filters('tp_admin_cap', 'manage_options');
-		add_options_page( 'thePlatform Plugin Settings', 'thePlatform', $tp_admin_cap, 'theplatform', array( &$this, 'admin_page' ) );
+		$tp_editor_cap = apply_filters('tp_editor_cap', 'upload_files');
+		$tp_uploader_cap = apply_filters('tp_editor_cap', 'upload_files');
+		$slug = 'thePlatform';		
+		add_menu_page('thePlatform', 'thePlatform', $tp_editor_cap, $slug, array( &$this, 'media_page' ), 'dashicons-video-alt3', 11);
+		add_submenu_page($slug, 'thePlatform Video Browser', 'Browse MPX Media', $tp_editor_cap, $slug, array( &$this, 'media_page' ));
+		add_submenu_page($slug, 'thePlatform Video Uploader', 'Upload Media to MPX', $tp_uploader_cap, 'theplatform-uploader', array( &$this, 'upload_page' ));
+		add_submenu_page($slug, 'thePlatform Plugin Settings', 'Settings', $tp_admin_cap, 'theplatform-settings', array( &$this, 'admin_page' ) );
 	}
 
 	/**
@@ -316,7 +334,7 @@ class ThePlatform_Plugin {
 			return '<div style="width:' . (int)$player_width . 'px; height:' . (int)$player_height . 'px"><script type="text/javascript" src="' . esc_url($url . "&form=javascript") . '"></script></div>';
 		}
 		else { //Assume iframe			
-			return '<iframe src="' . esc_url($url) . '" height=' . (int)$player_height . ' width=' . (int)$player_width . '></iframe>';
+			return '<iframe src="' . esc_url($url) . '" height=' . (int)$player_height . ' width=' . (int)$player_width . ' frameBorder="0" seamless="seamless" allowFullScreen></iframe>';
 		}	
 	}
 }

@@ -5,6 +5,14 @@ jQuery(document).ready(function () {
         container.style.height = window.parent.innerHeight;
 
     $pdk.bind("player");
+    $pdk.controller.addEventListener('OnPlayerLoaded', function() {
+        //Select the first one on the page.
+        setTimeout(function() {
+            if (jQuery('#media-list').children().length < 2) 
+                jQuery('.media', '#media-list').click();
+        }, 500)
+        
+    })
     jQuery('#load-overlay').hide();
     //Parse params and basic setup.
     var queryParams = mpxHelper.getParameters();
@@ -314,10 +322,10 @@ function addMediaObject(media) {
     newMedia.data('guid', media.guid);
     newMedia.data('media', media);
     var previewUrl = mpxHelper.extractVideoUrlfromFeed(media);
-    if (previewUrl.length > 0) 
-        newMedia.data('release', previewUrl.pop())
-    else
-        return;
+    if (previewUrl.length == 0 && localStorage.isEmbed == "1")
+        return; 
+    
+    newMedia.data('release', previewUrl.pop()) 
     jQuery('.media-embed', newMedia).hover(function() {
         jQuery(this).tooltip();
     }, function() {
@@ -348,24 +356,9 @@ function addMediaObject(media) {
 
     });
 
-    // //Handle showing popovers when clicking <>, added some logic to hide all others etc.
-    // jQuery('.btn', newMedia).click(function () {
-    //     var $this = jQuery(this);
-    //     var media = jQuery(this).parent();
-    //     var $tooltip = jQuery(jQuery('.tooltip', media)[0]);
-
-    //     if ($tooltip && $tooltip.hasClass('in')) $this.tooltip('hide');
-    //     else {
-    //         hideAllMediaPopover(media.attr('id'));
-    //         $this.tooltip('show');
-    //     }
-
-    // });
-
     jQuery('#media-list').append(newMedia);
 
-    //Select the first one on the page.
-    if (jQuery('#media-list').children().length < 2) jQuery('.media', '#media-list').click();
+    
 
 }
 

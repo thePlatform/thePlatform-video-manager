@@ -36,15 +36,15 @@ define('TP_API_WORKFLOW_BASE_URL', 'http://data.workflow.theplatform.com/workflo
 define('TP_API_WORKFLOW_PROFILE_RESULT_ENDPOINT', TP_API_WORKFLOW_BASE_URL . 'ProfileResult?schema=1.0&form=cjson');
 
 // Publish Endpoint
-define('TP_API_PUBLISH_BASE_URL', 'http://publish.theplatform.com/web/Publish/publish?schema=1.2&form=cjson');
+define('TP_API_PUBLISH_BASE_URL', 'http://publish.theplatform.com/web/Publish/publish?schema=1.2&form=json');
 
 // Publish Data Service URLs
 define('TP_API_PUBLISH_DATA_BASE_URL', 'http://data.publish.theplatform.com/publish/data/');
-define('TP_API_PUBLISH_PROFILE_ENDPOINT', TP_API_PUBLISH_DATA_BASE_URL . 'PublishProfile?schema=1.5.0&form=cjson');
+define('TP_API_PUBLISH_PROFILE_ENDPOINT', TP_API_PUBLISH_DATA_BASE_URL . 'PublishProfile?schema=1.5.0&form=json');
 
 // FMS URLs
 define('TP_API_FMS_BASE_URL', 'http://fms.theplatform.com/web/FileManagement/');
-define('TP_API_FMS_GET_UPLOAD_URLS_ENDPOINT', TP_API_FMS_BASE_URL . 'getUploadUrls?schema=1.4&form=cjson');
+define('TP_API_FMS_GET_UPLOAD_URLS_ENDPOINT', TP_API_FMS_BASE_URL . 'getUploadUrls?schema=1.4&form=json');
 
 /**
  * Wrapper class around Wordpress HTTP methods
@@ -311,35 +311,26 @@ class ThePlatform_API {
 			$fieldKeys = implode('|', array_keys($custom_fields));
 			$customfield_info = $this->get_customfield_info($fieldKeys);
 			foreach ($customfield_info['entries'] as $value) {
-				if ($value['plfield$namespacePrefix'] !== '') {
-					$custom_field_ns[$value['plfield$namespacePrefix']] = $value['plfield$namespace'];
-					$custom_field_values[$value['plfield$namespacePrefix'] . '$' . $value['plfield$fieldName']] = $custom_fields[$value['plfield$fieldName']]; 	
+				if ($value['namespacePrefix'] !== '') {
+					$custom_field_ns[$value['namespacePrefix']] = $value['namespace'];
+					$custom_field_values[$value['namespacePrefix'] . '$' . $value['fieldName']] = $custom_fields[$value['fieldName']]; 	
 				}
 			}
 		}		
 		
 		$payload = array_merge(array(
-			'$xmlns' => array_merge(array(
-				"dcterms" => "http://purl.org/dc/terms/",
-				"media" => "http://search.yahoo.com/mrss/",
-				"pl" => "http://xml.theplatform.com/data/object",
-				"pla" => "http://xml.theplatform.com/data/object/admin",
-				"plmedia" => "http://xml.theplatform.com/media/data/Media",
-				"plfile" => "http://xml.theplatform.com/media/data/MediaFile",
-				"plrelease" => "http://xml.theplatform.com/media/data/Release",
-				"plcategory" => "http://xml.theplatform.com/media/data/Category"
-				),
-				$custom_field_ns)
+			'$xmlns' => array_merge(array(),$custom_field_ns)
 			), 
 			array_merge($fields, $custom_field_values)
 		);
-					
+						
 		$url = TP_API_MEDIA_ENDPOINT;
 		$url .= '&account=' .  urlencode($this->preferences['mpx_account_id']);
-		$url .= '&token=' . $token;
+		$url .= '&token=' . $token;		
+		
 		
 		$response = ThePlatform_API_HTTP::post($url, json_encode($payload, JSON_UNESCAPED_SLASHES), true);		
-		
+				
 		$data = decode_json_from_server($response, TRUE);			
 			
 		return $data;
@@ -380,12 +371,12 @@ class ThePlatform_API {
 			$this->preferences = get_option($this->preferences_options_key);
 	
 		$url =  TP_API_FMS_GET_UPLOAD_URLS_ENDPOINT;
-		$url .= '&token=' . $token;
+		$url .= '&token=' .  urlencode($token);
 		$url .= '&account=' . urlencode($this->preferences['mpx_account_id']);
 		$url .= '&_serverId=' . urlencode($server_id);		
 
 		$response = ThePlatform_API_HTTP::get($url);
-				
+						
 		$data = decode_json_from_server($response, TRUE);	
 		
 		return $data['getUploadUrlsResponse'][0];
@@ -417,18 +408,18 @@ class ThePlatform_API {
 			);		
 
 		$token = $this->mpx_signin();
-			
+		
 		$response = $this->create_media_placeholder($args, $token);
-
+			
 		$media_guid = $response['guid'];
 		$media_id = $response['id'];
 		
 		$format = $this->get_format($args['filetype']);
-			
+
 		$upload_server_id = $this->preferences['mpx_server_id'];
 	
 		$upload_server_base_url = $this->get_upload_urls($upload_server_id, $token); 
-
+		
 		if ( is_wp_error( $upload_server_base_url ) ) {
 			return $upload_server_base_url;
 		}
@@ -490,8 +481,11 @@ class ThePlatform_API {
 
 		$token = $this->mpx_signin();
 
-				
-		$url = TP_API_MEDIA_ENDPOINT . '&count=true&byAvailabilityState=available&byApproved=true&count=true&types=variable&byContent=byReleases=byDelivery%253Dstreaming&fields=' . $_POST['fields'] . '&token=' . $token . '&range=' . $_POST['range'];
+		$url = TP_API_MEDIA_ENDPOINT . '&count=true&fields=' . $_POST['fields'] . '&token=' . $token . '&range=' . $_POST['range'];
+
+		if ($_POST['isEmbed'] === "1") {
+			$url .= '&byAvailabilityState=available&byApproved=true&count=true&types=variable&byContent=byReleases=byDelivery%253Dstreaming';
+		}
 
 		if (!empty($_POST['myContent']) && $_POST['myContent'] === 'true') {
 			$url .= '&byCustomValue=' . urlencode('{' . $this->preferences['user_id_customfield'] . '}{' . wp_get_current_user()->ID . '}');
@@ -515,12 +509,7 @@ class ThePlatform_API {
 		$response = ThePlatform_API_HTTP::get($url);		
 		echo(wp_remote_retrieve_body($response));
 		$this->mpx_signout($token);
-		die();		
-		
-		// $ret = decode_json_from_server($response, TRUE);
-		
-
-		return $ret;
+		die();						
 	}
 	
 	/**

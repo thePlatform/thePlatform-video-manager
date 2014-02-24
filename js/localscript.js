@@ -18,6 +18,7 @@ var mpxHelper = {
             range: range,
             query: localStorage.queryString,
             fields: localStorage.fields,
+            isEmbed: localStorage.isEmbed,
             myContent: jQuery('#my-content-cb').prop('checked')
         };
     
