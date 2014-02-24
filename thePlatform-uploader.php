@@ -1,4 +1,10 @@
 <?php 
+	if ( ! defined( 'ABSPATH' ) ) exit;
+	$tp_uploader_cap = apply_filters('tp_uploader_cap', 'upload_files');
+	if (!current_user_can($tp_uploader_cap)) {
+		wp_die('<p>'.__('You do not have sufficient permissions to upload MPX Media').'</p>');
+	}		
+
 	wp_enqueue_script('theplatform_js');	
 	wp_enqueue_style('bootstrap_tp_css');
 	$tp_api = new ThePlatform_API;
@@ -146,10 +152,14 @@
 		</div>
 	</div>
 	<div class="row">
-		<label class="control-label" for="theplatform_upload_file">File</label><input type="file" accept="video/*" id="theplatform_upload_file" />
+		<div class="col-xs-3">			
+			<label class="control-label" for="theplatform_upload_file">File</label><input type="file" accept="video/*" id="theplatform_upload_file" />
+		</div>
 	</div>	
 	<div class="row">
-		<button id="theplatform_upload_button" class="form-control btn btn-primary" type="button" name="theplatform-upload-button">Upload Video</button>		
+		<div class="col-xs-3">
+			<button id="theplatform_upload_button" class="form-control btn btn-primary" type="button" name="theplatform-upload-button">Upload Video</button>		
+		</div>
 	</div>
 	</form>	
 	<!-- <p class="submit">

@@ -25,35 +25,6 @@ TheplatformUploader = (function() {
     	return ret;
     };
     
-	/**
-	 @function waitForPublished Polls the API proxy for media publishing status until status is 'Processed'
-	 @param {Object} params - URL parameters passed to the proxy
-	*/    
-    TheplatformUploader.prototype.waitForPublished = function(params) {
-    	var me = this;
-    	params.action = 'waitForPublish';
-    	params._wpnonce = theplatform.tp_nonce;
-    	
-    	jQuery.ajax({
-			url: theplatform.ajax_url,
-			data: params,
-       		type: "POST",
-			success: function(responseJSON) {
-				var response = jQuery.parseJSON(responseJSON);
-				if (response.status == 'Processed') {
-						
-					message_nag("Publishing Complete. Your media is ready to post.", true);	
-					// window.setTimeout('window.close()', 4000);					
-				} else {
-					me.waitForPublished( params );
-				}
-			},
-			error: function(response) {
-				error_nag("An error occurred while waiting for upload server COMPLETE status: " + response, true);
-			}
-		});
-    };
-    
     /**
 	 @function publishMedia Publishes the uploaded media via the API proxy
 	 @param {Object} params - URL parameters passed to the proxy
@@ -79,8 +50,8 @@ TheplatformUploader = (function() {
 				var response = jQuery.parseJSON(responseJSON);
 				
 				if (response.success == 'true') {
-					message_nag("Media published. It may take several minutes until the media is available to post.", true);
-					window.setTimeout('window.close()', 4000);
+					message_nag("Media is being published. It may take several minutes until the media is available. This window will now close.", true);
+					window.setTimeout('window.close()', 10000);
 				} else {
 					error_nag("Unable to publish media..", true);
 				}

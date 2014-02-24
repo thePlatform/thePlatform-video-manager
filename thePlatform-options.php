@@ -28,8 +28,7 @@ class ThePlatform_Options {
 		$tp_admin_cap = apply_filters('tp_admin_cap', 'manage_options');
 		if (!current_user_can($tp_admin_cap)) {
 			wp_die('<p>'.__('You do not have sufficient permissions to manage this plugin').'</p>');
-		}
-		// add_action('admin_menu', array( &$this, 'add_admin_menus' ) );
+		}		
 		add_action('admin_enqueue_scripts', array(&$this, 'enqueue_scripts'));
 
 		$this->tp_api = new ThePlatform_API;

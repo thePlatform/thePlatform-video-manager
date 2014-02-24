@@ -10,6 +10,12 @@
 <?php 
 
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+$tp_viewer_cap = apply_filters('tp_viewer_cap', 'edit_posts');
+if (!current_user_can($tp_viewer_cap)) {
+	wp_die('<p>'.__('You do not have sufficient permissions to browse MPX Media').'</p>');
+}		
+
 
 if (!class_exists( 'ThePlatform_API' )) {
 	require_once( dirname(__FILE__) . '/thePlatform-API.php' );

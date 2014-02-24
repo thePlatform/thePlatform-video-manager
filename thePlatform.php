@@ -3,7 +3,7 @@
 Plugin Name: thePlatform Video Manager
 Plugin URI: http://theplatform.com/
 Description: Manage video assets hosted in thePlatform MPX from within WordPress.
-Version: 1.1.0
+Version: 1.2.0
 Author: thePlatform for Media, Inc.
 Author URI: http://theplatform.com/
 License: GPL2
@@ -77,8 +77,7 @@ class ThePlatform_Plugin {
 		$this->plugin_base_dir = plugin_dir_path(__FILE__);
 		$this->plugin_base_url = plugins_url('/', __FILE__);
 		
-		if (is_admin()) {
-			add_action('admin_menu', array(&$this, 'add_media_page'));				
+		if (is_admin()) {						
 			add_action('admin_menu', array(&$this, 'add_admin_page'));
 			add_action('admin_init', array(&$this, 'register_scripts'));		
 			add_action('media_buttons', array(&$this, 'theplatform_embed_button'), 100);	
@@ -86,16 +85,14 @@ class ThePlatform_Plugin {
 			add_action('wp_ajax_get_subaccounts', array($this->tp_api, 'get_subaccounts'));
 			add_action('wp_ajax_theplatform_embed', array(&$this, 'embed')); 	
 			add_action('wp_ajax_theplatform_upload', array(&$this, 'upload'));	
-
 			add_action('wp_ajax_get_categories', array($this->tp_api, 'get_categories'));
 			add_action('wp_ajax_get_videos', array($this->tp_api, 'get_videos'));	
 		}	
-
 		add_shortcode('theplatform', array(&$this, 'shortcode'));
 	}
 	
 	/**
-	 * Calls the Embed template in a thickbox
+	 * Calls the Embed template in an IFrame and Dialog
 	 * @return void
 	 */
 	function embed() {
@@ -104,7 +101,7 @@ class ThePlatform_Plugin {
 	}
 
 	/**
-	 * Calls the Uploader template in a popup
+	 * Calls the Upload Window template in a popup
 	 * @return void
 	 */
 	function upload() {
@@ -125,8 +122,6 @@ class ThePlatform_Plugin {
 		wp_register_script('pdk_external_controller', "http://pdk.theplatform.com/pdk/tpPdkController.js");
 		wp_register_script('infiniscroll_js', plugins_url('/js/jquery.infinitescroll.min.js', __FILE__), array('jquery'));
 
-		wp_register_script('nprogress_js', plugins_url('/js/nprogress.js', __FILE__), array('jquery'));
-
 		wp_localize_script('theplatform_js', 'theplatform', array(
 			'ajax_url' => admin_url( 'admin-ajax.php' ),
 			'plugin_base_url' => plugins_url('images/', __FILE__),
@@ -138,23 +133,11 @@ class ThePlatform_Plugin {
 			'tp_nonce' => wp_create_nonce('theplatform-ajax-nonce')			
 		));
 
-
-		
 		wp_register_style('theplatform_css', plugins_url('/css/thePlatform.css', __FILE__ ));
 		wp_register_style('localstyle_css', plugins_url('/css/localstyle.css', __FILE__ ));
 		wp_register_style('bootstrap_tp_css', plugins_url('/css/bootstrap_tp.min.css', __FILE__ ));
-		wp_register_style('nprogress_css', plugins_url('/css/nprogress.css', __FILE__ ));
 	}
 	
-	/**
-	 * Add media page (library view, detail view, media uploader)
-	 */
-	function add_media_page() {
-		// $tp_editor_cap = apply_filters('tp_editor_cap', 'upload_files');
-		// add_media_page('thePlatform', 'thePlatform Video', $tp_editor_cap, 'theplatform-media', array( &$this, 'media_page' ));
-		// add_media_page('thePlatform', 'thePlatform Video Upload', $tp_editor_cap, 'theplatform-uploader', array( &$this, 'upload_page' ));
-	}
-
 	/**
 	 * Calls the Media Manager template
 	 * @return type
@@ -174,14 +157,13 @@ class ThePlatform_Plugin {
 	/**
 	 * Add admin page 
 	 */
-	function add_admin_page() {
-		
+	function add_admin_page() {		
 		$tp_admin_cap = apply_filters('tp_admin_cap', 'manage_options');
-		$tp_editor_cap = apply_filters('tp_editor_cap', 'upload_files');
-		$tp_uploader_cap = apply_filters('tp_editor_cap', 'upload_files');
-		$slug = 'thePlatform';		
-		add_menu_page('thePlatform', 'thePlatform', $tp_editor_cap, $slug, array( &$this, 'media_page' ), 'dashicons-video-alt3', 11);
-		add_submenu_page($slug, 'thePlatform Video Browser', 'Browse MPX Media', $tp_editor_cap, $slug, array( &$this, 'media_page' ));
+		$tp_viewer_cap = apply_filters('tp_viewer_cap', 'edit_posts');
+		$tp_uploader_cap = apply_filters('tp_uploader_cap', 'upload_files');
+		$slug = 'theplatform';		
+		add_menu_page('thePlatform', 'thePlatform', $tp_viewer_cap, $slug, array( &$this, 'media_page' ), 'dashicons-video-alt3', 11);
+		add_submenu_page($slug, 'thePlatform Video Browser', 'Browse MPX Media', $tp_viewer_cap, $slug, array( &$this, 'media_page' ));
 		add_submenu_page($slug, 'thePlatform Video Uploader', 'Upload Media to MPX', $tp_uploader_cap, 'theplatform-uploader', array( &$this, 'upload_page' ));
 		add_submenu_page($slug, 'thePlatform Plugin Settings', 'Settings', $tp_admin_cap, 'theplatform-settings', array( &$this, 'admin_page' ) );
 	}
