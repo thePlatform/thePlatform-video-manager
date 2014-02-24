@@ -47,7 +47,7 @@ TheplatformUploader = (function() {
 			data: params,
        		type: "POST",
 			success: function(responseJSON) {
-				var response = jQuery.parseJSON(responseJSON);
+				var response = me.parseJSON(responseJSON);
 				
 				if (response.success == 'true') {
 					message_nag("Media is being published. It may take several minutes until the media is available. This window will now close.", true);
@@ -73,7 +73,7 @@ TheplatformUploader = (function() {
 			data: params,
        		type: "POST",
 			success: function(responseJSON) {
-				var response = jQuery.parseJSON(responseJSON);
+				var response = me.parseJSON(responseJSON);
 				var data = response.content;
 		
 				if (data.entries.length != 0) {
@@ -253,7 +253,7 @@ TheplatformUploader = (function() {
 			data: params,
        		type: "POST",
 			success: function(responseJSON) {
-				var response = jQuery.parseJSON(responseJSON);
+				var response = me.parseJSON(responseJSON);
 				var data = response.content;
 		
 				if (data.entries.length != 0) {
@@ -302,7 +302,7 @@ TheplatformUploader = (function() {
 			   withCredentials: true
 			},
 			success: function(responseJSON) {
-				var response = jQuery.parseJSON(responseJSON);
+				var response = me.parseJSON(responseJSON);
 			
 				if (response.success == 'true') {
 					message_nag("Waiting for READY status from " + params.upload_base + ".");
@@ -340,6 +340,19 @@ TheplatformUploader = (function() {
 			}	
 		);
     };
+
+    /**
+	 @function Attempt to parse JSON, alert to user if it failed
+	 @param {string} params - JSON String	 
+	*/
+    TheplatformUploader.prototype.parseJSON = function(jsonString) {
+		try {
+			return jQuery.parseJSON(jsonString);
+		}
+		catch(ex) {
+			error_nag(jsonString);
+		}
+    };
     
     /**
 	 @function constructor Inform the API proxy to create placeholder media assets in MPX and begin uploading
@@ -366,7 +379,7 @@ TheplatformUploader = (function() {
 		};
 	
 		jQuery.post(theplatform.ajax_url, data, function(responseJSON) {
-			var response = jQuery.parseJSON(responseJSON);
+			var response = me.parseJSON(responseJSON);
 		
 			if (response.success == "true") {
 				var params = {
