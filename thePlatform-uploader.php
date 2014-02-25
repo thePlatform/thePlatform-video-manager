@@ -1,12 +1,13 @@
-<?php 
+<?php 	
+	wp_enqueue_style('bootstrap_tp_css');
+	wp_enqueue_script('theplatform_js');	
+
 	if ( ! defined( 'ABSPATH' ) ) exit;
 	$tp_uploader_cap = apply_filters('tp_uploader_cap', 'upload_files');
 	if (!current_user_can($tp_uploader_cap)) {
 		wp_die('<p>'.__('You do not have sufficient permissions to upload MPX Media').'</p>');
 	}		
 
-	wp_enqueue_script('theplatform_js');	
-	wp_enqueue_style('bootstrap_tp_css');
 	$tp_api = new ThePlatform_API;
 	$metadata = $tp_api->get_metadata_fields();
 	$preferences = get_option('theplatform_preferences_options');	
@@ -14,7 +15,6 @@
 	$metadata_options = get_option('theplatform_metadata_options');		
 
 ?>
-<!-- <div id="message_nag"><p id="message_nag_text"></p></div> -->
 <h1> Upload Media to MPX </h1>
 <div id="media-mpx-upload-form" class="tp">
 <form role="form">

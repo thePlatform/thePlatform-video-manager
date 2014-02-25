@@ -1,7 +1,18 @@
+<?php
+	/*
+	 * Load scripts and styles 
+	 */	
+	wp_print_scripts('mediaview_js');
+	wp_print_scripts('bootstrap_js');	
+	wp_print_scripts('infiniscroll_js');
+	wp_print_scripts('pdk_external_controller');
+
+	wp_print_styles('bootstrap_tp_css');
+	wp_print_styles('theplatform_css');
+	wp_print_styles('jquery-ui-dialog');
+?>
 <!DOCTYPE html>
-<!--[if lt IE 8 ]><html lang="en" class="no-js ie ie7"><![endif]-->
-<!--[if IE 8 ]><html lang="en" class="no-js ie"><![endif]-->
-<!--[if (gt IE 8)|!(IE)]><!--><html lang="en" class="no-js"><!--<![endif]-->
+<html lang="en" class="no-js">
 <head>
 
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -15,7 +26,6 @@ $tp_viewer_cap = apply_filters('tp_viewer_cap', 'edit_posts');
 if (!current_user_can($tp_viewer_cap)) {
 	wp_die('<p>'.__('You do not have sufficient permissions to browse MPX Media').'</p>');
 }		
-
 
 if (!class_exists( 'ThePlatform_API' )) {
 	require_once( dirname(__FILE__) . '/thePlatform-API.php' );
@@ -82,19 +92,7 @@ function writePlayers($players, $preferences) {
 	echo $html;
 }
 	
-/*
- * Load scripts and styles 
- */
-wp_print_scripts('theplatform_js');
-wp_print_scripts('localscript_js');
-wp_print_scripts('bootstrap_js');
-wp_print_scripts('mediaview_js');
-wp_print_scripts('infiniscroll_js');
-wp_print_scripts('pdk_external_controller');
 
-wp_print_styles('bootstrap_tp_css');
-wp_print_styles('localstyle_css');
-wp_print_styles('jquery-ui-dialog');
 
 ?>
 
@@ -186,8 +184,13 @@ wp_print_styles('jquery-ui-dialog');
 										continue;
 
 										$field_title = (strstr($upload_field, '$') !== false) ? substr(strstr($upload_field, '$'), 1) : $upload_field;
+										$display_title = mb_convert_case($field_title, MB_CASE_TITLE);
+										
+										//Custom names
+										if ($field_title === 'guid') $display_title = 'Reference ID';
+										if ($field_title === 'link') $display_title = 'Related Link';
 										$html = '<div class="row">';																			
-										$html .= '<strong>' . mb_convert_case($field_title, MB_CASE_TITLE) . ': </strong>';
+										$html .= '<strong>' . $display_title . ': </strong>';
 										$html .= '<span id="media-' . strtolower($field_title) . '"' . '" data-name="' . strtolower($field_title) . '"></span></div>';
 										echo $html;
 								}	

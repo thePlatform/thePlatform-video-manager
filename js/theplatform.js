@@ -77,10 +77,76 @@ var error_nag = function(msg, fade) {
 	message_nag(msg, fade, true);
 }
 
+/**
+ * Validate Media data is valid before submitting upload/edit
+ * @param  {Object} event click event
+ * @return {boolean}       Did validation pass or not
+ */
+var validate_media = function(event) {
+
+	//TODO: Change CSS to Bootstrap classes
+	//TODO: Validate that file has been selected for upload but not edit
+	var validation_error = false;
+	
+	jQuery('.edit_field').each(function() {
+	   if (jQuery(this).val().match(/<(\w+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/)) {
+		  jQuery(this).css({border: 'solid 1px #FF0000'}); 
+		  validation_error = true;
+	   }
+	});		
+
+	jQuery('.edit_custom_field').each(function() {
+	   if (jQuery(this).val().match(/<(\w+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/)) {
+		  jQuery(this).css({border: 'solid 1px #FF0000'}); 
+		  validation_error = true;
+	   }
+	});
+
+	if (jQuery('#theplatform_upload_title').val() === "") {
+		validation_error = true;
+		jQuery('#theplatform_upload_title').addClass('has-error');
+	}
+
+	
+	return validation_error;
+}
+
+var parseMediaParams = function() {
+	var params = {};
+	jQuery('.upload_field').each(function(i){
+		if (jQuery(this).val().length != 0)
+			params[jQuery(this).attr('name')] = jQuery(this).val();
+	});
+
+	var categories = []
+	var categoryArray = jQuery('.category_field').val();
+	for (i in categoryArray) {
+		var name = categoryArray[i];
+		if (name != '(None)') {
+			var cat = {};
+			cat['name'] = name;
+			categories.push(cat);
+		}
+	}
+		
+	params['categories'] = categories;
+
+	return params;
+}
+
+var parseCustomParams = function() {
+	var custom_params = {};
+	jQuery('.custom_field').each(function(i){
+		if (jQuery(this).val().length != 0) 
+			custom_params[jQuery(this).attr('name')] = jQuery(this).val();
+		});
+	return custom_params;
+}
+
 jQuery(document).ready(function() {
 
-	if (document.title.indexOf('thePlatform Plugin Settings') != -1) {
-		// Hide PID option fields
+	// Hide PID option fields in the Settings page
+	if (document.title.indexOf('thePlatform Plugin Settings') != -1) {		
 		jQuery('#mpx_account_pid').parent().parent().hide();
 		jQuery('#default_player_pid').parent().parent().hide();
 
@@ -100,39 +166,19 @@ jQuery(document).ready(function() {
 		if (jQuery('#mpx_server_id option:selected').length == 0) {			
 			jQuery('#mpx_server_id').parent().parent().hide();
 		}
-
-
-		
 	}	
 	
-	jQuery('#upload_add_category').click(function(e) {
-		var categories = jQuery(this).prev().clone()
-		var name = categories.attr('name');
-		if (name.indexOf('-') != -1) {
-			name = name.split('-')[0] + '-' + (parseInt(name.split('-')[1])+1)
-		}
-			
-		jQuery(this).before(categories.attr('name',name));
-	});
-
-	// Fade in the upload form and fade out the media library view
-	jQuery('#media-mpx-upload-button').click(function($) {
-		jQuery('#theplatform-library-view').fadeOut(500, function() {
-			jQuery('#media-mpx-upload-form').fadeIn(500);
-		});
-	});
-
-	//Set up the PID for users	
+	//Set up the PID for the MPX account on change in the Settings page	
 	jQuery('#mpx_account_id').change(function(e) {
 			jQuery('#mpx_account_pid').val(jQuery('#mpx_account_id option:selected').val().split('|')[1]);
 	})
 
-	//and players
+	//Set up the PID for the Player on change in the Settings page
 	jQuery('#default_player_name').change(function(e) {
 			jQuery('#default_player_pid').val(jQuery('#default_player_name option:selected').val().split('|')[1]);
 	})
 
-	// Validate account information in plugin settings fields
+	// Validate account information in plugin settings fields by logging in to MPX
 	jQuery("#verify-account-button").click(function($) {
 		var usr = jQuery("#mpx_username").val();
 		var pwd = jQuery("#mpx_password").val();
@@ -152,93 +198,31 @@ jQuery(document).ready(function() {
 			}
 			
 			if (response.indexOf('success') != -1 ) {
-				jQuery('#verify-account').append('<img id="verification_image" src="' + images + 'checkmark.png" />');											
+				jQuery('#verify-account-dashicon').removeClass('dashicons-no').addClass('dashicons-yes');
 			} else {
-				jQuery('#verify-account').append('<img id="verification_image" src="' + images + 'xmark.png" />');				
+				jQuery('#verify-account-dashicon').removeClass('dashicons-yes').addClass('dashicons-no');
 			}
 		});	
 	});
 
+	//Edit Media Validation	
 	jQuery("#theplatform-edit-media").submit(function(event) {
-		var validation_error = false;
-	
-		jQuery('.edit_field').each(function() {
-		   if (jQuery(this).val().match(/<(\w+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/)) {
-			  jQuery(this).css({border: 'solid 1px #FF0000'}); 
-			  validation_error = true;
-		   }
-		});		
-
-		jQuery('.edit_custom_field').each(function() {
-		   if (jQuery(this).val().match(/<(\w+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/)) {
-			  jQuery(this).css({border: 'solid 1px #FF0000'}); 
-			  validation_error = true;
-		   }
-		});
-	
-		if (validation_error) {
-			event.preventDefault();
-			return false;
-		} else {
-			return true;
-		}
-		
+		var validation_error = validate_media(event);;
+		var params = parseMediaParams();
+		var custom_params = parseCustomParams();	
 	});
 
-	// Upload a file to MPX
+	// Upload media button handler
 	jQuery("#theplatform_upload_button").click(function(event) {
 		var file = document.getElementById('theplatform_upload_file').files[0];
-		
-		var validation_error = false;
-		var params = {};
-		var custom_params = {}
-	
-		jQuery('.upload_field').each(function() {
-		   if (jQuery(this).val().match(/<(\w+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/)) {
-			  jQuery(this).css({border: 'solid 1px #FF0000'}); 
-			  validation_error = true;
-		   }
-		});
 
-		if (jQuery('#theplatform_upload_title').val() === "") {
-			validation_error = true;
-			jQuery('#theplatform_upload_title').addClass('has-error');
-		}
+		var validation_error = validate_media(event);
 
-		jQuery('.custom_field').each(function() {
-		   if (jQuery(this).val().match(/<(\w+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/)) {
-			  jQuery(this).css({border: 'solid 1px #FF0000'}); 
-			  validation_error = true;
-		   }
-		});
-	
-		if (validation_error) {
-			event.preventDefault();
+		if (validation_error || file === undefined)
 			return false;
-		}
-		
-		jQuery('.upload_field').each(function(i){
-			if (jQuery(this).val().length != 0)
-				params[jQuery(this).attr('name')] = jQuery(this).val();
-		});
 
-		var categories = []
-		var categoryArray = jQuery('.category_field').val();
-		for (i in categoryArray) {
-			var name = categoryArray[i];
-			if (name != '(None)') {
-				var cat = {};
-				cat['name'] = name;
-				categories.push(cat);
-			}
-		}
-			
-		params['categories'] = categories;
-
-		jQuery('.custom_field').each(function(i){
-			if (jQuery(this).val().length != 0) 
-				custom_params[jQuery(this).attr('name')] = jQuery(this).val();
-		});
+		var params = parseMediaParams();
+		var custom_params = parseCustomParams();						
 		
 		var profile = jQuery('.upload_profile');
 		
@@ -254,33 +238,4 @@ jQuery(document).ready(function() {
 		upload_window.parentLocation = window.location;
 		
 	});
-
-	// Reload media viewer with no search queries
-	jQuery("#media-mpx-show-all-button, #theplatform_cancel_edit_button").click(function(event) {
-		var url = document.location;
-		
-		document.location = url.origin + url.pathname + "?page=theplatform-media";
-	});
-
-	// Cancel upload.. fade out upload form and fade in media library view
-	jQuery("#theplatform_cancel_upload_button").click(function(event) {
-	
-		jQuery('#media-mpx-upload-form').fadeOut(750, function() {
-			jQuery('#theplatform-library-view').fadeIn(750);
-			message_nag("Cancelling upload..", true);
-		});
-	});
-	
-	// Handle search dropdown text
-	jQuery('#search-dropdown').change(function() {
-		jQuery('#search-by-content').text(jQuery(this).find(":selected").text());
-	});
-	
-	// Handle sort dropdown text
-	jQuery('#sort-dropdown').change(function() {
-		jQuery('#sort-by-content').text(jQuery(this).find(":selected").text());
-	});	
-
-	jQuery('#search-by-content').text(jQuery('.search-select').find(":selected").text());
-	jQuery('#sort-by-content').text(jQuery('.sort-select').find(":selected").text());
 });

@@ -50,7 +50,7 @@ class ThePlatform_Options {
 	function enqueue_scripts() {
 		wp_enqueue_script('jquery');  
 		wp_enqueue_script('theplatform_js');
-		wp_enqueue_style('theplatform_css');
+		wp_enqueue_style('dashicons');
 	}
 	
 	/**
@@ -282,7 +282,7 @@ class ThePlatform_Options {
 				break;			
 			case 'mpx_password':
 				$html = '<input id="mpx_password" type="password" name="theplatform_preferences_options[' . esc_attr($field) . ']" value="' . esc_attr( $opts[$field] ) . '" />';
-				$html .= '<span id="verify-account"><button id="verify-account-button" type="button" name="verify-account-button">Verify Account Settings</button></span>';			
+				$html .= '<span id="verify-account"><button id="verify-account-button" type="button" name="verify-account-button">Verify Account Settings</button><div id="verify-account-dashicon" class="dashicons"></div></span>';					
 				break;
 			case 'mpx_username':
 				$html = '<input id="mpx_username" type="text" name="theplatform_preferences_options[' . esc_attr($field) . ']" value="' . esc_attr( $opts[$field] ) . '" />';

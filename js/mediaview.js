@@ -60,6 +60,7 @@ jQuery(document).ready(function () {
                     addMediaObject(entries[i]);
 
                 jQuery('#load-overlay').hide();
+                Holder.run();
                 callback(parseInt(localStorage.feedEndRange) < parseInt(localStorage.feedResultCount)); //True if there are still more results.
             });
         }
@@ -300,8 +301,12 @@ function addMediaObject(media) {
     // Something just gets added.
     if (document.getElementById(media.guid) != null) //Can't use jquery because of poor guid format convention.
     return;
+    
+    var placeHolder = "";
+    if (media.defaultThumbnailUrl === "")
+        placeHolder = "holder.js/128x72/text:No Thumbnail";
 
-    var newMedia = '<div class="media" id="' + media.guid + '"><img class="media-object pull-left thumb-img" data-src="holder.js/128x72" alt="128x72" src="' + media.defaultThumbnailUrl + '">'
+    var newMedia = '<div class="media" id="' + media.guid + '"><img class="media-object pull-left thumb-img" data-src="' + placeHolder + '" alt="128x72" src="' + media.defaultThumbnailUrl + '">'
     if (location.search.indexOf('&embed=true') != -1)
         newMedia += '<button class="btn btn-xs media-embed pull-right" data-toggle="tooltip" data-placement="bottom" title="Embed this Media"><></button>';
     newMedia += '<div class="media-body">' + '<div id="head"><strong class="media-heading"></strong></div>' + '<div id="source"></div>' + '<div id="desc"></div>' + '</div>' + '</div>';
