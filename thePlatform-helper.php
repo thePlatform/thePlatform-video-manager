@@ -25,9 +25,7 @@ function connection_options_validate($input) {
 		return array(
 			'mpx_account_id' => '',
 			'mpx_username' => 'mpx/',				
-			'mpx_password' => '',
-			'videos_per_page' => 16,
-			'default_sort' => 'id',
+			'mpx_password' => '',			
 			'video_type' => 'embed',				
 			'mpx_account_pid' => '',
 			'default_player_name' => '',

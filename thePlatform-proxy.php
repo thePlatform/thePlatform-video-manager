@@ -161,7 +161,7 @@ class MPXProxy {
 			$url .= '&_mediaId=' . urlencode($mediaId);
 			$url .= '&_profileId=' . urlencode($profileId); 
 
-			$response = ThePlatform_API_HTTP::get($url);
+			$response = ThePlatform_API_HTTP::get($url, array("timeout" => 120));
 							
 			if ( is_wp_error($response) ) {
 				$ret['success'] = 'false';

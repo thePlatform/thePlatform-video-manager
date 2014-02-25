@@ -53,18 +53,18 @@ var message_nag = function(msg, fade, isError) {
 		messageType="error";
 
 	if (jQuery('#message_nag').length == 0) {
-		jQuery('.wrap > h2').parent().prev().after('<div id="message_nag" class="' + messageType + '"><p id="message_nag_text">' +  msg + '</p></div>').fadeIn(2000);
+		jQuery('.wrap > h2').parent().prev().after('<div id="message_nag" class="' + messageType + '"><p id="message_nag_text">' +  msg + '</p></div>').fadeIn(1000);
 	} else {
 		jQuery('#message_nag').removeClass();
 		jQuery('#message_nag').addClass(messageType);
-		jQuery('#message_nag').fadeIn(1000);
-		jQuery('#message_nag_text').animate({'opacity': 0}, 1000, function () {
+		jQuery('#message_nag').fadeIn(500);
+		jQuery('#message_nag_text').animate({'opacity': 0}, 500, function () {
 			jQuery(this).text(msg);
-		}).animate({'opacity': 1}, 1000);
+		}).animate({'opacity': 1}, 500);
 	}
 	
 	if (fade == true) {
-		jQuery('#message_nag').delay(4000).fadeOut(6000);
+		jQuery('#message_nag').delay(6000).fadeOut(10000);
 	}
 }
 

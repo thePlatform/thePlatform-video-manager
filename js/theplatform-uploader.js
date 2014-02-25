@@ -53,7 +53,8 @@ TheplatformUploader = (function() {
 					message_nag("Media is being published. It may take several minutes until the media is available. This window will now close.", true);
 					window.setTimeout('window.close()', 10000);
 				} else {
-					error_nag("Unable to publish media..", true);
+					message_nag("Publish for the uploaded Media was requested but timed out, this is normal but your Media may or may not have published.", true);
+					window.setTimeout('window.close()', 10000);
 				}
 			}
 		});

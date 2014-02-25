@@ -302,12 +302,12 @@ class ThePlatform_API {
 		$fields = json_decode(stripslashes($args['fields']), TRUE);		
 		$custom_fields = json_decode(stripslashes($args['custom_fields']), TRUE);		
 
-		if (is_null($fields))
-			wp_die('MPX error');
+		if (empty($fields))
+			wp_die('No fields are set, unable to upload Media');
 
 		$custom_field_ns = array();
 		$custom_field_values = array();
-		if (!is_null($custom_fields)) {
+		if (!empty($custom_fields)) {
 			$fieldKeys = implode('|', array_keys($custom_fields));
 			$customfield_info = $this->get_customfield_info($fieldKeys);
 			foreach ($customfield_info['entries'] as $value) {
@@ -327,7 +327,6 @@ class ThePlatform_API {
 		$url = TP_API_MEDIA_ENDPOINT;
 		$url .= '&account=' .  urlencode($this->preferences['mpx_account_id']);
 		$url .= '&token=' . $token;		
-		
 		
 		$response = ThePlatform_API_HTTP::post($url, json_encode($payload, JSON_UNESCAPED_SLASHES), true);		
 				
@@ -696,14 +695,14 @@ class ThePlatform_API {
 	 * @return array The Media data service response
 	*/
 	function get_categories() {
-		$fields = array('title');
+		$fields = array('title', 'fullTitle');
 
 		if (!$this->preferences)
 			$this->preferences = get_option($this->preferences_options_key);
 			
 		$token = $this->mpx_signin();
 		
-		$url = TP_API_MEDIA_CATEGORY_ENDPOINT . '&fields=title&token=' . $token;
+		$url = TP_API_MEDIA_CATEGORY_ENDPOINT . '&fields=title,fullTitle&sort=fullTitle,order&token=' . $token;
 		
 		if (!empty($this->preferences['mpx_account_id'])) {
 			$url .= '&account=' . urlencode($this->preferences['mpx_account_id']);

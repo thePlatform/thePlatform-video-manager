@@ -98,9 +98,7 @@ class ThePlatform_Options {
 		$this->preferences_options = array_merge(array(
 			'mpx_account_id' => '',
 			'mpx_username' => 'mpx/',
-			'mpx_password' => '',
-			'videos_per_page' => 16,
-			'default_sort' => 'id',
+			'mpx_password' => '',						
 			'video_type' => 'embed',			
 			'mpx_account_pid' => '',
 			'default_player_name' => '',
@@ -147,10 +145,8 @@ class ThePlatform_Options {
 		
 		add_settings_section( 'section_preferences_options', 'General Preferences', array( &$this, 'section_preferences_desc' ), $this->preferences_options_key );		
 		add_settings_field( 'default_player_name', 'Default Player', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_preferences_options', array('field' => 'default_player_name') );
-		add_settings_field( 'default_player_pid', 'Default Player PID', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_preferences_options', array('field' => 'default_player_pid') );
-		add_settings_field( 'videos_per_page_option', 'Number of Videos Per Page', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_preferences_options', array('field' => 'videos_per_page') );
-		add_settings_field( 'default_sort_order_option', 'Default Sort Order', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_preferences_options', array('field' => 'default_sort') );
- 		add_settings_field( 'video_type_option', 'Default Video Type', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_preferences_options', array('field' => 'video_type') );
+		add_settings_field( 'default_player_pid', 'Default Player PID', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_preferences_options', array('field' => 'default_player_pid') );		
+ 		add_settings_field( 'video_type_option', 'Default Embed Type', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_preferences_options', array('field' => 'video_type') );
 		add_settings_field( 'filter_by_user_id', 'Filter Users Own Videos', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_preferences_options', array('field' => 'filter_by_user_id') );
  		add_settings_field( 'user_id_customfield', 'User ID Custom Field', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_preferences_options', array('field' => 'user_id_customfield') ); 		
  		add_settings_field( 'mpx_server_id', 'Default Upload Server', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_preferences_options', array('field' => 'mpx_server_id') );
@@ -280,20 +276,10 @@ class ThePlatform_Options {
 				break;
 			case 'video_type':
 				$html = '<select id="' . esc_attr($field) . '" name="theplatform_preferences_options[' . esc_attr($field) . ']">';  
-				$html .= '<option value="embed"' . selected( $opts[$field], 'embed', false) . '>Embed</option>';  
+				$html .= '<option value="embed"' . selected( $opts[$field], 'embed', false) . '>Video Only</option>';  
 				$html .= '<option value="full"' . selected( $opts[$field], 'full', false) . '>Full Player</option>';  
 				$html .= '</select>';
-				break;
-			case 'default_sort':
-				$html = '<select id="' . esc_attr($field) . '" name="theplatform_preferences_options[' . esc_attr($field) . ']">';  
-				$html .= '<option value="title"' . selected( $opts[$field], 'title', false) . '>Title - Ascending</option>';  
-				$html .= '<option value="title|desc"' . selected( $opts[$field], 'title|desc', false) . '>Title - Descending</option>';  
-				$html .= '<option value="author"' . selected( $opts[$field], 'author', false) . '>Author - Ascending</option>';
-				$html .= '<option value="author|desc"' . selected( $opts[$field], 'author|desc', false) . '>Author - Descending</option>'; 
-				$html .= '<option value="added"' . selected( $opts[$field], 'added', false) . '>Date Added - Ascending</option>'; 
-				$html .= '<option value="added|desc"' . selected( $opts[$field], 'added|desc', false) . '>Date Added - Descending</option>';   
-				$html .= '</select>';
-				break;
+				break;			
 			case 'mpx_password':
 				$html = '<input id="mpx_password" type="password" name="theplatform_preferences_options[' . esc_attr($field) . ']" value="' . esc_attr( $opts[$field] ) . '" />';
 				$html .= '<span id="verify-account"><button id="verify-account-button" type="button" name="verify-account-button">Verify Account Settings</button></span>';			
