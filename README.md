@@ -1,9 +1,11 @@
+# Warning, you are looking at a development branch which may not be stable. For the latest Wordpress VIP release please switch to either the Master or Release branch.
+
 # === thePlatform Video Manager ===
 Developed By: thePlatform for Media, Inc.  
 Tags: embedding, video, embed, portal, theplatform, shortcode  
 Requires at least: 3.7  
 Tested up to: 3.8  
-Stable tag: 1.1.0  
+Stable tag: 1.2.0  
 
 Manage your content hosted by thePlatform and embed media in WordPress posts.
 
@@ -16,12 +18,6 @@ library in WordPress posts, modify media metadata, and upload new media.
 Copy the folder "thePlatform-video-manager" with all included files into the "wp-content/plugins" folder of WordPress. Activate the plugin and set your MPX credentials in the plugin settings interface.
 
 # == Screenshots ==
-
-1. thePlatform's Setting screen
-2. View your media library, search for videos, and sort the returned media set
-3. Modify video metadata
-4. Easily embed videos from MPX into your posts
-5. Upload media to your MPX account
 
 # == Changelog ==
 
