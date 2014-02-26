@@ -1,4 +1,4 @@
-# Warning, you are looking at a development branch which may not be stable. For the latest Wordpress VIP release please switch to either the Master or Release branch.
+**Warning, you are looking at a development branch which may not be stable. For the latest Wordpress VIP release please switch to either the Master or Release branch**
 
 # === thePlatform Video Manager ===
 Developed By: thePlatform for Media, Inc.  
