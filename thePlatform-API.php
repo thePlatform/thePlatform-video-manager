@@ -14,26 +14,26 @@ define('TP_API_SIGNOUT_URL', TP_API_ADMIN_IDENTITY_BASE_URL . 'signOut?schema=1.
 
 // Media Data Service URLs
 define('TP_API_MEDIA_DATA_BASE_URL', 'http://data.media.theplatform.com/media/data/');
-define('TP_API_MEDIA_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Media?schema=1.5&form=json');
-define('TP_API_MEDIA_FILE_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'MediaFile?schema=1.2&form=json');
-define('TP_API_MEDIA_FIELD_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Media/Field?schema=1.3&form=json');
-define('TP_API_MEDIA_SERVER_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Server?schema=1.0&form=json');
-define('TP_API_MEDIA_ACCOUNT_SETTINGS_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'AccountSettings?schema=1.5.0&form=json');
+define('TP_API_MEDIA_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Media?schema=1.5&form=cjson');
+define('TP_API_MEDIA_FILE_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'MediaFile?schema=1.2&form=cjson');
+define('TP_API_MEDIA_FIELD_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Media/Field?schema=1.3&form=cjson');
+define('TP_API_MEDIA_SERVER_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Server?schema=1.0&form=cjson');
+define('TP_API_MEDIA_ACCOUNT_SETTINGS_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'AccountSettings?schema=1.5.0&form=cjson');
 define('TP_API_MEDIA_DELETE_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Media?method=delete');
-define('TP_API_MEDIA_RELEASE_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Release?schema=1.5.0&form=json');
-define('TP_API_MEDIA_CATEGORY_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Category?schema=1.6.0&form=json');
+define('TP_API_MEDIA_RELEASE_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Release?schema=1.5.0&form=cjson');
+define('TP_API_MEDIA_CATEGORY_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Category?schema=1.6.0&form=cjson');
 
 // Player Data Service URLs
 define('TP_API_PLAYER_BASE_URL', 'http://data.player.theplatform.com/player/data/');
-define('TP_API_PLAYER_PLAYER_ENDPOINT', TP_API_PLAYER_BASE_URL . 'Player?schema=1.3.0&form=json');
+define('TP_API_PLAYER_PLAYER_ENDPOINT', TP_API_PLAYER_BASE_URL . 'Player?schema=1.3.0&form=cjson');
 
 // Access Data Service URLs
 define('TP_API_ACCESS_BASE_URL', 'http://access.auth.theplatform.com/data/');
-define('TP_API_ACCESS_ACCOUNT_ENDPOINT', TP_API_ACCESS_BASE_URL . 'Account?schema=1.3.0&form=json');
+define('TP_API_ACCESS_ACCOUNT_ENDPOINT', TP_API_ACCESS_BASE_URL . 'Account?schema=1.3.0&form=cjson');
 
 // Workflow Data Service URLs
 define('TP_API_WORKFLOW_BASE_URL', 'http://data.workflow.theplatform.com/workflow/data/');
-define('TP_API_WORKFLOW_PROFILE_RESULT_ENDPOINT', TP_API_WORKFLOW_BASE_URL . 'ProfileResult?schema=1.0&form=json');
+define('TP_API_WORKFLOW_PROFILE_RESULT_ENDPOINT', TP_API_WORKFLOW_BASE_URL . 'ProfileResult?schema=1.0&form=cjson');
 
 // Publish Endpoint
 define('TP_API_PUBLISH_BASE_URL', 'http://publish.theplatform.com/web/Publish/publish?schema=1.2&form=json');
@@ -302,44 +302,34 @@ class ThePlatform_API {
 		$fields = json_decode(stripslashes($args['fields']), TRUE);		
 		$custom_fields = json_decode(stripslashes($args['custom_fields']), TRUE);		
 
-		if (is_null($fields))
-			wp_die('MPX error');
+		if (empty($fields))
+			wp_die('No fields are set, unable to upload Media');
 
 		$custom_field_ns = array();
 		$custom_field_values = array();
-		if (!is_null($custom_fields)) {
+		if (!empty($custom_fields)) {
 			$fieldKeys = implode('|', array_keys($custom_fields));
 			$customfield_info = $this->get_customfield_info($fieldKeys);
 			foreach ($customfield_info['entries'] as $value) {
-				if ($value['plfield$namespacePrefix'] !== '') {
-					$custom_field_ns[$value['plfield$namespacePrefix']] = $value['plfield$namespace'];
-					$custom_field_values[$value['plfield$namespacePrefix'] . '$' . $value['plfield$fieldName']] = $custom_fields[$value['plfield$fieldName']]; 	
+				if ($value['namespacePrefix'] !== '') {
+					$custom_field_ns[$value['namespacePrefix']] = $value['namespace'];
+					$custom_field_values[$value['namespacePrefix'] . '$' . $value['fieldName']] = $custom_fields[$value['fieldName']]; 	
 				}
 			}
 		}		
 		
 		$payload = array_merge(array(
-			'$xmlns' => array_merge(array(
-				"dcterms" => "http://purl.org/dc/terms/",
-				"media" => "http://search.yahoo.com/mrss/",
-				"pl" => "http://xml.theplatform.com/data/object",
-				"pla" => "http://xml.theplatform.com/data/object/admin",
-				"plmedia" => "http://xml.theplatform.com/media/data/Media",
-				"plfile" => "http://xml.theplatform.com/media/data/MediaFile",
-				"plrelease" => "http://xml.theplatform.com/media/data/Release",
-				"plcategory" => "http://xml.theplatform.com/media/data/Category"
-				),
-				$custom_field_ns)
+			'$xmlns' => array_merge(array(),$custom_field_ns)
 			), 
 			array_merge($fields, $custom_field_values)
 		);
-					
+						
 		$url = TP_API_MEDIA_ENDPOINT;
 		$url .= '&account=' .  urlencode($this->preferences['mpx_account_id']);
-		$url .= '&token=' . $token;
+		$url .= '&token=' . $token;		
 		
 		$response = ThePlatform_API_HTTP::post($url, json_encode($payload, JSON_UNESCAPED_SLASHES), true);		
-		
+				
 		$data = decode_json_from_server($response, TRUE);			
 			
 		return $data;
@@ -380,12 +370,12 @@ class ThePlatform_API {
 			$this->preferences = get_option($this->preferences_options_key);
 	
 		$url =  TP_API_FMS_GET_UPLOAD_URLS_ENDPOINT;
-		$url .= '&token=' . $token;
+		$url .= '&token=' .  urlencode($token);
 		$url .= '&account=' . urlencode($this->preferences['mpx_account_id']);
 		$url .= '&_serverId=' . urlencode($server_id);		
 
 		$response = ThePlatform_API_HTTP::get($url);
-				
+						
 		$data = decode_json_from_server($response, TRUE);	
 		
 		return $data['getUploadUrlsResponse'][0];
@@ -417,18 +407,18 @@ class ThePlatform_API {
 			);		
 
 		$token = $this->mpx_signin();
-			
+		
 		$response = $this->create_media_placeholder($args, $token);
-
+			
 		$media_guid = $response['guid'];
 		$media_id = $response['id'];
 		
 		$format = $this->get_format($args['filetype']);
-			
+
 		$upload_server_id = $this->preferences['mpx_server_id'];
 	
 		$upload_server_base_url = $this->get_upload_urls($upload_server_id, $token); 
-
+		
 		if ( is_wp_error( $upload_server_base_url ) ) {
 			return $upload_server_base_url;
 		}
@@ -483,28 +473,23 @@ class ThePlatform_API {
 	 * @param array $fields Optional set of fields to request from the data service, default empty
 	 * @return array The Media data service response
 	*/
-	function get_videos($query = '', $sort = '', $startPage = '', $fields = array()) {			
-		$default_fields = array('id', 'categories', 'guid', 'author', 'added', 'keywords', 'content', 'description', 'title', 'ownerId', 'defaultThumbnailUrl', ':');
-		
-		$fields = array_merge($default_fields, $fields);
-		
-		$fields = implode(',', $fields);
-
+	function get_videos($query = '', $sort = '', $fields = array()) {			
+	
 		if (!$this->preferences)
 			$this->preferences = get_option($this->preferences_options_key);
 
 		$token = $this->mpx_signin();
-		
-		if ($startPage === '' || $startPage === '1')
-			$range = '1-' . $this->preferences['videos_per_page'];
-		else {
-			$startRange = (intval($startPage)-1)*intval($this->preferences['videos_per_page']);
-			$endRange = $startRange+intval($this->preferences['videos_per_page']);
-			$range = ++$startRange. '-' . $endRange;
+
+		$url = TP_API_MEDIA_ENDPOINT . '&count=true&fields=' . $_POST['fields'] . '&token=' . $token . '&range=' . $_POST['range'];
+
+		if ($_POST['isEmbed'] === "1") {
+			$url .= '&byAvailabilityState=available&byApproved=true&count=true&types=variable&byContent=byReleases=byDelivery%253Dstreaming';
 		}
-		$url = TP_API_MEDIA_ENDPOINT . '&count=true&fields=' . $fields . '&token=' . $token . '&range=' . $range;
-		
-		
+
+		if (!empty($_POST['myContent']) && $_POST['myContent'] === 'true') {
+			$url .= '&byCustomValue=' . urlencode('{' . $this->preferences['user_id_customfield'] . '}{' . wp_get_current_user()->ID . '}');
+		}	
+
 		if (!empty($this->preferences['mpx_account_id'])) {
 			$url .= '&account=' . urlencode($this->preferences['mpx_account_id']);
 		}
@@ -512,20 +497,18 @@ class ThePlatform_API {
 			wp_die('<p>'.__('MPX Account is not set, unable to retrieve videos.').'</p>');			
 		}		
 		
-		if (!empty($query)) {
-			$url .= '&' . $query;
+		if (!empty($_POST['query'])) {
+			$url .= '&' . $_POST['query'];
 		}
 		
 		if (!empty($sort)) {
 			$url .= '&sort=' . $sort;
-		}		
+		}
 
-		$response = ThePlatform_API_HTTP::get($url);
-		
-		$ret = decode_json_from_server($response, TRUE);
-		$this->mpx_signout($token);				
-
-		return $ret;
+		$response = ThePlatform_API_HTTP::get($url);		
+		echo(wp_remote_retrieve_body($response));
+		$this->mpx_signout($token);
+		die();						
 	}
 	
 	/**
@@ -695,6 +678,41 @@ class ThePlatform_API {
 		}
 		
 		$response = ThePlatform_API_HTTP::get($url);
+		$data = decode_json_from_server($response, TRUE);
+		$ret = $data['entries'];
+		
+		$this->mpx_signout($token);
+		
+		return $ret;
+	}
+
+		/**
+	 * Query MPX for account categories
+	 *
+	 * @param array $query Query fields to append to the request URL
+	 * @param array $sort Sort parameters to pass to the data service
+	 * @param array $fields Optional set of fields to request from the data service
+	 * @return array The Media data service response
+	*/
+	function get_categories() {
+		$fields = array('title', 'fullTitle');
+
+		if (!$this->preferences)
+			$this->preferences = get_option($this->preferences_options_key);
+			
+		$token = $this->mpx_signin();
+		
+		$url = TP_API_MEDIA_CATEGORY_ENDPOINT . '&fields=title,fullTitle&sort=fullTitle,order&token=' . $token;
+		
+		if (!empty($this->preferences['mpx_account_id'])) {
+			$url .= '&account=' . urlencode($this->preferences['mpx_account_id']);
+		}
+		
+		$response = ThePlatform_API_HTTP::get($url);
+
+		echo(wp_remote_retrieve_body($response));
+		die();		
+
 		$data = decode_json_from_server($response, TRUE);
 		$ret = $data['entries'];
 		

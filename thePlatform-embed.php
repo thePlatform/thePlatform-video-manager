@@ -1,272 +1,237 @@
 <?php
-	$tp_embedder_cap = apply_filters('tp_embedder_cap', 'edit_posts');
-	if (!current_user_can($tp_embedder_cap)) {
-		wp_die('<p>'.__('You do not have sufficient permissions to embed videos').'</p>');
-	}
+	/*
+	 * Load scripts and styles 
+	 */	
+	wp_print_scripts('mediaview_js');
+	wp_print_scripts('bootstrap_js');	
+	wp_print_scripts('infiniscroll_js');
+	wp_print_scripts('pdk_external_controller');
 
-	if ( ! class_exists( 'ThePlatform_API' ) )
-		require_once( dirname(__FILE__) . '/thePlatform-API.php' );
-	?>
-
+	wp_print_styles('bootstrap_tp_css');
+	wp_print_styles('theplatform_css');
+	wp_print_styles('jquery-ui-dialog');
+?>
 <!DOCTYPE html>
-<html <?php language_attributes(); ?>>
+<html lang="en" class="no-js">
 <head>
-<meta charset="<?php bloginfo( 'charset' ); ?>" />
 
-<title>thePlatform Video Library</title>
-<?php 			
-	wp_print_scripts(array('jquery', 'theplatform_js', 'thickbox', 'jquery-ui-dialog'));
-	wp_print_styles(array('theplatform_css', 'global', 'media', 'wp-admin', 'colors', 'thickbox', 'jquery-ui-dialog'));
-	
-	$tp_api = new ThePlatform_API;  
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="tp:EnableExternalController" content="true" />
+<?php 
 
-	$players = $tp_api->get_players();
-	
-	if ( is_wp_error( $players ) )
-		echo '<div id="message" class="error below-h2"><p>' . $players->get_error_message() . '</p></div>';
-	
-	$metadata = $tp_api->get_metadata_fields();
-	
-	if ( is_wp_error( $metadata ) )
-		echo '<div id="message" class="error below-h2"><p>' . $metadata->get_error_message() . '</p></div>';
-	
-	$preferences = get_option('theplatform_preferences_options');
-	
-	$page = isset( $_POST['tppage'] ) ? sanitize_text_field( $_POST['tppage'] ) : '1';		
 
-	if (isset($_POST['s'])) {
-		check_admin_referer('theplatform-ajax-nonce'); 
-		$key_word = isset( $_POST['s'] ) ? sanitize_text_field( $_POST['s'] ) : '';						
-		$field = isset( $_POST['theplatformsearchfield'] ) ? sanitize_text_field( $_POST['theplatformsearchfield'] ) : '';			
-		$sort = isset( $_POST['theplatformsortfield'] ) ? sanitize_text_field( $_POST['theplatformsortfield'] ) : '';
+if ( ! defined( 'ABSPATH' ) ) exit;
+$tp_viewer_cap = apply_filters('tp_viewer_cap', 'edit_posts');
+if (!current_user_can($tp_viewer_cap)) {
+	wp_die('<p>'.__('You do not have sufficient permissions to browse MPX Media').'</p>');
+}		
 
-		$query = array();
-		if ($key_word !== '')
-			array_push($query, $field. '=' . $key_word);
-					
-		if (isset($_POST['filter-by-userid']) && $preferences['user_id_customfield'] !== '')
-		 	array_push($query, 'byCustomValue=' . urlencode('{' . $preferences['user_id_customfield'] . '}{' . wp_get_current_user()->ID . '}'));
-		
-		if ($field !== 'q')
-			$videos = $tp_api->get_videos(implode('&', $query), $sort, $page);
-		else
-			$videos = $tp_api->get_videos(implode('&', $query), '', $page);		
-	} 
-	else {
-		// Library View				
-		if ($preferences['filter_by_user_id'] === 'TRUE' && $preferences['user_id_customfield'] !== '') 
-				$videos = $tp_api->get_videos('byCustomValue=' . urlencode('{' . $preferences['user_id_customfield'] . '}{' . wp_get_current_user()->ID . '}'), '', $page);
-		else
-			$videos = $tp_api->get_videos('','',$page);	
+if (!class_exists( 'ThePlatform_API' )) {
+	require_once( dirname(__FILE__) . '/thePlatform-API.php' );
+}
+
+$tp_api = new ThePlatform_API;  
+$metadata = $tp_api->get_metadata_fields();
+
+$metadata_options = get_option('theplatform_metadata_options');
+$upload_options = get_option('theplatform_upload_options');
+$fields = 'id,defaultThumbnailUrl,content,thumbnails';
+
+foreach ($upload_options as $upload_field => $val) {
+	if ($val !== 'allow') 
+		continue;
+
+	$field_title = (strstr($upload_field, '$') !== false) ? substr(strstr($upload_field, '$'), 1) : $upload_field;
+	if (!empty($fields))
+		$fields .= ',';
+	$fields .= $field_title;
+}	
+foreach ($metadata_options as $custom_field => $val) {
+	if ($val !== 'allow')
+		continue;
+
+	$metadata_info = NULL;
+	foreach ($metadata as $entry) {
+		if (array_search($custom_field, $entry)) {
+			$metadata_info = $entry;
+			break;
+		}
+	}	
+
+	if (is_null($metadata_info))
+		continue;								
+	
+	$field_title = $metadata_info['fieldName'];
+
+	if (empty($fields))
+		$fields .= ':';
+	else
+		$fields .= ',:';
+
+	$fields .= $field_title;
+}
+
+
+$preferences = get_option('theplatform_preferences_options');	
+
+if (strcmp($preferences['mpx_account_id'], "") == 0) {			
+			wp_die('MPX Account ID is not set, please configure the plugin before attempting to manage media');
+}
+
+//Embed only stuff
+$players = $tp_api->get_players();
+$IS_EMBED = strpos($_SERVER['QUERY_STRING'], '&embed=true') !== false ? true : false;
+
+function writePlayers($players, $preferences) {		
+	$html = '<p class="navbar-text sort-bar-text">Player:</p><form class="navbar-form navbar-left sort-bar-nav" role="sort"><select id="selectpick-player" class="form-control">';
+	foreach ($players as $player) {																		
+		$html .= '<option value="' . esc_attr($player['pid']) . '"' . selected($player['pid'], $preferences['default_player_pid'], false) . '>' . esc_html($player['title']) . '</option>';      								
 	}
-	$count = $videos['totalResults'];	
-	$pages = ceil(intval($count)/intval($preferences['videos_per_page']));
-	$videos = $videos['entries'];	
+    $html .= '</select></form>';	
+	echo $html;
+}
+	
+
+
 ?>
 
-<script type='text/javascript'>
+<script type="text/javascript">
+	localStorage.clear();
+	localStorage.token = "<?php echo $tp_api->mpx_signin();?>";
+	localStorage.account = "<?php echo $preferences['mpx_account_id'];?>";
+	localStorage.fields = "<?php echo $fields;?>";
+	localStorage.isEmbed = "<?php echo $IS_EMBED;?>";
+	window.parent.document.body.style.overflowY="hidden";
 
-jQuery(document).ready(function() {
-
-	jQuery('.embed-photo, .use-shortcode').click(function() {
-		var media = this.id;
-		
-		var player = jQuery('#embed_player').val();
-	
-		if (media != '') {
-			var shortcode = '[theplatform media="' + media + '" player="' + player + '"]';
-		
-			var win = window.dialogArguments || opener || parent || top;
-			var isVisual = (typeof win.tinyMCE != "undefined") && win.tinyMCE.activeEditor && !win.tinyMCE.activeEditor.isHidden();	
-			if (isVisual) {
-				win.tinyMCE.activeEditor.execCommand('mceInsertContent', false, shortcode);
-			} else {
-				var currentContent = jQuery('#content', window.parent.document).val();
-				if ( typeof currentContent == 'undefined' )
-					currentContent = '';		
-				jQuery( '#content', window.parent.document ).val( currentContent + shortcode );
-			}
-			self.parent.tb_remove();
-		}
-		return false;
-	});
-
-	jQuery('.mpx-media-page').click(function(e) {
-		e.preventDefault();
-		jQuery('#form-page-field').val(jQuery(this).data('page'));
-		jQuery('#theplatform-search').submit();
-	});
-
-	jQuery('#search-by-content').text(jQuery('.search-select').find(":selected").text());
-	jQuery('#sort-by-content').text(jQuery('.sort-select').find(":selected").text());
-
-});
 
 </script>
-
 </head>
-
 <body>
-	<div>
-		<div>
-			<div id="search-bar-outer-embed">
-				<div id="search-bar-inner-embed" class="nav-sprite">
-					<div>
-						<label id="search-label-embed"> Search </label>
-						<form class="search-form-embed" id="theplatform-search" name="library-search" method="POST" action="#">							
-							<?php wp_nonce_field('theplatform-ajax-nonce'); ?>
-          					<input type="hidden" name="page" value="theplatform-media" />
-          					<input type="hidden" id="form-page-field" name="tppage" value="1" />
-							<span class="nav-sprite" id="search-by" style="width: auto;">
-							  <span id="search-by-content" style="width: auto; overflow: visible;">
-								Title Prefix
-							  </span>
-							  <span class="search-down-arrow nav-sprite"></span>
-							  <select title="Search by" class="search-select" id="search-dropdown" name="theplatformsearchfield" data-nav-selected="0" style="top: 0px;">
-							  	<option value="byTitlePrefix" <?php selected($_POST['theplatformsearchfield'], 'byTitlePrefix')?>>Title Prefix</option>
-								<option value="byTitle" <?php selected($_POST['theplatformsearchfield'], 'byTitle')?>>Full Title</option>								
-								<option value="byCategories" <?php selected($_POST['theplatformsearchfield'], 'byCategories')?>>Categories</option>
-								<option value="q" <?php selected($_POST['theplatformsearchfield'], 'q')?>>q</option>
-							  </select>
-							</span>
-							
-							<span class="nav-sprite" id="sort-by" style="width: auto;">
-							  <span id="sort-by-content" style="width: auto; overflow: visible;">
-								Sort by..
-							  </span>
-							  <span class="sort-down-arrow nav-sprite"></span>							  
-							  <select title="Sort by" class="sort-select" id="sort-dropdown" name="theplatformsortfield" data-nav-selected="0" style="top: 0px;">
-							  	<option value="title" <?php selected($_POST['theplatformsortfield'], 'title')?>>Title: Asc</option>
-								<option value="title|desc" <?php selected($_POST['theplatformsortfield'], 'title|desc')?>>Title: Desc</option>
-								<option value="added" <?php selected($_POST['theplatformsortfield'], 'added')?>>Date Added: Asc</option>
-								<option value="added|desc" <?php selected( $_POST['theplatformsortfield'], 'added|desc')?>>Date Added: Desc</option>
-								<option value="author" <?php selected($_POST['theplatformsortfield'], 'author')?>>Author: Asc</option>
-								<option value="author|desc" <?php selected($_POST['theplatformsortfield'], 'author|desc')?>>Author: Desc</option>
-							  </select>
-							</span>
+<div class="tp">
+	<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="row">
+        <div class="navbar-header" style="margin-left: 15px">
+            <a class="navbar-brand" href="#"><img height="25px" width="25px" src="<?php echo plugins_url('/images/embed_button.png', __FILE__);?>"> thePlatform</a>
+        </div>            
+            <form class="navbar-form navbar-left" role="search" onsubmit="return false;"><!--TODO: Add seach functionality on Enter -->
+                <div class="form-group">
+                    <input id="input-search" type="text" class="form-control" placeholder="Keywords">
+                </div>
+                <button id="btn-feed-preview" type="button" class="btn btn-default">Search</button>
+            </form>
+            <p class="navbar-text sort-bar-text">Sort:</p>
+            <form class="navbar-form navbar-left sort-bar-nav" role="sort">
+                <select id="selectpick-sort" class="form-control">
+                    <option>Added</option>
+                    <option>Title</option>
+                    <option>Updated</option>
+                </select>
+            </form>
 
-							<?php 
-							// add_query_arg(array('filter_by_user_id' => 'TRUE'))
-								if ($preferences['user_id_customfield'] !== '') { ?>
-									<span id="filter-by-embed">
-										<input name="filter-by-userid" id="filter-cb-embed" type="checkbox" 
-											<?php 
-												checked(!isset($_POST['s']) && $preferences['filter_by_user_id'] === 'TRUE'); 
-												checked(isset($_POST['filter-by-userid']));
-											?>
-										/>
-                                		<label id="filter-label-embed" for="filter-cb-embed">My Media</label>
-								</span>
-							<?php } ?>	
+            <div id="my-content" class="navbar-left">
+                <p class="navbar-text sort-bar-text">
+                <!-- Render My Content checkbox -->
+    				<?php if ($preferences['user_id_customfield'] !== '') { ?>
+						<input type="checkbox" id="my-content-cb"
+						<?php 
+									checked($preferences['filter_by_user_id'] === 'TRUE'); 									
+						?>
+								/>
+						<label for="my-content-cb" style="font-weight: normal">My Content</label>													
+                	<?php } ?>
+                <!-- End My Content Checkbox -->	
+                </p>
+            </div>
+            <?php if ($IS_EMBED) writePlayers($players, $preferences); ?>    
+            <img id="load-overlay" src="<?php echo plugins_url('/images/loading.gif', __FILE__)?>" class="loadimg navbar-right">
+        </div>   
 
+        
+    </nav>
 
-							<div class="searchfield-outer nav-sprite">
-							  <div class="searchfield-inner nav-sprite">
-								<div class="searchfield-width" style="padding-left: 44px;">
-								  <div id="search-input-container">
-									<input type="text" autocomplete="off" name="s" value="<?php echo esc_attr($_POST['s']) ?>" title="Search For" id="search-input" style="padding-right: 1px;">
-								  </div>
-								</div>
-							  </div>
-							</div>
+    <div class="fs-main">
+        <div id="filter-container">
+            <div id="filter-affix" class="scrollable affix-top">
+                    <div id="list-categories" class="list-group">
+                        <a class="list-group-item active">
+                            Categories
+                        </a>
+                        <a href="#" class="list-group-item cat-list-selector">All Videos</a>
+                    </div>                    
+            </div>
+        </div>
 
+        <div id="content-container">
+            <div id="media-list"></div>
+        </div>
+        <div id="info-container">
+            <div id="info-affix" class="scrollable affix-top">
+                <div id="info-player-container">
+                        <div id="modal-player" class="marketplacePlayer">
+                            <iframe id="player" width="320px" height="180px" frameBorder="0" seamless="seamless" src="http://player.theplatform.com/p/<?php echo $preferences['mpx_account_pid'] . '/' .  $preferences['default_player_pid'];?>/embed?autoPlay=false"
+                                    webkitallowfullscreen mozallowfullscreen msallowfullscreen allowfullscreen></iframe>
+                        </div>
+                    <br>
+                    <div id="panel-contentpane" class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Metadata</h3>
+                        </div>
+                        <div class="panel-body">
+                        <?php                         	
+								foreach ($upload_options as $upload_field => $val) {
+									if ($val !== 'allow') 
+										continue;
 
-							<div class="search-submit-button nav-sprite">
-							  <input type="submit" title="Go" class="search-submit-input" value="Go">
-							</div>
-				   		</form>
+										$field_title = (strstr($upload_field, '$') !== false) ? substr(strstr($upload_field, '$'), 1) : $upload_field;
+										$display_title = mb_convert_case($field_title, MB_CASE_TITLE);
+										
+										//Custom names
+										if ($field_title === 'guid') $display_title = 'Reference ID';
+										if ($field_title === 'link') $display_title = 'Related Link';
+										$html = '<div class="row">';																			
+										$html .= '<strong>' . $display_title . ': </strong>';
+										$html .= '<span id="media-' . strtolower($field_title) . '"' . '" data-name="' . strtolower($field_title) . '"></span></div>';
+										echo $html;
+								}	
 
-				  		<div id="embed-player-select">
-							<span> Player </span>
-							<?php
-								$html = '<select id="embed_player" name="embed_player_select">';  
 								
-								foreach ($players as $player) {																		
- 									$html .= '<option value="' . esc_attr($player['plplayer$pid']) . '"' . selected($player['plplayer$pid'], $preferences['default_player_pid'], false) . '>' . esc_html($player['title']) . '</option>';      								
-								}
-								 $html .= '</select>';  
-								echo $html;
-							?>
-						</div>
-					</div>		
-				</div>	
-			</div>
+								$metadata_options = get_option('theplatform_metadata_options');							
+								foreach ($metadata_options as $custom_field => $val) {
+									if ($val !== 'allow')
+										continue;
 
-			<div id="response-div">
-					
-				<?php			  
+									$metadata_info = NULL;
+									foreach ($metadata as $entry) {
+										if (array_search($custom_field, $entry)) {
+											$metadata_info = $entry;
+											break;
+										}
+									}	
 
-					if ( !is_wp_error( $response ) ) {
+									if (is_null($metadata_info))
+										continue;								
+									
+									$field_title = $metadata_info['fieldName'];
+									$field_prefix = $metadata_info['namespacePrefix'];
+									$field_namespace = $metadata_info['namespace'];
+									
+									if ($field_title === $preferences['user_id_customfield'])
+										continue;
 
-						if (empty( $videos) )
-							echo 'No media present.';
-
-						$output = '<div style="clear:both;"></div><div style="align: center;"><div class="wrap" >';
-						foreach ( $videos as $video ) {	
-
-							$thumbnail_url = $video['plmedia$defaultThumbnailUrl'];
-							if ($thumbnail_url === '')					
-								$thumbnail_url = plugins_url('/images/notavailable.gif', __FILE__);
-							$embed_id = null;			
-							if (!is_array($video['media$content'])) 
-								continue;	
-
-							foreach ($video['media$content'] as $content) {			
-								if (!is_array($content['plfile$releases'])) 
-									continue;
-								
-								foreach ($content['plfile$releases'] as $release) {
-									if ($release['plrelease$delivery'] == "streaming") {
-										$embed_id = $release['plrelease$pid'];	
-										break;
-									}						
-								}					
-							}
-
-							if (is_null($embed_id)) {
-								$count--;
-								continue;
-							}
-							
-								
-							$output .= '
-							<div id="theplatform-media-embed-wrapper" class="theplatform-media">
-							<div id="' . esc_attr($embed_id) . '" class="photo embed-photo">
-							<img src="' . esc_url($thumbnail_url) . '">
-							</div>
-							<div class="item-title">' . esc_html( $video['title'] ) .'</div>
-							</div>';
-						}
-
-						$output.='</div><div style="clear:both;"></div>';
-
-						$output .= '<ul id="pagination">';
-
-						if (!isset($_POST['tppage']) || $_POST['tppage'] === '1')
-							$output .= '<li class="previous-off">«Previous</li>';
-						else
-							$output .= '<li><a class="mpx-media-page" href="#" data-page="' . (intval($_POST['tppage'])-1) . '">«Previous</a></li><li>';
-
-						for ($i=1; $i <= $pages; $i++) { 
-							if ($i == $page)
-								$output .= '<li class="active">' . esc_html($page) . '</li>';
-							else
-								$output .= '<li><a class="mpx-media-page" href="#" data-page="' . esc_attr($i) . '">' . esc_attr($i) . '</a></li>';
-						}
-
-						if ($_POST['tppage'] != $pages)
-							$output .= '<li><a class="mpx-media-page" href="#" data-page="' . (isset($_POST['tppage']) ? intval($_POST['tppage'])+1 : 2) . '">Next »</a></li>';
-						else
-							$output .= '<li class="next-off">Next »</li><li>';
-							
-						$output .= '</ul>';
-		
-					}
-					echo $output;
-				?>
-	      	</div>
-		</div>
-	</div>
+									$html = '<div class="row">';																			
+									$html .= '<strong>' . mb_convert_case($field_title, MB_CASE_TITLE) . ': </strong>';
+									$html .= '<span id="media-' . strtolower($field_title) . '" data-name="' . strtolower($field_title) . '" data-prefix="' . strtolower($field_prefix) . '" data-namespace="' . strtolower($field_namespace) . '"></span></div>';
+									echo $html;
+								}				
+                        ?>                      
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 
 </html>
