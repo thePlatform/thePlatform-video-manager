@@ -190,8 +190,8 @@ function writePlayers($players, $preferences) {
 										if ($field_title === 'guid') $display_title = 'Reference ID';
 										if ($field_title === 'link') $display_title = 'Related Link';
 										$html = '<div class="row">';																			
-										$html .= '<strong>' . $display_title . ': </strong>';
-										$html .= '<span id="media-' . strtolower($field_title) . '"' . '" data-name="' . strtolower($field_title) . '"></span></div>';
+										$html .= '<strong>' . esc_html($display_title) . ': </strong>';
+										$html .= '<span id="media-' . esc_attr(strtolower($field_title)) . '"' . '" data-name="' . esc_attr(strtolower($field_title)) . '"></span></div>';
 										echo $html;
 								}	
 
@@ -215,13 +215,15 @@ function writePlayers($players, $preferences) {
 									$field_title = $metadata_info['fieldName'];
 									$field_prefix = $metadata_info['namespacePrefix'];
 									$field_namespace = $metadata_info['namespace'];
+									$field_type = $metadata_info['dataType'];
+									$field_structure = $metadata_info['dataStructure'];
 									
 									if ($field_title === $preferences['user_id_customfield'])
 										continue;
 
 									$html = '<div class="row">';																			
-									$html .= '<strong>' . mb_convert_case($field_title, MB_CASE_TITLE) . ': </strong>';
-									$html .= '<span id="media-' . strtolower($field_title) . '" data-name="' . strtolower($field_title) . '" data-prefix="' . strtolower($field_prefix) . '" data-namespace="' . strtolower($field_namespace) . '"></span></div>';
+									$html .= '<strong>' . esc_html(mb_convert_case($field_title, MB_CASE_TITLE)) . ': </strong>';
+									$html .= '<span id="media-' . esc_attr(strtolower($field_title)) . '" data-type="' . esc_attr($field_type) . '" data-structure="' . esc_attr($field_structure) . '" data-name="' . esc_attr(strtolower($field_title)) . '" data-prefix="' . esc_attr(strtolower($field_prefix)) . '" data-namespace="' . esc_attr(strtolower($field_namespace)) . '"></span></div>';
 									echo $html;
 								}				
                         ?>                      
