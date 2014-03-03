@@ -1,15 +1,10 @@
 <?php 	
-	wp_enqueue_style('bootstrap_tp_css');
-	wp_enqueue_script('theplatform_js');	
-
 	if ( ! defined( 'ABSPATH' ) ) exit;
 
-	
-
-
-	$IS_EDIT = strpos($_SERVER['QUERY_STRING'], '&media=') !== false ? true : false;
+	$mediaId = $_POST['media'];
+	$IS_EDIT = $mediaId !== NULL;
 	$tp_uploader_cap = apply_filters('tp_uploader_cap', 'upload_files');
-	$tp_editor_cap = apply_filters('tp_editor_cap', 'upload_files');
+	$tp_editor_cap = apply_filters('tp_editor_cap', 'upload_files');	
 
 	if ($IS_EDIT && !current_user_can($tp_editor_cap)) 
 		wp_die('<p>'.__('You do not have sufficient permissions to edit MPX Media').'</p>');
@@ -17,15 +12,19 @@
 	if (!$IS_EDIT && !current_user_can($tp_uploader_cap))
 		wp_die('<p>'.__('You do not have sufficient permissions to upload MPX Media').'</p>');
 
+
 	$tp_api = new ThePlatform_API;
 	$media = array();
 	if ($IS_EDIT)
-		$media = $tp_api->get_video_by_id($_GET['media']);
-
-	$metadata = $tp_api->get_metadata_fields();
-	$preferences = get_option('theplatform_preferences_options');	
-	$upload_options = get_option('theplatform_upload_options');
-	$metadata_options = get_option('theplatform_metadata_options');			
+		$media = $tp_api->get_video_by_id($mediaId);
+	else {
+		wp_enqueue_style('bootstrap_tp_css');
+		wp_enqueue_script('theplatform_js');
+		$metadata = $tp_api->get_metadata_fields();
+		$preferences = get_option('theplatform_preferences_options');	
+		$upload_options = get_option('theplatform_upload_options');
+		$metadata_options = get_option('theplatform_metadata_options');			
+	}
 
 ?>
 <h1> Upload Media to MPX </h1>
@@ -95,7 +94,7 @@
 		$metadata_options = get_option('theplatform_metadata_options');
 		
 		$html = '';
-
+		
 		foreach ($metadata_options as $custom_field => $val) {
 			$metadata_info = NULL;
 			foreach ($metadata as $entry) {

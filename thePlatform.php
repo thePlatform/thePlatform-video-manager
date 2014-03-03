@@ -105,9 +105,9 @@ class ThePlatform_Plugin {
 	 * Calls the Embed template in an IFrame and Dialog
 	 * @return void
 	 */
-	function edit() {
-
-		require_once($this->plugin_dir . 'thePlatform-uploader.php?media=' . $_GET['media'] );
+	function edit() {		
+		$args = array( 'fields' => $_POST['params'], 'custom_fields' => $_POST['custom_params']);
+		$this->tp_api->update_media($args);
 		die();
 	}
 

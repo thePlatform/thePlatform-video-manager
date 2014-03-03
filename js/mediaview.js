@@ -157,7 +157,7 @@ jQuery(document).on('change', '.media > [type="checkbox"]', function () {
 
 //Set color and release into player when clicking on media.
 jQuery(document).on('click', '.media', function () {
-    updateContentPane(jQuery(this).data('media'));
+    updateContentPane(jQuery(this).data('media'));    
     jQuery('.media').css('background-color', '');
     jQuery(this).css('background-color', '#D8E8FF');
     jQuery(this).data('bgc', '#D8E8FF');
@@ -325,9 +325,10 @@ function addMediaObject(media) {
     //TBD: Should there be fallback?
     //There seems to be a max depth when storing data on media, so this injects the thumb release to a parent for easily find and display later.
     media['defaultThumbRelease'] = mpxHelper.getDefaultThumbRelease(media.thumbnails);
-
+    
     newMedia.data('guid', media.guid);
     newMedia.data('media', media);
+    newMedia.data('id', media.id)
     var previewUrl = mpxHelper.extractVideoUrlfromFeed(media);
     if (previewUrl.length == 0 && localStorage.isEmbed == "1")
         return; 
@@ -370,16 +371,18 @@ function addMediaObject(media) {
     });
 
     jQuery('.media-edit', newMedia).click(function() {
+        jQuery(newMedia).click();
+        localStorage.mediaId = newMedia.data('id');
     
         if (newMedia != '') {
-            jQuery("#tp-edit-dialog").load(localscript.ajaxurl, { action: 'theplatform_edit', media: newMedia.id }).dialog({
+            jQuery("#tp-edit-dialog").dialog({
                     dialogClass: "wp-dialog", 
                     modal: true, 
                     resizable: true, 
-                    minWidth: 1024, 
-                    width: 1200, 
-                    height: 1024
-                }).css("overflow-y","hidden");    
+                    minWidth: 800, 
+                    width: 1024,
+                    position: ['center',20]                   
+                }).css("overflow","hidden");    
         }
 
         return false;
@@ -425,6 +428,7 @@ function updateContentPane(mediaItem) {
             value = catList
         }              
         jQuery('#media-' + name).text(value || '')
+        jQuery('#theplatform_upload_' + fullName.replace('$', "\\$")).val(value || '')
     })  
 }
 

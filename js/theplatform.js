@@ -207,10 +207,20 @@ jQuery(document).ready(function() {
 	});
 
 	//Edit Media Validation	
-	jQuery("#theplatform-edit-media").submit(function(event) {
+	jQuery("#theplatform_edit_button").click(function(event) {
 		var validation_error = validate_media(event);;
 		var params = parseMediaParams();
 		var custom_params = parseCustomParams();	
+		params.id = localStorage.mediaId;
+
+		var data = {
+			action: 'theplatform_edit',
+			params: JSON.stringify(params),
+			custom_params: JSON.stringify(custom_params)
+		}
+		jQuery.post(localscript.ajaxurl, data, function(resp) {
+			console.log(resp);
+		});
 	});
 
 	// Upload media button handler

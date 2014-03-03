@@ -258,30 +258,10 @@ class ThePlatform_API {
 	 * @param array $payload JSON payload containing field-data pairs to update
 	 * @return string A message indicating whether or not the update succeeded
 	*/
-	function update_media($payload) {
-		if (!$this->preferences)
-			$this->preferences = get_option($this->preferences_options_key);
-	
-		$params = array(			
-			'token' => $this->mpx_signin(),			
-		);
-				
-		$response = $this->query('Media', 'put', $params, $payload, true);
-						
-		$this->mpx_signout($params['token']);
-		
-		if( is_wp_error( $response ) ) {
-		   $error_message = $response->get_error_message();
-		   echo '<div id="message" class="error below-h2"><p>' . $error_message . '</p></div>';
-		} else {
-			$data = decode_json_from_server($response, TRUE);
-			if ($data['isException'] == true) {
-				$error_message = $data['title'] . ": " . $data['description'];
-				echo '<div id="message" class="error below-h2"><p>' . $error_message . '</p></div>';
-			} else {			
-			   echo '<div id="message" class="updated below-h2 fade"><p>Video updated.</p></div>';
-			}
-		}
+	function update_media($args) {
+		$token = $this->mpx_signin();
+		$this->create_media_placeholder($args, $token);
+		$this->mpx_signout($token);
 	}
 
 	/**
