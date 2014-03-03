@@ -167,29 +167,6 @@ jQuery(document).ready(function() {
 		if (jQuery('#mpx_server_id option:selected').length == 0) {			
 			jQuery('#mpx_server_id').parent().parent().hide();
 		}
-
-
-		// Create the lists
-		jQuery('form table').hide()
-		jQuery('form table').before('<ul class="connectedSortable hideList"></ul><ul class="connectedSortable showList"></ul><ul class="connectedSortable editList"></ul>')
-		jQuery('.tpField').each(function(key, value) {
-			var listClass = '.hideList'
-			if (jQuery(this).hasClass('show'))
-				listClass = '.showList';
-			else if (jQuery(this).hasClass('edit'))
-				listClass = '.editList';
-
-				jQuery(listClass).append('<li>' + jQuery(this).parent().prev().text() + '</li>')
-		});
-
-
-		jQuery(function() {
-		    jQuery( ".hideList, .showList, .editList" ).sortable({
-		      connectWith: ".connectedSortable"
-		    }).disableSelection();
-		  });
-
-
 	}	
 	
 	//Set up the PID for the MPX account on change in the Settings page	

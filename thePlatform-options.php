@@ -40,7 +40,6 @@ class ThePlatform_Options {
 		$this->register_upload_options();
 
 
-
 		//Render the page
 		$this->plugin_options_page();
 	}
@@ -51,7 +50,6 @@ class ThePlatform_Options {
 	function enqueue_scripts() {
 		wp_enqueue_script('jquery');  
 		wp_enqueue_script('theplatform_js');
-		wp_enqueue_script('jquery-ui-sortable');
 		wp_enqueue_style('dashicons');
 	}
 	
@@ -339,11 +337,11 @@ class ThePlatform_Options {
 	/*
 	 * Metadata Option field callback.
 	 */
-	function field_metadata_option($args, $value='hide') {
+	function field_metadata_option($args) {
 		$field_id = $args['id'];
 		$field_title = $args['title'];			
 
-		$html = '<select class="tpField ' . $value . '" id="' . esc_attr($field_id) . '" name="theplatform_metadata_options[' . esc_attr($field_id) . ']">';  
+		$html = '<select id="' . esc_attr($field_id) . '" name="theplatform_metadata_options[' . esc_attr($field_id) . ']">';  
 			$html .= '<option value="allow"' . selected( $this->metadata_options[$field_id], 'allow', false) . '>Allow</option>';    
 			$html .= '<option value="omit"' . selected( $this->metadata_options[$field_id], 'omit', false) . '>Omit</option>';  
 		$html .= '</select>';
