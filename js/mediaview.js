@@ -308,7 +308,9 @@ function addMediaObject(media) {
 
     var newMedia = '<div class="media" id="' + media.guid + '"><img class="media-object pull-left thumb-img" data-src="' + placeHolder + '" alt="128x72" src="' + media.defaultThumbnailUrl + '">'
     if (location.search.indexOf('&embed=true') != -1)
-        newMedia += '<button class="btn btn-xs media-embed pull-right" data-toggle="tooltip" data-placement="bottom" title="Embed this Media"><></button>';
+        newMedia += '<button class="btn btn-xs media-embed pull-right" data-toggle="tooltip" data-placement="bottom" title="Embed this Media"><div class="dashicons dashicons-migrate"></div></button>';
+    else
+        newMedia += '<button class="btn btn-xs media-edit pull-right" data-toggle="tooltip" data-placement="bottom" title="Edit this Media"><div class="dashicons dashicons-edit"></div></button>';
     newMedia += '<div class="media-body">' + '<div id="head"><strong class="media-heading"></strong></div>' + '<div id="source"></div>' + '<div id="desc"></div>' + '</div>' + '</div>';
 
     newMedia = jQuery(newMedia);
@@ -359,6 +361,28 @@ function addMediaObject(media) {
         }
         return false;
 
+    });
+
+    jQuery('.media-edit', newMedia).hover(function() {
+        jQuery(this).tooltip();
+    }, function() {
+        jQuery(this).attr('title', 'Edit this Media').tooltip('fixTitle');
+    });
+
+    jQuery('.media-edit', newMedia).click(function() {
+    
+        if (newMedia != '') {
+            jQuery("#tp-edit-dialog").load(localscript.ajaxurl, { action: 'theplatform_edit', media: newMedia.id }).dialog({
+                    dialogClass: "wp-dialog", 
+                    modal: true, 
+                    resizable: true, 
+                    minWidth: 1024, 
+                    width: 1200, 
+                    height: 1024
+                }).css("overflow-y","hidden");    
+        }
+
+        return false;
     });
 
     jQuery('#media-list').append(newMedia);

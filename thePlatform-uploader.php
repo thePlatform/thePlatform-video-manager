@@ -3,15 +3,21 @@
 	wp_enqueue_script('theplatform_js');	
 
 	if ( ! defined( 'ABSPATH' ) ) exit;
-	$tp_uploader_cap = apply_filters('tp_uploader_cap', 'upload_files');
-	if (!current_user_can($tp_uploader_cap)) {
-		wp_die('<p>'.__('You do not have sufficient permissions to upload MPX Media').'</p>');
-	}		
 
-	$tp_api = new ThePlatform_API;
+	
 
 
 	$IS_EDIT = strpos($_SERVER['QUERY_STRING'], '&media=') !== false ? true : false;
+	$tp_uploader_cap = apply_filters('tp_uploader_cap', 'upload_files');
+	$tp_editor_cap = apply_filters('tp_editor_cap', 'upload_files');
+
+	if ($IS_EDIT && !current_user_can($tp_editor_cap)) 
+		wp_die('<p>'.__('You do not have sufficient permissions to edit MPX Media').'</p>');
+	
+	if (!$IS_EDIT && !current_user_can($tp_uploader_cap))
+		wp_die('<p>'.__('You do not have sufficient permissions to upload MPX Media').'</p>');
+
+	$tp_api = new ThePlatform_API;
 	$media = array();
 	if ($IS_EDIT)
 		$media = $tp_api->get_video_by_id($_GET['media']);

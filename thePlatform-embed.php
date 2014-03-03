@@ -5,11 +5,12 @@
 	wp_print_scripts('mediaview_js');
 	wp_print_scripts('bootstrap_js');	
 	wp_print_scripts('infiniscroll_js');
+	wp_print_scripts('jquery-ui-dialog');
 	wp_print_scripts('pdk_external_controller');
-
+	wp_print_styles('dashicons');
 	wp_print_styles('bootstrap_tp_css');
 	wp_print_styles('theplatform_css');
-	wp_print_styles('jquery-ui-dialog');
+	wp_print_styles('wp-jquery-ui-dialog');
 ?>
 <!DOCTYPE html>
 <html lang="en" class="no-js">
@@ -102,6 +103,7 @@ function writePlayers($players, $preferences) {
 	localStorage.account = "<?php echo $preferences['mpx_account_id'];?>";
 	localStorage.fields = "<?php echo $fields;?>";
 	localStorage.isEmbed = "<?php echo $IS_EMBED;?>";
+	localStorage.editUrl = "<?php echo plugins_url('theplatform-uploader.php', __FILE__);?>"
 	window.parent.document.body.style.overflowY="hidden";
 
 
@@ -234,6 +236,7 @@ function writePlayers($players, $preferences) {
         </div>
     </div>
 </div>
+<div id="tp-edit-dialog"></div>
 </body>
 
 </html>

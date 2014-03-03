@@ -85,6 +85,7 @@ class ThePlatform_Plugin {
 			add_action('wp_ajax_get_subaccounts', array($this->tp_api, 'get_subaccounts'));
 			add_action('wp_ajax_theplatform_embed', array(&$this, 'embed')); 	
 			add_action('wp_ajax_theplatform_upload', array(&$this, 'upload'));	
+			add_action('wp_ajax_theplatform_edit', array(&$this, 'edit'));	
 			add_action('wp_ajax_get_categories', array($this->tp_api, 'get_categories'));
 			add_action('wp_ajax_get_videos', array($this->tp_api, 'get_videos'));	
 		}	
@@ -97,6 +98,16 @@ class ThePlatform_Plugin {
 	 */
 	function embed() {
 		require_once( $this->plugin_dir . 'thePlatform-embed.php' );
+		die();
+	}
+
+	/**
+	 * Calls the Embed template in an IFrame and Dialog
+	 * @return void
+	 */
+	function edit() {
+
+		require_once($this->plugin_dir . 'thePlatform-uploader.php?media=' . $_GET['media'] );
 		die();
 	}
 
