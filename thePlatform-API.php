@@ -463,7 +463,7 @@ class ThePlatform_API {
 		$url = TP_API_MEDIA_ENDPOINT . '&count=true&fields=' . $_POST['fields'] . '&token=' . $token . '&range=' . $_POST['range'];
 
 		if ($_POST['isEmbed'] === "1") {
-			$url .= '&byAvailabilityState=available&byApproved=true&count=true&types=variable&byContent=byReleases=byDelivery%253Dstreaming';
+			$url .= '&byAvailabilityState=available&byApproved=true&count=true&byContent=byReleases=byDelivery%253Dstreaming';
 		}
 
 		if (!empty($_POST['myContent']) && $_POST['myContent'] === 'true') {
@@ -487,7 +487,7 @@ class ThePlatform_API {
 
 		$response = ThePlatform_API_HTTP::get($url, array("timeout" => 120));		
 		$this->mpx_signout($token);
-		
+
 		echo(wp_remote_retrieve_body($response));		
 		die();						
 	}
