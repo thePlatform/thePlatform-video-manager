@@ -330,7 +330,7 @@ class ThePlatform_Options {
 				$html = '<select id="' . esc_attr($field) . '"" name="theplatform_preferences_options[' . esc_attr($field) . ']"/>';
 				$html .= '<option value="(None)" ' . selected( $opts[$field], '(None)', false) . '>(None)</option>';
 				foreach ($this->metadata_fields as $metadata) {
-					$html .= '<option value="' . esc_attr($metadata['title']) . '" ' . selected( $opts[$field], $metadata['title'], false) . '>' . esc_html($metadata['title']) . '</option>';
+					$html .= '<option value="' . esc_attr($metadata['fieldName']) . '" ' . selected( $opts[$field], $metadata['fieldName'], false) . '>' . esc_html($metadata['title']) . '</option>';
 				}								
 				$html .= '</select>'; 
 				break;
