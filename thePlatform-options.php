@@ -326,6 +326,14 @@ class ThePlatform_Options {
 				$html .= '<option value="FALSE" ' . selected( $opts[$field], 'FALSE', false) . '>False</option>';
 				$html .= '</select>'; 
 				break;
+			case 'user_id_customfield':
+				$html = '<select id="' . esc_attr($field) . '"" name="theplatform_preferences_options[' . esc_attr($field) . ']"/>';
+				$html .= '<option value="(None)" ' . selected( $opts[$field], '(None)', false) . '>(None)</option>';
+				foreach ($this->metadata_fields as $metadata) {
+					$html .= '<option value="' . esc_attr($metadata['title']) . '" ' . selected( $opts[$field], $metadata['title'], false) . '>' . esc_html($metadata['title']) . '</option>';
+				}								
+				$html .= '</select>'; 
+				break;
 			default:		
 				$html = '<input type="text" id="' . esc_attr($field) . '" name="theplatform_preferences_options[' . esc_attr($field) . ']" value="' . esc_attr( $opts[$field] ) . '" />';		
 				break;

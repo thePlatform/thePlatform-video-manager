@@ -127,7 +127,7 @@ function writePlayers($players, $preferences) {
             <div id="my-content" class="navbar-left">
                 <p class="navbar-text sort-bar-text">
                 <!-- Render My Content checkbox -->
-    				<?php if ($preferences['user_id_customfield'] !== '') { ?>
+    				<?php if ($preferences['user_id_customfield'] !== '(None)') { ?>
 						<input type="checkbox" id="my-content-cb"
 						<?php 
 									checked($preferences['filter_by_user_id'] === 'TRUE'); 									
