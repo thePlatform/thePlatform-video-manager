@@ -485,9 +485,10 @@ class ThePlatform_API {
 			$url .= '&sort=' . $sort;
 		}
 
-		$response = ThePlatform_API_HTTP::get($url);		
-		echo(wp_remote_retrieve_body($response));
+		$response = ThePlatform_API_HTTP::get($url, array("timeout" => 120));		
 		$this->mpx_signout($token);
+		
+		echo(wp_remote_retrieve_body($response));		
 		die();						
 	}
 	

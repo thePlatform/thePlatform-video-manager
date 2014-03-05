@@ -117,14 +117,19 @@ var mpxHelper = {
         else
             return res;
 
-        for (var contentIdx  in media){
+        for (var contentIdx in media){
             var content = media[contentIdx];
-            if (content.contentType == "video" && content.format == "MPEG4" && content.releases) {
+            if (content.contentType == "video" && content.releases) {
                 for (var releaseIndex in content.releases) {
                     if (content.releases[releaseIndex].delivery == "streaming")
                         res.push(content.releases[releaseIndex].pid);    
                 }
-                
+            }
+            if (content.contentType == "audio" && content.releases) {
+                for (var releaseIndex in content.releases) {
+                    if (content.releases[releaseIndex].delivery == "streaming" || content.releases[releaseIndex].delivery == "download" )
+                        res.push(content.releases[releaseIndex].pid);    
+                }
             }
         }
 

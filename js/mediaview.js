@@ -4,16 +4,9 @@ jQuery(document).ready(function () {
     if (container)
         container.style.height = window.parent.innerHeight;
 
-    $pdk.bind("player");
-    $pdk.controller.addEventListener('OnPlayerLoaded', function() {
-        //Select the first one on the page.
-        setTimeout(function() {
-            if (jQuery('#media-list').children().length < 2) 
-                jQuery('.media', '#media-list').click();
-        }, 500)
-        
-    })
+    $pdk.bind("player");    
     jQuery('#load-overlay').hide();
+
     //Parse params and basic setup.
     var queryParams = mpxHelper.getParameters();
     localStorage.baseMediaUrl = ''
@@ -161,9 +154,15 @@ jQuery(document).on('click', '.media', function () {
     jQuery('.media').css('background-color', '');
     jQuery(this).css('background-color', '#D8E8FF');
     jQuery(this).data('bgc', '#D8E8FF');
-    localStorage.currentRelease = jQuery(this).data('release');
+    localStorage.currentRelease = jQuery(this).data('release');    
     $pdk.controller.resetPlayer();
-    $pdk.controller.loadReleaseURL("http://link.theplatform.com/s/lkKgNC/" + localStorage.currentRelease,true);
+    if (localStorage.currentRelease !== "undefined") {
+        jQuery('#modal-player-placeholder').hide();        
+        $pdk.controller.loadReleaseURL("http://link.theplatform.com/s/" + localStorage.accountPid + "/" + localStorage.currentRelease,true);
+    }
+    else {
+        jQuery('#modal-player-placeholder').show()        
+    }
 });
 
 //Update background color when hovering over media

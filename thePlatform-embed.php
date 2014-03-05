@@ -101,6 +101,7 @@ function writePlayers($players, $preferences) {
 	localStorage.clear();
 	localStorage.token = "<?php echo $tp_api->mpx_signin();?>";
 	localStorage.account = "<?php echo $preferences['mpx_account_id'];?>";
+	localStorage.accountPid = "<?php echo $preferences['mpx_account_pid'];?>";
 	localStorage.fields = "<?php echo $fields;?>";
 	localStorage.isEmbed = "<?php echo $IS_EMBED;?>";
 	localStorage.editUrl = "<?php echo plugins_url('theplatform-uploader.php', __FILE__);?>"
@@ -171,6 +172,7 @@ function writePlayers($players, $preferences) {
             <div id="info-affix" class="scrollable affix-top">
                 <div id="info-player-container">
                         <div id="modal-player" class="marketplacePlayer">
+                        	<img id="modal-player-placeholder" data-src="holder.js/320x180/text:No Preview Available" src="" style="position: absolute"><!-- holder.js/128x72/text:No Thumbnail" -->
                             <iframe id="player" width="320px" height="180px" frameBorder="0" seamless="seamless" src="http://player.theplatform.com/p/<?php echo $preferences['mpx_account_pid'] . '/' .  $preferences['default_player_pid'];?>/embed?autoPlay=false"
                                     webkitallowfullscreen mozallowfullscreen msallowfullscreen allowfullscreen></iframe>
                         </div>
