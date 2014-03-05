@@ -123,15 +123,7 @@ function writePlayers($players, $preferences) {
                 </div>
                 <button id="btn-feed-preview" type="button" class="btn btn-default">Search</button>
             </form>
-            <p class="navbar-text sort-bar-text">Sort:</p>
-            <form class="navbar-form navbar-left sort-bar-nav" role="sort">
-                <select id="selectpick-sort" class="form-control">
-                    <option>Added</option>
-                    <option>Title</option>
-                    <option>Updated</option>
-                </select>
-            </form>
-
+   
             <div id="my-content" class="navbar-left">
                 <p class="navbar-text sort-bar-text">
                 <!-- Render My Content checkbox -->
