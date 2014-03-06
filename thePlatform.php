@@ -74,10 +74,9 @@ class ThePlatform_Plugin {
 		$this->plugin_base_dir = plugin_dir_path(__FILE__);
 		$this->plugin_base_url = plugins_url('/', __FILE__);
 		
-		if (is_admin()) {						
+		if (is_admin()) {							
 			add_action('admin_menu', array(&$this, 'add_admin_page'));
 			add_action('admin_init', array(&$this, 'register_scripts'));		
-			add_action('media_buttons', array(&$this, 'theplatform_media_button'), 100);	
 			add_action('wp_ajax_initialize_media_upload', array($this->tp_api, 'initialize_media_upload'));
 			add_action('wp_ajax_get_subaccounts', array($this->tp_api, 'get_subaccounts'));
 			add_action('wp_ajax_theplatform_media', array(&$this, 'embed')); 	
@@ -87,7 +86,7 @@ class ThePlatform_Plugin {
 			add_action('wp_ajax_get_videos', array($this->tp_api, 'get_videos'));	
 		}	
 		add_shortcode('theplatform', array(&$this, 'shortcode'));
-	}
+	}	
 
 	/**
 	 * Registers javascripts and css
@@ -132,21 +131,6 @@ class ThePlatform_Plugin {
 		add_submenu_page($slug, 'thePlatform Video Uploader', 'Upload Media to MPX', $tp_uploader_cap, 'theplatform-uploader', array( &$this, 'upload_page' ));
 		add_submenu_page($slug, 'thePlatform Plugin Settings', 'Settings', $tp_admin_cap, 'theplatform-settings', array( &$this, 'admin_page' ) );
 	}
-
-	
-	
-	/**
-	 * Adds thePlatform media embed button to posts
-	 */
-	function theplatform_media_button() {
-		global $post_ID, $temp_ID;
-		$iframe_post_id = (int) ( 0 == $post_ID ? $temp_ID : $post_ID );
-		$title = 'Embed Video from thePlatform';
-		$image_url = plugins_url('/images/embed_button.png', __FILE__);
- 		$site_url = admin_url("admin-ajax.php?post_id=$iframe_post_id&action=theplatform_media&embed=true"); 
-		echo '<a href="#" class="button tp-embed" title="' . esc_attr($title) . '"><div id="tp-embed-dialog"></div><img src="' . esc_url($image_url) . '" alt="' . esc_attr($title) . '" width="20" height="20" />thePlatform</a>';
-		echo '<script type="text/javascript">jQuery(".tp-embed").click(function() {jQuery("#tp-embed-dialog").html(\'<iframe src="' . esc_url($site_url) . '" height="100%" width="100%">\').dialog({dialogClass: "wp-dialog", modal: true, resizable: true, minWidth: 1024, width: 1200, height: 1024}).css("overflow-y","hidden");});</script>';				
-	}	
 
 	/**
 	 * Calls the plugin's options page template
@@ -335,6 +319,26 @@ class ThePlatform_Plugin {
 add_action('init', array( 'ThePlatform_Plugin', 'init' ) );
 add_action('wp_ajax_verify_account', 'verify_account_settings');
 add_action('admin_init', 'register_plugin_settings' );
+add_action('init', 'theplatform_buttonhooks');	
+
+function theplatform_buttonhooks() {
+	$tp_embedder_cap = apply_filters('tp_embedder_cap', 'edit_posts');	
+	if (current_user_can($tp_embedder_cap)) {
+		add_filter("mce_external_plugins", "theplatform_register_tinymce_javascript");
+		add_filter('mce_buttons', 'theplatform_register_buttons');
+	}
+}
+ 
+function theplatform_register_buttons($buttons) {
+   array_push($buttons, "|", "theplatform");
+   return $buttons;
+}
+ 
+// Load the TinyMCE plugin : editor_plugin.js (wp2.5)
+function theplatform_register_tinymce_javascript($plugin_array) {
+   $plugin_array['theplatform'] = plugins_url('/js/theplatform.tinymce.plugin.js',__file__);
+   return $plugin_array;
+}
 
 /**
  * Registers initial plugin settings during initalization

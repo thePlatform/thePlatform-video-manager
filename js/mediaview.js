@@ -282,9 +282,10 @@ function addMediaObject(media) {
             var shortcode = '[theplatform media="' + newMedia.data('release') + '" player="' + player + '"]';
         
             var win = window.dialogArguments || opener || parent || top;
-            var isVisual = (typeof win.tinyMCE != "undefined") && win.tinyMCE.activeEditor && !win.tinyMCE.activeEditor.isHidden(); 
+            var editor = win.tinyMCE.activeEditor;
+            var isVisual = (typeof win.tinyMCE != "undefined") && editor && !editor.isHidden(); 
             if (isVisual) {
-                win.tinyMCE.activeEditor.execCommand('mceInsertContent', false, shortcode);
+                editor.execCommand('mceInsertContent', false, shortcode);
             } else {
                 var currentContent = jQuery('#content', window.parent.document).val();
                 if ( typeof currentContent == 'undefined' )
