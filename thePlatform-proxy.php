@@ -25,7 +25,7 @@ class MPXProxy {
 
 	public static function check_nonce_and_permissions() {
 		check_admin_referer('theplatform-ajax-nonce');
-		$tp_publisher_cap = apply_filters('tp_publisher_cap', 'upload_files');
+		$tp_uploader_cap = apply_filters('tp_uploader_cap', 'upload_files');
 		if (!current_user_can($tp_publisher_cap)) {
       		wp_die('<p>'.__('You do not have sufficient permissions to modify MPX Media').'</p>');
       	}

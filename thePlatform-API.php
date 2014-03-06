@@ -299,11 +299,7 @@ class ThePlatform_API {
 	 * @return array An array of parameters for the fragmented uploader service
 	*/ 
 	function initialize_media_upload() {		
-		check_admin_referer('theplatform-ajax-nonce');
-		$tp_publisher_cap = apply_filters('tp_publisher_cap', 'upload_files'); 
-		if (!current_user_can($tp_publisher_cap)) {
-			wp_die('<p>'.__('You do not have sufficient permissions to upload files').'</p>');
-		}
+		check_admin_referer('theplatform-ajax-nonce');		
 
 		if (!$this->preferences)
 			$this->preferences = get_option($this->preferences_options_key);
