@@ -22,7 +22,7 @@
 <div id="tp-container">		
 	<?php 
 		$site_url = admin_url("/admin-ajax.php?action=theplatform_media"); 
-		echo '<iframe id="tp-iframe" src="' . $site_url . '"></iframe>'
+		echo '<iframe id="tp-iframe" src="' . esc_url($site_url) . '"></iframe>'
 	?>		
 </div>
 

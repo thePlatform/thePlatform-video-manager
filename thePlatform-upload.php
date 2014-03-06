@@ -161,7 +161,7 @@
 		</div>
 		<?php } 
 		else { ?>
-			<div class="row">
+			<div class="row" style="margin-top: 10px;">
 				<div class="col-xs-3">
 					<button id="theplatform_edit_button" class="form-control btn btn-primary" type="button" name="theplatform-edit-button">Submit</button>		
 				</div>

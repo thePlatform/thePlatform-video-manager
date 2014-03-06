@@ -10,7 +10,7 @@
 	wp_print_styles('wp-jquery-ui-dialog');
 ?>
 <!DOCTYPE html>
-<html lang="en" class="no-js">
+<html <?php language_attributes(); ?>>
 <head>
 
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -190,7 +190,9 @@ function writePlayers($players, $preferences) {
         </div>
     </div>
 </div>
-<?php if (!$IS_EMBED) { ?>
+<?php 
+$tp_editor_cap = apply_filters('tp_editor_cap', 'upload_files');
+if (!$IS_EMBED && current_user_can($tp_editor_cap)) { ?>
 <div id="tp-edit-dialog" class="tp" style="display: none; padding-left:10px;">
 	<h1> Edit Media </h1><div id="media-mpx-upload-form" class="tp">
 	<?php require_once( dirname(__FILE__) . '/thePlatform-upload.php' ); ?>
