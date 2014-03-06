@@ -1,7 +1,6 @@
 tinymce.PluginManager.add('theplatform', function(editor, url) {
     // Add a button that opens a window
-    editor.addButton('theplatform', {
-        text: 'Embed MPX Media',
+    editor.addButton('theplatform', {        
         tooltip: 'Embed MPX Media',        
         image: url.substring(0, url.lastIndexOf('/js')) + '/images/embed_button.png',
         onclick: function() {
