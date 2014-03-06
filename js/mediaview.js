@@ -1,52 +1,35 @@
 jQuery(document).ready(function () {
-
-    var container = window.parent.document.getElementById('tp-container')
-    if (container)
-        container.style.height = window.parent.innerHeight;
-
-    $pdk.bind("player");    
-    jQuery('#load-overlay').hide();
-
     //Parse params and basic setup.
     var queryParams = mpxHelper.getParameters();
-    localStorage.baseMediaUrl = ''
-    localStorage.provider = queryParams.provider || '';
-    localStorage.selectedCategory = '';
-    localStorage.feedEndRange = 0;
-    localStorage.queryString = ''
+    tpHelper.selectedCategory = '';
+    tpHelper.feedEndRange = 0;
+    tpHelper.queryString = ''
+    $pdk.bind("player");    
+    jQuery('#load-overlay').hide();
+    mpxHelper.getCategoryList(buildCategoryAccordion);
 
-    mpxHelper.getCategoryList(localStorage.baseMediaUrl, buildCategoryAccordion);
-
-    jQuery('#list-categories').on('mouseover', function () {
-        jQuery('body')[0].style.overflowY = 'none';
-    });
-    jQuery('#list-categories').on('mouseout', function () {
-        jQuery('body')[0].style.overflowY = 'auto';
-    });
-
-    //Set search button to refresh when clicked.
-    jQuery('#btn-feed-preview').click(refreshView);
-
-    //Turn on infinite scrolling.
+    /**
+     * Set up the infinite scrolling media list
+     */
     jQuery('#media-list').infiniteScroll({
         threshold: 100,
         onEnd: function () {
             //No more results
         },
         onBottom: function (callback) {
-            jQuery('#load-overlay').show(); // show loading before we call getFeed
-            var theRange = parseInt(localStorage.feedEndRange);
+            jQuery('#load-overlay').show(); // show loading before we call getVideos
+            var theRange = parseInt(tpHelper.feedEndRange);
             theRange = (theRange + 1) + '-' + (theRange + 20);
-            mpxHelper.getFeed(theRange, function (resp) {
+            mpxHelper.getVideos(theRange, function (resp) {
                 if (resp['isException']) {
                     jQuery('#load-overlay').hide();
                     //what do we do on error?
                 }
 
-                localStorage.feedResultCount = resp['totalResults'];
-                localStorage.feedStartRange = resp['startIndex'];
-                localStorage.feedEndRange = 0;
-                if (resp['entryCount'] > 0) localStorage.feedEndRange = resp['startIndex'] + resp['entryCount'] - 1;
+                tpHelper.feedResultCount = resp['totalResults'];
+                tpHelper.feedStartRange = resp['startIndex'];
+                tpHelper.feedEndRange = 0;
+                if (resp['entryCount'] > 0) tpHelper.feedEndRange = resp['startIndex'] + resp['entryCount'] - 1;
 
                 var entries = resp['entries'];
                 for (var i = 0; i < entries.length; i++)
@@ -54,26 +37,9 @@ jQuery(document).ready(function () {
 
                 jQuery('#load-overlay').hide();
                 Holder.run();
-                callback(parseInt(localStorage.feedEndRange) < parseInt(localStorage.feedResultCount)); //True if there are still more results.
+                callback(parseInt(tpHelper.feedEndRange) < parseInt(tpHelper.feedResultCount)); //True if there are still more results.
             });
         }
-    });
-
-    jQuery('#text-feedurl').tooltip({
-        title: mpxHelper.copyMessage(navigator.platform),
-        trigger: 'mouseup',
-        placement: 'bottom',
-        delay: {
-            hide: 200
-        }
-    });
-
-    jQuery('#text-feedurl').blur(function () {
-        jQuery(this).val(decodeURIComponent(jQuery(this).data('feed')));
-    });
-
-    jQuery('#text-feedurl').mouseup(function () {
-        jQuery(this).select();
     });
 
     //This is for setting a section "scrollable" so it will scroll without scrolling everything else.
@@ -103,6 +69,10 @@ jQuery(document).ready(function () {
         }
     });
 
+    /**
+     * Search form event handlers
+     */
+    jQuery('#btn-feed-preview').click(refreshView);
 
     jQuery('input:checkbox', '#my-content').click(refreshView);
 
@@ -112,7 +82,49 @@ jQuery(document).ready(function () {
         if (event.keyCode == 13) refreshView();
     });
 
-    //Set side sections to appropriately be affixed via bootstrap
+    /**
+     * Look and feel event handlers
+     */    
+    jQuery(document).on('click', '.media', function () {
+        updateContentPane(jQuery(this).data('media'));    
+        jQuery('.media').css('background-color', '');
+        jQuery(this).css('background-color', '#D8E8FF');
+        jQuery(this).data('bgc', '#D8E8FF');
+        tpHelper.currentRelease = jQuery(this).data('release');    
+        $pdk.controller.resetPlayer();
+        if (tpHelper.currentRelease !== "undefined") {
+            jQuery('#modal-player-placeholder').hide();        
+            $pdk.controller.loadReleaseURL("http://link.theplatform.com/s/" + tpHelper.accountPid + "/" + tpHelper.currentRelease,true);
+        }
+        else {
+            jQuery('#modal-player-placeholder').show()        
+        }
+    });
+
+    //Update background color when hovering over media
+    jQuery(document).on('mouseenter', '.media', function () {
+        $this = jQuery(this);
+        $this.data('bgc', $this.css('background-color'));
+        $this.css('background-color', '#f5f5f5');
+    });
+
+    //Update background color when hovering off media
+    jQuery(document).on('mouseleave', '.media', function () {
+        $this = jQuery(this);
+        var oldbgc = $this.data('bgc');
+
+        if (oldbgc) $this.css('background-color', oldbgc);
+        else $this.css('background-color', '');
+
+    });
+
+    /**
+     * Set the page layout 
+     */
+    var container = window.parent.document.getElementById('tp-container')
+    if (container)
+        container.style.height = window.parent.innerHeight;
+
     jQuery('#info-affix').affix({
         offset: {
             top: 0
@@ -127,87 +139,30 @@ jQuery(document).ready(function () {
 
 });
 
-//Hide popovers when mouse off.
-jQuery(document).on('blur', '.media > .popover', function () {
-    var media = jQuery(this).parent();
-    jQuery('.btn', media).popover('toggle');
-});
-
-
-
-jQuery(document).on('mouseup', '.embedIframe', function () {
-    jQuery(this).select();
-});
-
-//Select guids by checking their box.
-jQuery(document).on('change', '.media > [type="checkbox"]', function () {
-    var feedUrl = mpxHelper.buildFeedQuery(localStorage.baseMediaUrl, {
-        category: localStorage.selectedCategory,
-        selectedGuids: getSelectedGuids()
-    });
-
-});
-
-//Set color and release into player when clicking on media.
-jQuery(document).on('click', '.media', function () {
-    updateContentPane(jQuery(this).data('media'));    
-    jQuery('.media').css('background-color', '');
-    jQuery(this).css('background-color', '#D8E8FF');
-    jQuery(this).data('bgc', '#D8E8FF');
-    localStorage.currentRelease = jQuery(this).data('release');    
-    $pdk.controller.resetPlayer();
-    if (localStorage.currentRelease !== "undefined") {
-        jQuery('#modal-player-placeholder').hide();        
-        $pdk.controller.loadReleaseURL("http://link.theplatform.com/s/" + localStorage.accountPid + "/" + localStorage.currentRelease,true);
-    }
-    else {
-        jQuery('#modal-player-placeholder').show()        
-    }
-});
-
-//Update background color when hovering over media
-jQuery(document).on('mouseenter', '.media', function () {
-    $this = jQuery(this);
-    $this.data('bgc', $this.css('background-color'));
-    $this.css('background-color', '#f5f5f5');
-});
-
-//Update background color when hovering off media
-jQuery(document).on('mouseleave', '.media', function () {
-    $this = jQuery(this);
-    var oldbgc = $this.data('bgc');
-
-    if (oldbgc) $this.css('background-color', oldbgc);
-    else $this.css('background-color', '');
-
-});
-
-//Generic refresh the view function
-
-
+/**
+ * Refresh the infinite scrolling media list based on the selected category and search options
+ * @return {void} 
+ */
 function refreshView() {
     var $mediaList = jQuery('#media-list');
     //TODO: If sorting clear search?
     var queryObject = {
         search: jQuery('#input-search').val(),
-        category: localStorage.selectedCategory,
+        category: tpHelper.selectedCategory,
         sort: getSort(),
         desc: jQuery('#sort-desc').data('sort'),
-        myContent: jQuery('#my-content-cb').prop('checked'),
-        selectedGuids: getSelectedGuids()
+        myContent: jQuery('#my-content-cb').prop('checked')        
     };
 
-    localStorage.queryParams = queryObject
-    var newFeed = mpxHelper.buildFeedQuery(localStorage.baseMediaUrl, queryObject);
+    tpHelper.queryParams = queryObject
+    var newFeed = mpxHelper.buildMediaQuery(queryObject);
 
     delete queryObject.selectedGuids;
-    localStorage.queryString = mpxHelper.buildFeedQuery(localStorage.baseMediaUrl, queryObject);
-
-
+    tpHelper.queryString = mpxHelper.buildMediaQuery(queryObject);
 
     displayMessage('');
 
-    localStorage.feedEndRange = 0;
+    tpHelper.feedEndRange = 0;
     $mediaList.empty();
     $mediaList.infiniteScroll('reset');
 }
@@ -255,43 +210,26 @@ function buildCategoryAccordion(resp) {
         jQuery('#list-categories').append('<a href="#" class="list-group-item cat-list-selector">' + entryTitle + '</a>');
     }
 
+    jQuery('#list-categories').on('mouseover', function () {
+        jQuery('body')[0].style.overflowY = 'none';
+    });
+    jQuery('#list-categories').on('mouseout', function () {
+        jQuery('body')[0].style.overflowY = 'auto';
+    });
+
     jQuery('.cat-list-selector', '#list-categories').click(function () {
-        localStorage.selectedCategory = jQuery(this).text();
-        if (localStorage.selectedCategory == "All Videos") localStorage.selectedCategory = '';
+        tpHelper.selectedCategory = jQuery(this).text();
+        if (tpHelper.selectedCategory == "All Videos") tpHelper.selectedCategory = '';
         jQuery('.cat-list-selector', '#list-categories').each(function (idx, item) {
             var $item = jQuery(item);
 
-            if ((localStorage.selectedCategory == $item.text()) || (localStorage.selectedCategory == '' && $item.text() == 'All Videos')) $item.css('background-color', '#D8E8FF');
+            if ((tpHelper.selectedCategory == $item.text()) || (tpHelper.selectedCategory == '' && $item.text() == 'All Videos')) $item.css('background-color', '#D8E8FF');
             else jQuery(item).css('background-color', '');
         });
         jQuery('#input-search').val(''); //Clear the searching when we choose a category        
 
         refreshView();
     });
-}
-
-function getSelectedGuids() {
-    var mediaList = jQuery('#media-list').children();
-    var guids = '';
-    for (var i = 0; i < mediaList.length; i++)
-    if (jQuery('input', mediaList[i]).is(':checked')) {
-        if (guids.length > 0) guids += '|';
-
-        guids += jQuery(mediaList[i]).data('guid');
-    }
-    localStorage.selectedGuids = guids;
-    return guids;
-}
-
-function buildFeedPreview(data) {
-    var entries = data['entries'];
-    jQuery('#load-overlay').hide(); // Hide the loading overlay
-    //Reset the media list.
-    jQuery('#media-list').empty();
-
-    //Add each media to the list.
-    for (var idx in entries)
-    addMediaObject(entries[idx]);
 }
 
 function addMediaObject(media) {
@@ -319,17 +257,13 @@ function addMediaObject(media) {
         if (media.description.length > 300)
             media.description = media.description.substring(0,297) + '...'
         jQuery('#desc', newMedia).text(media.description);
-    }
-
-    //TBD: Should there be fallback?
-    //There seems to be a max depth when storing data on media, so this injects the thumb release to a parent for easily find and display later.
-    media['defaultThumbRelease'] = mpxHelper.getDefaultThumbRelease(media.thumbnails);
+    }    
     
     newMedia.data('guid', media.guid);
     newMedia.data('media', media);
     newMedia.data('id', media.id)
-    var previewUrl = mpxHelper.extractVideoUrlfromFeed(media);
-    if (previewUrl.length == 0 && localStorage.isEmbed == "1")
+    var previewUrl = mpxHelper.extractVideoUrlfromMedia(media);
+    if (previewUrl.length == 0 && tpHelper.isEmbed == "1")
         return; 
     
     newMedia.data('release', previewUrl.pop()) 
@@ -371,7 +305,7 @@ function addMediaObject(media) {
 
     jQuery('.media-edit', newMedia).click(function() {
         jQuery(newMedia).click();
-        localStorage.mediaId = newMedia.data('id');
+        tpHelper.mediaId = newMedia.data('id');
     
         if (newMedia != '') {
             jQuery("#tp-edit-dialog").dialog({
@@ -388,21 +322,6 @@ function addMediaObject(media) {
     });
 
     jQuery('#media-list').append(newMedia);
-
-    
-
-}
-
-//Hide all but the exception Id
-
-
-function hideAllMediaPopover(excId) {
-    var allMedia = jQuery('.media');
-    for (var i = 0; i < allMedia.length; i++) {
-        if (jQuery(allMedia[i]).attr('id') == excId) continue;
-
-        jQuery('.btn', allMedia[i]).popover('hide');
-    }
 }
 
 function updateContentPane(mediaItem) {
@@ -435,14 +354,3 @@ function displayMessage(msg) {
     jQuery('#msg').text(msg);
 }
 
-function setFieldsFromQuery(query) {
-    var displayMap = mpxHelper.parseParameters(query);
-
-    if (displayMap.sort) setSort(displayMap.sort.split('|').shift());
-
-    if (displayMap.q) //Search
-    jQuery('#input-search').val(displayMap.q);
-    else jQuery('#input-search').val('');
-
-    jQuery('input:checkbox', '#my-content').prop('checked', !! (displayMap.byCustomValue));
-}

@@ -193,7 +193,7 @@ jQuery(document).ready(function() {
 			auth_hash: hash
 		};
 
-		jQuery.post(theplatform.ajax_url, data, function(response) {
+		jQuery.post(theplatform.ajaxurl, data, function(response) {
 			if (jQuery("#verification_image").length > 0) {
 				jQuery("#verification_image").remove();
 			}
@@ -211,15 +211,17 @@ jQuery(document).ready(function() {
 		var validation_error = validate_media(event);;
 		var params = parseMediaParams();
 		var custom_params = parseCustomParams();	
-		params.id = localStorage.mediaId;
+		params.id = tpHelper.mediaId;
 
 		var data = {
 			action: 'theplatform_edit',
 			params: JSON.stringify(params),
 			custom_params: JSON.stringify(custom_params)
 		}
+
+		jQuery('#tp-edit-dialog').dialog('close');
 		jQuery.post(localscript.ajaxurl, data, function(resp) {
-			console.log(resp);
+			refreshView();
 		});
 	});
 
@@ -237,7 +239,7 @@ jQuery(document).ready(function() {
 		
 		var profile = jQuery('.upload_profile');
 		
-		var upload_window = window.open(theplatform.ajax_url + '?action=theplatform_upload', '_blank', 'menubar=no,location=no,resizable=yes,scrollbars=no,status=no,width=700,height=150')
+		var upload_window = window.open(theplatform.ajaxurl + '?action=theplatform_upload', '_blank', 'menubar=no,location=no,resizable=yes,scrollbars=no,status=no,width=700,height=150')
 
 		upload_window.uploaderData = { 
 			file: file,

@@ -1,34 +1,30 @@
 <?php 	
 	if ( ! defined( 'ABSPATH' ) ) exit;
 
-	$mediaId = $_POST['media'];
-	$IS_EDIT = $mediaId !== NULL;
-	$tp_uploader_cap = apply_filters('tp_uploader_cap', 'upload_files');
-	$tp_editor_cap = apply_filters('tp_editor_cap', 'upload_files');	
-
-	if ($IS_EDIT && !current_user_can($tp_editor_cap)) 
-		wp_die('<p>'.__('You do not have sufficient permissions to edit MPX Media').'</p>');
 	
-	if (!$IS_EDIT && !current_user_can($tp_uploader_cap))
-		wp_die('<p>'.__('You do not have sufficient permissions to upload MPX Media').'</p>');
-
-
-	$tp_api = new ThePlatform_API;
-	$media = array();
-	if ($IS_EDIT)
-		$media = $tp_api->get_video_by_id($mediaId);
-	else {
+	if (!defined('TP_MEDIA_BROWSER')) {
 		wp_enqueue_style('bootstrap_tp_css');
 		wp_enqueue_script('theplatform_js');
+
+		$tp_uploader_cap = apply_filters('tp_uploader_cap', 'upload_files');
+
+		if (!current_user_can($tp_uploader_cap))
+			wp_die('<p>'.__('You do not have sufficient permissions to upload MPX Media').'</p>');
+
+		$tp_api = new ThePlatform_API;
+		$media = array();
+		
 		$metadata = $tp_api->get_metadata_fields();
 		$preferences = get_option('theplatform_preferences_options');	
 		$upload_options = get_option('theplatform_upload_options');
-		$metadata_options = get_option('theplatform_metadata_options');			
-	}
+		$metadata_options = get_option('theplatform_metadata_options');		
 
+		echo '<h1> Upload Media to MPX </h1><div id="media-mpx-upload-form" class="tp">';
+	}
+	
+	
 ?>
-<h1> Upload Media to MPX </h1>
-<div id="media-mpx-upload-form" class="tp">
+
 <form role="form">
 	<?php
 		wp_nonce_field('theplatform_upload_nonce');
@@ -45,30 +41,18 @@
 			$field_title = (strstr($upload_field, '$') !== false) ? substr(strstr($upload_field, '$'), 1) : $upload_field;
 			
 			if ($val == 'allow') {	
-				if ($upload_field == 'categories') {
-					$params = array(
-						'token' => $tp_api->mpx_signin(),
-						'fields' => 'title,fullTitle',
-						'account' => $preferences['mpx_account_id']
-					);
-				
-					$response = $tp_api->query('MediaCategory', 'get', $params);
-
-					$tp_api->mpx_signout($params['token']);
-					
-					if (!is_wp_error($response)) {
-						$categories = decode_json_from_server($response, TRUE);
+				if ($upload_field == 'categories') {													
+						$categories = $tp_api->get_categories(true);						
 						$catHtml .= '<div class="row">';
 						$catHtml .= '<div class="col-xs-3">';
 						$catHtml .= 	'<label class="control-label" for="theplatform_upload_' . esc_attr($upload_field) . '">' . esc_html(ucfirst($field_title)) . '</label>';
 						$catHtml .= 	'<select class="category_field form-control" multiple id="theplatform_upload_' . esc_attr($upload_field) . '" name="' . esc_attr($upload_field) . '">';						
-						foreach ($categories['entries'] as $category) {
+						foreach ($categories as $category) {
 							$catHtml .= '<option value="' . esc_attr($category['fullTitle']) . '">' . esc_html($category['fullTitle']) . '</option>';						
 						}			
 						$catHtml .= 	'</select>';
 						$catHtml .= '</div>';
-						$catHtml .= '</div>';
-					} 
+						$catHtml .= '</div>';					
 				}
 				else {
 					if ($col === 0) {
@@ -108,20 +92,25 @@
 				continue;								
 	
 			$field_title = $metadata_info['fieldName'];
-			$field_prefix = $metadata_info['namespacePrefix'];
+			$field_prefix = $metadata_info['namespacePrefix'];			
+			$field_namespace = $metadata_info['namespace'];
+			$field_type = $metadata_info['dataType'];
+			$field_structure = $metadata_info['dataStructure'];
 
 			if ($field_title === $preferences['user_id_customfield'])
 				continue; 
 
 			if ($val == 'allow') {										
-				$field_value = $video[$field_prefix . '$' . $field_title];	
+				$field_name = $field_prefix . '$' . $field_title;
+				$field_value = $media[$field_prefix . '$' . $field_title];	
+
 				$html = '';
 				if ($col === 0) {
 					echo '<div class="row">';
 				}	
 				$html .= '<div class="col-xs-3">';
-				$html .= 	'<label class="control-label" for="theplatform_upload_' . esc_attr('theplatform_upload_' . esc_attr($field_prefix . '$' . $field_title)) . '">' . esc_html(ucfirst($field_title)) . '</label>';
-				$html .= 	'<input name="' . esc_attr($field_title) . '" id="theplatform_upload_' . esc_attr($field_prefix . '$' . $field_title) . '" class="form-control custom_field" type="text" value="' . esc_attr($media[$field_prefix . '$' . $field_title]) . '"/>'; 
+				$html .= 	'<label class="control-label" for="theplatform_upload_' . esc_attr($field_name) . '">' . esc_html(ucfirst($field_title)) . '</label>';
+				$html .= 	'<input name="' . esc_attr($field_title) . '" id="theplatform_upload_' . esc_attr($field_name) . '" class="form-control custom_field" type="text" value="' . esc_attr($field_value) . '" data-type="' . esc_attr($field_type) . '" data-structure="' . esc_attr($field_structure) . '" data-name="' . esc_attr(strtolower($field_title)) . '" data-prefix="' . esc_attr(strtolower($field_prefix)) . '" data-namespace="' . esc_attr(strtolower($field_namespace)) .'"/>'; 
 				$html .= '</div>';																											
 				echo $html;	
 
@@ -139,22 +128,24 @@
 		}
 
 		if (!empty($catHtml))
-			echo $catHtml;
-						
-	if (!$IS_EDIT) { ?>
+			echo $catHtml;						
+	 	
+		if (!defined('TP_MEDIA_BROWSER')) {
+
+	 	?>
+
 		<div class="row">
 			<div class="col-xs-3">			
 				<?php     								
-						$profiles = $tp_api->get_publish_profiles();     								
-						$html  = '<label class="control-label" for="publishing_profile">Publishing Profile</label>';
-						$html .= 	'<select name="profile" id="publishing_profile" name="publishing_profile" class="form-control upload_profile">';  											
-						$html .= 		'<option value="tp_wp_none">Do not publish</option>'; 
-						foreach($profiles as $entry) {																		
-							$html .= 	'<option value="' . esc_attr($entry['title']) . '"' . selected($entry['title'], $preferences['default_publish_id'], false) . '>' . esc_html($entry['title']) . '</option>'; 												
-						}
+					$profiles = $tp_api->get_publish_profiles();     								
+					$html  = '<label class="control-label" for="publishing_profile">Publishing Profile</label>';
+					$html .= 	'<select name="profile" id="publishing_profile" name="publishing_profile" class="form-control upload_profile">';  											
+					$html .= 		'<option value="tp_wp_none">Do not publish</option>'; 
+					foreach($profiles as $entry) {																		
+						$html .= 	'<option value="' . esc_attr($entry['title']) . '"' . selected($entry['title'], $preferences['default_publish_id'], false) . '>' . esc_html($entry['title']) . '</option>'; 												
+					}
 					$html .=		 '</select>';
 					echo $html;
-
 				?>
 			</div>
 		</div>
@@ -168,16 +159,14 @@
 				<button id="theplatform_upload_button" class="form-control btn btn-primary" type="button" name="theplatform-upload-button">Upload Video</button>		
 			</div>
 		</div>
-	<?php 
-	}
-	else { ?>
-		<div class="row">
-			<div class="col-xs-3">
-				<button id="theplatform_edit_button" class="form-control btn btn-primary" type="button" name="theplatform-edit-button">Submit</button>		
+		<?php } 
+		else { ?>
+			<div class="row">
+				<div class="col-xs-3">
+					<button id="theplatform_edit_button" class="form-control btn btn-primary" type="button" name="theplatform-edit-button">Submit</button>		
+				</div>
 			</div>
-		</div>
-	<?php
-	} ?>
+		<?php } ?>
 	</form>	
 </div>
 

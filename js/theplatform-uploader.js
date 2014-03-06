@@ -43,7 +43,7 @@ TheplatformUploader = (function() {
     	message_nag("Publishing media...");
     	
     	jQuery.ajax({
-			url: theplatform.ajax_url,
+			url: theplatform.ajaxurl,
 			data: params,
        		type: "POST",
 			success: function(responseJSON) {
@@ -70,7 +70,7 @@ TheplatformUploader = (function() {
     	params._wpnonce = theplatform.tp_nonce;
     	
     	jQuery.ajax({
-			url: theplatform.ajax_url,
+			url: theplatform.ajaxurl,
 			data: params,
        		type: "POST",
 			success: function(responseJSON) {
@@ -158,7 +158,7 @@ TheplatformUploader = (function() {
     	this.failed = true;
     	
     	jQuery.ajax({
-			url: theplatform.ajax_url,
+			url: theplatform.ajaxurl,
 			data: params,
        		type: "POST"
        	});
@@ -250,7 +250,7 @@ TheplatformUploader = (function() {
     	params._wpnonce = theplatform.tp_nonce;
     	
     	jQuery.ajax({
-			url: theplatform.ajax_url,
+			url: theplatform.ajaxurl,
 			data: params,
        		type: "POST",
 			success: function(responseJSON) {
@@ -296,7 +296,7 @@ TheplatformUploader = (function() {
 		params._wpnonce = theplatform.tp_nonce;
 	
 		jQuery.ajax({
-			url: theplatform.ajax_url,
+			url: theplatform.ajaxurl,
 			data: params,
        		type: "POST",
 			xhrFields: {
@@ -334,7 +334,7 @@ TheplatformUploader = (function() {
 			_wpnonce: theplatform.tp_nonce
 		};
 
-		jQuery.post(theplatform.ajax_url, sessionParams, function(result) {
+		jQuery.post(theplatform.ajaxurl, sessionParams, function(result) {
 				// Cross-domain XML parsing will get us here.. Ignore the error (SB)
 				message_nag("Session established.");
 				me.startUpload(params, file);
@@ -379,7 +379,7 @@ TheplatformUploader = (function() {
 			profile: profile
 		};
 	
-		jQuery.post(theplatform.ajax_url, data, function(responseJSON) {
+		jQuery.post(theplatform.ajaxurl, data, function(responseJSON) {
 			var response = me.parseJSON(responseJSON);
 		
 			if (response.success == "true") {

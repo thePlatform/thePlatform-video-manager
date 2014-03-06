@@ -164,23 +164,23 @@ class ThePlatform_Options {
 		if (!$this->account_is_verified)
 				return;
 			
-
-		$this->plugin_settings_tabs[$this->metadata_options_key] = 'Metadata';			
-		
-		$this->metadata_fields = $this->tp_api->get_metadata_fields();
-		
+		$this->plugin_settings_tabs[$this->metadata_options_key] = 'Metadata';					
+		$this->metadata_fields = $this->tp_api->get_metadata_fields();		
 		add_settings_section( 'section_metadata_options', 'Metadata Settings', array( &$this, 'section_metadata_desc' ), $this->metadata_options_key );
 		
 		foreach ($this->metadata_fields as $field) {
 			if (!array_key_exists($field['id'], $this->metadata_options)) {
 				$this->metadata_options[$field['id']] = 'omit';
-			}
-			
+			}		
+
+			if ($field['fieldName'] === $this->preferences['user_id_customfield']) 
+				continue;
+
 			update_option($this->metadata_options_key, $this->metadata_options);
 			
 			$types = array('String', 'Time', 'Date', 'Integer', 'Decimal', 'Duration', 'Boolean', 'URI');
 			if ($field['dataStructure'] === 'Single' && in_array($field['dataType'], $types)) //TODO: Remove this and support all types and structures of fields
-				add_settings_field( $field['id'], $field['title'], array( &$this, 'field_metadata_option' ), $this->metadata_options_key, 'section_metadata_options', array('id' => $field['id'], 'title' => $field['title']));
+				add_settings_field( $field['id'], $field['title'], array( &$this, 'field_metadata_option' ), $this->metadata_options_key, 'section_metadata_options', array('id' => $field['id'], 'title' => $field['title'], 'fieldName' => $field['fieldName']));
 		}
 	}
 		
@@ -269,12 +269,10 @@ class ThePlatform_Options {
 						$html .= '<option value="' . esc_attr($account['id']) . '|' . esc_attr($account['pid']) . '"' . selected( $opts[$field], $account['id'], false) . '>' . esc_html($account['title']) . '</option>';
 					}
 				}	
-
 				$html .= '</select>';
 
 				if ($this->preferences['mpx_account_id'] === '')
 					$html .= "<span> Please pick the MPX account you'd like to manage through Wordpress</span>";
-
 				break;
 			case 'video_type':
 				$html = '<select id="' . esc_attr($field) . '" name="theplatform_preferences_options[' . esc_attr($field) . ']">';  
@@ -294,14 +292,12 @@ class ThePlatform_Options {
 				break;
 			case 'default_player_name':
 				$html = '<select id="' . esc_attr($field) . '" name="theplatform_preferences_options[' . esc_attr($field) . ']">';
-
 				if ($this->preferences['mpx_account_id'] !== '') {
 					$players = $this->tp_api->get_players();
 					foreach ($players as $player) {
 						$html .= '<option value="' . esc_attr($player['id']) . '|' . esc_attr($player['pid']) . '"' . selected( $opts[$field], $player['id'], false) . '>' . esc_html($player['title']) . '</option>';
 					}
 				}
-
 				$html .= '</select>'; 	
 				break;	
 			case 'default_publish_id':
@@ -314,7 +310,6 @@ class ThePlatform_Options {
 						$html .= '<option value="' . esc_attr($profile['title']) . '"' . selected( $opts[$field], $profile['title'], false) . '>' . esc_html($profile['title']) . '</option>';
 					}
 				}
-
 				$html .= '</select>'; 
 				break;	
 			case 'default_player_pid':
@@ -347,7 +342,7 @@ class ThePlatform_Options {
 	 */
 	function field_metadata_option($args) {
 		$field_id = $args['id'];
-		$field_title = $args['title'];			
+		$field_title = $args['title'];	
 
 		$html = '<select id="' . esc_attr($field_id) . '" name="theplatform_metadata_options[' . esc_attr($field_id) . ']">';  
 			$html .= '<option value="allow"' . selected( $this->metadata_options[$field_id], 'allow', false) . '>Allow</option>';    

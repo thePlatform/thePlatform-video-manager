@@ -1,5 +1,9 @@
 <?php 
 
+/**
+ * Not in use at the moment
+ */
+
 class ThePlatform_FieldTypes {
 
 	public function write($type, $structure, $value)

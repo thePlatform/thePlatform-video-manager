@@ -112,4 +112,49 @@ function decode_json_from_server($input, $assoc, $die_on_error = TRUE) {
 
 	return $response;
 }
+
+function get_query_fields($metadata) {
+	$metadata_options = get_option('theplatform_metadata_options');
+	$upload_options = get_option('theplatform_upload_options');
+
+	$fields = 'id,defaultThumbnailUrl,content';
+
+	foreach ($upload_options as $upload_field => $val) {
+		if ($val !== 'allow') 
+			continue;
+
+		$field_title = (strstr($upload_field, '$') !== false) ? substr(strstr($upload_field, '$'), 1) : $upload_field;
+		if (!empty($fields))
+			$fields .= ',';
+		$fields .= $field_title;
+	}	
+	
+	foreach ($metadata_options as $custom_field => $val) {
+		if ($val !== 'allow')
+			continue;
+
+		$metadata_info = NULL;
+		foreach ($metadata as $entry) {
+			if (array_search($custom_field, $entry)) {
+				$metadata_info = $entry;
+				break;
+			}
+		}	
+
+		if (is_null($metadata_info))
+			continue;								
+		
+		$field_title = $metadata_info['fieldName'];
+
+		if (empty($fields))
+			$fields .= ':';
+		else
+			$fields .= ',:';
+
+		$fields .= $field_title;
+	}
+
+	return $fields;
+}
+
 ?>

@@ -1,24 +1,14 @@
 var ajaxurl = localscript.ajaxurl;
 
-var mpxHelper = {
-    feedFields:{
-        fields: 'guid,title,description,categories,provider,:id,:additionalCategories,keywords,:source,:videoSource,:embargoes,pubDate,added,updated,defaultThumbnailUrl,content,expirationDate,thumbnails',
-        fileFields: 'releases,isDefault,contentType,url,format',
-        releaseFields: 'url',
-        range: '-50'
-    },
-    IDM_DS:'https://identity.auth.theplatform.com/idm',
-    MDS_DS:'http://data.media.theplatform.com/media',
-
-    getFeed: function(range, callback){
+var mpxHelper = {   
+    getVideos: function(range, callback){
 
         var data = {
             _wpnonce: theplatform.tp_nonce,
             action: 'get_videos',
             range: range,
-            query: localStorage.queryString,
-            fields: localStorage.fields,
-            isEmbed: localStorage.isEmbed,
+            query: tpHelper.queryString,            
+            isEmbed: tpHelper.isEmbed,
             myContent: jQuery('#my-content-cb').prop('checked')
         };
     
@@ -32,7 +22,7 @@ var mpxHelper = {
         });
     },    
 
-    buildFeedQuery: function (feed,data){
+    buildMediaQuery: function (data){
 
         var queryParams = '';
         if (data.category)
@@ -51,13 +41,10 @@ var mpxHelper = {
         if (data.selectedGuids)
             queryParams = queryParams.appendParams({byGuid: data.selectedGuids});
 
-        if (queryParams.length > 1)
-            return feed + queryParams;
-
-        return feed;
+        return queryParams;
     },
 
-    getCategoryList: function (feed,callback){        
+    getCategoryList: function (callback){        
         var data = {
             _wpnonce: theplatform.tp_nonce,
             action: 'get_categories',
@@ -93,20 +80,8 @@ var mpxHelper = {
         return hash;
     },
 
-    parseParameters: function (str){
-        var params = str.split("&")
-        ,   hash = {};
-
-        if (str == "") return {};
-        for (var i = 0; i < params.length; i++) {
-            var val = params[i].split("=");
-            hash[decodeURIComponent(val[0])] = decodeURIComponent(val[1]);
-        }
-        return hash;
-    },
-
     //Get a list of release URls
-    extractVideoUrlfromFeed: function (media){
+    extractVideoUrlfromMedia: function (media){
         var res = [];
 
         if (media.entries)
@@ -129,63 +104,6 @@ var mpxHelper = {
         }
 
         return res;
-    },
-
-    copyMessage: function (str){
-        if (str.indexOf('Mac') > -1)
-            return "Press \u2318-C to copy";
-
-        if (str.indexOf('Win') > -1)
-            return "Press CTRL-C to copy";
-
-        return "User your Copy shortcut now.";
-    },
-
-    //Parse an array into a put-able get
-    parseArray: function (name,ary){
-        var ret = {};
-
-        //Handle empty array.
-        if (ary.length < 1)
-            ret['_'+name+'[]']='';
-
-        for (var i in ary){
-            if (ret.length > 0)	ret += '&';
-
-            if (typeof(ary[i]) === "object")
-                jQuery.extend(ret ,mpxHelper.parseMap(name+'['+i+']', ary[i]));
-            else
-                ret['_'+name+'['+i+']'] =  ary[i];
-        }
-        return ret;
-    },
-
-    //Parse a hashmap into a put-able get
-    parseMap: function (name, map){
-        var ret = {};
-
-        //Handle empty object
-        if (jQuery.isEmptyObject(map))
-            ret['_'+name+'{}']='';
-
-        for (key in map){
-            if (ret.length > 0) ret += '&';
-
-            if (jQuery.isArray(map[key]))
-                jQuery.extend(ret, mpxHelper.parseArray(name+'{'+key+'}', map[key]));
-            else
-                ret['_'+name+'{'+key+'}'] =  map[key];
-        }
-        return ret;
-    },
-    //Get the release url from the default thumbnails
-    getDefaultThumbRelease: function(thumbnails){
-        for (var i=0; i< thumbnails.length; i++){
-            var thumb = thumbnails[i];
-            if (thumb.isDefault && thumb.releases.length)
-                return thumb.releases.shift().url;
-        }
-        return '';
     }
 };
 
