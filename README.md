@@ -3,7 +3,7 @@ Developed By: thePlatform for Media, Inc.
 Tags: embedding, video, embed, portal, theplatform, shortcode, media  
 Requires at least: 3.7  
 Tested up to: 3.8  
-Stable tag: 1.1.0  
+Stable tag: 1.1.1 
 
 Manage your content hosted by thePlatform and embed media in WordPress posts.
 
