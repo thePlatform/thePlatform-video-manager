@@ -114,7 +114,6 @@ class ThePlatform_Plugin {
 	 */
 	function register_scripts() {		
 		wp_register_script('theplatform_js', plugins_url('/js/theplatform.js', __FILE__), array('jquery'));
-		wp_register_script('nprogress_js', plugins_url('/js/nprogress.js', __FILE__), array('jquery'));
 
 		wp_localize_script('theplatform_js', 'theplatform', array(
 			'ajax_url' => admin_url( 'admin-ajax.php' ),
@@ -122,8 +121,7 @@ class ThePlatform_Plugin {
 			'tp_nonce' => wp_create_nonce('theplatform-ajax-nonce')
 		));
 		
-		wp_register_style('theplatform_css', plugins_url('/css/thePlatform.css', __FILE__ ));
-		wp_register_style('nprogress_css', plugins_url('/css/nprogress.css', __FILE__ ));
+		wp_register_style('theplatform_css', plugins_url('/css/thePlatform.css', __FILE__ ));		
 	}
 	
 	/**

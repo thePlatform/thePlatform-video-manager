@@ -12,8 +12,9 @@ if ( !isset( $preferences ) )
 add_action('wp_ajax_startUpload', 'MPXProxy::startUpload');
 add_action('wp_ajax_uploadStatus', 'MPXProxy::uploadStatus');
 add_action('wp_ajax_publishMedia', 'MPXProxy::publishMedia');
-add_action('wp_ajax_publishStatus', 'MPXProxy::publishStatus');
 add_action('wp_ajax_cancelUpload', 'MPXProxy::cancelUpload');
+add_action('wp_ajax_uploadFragment', 'MPXProxy::uploadFragment');
+add_action('wp_ajax_establishSession', 'MPXProxy::establishSession');
 
 /**
  * This class is responsible for uploading and publishing Media to MPX
@@ -23,9 +24,9 @@ class MPXProxy {
 
 	public static function check_nonce_and_permissions() {
 		check_admin_referer('theplatform-ajax-nonce');
-		$tp_publisher_cap = apply_filters('tp_publisher_cap', 'upload_files');
-		if (!current_user_can($tp_publisher_cap)) {
-      		wp_die('<p>'.__('You do not have sufficient permissions to modify MPX Media').'</p>');
+		$tp_uploader_cap = apply_filters('tp_uploader_cap', 'upload_files');
+		if (!current_user_can($tp_uploader_cap)) {
+      		wp_die('You do not have sufficient permissions to modify MPX Media');
       	}
 	}
 	/**
@@ -126,7 +127,7 @@ class MPXProxy {
 			$url .= '&byTitle=' . urlencode($_POST['profile']);
 		$url .= '&token=' . $_POST['token'];							
 
-		$response = ThePlatform_API_HTTP::get($url);
+		$response = ThePlatform_API_HTTP::get($url);		
 
 		if ( is_wp_error($response) ) {
 			$ret['success'] = 'false';
@@ -140,7 +141,7 @@ class MPXProxy {
 			$ret['code'] = $response['status']['http_code'];
 		} else {
 			
-
+			
 			$content = decode_json_from_server($response, TRUE);
 		
 			if ($content['entryCount'] == 0) {
@@ -158,9 +159,9 @@ class MPXProxy {
 			$url .= '&account=' . urlencode($_POST['account_id']); 
 			$url .= '&_mediaId=' . urlencode($mediaId);
 			$url .= '&_profileId=' . urlencode($profileId); 
-		
-			$response = ThePlatform_API_HTTP::get($url);
-		
+
+			$response = ThePlatform_API_HTTP::get($url, array("timeout" => 120));
+							
 			if ( is_wp_error($response) ) {
 				$ret['success'] = 'false';
 				$ret['code'] = $response->get_error_message();
@@ -182,49 +183,6 @@ class MPXProxy {
 		}
 
 		echo json_encode($ret);
-		die();
-	}
-
-	/**
-	 * Retrieve the current publishing status of a newly uploaded media asset
-	 *
-	 * @return mixed JSON response or instance of WP_Error
-	 */
-	public static function publishStatus() {
-		MPXProxy::check_nonce_and_permissions();
-
-		$ret = array();
-
-		$url = TP_API_WORKFLOW_PROFILE_RESULT_ENDPOINT;
-		$url .= '&byProfileId=' . urlencode($_POST['profile_result_id']);
-		$url .= '&token=' . $_POST['token'];
-	
-		$response = ThePlatform_API_HTTP::get($url);
-		
-		if ( is_wp_error($response) ) {
-			$ret['success'] = 'false';
-			$ret['code'] = $response->get_error_message();
-			echo json_encode($ret);
-			die();
-		}
-		
-		if ($response['data'] === false) {
-			$ret['success'] = 'false';
-			$ret['code'] = 'Unable to publish media.';
-			echo json_encode($ret);
-			die();
-		} else {
-			$content = decode_json_from_server($response, TRUE);
-		
-			if (!isset($content['plprofileresult$status'])) {
-				$ret['status'] = 'Unknown';
-			} else {
-				$ret['status'] = $content['plprofileresult$status'];
-			}
-			$ret['success'] = 'true';
-		}
-	
-		echo json_encode($ret); 
 		die();
 	}
 
@@ -279,6 +237,24 @@ class MPXProxy {
 		}
 	
 		echo json_encode($ret); 
+		die();
+	}
+
+	/**
+	 * Retrieve the current publishing status of a newly uploaded media asset
+	 *
+	 * @return mixed JSON response or instance of WP_Error
+	 */
+	public static function establishSession() {
+		MPXProxy::check_nonce_and_permissions();
+
+		$ret = array();
+
+		$url = $_POST['url'];
+	
+		$response = ThePlatform_API_HTTP::get($url);
+		
+		echo "OK"; //doesn't matter what we return here
 		die();
 	}
 }

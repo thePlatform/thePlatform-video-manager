@@ -5,8 +5,8 @@
 
 <title>thePlatform Video Library</title>
 <?php 			
-	wp_print_scripts(array('jquery', 'theplatform_js', 'nprogress_js'));
-	wp_print_styles(array('theplatform_css', 'global', 'wp-admin', 'colors', 'nprogress_css'));
+	wp_print_scripts(array('jquery', 'theplatform_js'));
+	wp_print_styles(array('theplatform_css', 'global', 'wp-admin', 'colors'));
 		
 ?>
 

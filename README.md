@@ -1,6 +1,6 @@
 # === thePlatform Video Manager ===
 Developed By: thePlatform for Media, Inc.  
-Tags: embedding, video, embed, portal, theplatform, shortcode  
+Tags: embedding, video, embed, portal, theplatform, shortcode, media  
 Requires at least: 3.7  
 Tested up to: 3.8  
 Stable tag: 1.1.0  
@@ -24,6 +24,9 @@ Copy the folder "thePlatform-video-manager" with all included files into the "wp
 5. Upload media to your MPX account
 
 # == Changelog ==
+
+## = 1.1.1 =
+* Fixed an issue where files would not always upload
 
 ## = 1.1.0 =
 * Added an option to submit the Wordpress User ID into a custom field and filter by it

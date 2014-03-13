@@ -68,35 +68,6 @@ TheplatformUploader = (function() {
     	return ret;
     };
     
-	/**
-	 @function waitForPublished Polls the API proxy for media publishing status until status is 'Processed'
-	 @param {Object} params - URL parameters passed to the proxy
-	*/    
-    TheplatformUploader.prototype.waitForPublished = function(params) {
-    	var me = this;
-    	params.action = 'waitForPublish';
-    	params._wpnonce = theplatform.tp_nonce;
-    	
-    	jQuery.ajax({
-			url: theplatform.ajax_url,
-			data: params,
-       		type: "POST",
-			success: function(responseJSON) {
-				var response = jQuery.parseJSON(responseJSON);
-				if (response.status == 'Processed') {
-						
-					message_nag("Publishing Complete. Your media is ready to post.", true);	
-					window.setTimeout('window.close()', 4000);					
-				} else {
-					me.waitForPublished( params );
-				}
-			},
-			error: function(response) {
-				error_nag("An error occurred while waiting for upload server COMPLETE status: " + response, true);
-			}
-		});
-    };
-    
     /**
 	 @function publishMedia Publishes the uploaded media via the API proxy
 	 @param {Object} params - URL parameters passed to the proxy
@@ -115,17 +86,18 @@ TheplatformUploader = (function() {
     	message_nag("Publishing media...");
     	
     	jQuery.ajax({
-			url: theplatform.ajax_url,
+			url: theplatform.ajaxurl,
 			data: params,
        		type: "POST",
 			success: function(responseJSON) {
-				var response = jQuery.parseJSON(responseJSON);
+				var response = me.parseJSON(responseJSON);
 				
 				if (response.success == 'true') {
-					message_nag("Media published. It may take several minutes until the media is available to post.", true);
-					window.setTimeout('window.close()', 4000);
+					message_nag("Media is being published. It may take several minutes until the media is available. This window will now close.", true);
+					window.setTimeout('window.close()', 10000);
 				} else {
-					error_nag("Unable to publish media..", true);
+					message_nag("Publish for the uploaded Media was requested but timed out, this is normal but your Media may or may not have published.", true);
+					window.setTimeout('window.close()', 10000);
 				}
 			}
 		});
@@ -141,11 +113,11 @@ TheplatformUploader = (function() {
     	params._wpnonce = theplatform.tp_nonce;
     	
     	jQuery.ajax({
-			url: theplatform.ajax_url,
+			url: theplatform.ajaxurl,
 			data: params,
        		type: "POST",
 			success: function(responseJSON) {
-				var response = jQuery.parseJSON(responseJSON);
+				var response = me.parseJSON(responseJSON);
 				var data = response.content;
 		
 				if (data.entries.length != 0) {
@@ -156,7 +128,7 @@ TheplatformUploader = (function() {
 						
 						params.file_id = fileID;
 						
-						if (uploaderData.profile != "tp_wp_none") {
+						if (params.profile != "tp_wp_none") {
 	    					message_nag("Waiting for MPX to publish media.");
 	    					me.publishMedia(params);
 						}
@@ -229,7 +201,7 @@ TheplatformUploader = (function() {
     	this.failed = true;
     	
     	jQuery.ajax({
-			url: theplatform.ajax_url,
+			url: theplatform.ajaxurl,
 			data: params,
        		type: "POST"
        	});
@@ -273,15 +245,8 @@ TheplatformUploader = (function() {
 			},
     		success: function(response) {    			
     			me.frags_uploaded++;    			
-    			if (me.frags_uploaded == 1) {
-    				NProgress.configure({ trickle: true, trickleRate: 0.01, trickleSpeed: 2000, showSpinner: false });
-					NProgress.start();							
-    			}
-    			else
-    				NProgress.set(me.frags_uploaded/params.num_fragments);
 				if (params.num_fragments == me.frags_uploaded) {
 					message_nag("Uploaded last fragment. Please do not close this window.");
-					NProgress.done();
 					me.finish(params);
 				} else {
 					message_nag("Finished uploading fragment " + me.frags_uploaded + " of " + params.num_fragments + ". Please do not close this window.");
@@ -290,16 +255,20 @@ TheplatformUploader = (function() {
 					me.uploadFragments(params, fragments, index);
 				}
     		},
-    		error: function(response, type, msg) {
-    			me.attempts++;
-    			NProgress.done();
+    		error: function(response, type, msg) {    			
+    			me.attempts++;    			
+    			if (index==0) {
+    				message_nag("Unable to start upload, server is not ready.");
+    				me.startUpload(params, me.file);    				
+    				return;
+    			}
 				var actualIndex = parseInt(index)+1;    			
     			error_nag("Unable to upload fragment " + actualIndex + " of " + params.num_fragments + ". Retrying count is " + me.attempts + " of 5. Retrying in 5 seconds..", true);
     			
     			if (me.attempts < 5) {
    					setTimeout(function() {
 						me.uploadFragments(params, fragments, index);
-					}, 5000);
+					}, 100);
     			} else {
     				error_nag("Uploading fragment " + actualIndex + " of " + params.num_fragments + " failed on the client side. Cancelling... Retry upload later.", true);
     				
@@ -324,11 +293,11 @@ TheplatformUploader = (function() {
     	params._wpnonce = theplatform.tp_nonce;
     	
     	jQuery.ajax({
-			url: theplatform.ajax_url,
+			url: theplatform.ajaxurl,
 			data: params,
        		type: "POST",
 			success: function(responseJSON) {
-				var response = jQuery.parseJSON(responseJSON);
+				var response = me.parseJSON(responseJSON);
 				var data = response.content;
 		
 				if (data.entries.length != 0) {
@@ -370,14 +339,14 @@ TheplatformUploader = (function() {
 		params._wpnonce = theplatform.tp_nonce;
 	
 		jQuery.ajax({
-			url: theplatform.ajax_url,
+			url: theplatform.ajaxurl,
 			data: params,
        		type: "POST",
 			xhrFields: {
 			   withCredentials: true
 			},
 			success: function(responseJSON) {
-				var response = jQuery.parseJSON(responseJSON);
+				var response = me.parseJSON(responseJSON);
 			
 				if (response.success == 'true') {
 					message_nag("Waiting for READY status from " + params.upload_base + ".");
@@ -402,22 +371,31 @@ TheplatformUploader = (function() {
 
 		var url = params.upload_base + '/crossdomain.xml';
 
-		jQuery.ajax({
+		var sessionParams = {
 			url: url,
-       		type: "GET",
-       		dataType: "xml text",
-			xhrFields: {
-			   withCredentials: true
-			},
-			success: function(result) {
-				me.startUpload(params, file);
-			},
-			error: function(result) {
+			action: 'establishSession',
+			_wpnonce: theplatform.tp_nonce
+		};
+
+		jQuery.post(theplatform.ajaxurl, sessionParams, function(result) {
 				// Cross-domain XML parsing will get us here.. Ignore the error (SB)
 				message_nag("Session established.");
 				me.startUpload(params, file);
 			}	
-		});
+		);
+    };
+
+    /**
+	 @function Attempt to parse JSON, alert to user if it failed
+	 @param {string} params - JSON String	 
+	*/
+    TheplatformUploader.prototype.parseJSON = function(jsonString) {
+		try {
+			return jQuery.parseJSON(jsonString);
+		}
+		catch(ex) {
+			error_nag(jsonString);
+		}
     };
     
     /**
@@ -444,8 +422,8 @@ TheplatformUploader = (function() {
 			profile: profile
 		};
 	
-		jQuery.post(theplatform.ajax_url, data, function(responseJSON) {
-			var response = jQuery.parseJSON(responseJSON);
+		jQuery.post(theplatform.ajaxurl, data, function(responseJSON) {
+			var response = me.parseJSON(responseJSON);
 		
 			if (response.success == "true") {
 				var params = {
@@ -463,7 +441,7 @@ TheplatformUploader = (function() {
 				};		
 			
 				message_nag("Server " + params.upload_base + " ready for upload of " + file.name + " [" + params.format + "].");
-				parentLocation.reload();
+				// parentLocation.reload();
 				me.establishSession(params, file);	
 			} else {
 				error_nag("Unable to upload media asset at this time. Please try again later.", true);
