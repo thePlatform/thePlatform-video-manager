@@ -99,7 +99,7 @@ class ThePlatform_Plugin {
 		wp_register_script('infiniscroll_js', plugins_url('/js/jquery.infinitescroll.min.js', __FILE__), array('jquery'));
 		wp_register_script('mpxhelper_js', plugins_url('/js/mpxHelper.js', __FILE__), array('jquery'));
 		wp_register_script('theplatform_uploader_js', plugins_url('/js/theplatform-uploader.js', __FILE__), array('jquery', 'theplatform_js'));	
-		wp_register_script('mediaview_js', plugins_url('/js/mediaView.js', __FILE__), array('jquery', 'holder', 'mpxhelper_js', 'theplatform_js', 'pdk_external_controller', 'infiniscroll_js', 'bootstrap_js'));
+		wp_register_script('mediaview_js', plugins_url('/js/mediaview.js', __FILE__), array('jquery', 'holder', 'mpxhelper_js', 'theplatform_js', 'pdk_external_controller', 'infiniscroll_js', 'bootstrap_js'));
 
 		wp_localize_script('theplatform_js', 'theplatform', array(
 			'ajaxurl' => admin_url( 'admin-ajax.php' ),
@@ -153,7 +153,7 @@ class ThePlatform_Plugin {
 	 * @return type
 	 */
 	function upload_page() {
-		require_once( dirname( __FILE__ ) . '/theplatform-upload.php' );
+		require_once( dirname( __FILE__ ) . '/thePlatform-upload.php' );
 	}
 
 	/**
