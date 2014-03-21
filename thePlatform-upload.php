@@ -32,7 +32,7 @@
 		$upload_options = get_option('theplatform_upload_options');
 		$html = '';
 		
-		if ($preferences['user_id_customfield'] !== '') 
+		if ($preferences['user_id_customfield'] !== '(None)') 
 			echo '<input type="hidden" name="' . esc_attr($preferences['user_id_customfield']) . '" class="custom_field" value="' . wp_get_current_user()->ID . '" />';
 
 		$col=0;
