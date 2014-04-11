@@ -269,22 +269,20 @@ class ThePlatform_Plugin {
 	function get_embed_shortcode($accountPID, $releasePID, $playerPID, $player_width, $player_height, $loop = false, $autoplay = false, $mute = false, $form = "iframe", $params) {
 
 		if (!$this->preferences)
-			$this->preferences = get_option($this->preferences_options_key);
-
+			$this->preferences = get_option('theplatform_preferences_options');
 		
-		$type = $this->preferences['video_type'];		
+		$type = $this->preferences['video_type'];	
 
 		if (empty($type))
-			$type = 'embed';
-		
+			$type = 'embed';		
 		
 		$url = 'http://player.theplatform.com/p/' . urlencode($accountPID) . '/' . urlencode($playerPID);
 
 		$url = apply_filters('tp_base_embed_url', $url);
 		
-		if ($type == 'embed') {
+		if ($type == 'embed') 
 			$url .= '/embed';
-		}
+
 		$url .= '/select/' . urlencode($releasePID);
 		
 		$url .= '?width=' . (int)$player_width . '&height=' . (int)$player_height;
