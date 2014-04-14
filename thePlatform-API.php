@@ -572,7 +572,7 @@ class ThePlatform_API {
 			
 		$token = $this->mpx_signin();
 		
-		$url = TP_API_MEDIA_CATEGORY_ENDPOINT . '&fields=title,fullTitle&sort=fullTitle,order&token=' . $token;
+		$url = TP_API_MEDIA_CATEGORY_ENDPOINT . '&fields=title,fullTitle&sort=title,order&token=' . $token;
 		
 		if (!empty($this->preferences['mpx_account_id'])) {
 			$url .= '&account=' . urlencode($this->preferences['mpx_account_id']);
