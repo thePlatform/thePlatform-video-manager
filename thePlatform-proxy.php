@@ -135,13 +135,16 @@ class MPXProxy {
 		MPXProxy::check_nonce_and_permissions();
 
 		$ret = array();
+		if ( !isset( $preferences ) ) 
+			$preferences = get_option('theplatform_preferences_options');
 
 		$url = TP_API_PUBLISH_PROFILE_ENDPOINT;
 		if ($_POST['profile'] == 'wp_tp_none')
 			die();
 		else
 			$url .= '&byTitle=' . urlencode($_POST['profile']);
-		$url .= '&token=' . $_POST['token'];							
+		$url .= '&token=' . $_POST['token'];					
+		$url .= '&account=' . $preferences['mpx_account_id'];		
 
 		$response = ThePlatform_API_HTTP::get($url);		
 
