@@ -207,3 +207,8 @@ header {
 .tp .panel-body {
     padding-left: 25px;
 }
+
+#btn-container {
+    padding-left: 10px;
+    padding-bottom: 5px;
+}

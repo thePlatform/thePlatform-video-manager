@@ -115,14 +115,17 @@ class ThePlatform_Options {
 			'mpx_account_id' => '',
 			'mpx_username' => 'mpx/',
 			'mpx_password' => '',						
-			'video_type' => 'embed',			
+			'embed_tag_type' => 'iframe',			
 			'mpx_account_pid' => '',
 			'default_player_name' => '',
 			'default_player_pid' => '',
 			'mpx_server_id' => '',
 			'default_publish_id' => '',
 			'user_id_customfield' => '',
-			'filter_by_user_id' => FALSE
+			'filter_by_user_id' => 'FALSE',
+			'autoplay' => 'TRUE',
+			'default_width' => $GLOBALS['content_width'],
+			'default_height' => ($GLOBALS['content_width']/16)*9,
 		), $this->preferences_options);
 			
 		$this->metadata_options = array_merge(array(), $this->metadata_options);
@@ -158,14 +161,18 @@ class ThePlatform_Options {
 		if ($this->preferences['mpx_account_id'] === '')
 			return;		
 
+		add_settings_section( 'section_embed_options', 'Embedding Preferences', array( &$this, 'section_embed_desc' ), $this->preferences_options_key );		
+		add_settings_field( 'default_player_name', 'Default Player', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_embed_options', array('field' => 'default_player_name') );
+		add_settings_field( 'default_player_pid', 'Default Player PID', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_embed_options', array('field' => 'default_player_pid') );				
+ 		add_settings_field( 'embed_tag_type_option', 'Embed Tag Type', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_embed_options', array('field' => 'embed_tag_type') );
+ 		add_settings_field( 'autoplay', 'Force Autoplay', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_embed_options', array('field' => 'autoplay') );
+ 		add_settings_field( 'default_width', 'Default Player Width', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_embed_options', array('field' => 'default_width') );		
+		add_settings_field( 'default_height', 'Default Player Height', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_embed_options', array('field' => 'default_height') );		
 		
 		add_settings_section( 'section_preferences_options', 'General Preferences', array( &$this, 'section_preferences_desc' ), $this->preferences_options_key );		
-		add_settings_field( 'default_player_name', 'Default Player', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_preferences_options', array('field' => 'default_player_name') );
-		add_settings_field( 'default_player_pid', 'Default Player PID', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_preferences_options', array('field' => 'default_player_pid') );		
- 		add_settings_field( 'video_type_option', 'Default Embed Type', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_preferences_options', array('field' => 'video_type') );
 		add_settings_field( 'filter_by_user_id', 'Filter Users Own Videos', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_preferences_options', array('field' => 'filter_by_user_id') );
  		add_settings_field( 'user_id_customfield', 'User ID Custom Field', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_preferences_options', array('field' => 'user_id_customfield') ); 		
- 		add_settings_field( 'mpx_server_id', 'Default Upload Server', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_preferences_options', array('field' => 'mpx_server_id') );
+ 		add_settings_field( 'mpx_server_id', 'MPX Upload Server', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_preferences_options', array('field' => 'mpx_server_id') );
  		add_settings_field( 'default_publish_id', 'Default Publishing Profile', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_preferences_options', array('field' => 'default_publish_id') ); 		
  		
 	}
@@ -242,11 +249,15 @@ class ThePlatform_Options {
 	 * with add_settings_section
 	 */
 	function section_mpx_account_desc() { 
-		echo 'Set your MPX credentials here. These should have been provided to you when creating your account with thePlatform.'; 				
+		echo 'Set your MPX credentials and Account. If you do not have an account, please reach out to thePlatform.'; 				
 	}
 	
 	function section_preferences_desc() { 
-		echo 'Configure general plugin preferences below.'; 
+		echo 'Configure general preferences below.'; 
+	}
+
+	function section_embed_desc() { 
+		echo 'Configure embedding defaults.'; 
 	}
 	
 	function section_metadata_desc() { 
@@ -290,10 +301,10 @@ class ThePlatform_Options {
 				if ($this->preferences['mpx_account_id'] === '')
 					$html .= "<span> Please pick the MPX account you'd like to manage through Wordpress</span>";
 				break;
-			case 'video_type':
+			case 'embed_tag_type':
 				$html = '<select id="' . esc_attr($field) . '" name="theplatform_preferences_options[' . esc_attr($field) . ']">';  
-				$html .= '<option value="embed"' . selected( $opts[$field], 'embed', false) . '>Video Only</option>';  
-				$html .= '<option value="full"' . selected( $opts[$field], 'full', false) . '>Full Player</option>';  
+				$html .= '<option value="IFrame"' . selected( $opts[$field], 'iframe', false) . '>IFrame</option>';  
+				$html .= '<option value="Script"' . selected( $opts[$field], 'script', false) . '>Script</option>';  
 				$html .= '</select>';
 				break;			
 			case 'mpx_password':
@@ -332,6 +343,7 @@ class ThePlatform_Options {
 				$html = '<input disabled style="background-color: lightgray" id="default_player_pid" type="text" name="theplatform_preferences_options[' . esc_attr($field) . ']" value="' . esc_attr( $opts[$field] ) . '" />';
 				break;	
 			case 'filter_by_user_id':
+			case 'autoplay':
 				$html = '<select id="' . esc_attr($field) . '"" name="theplatform_preferences_options[' . esc_attr($field) . ']"/>';
 				$html .= '<option value="TRUE" ' . selected( $opts[$field], 'TRUE', false) . '>True</option>';
 				$html .= '<option value="FALSE" ' . selected( $opts[$field], 'FALSE', false) . '>False</option>';

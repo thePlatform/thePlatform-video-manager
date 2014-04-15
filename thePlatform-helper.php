@@ -42,14 +42,17 @@ function connection_options_validate($input) {
 			'mpx_account_id' => '',
 			'mpx_username' => 'mpx/',				
 			'mpx_password' => '',			
-			'video_type' => 'embed',				
+			'embed_tag_type' => 'embed',				
 			'mpx_account_pid' => '',
 			'default_player_name' => '',
 			'default_player_pid' => '',
 			'mpx_server_id' => '',
 			'default_publish_id' => '',
 			'user_id_customfield' => '',
-			'filter_by_user_id' => 'FALSE'
+			'filter_by_user_id' => 'FALSE',
+			'autoplay' => 'TRUE',
+			'default_width' => $GLOBALS['content_width'],
+			'default_height' => ($GLOBALS['content_width']/16)*9
 			);;
 	}
 
@@ -66,7 +69,7 @@ function connection_options_validate($input) {
 	}
 
 	foreach ($input as $key => $value) {
-		if ($key == 'videos_per_page') {
+		if ($key == 'videos_per_page' || $key === 'default_width' || $key === 'default_height') {
 			$input[$key] = intval($value);
 		}
 		else {

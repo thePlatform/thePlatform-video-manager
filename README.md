@@ -5,7 +5,7 @@ Developed By: thePlatform for Media, Inc.
 Tags: embedding, video, embed, portal, theplatform, shortcode  
 Requires at least: 3.7  
 Tested up to: 3.9  
-Stable tag: 1.2.0  
+Stable tag: 1.2.5 
 
 Manage your content hosted by thePlatform and embed media in WordPress posts.
 
@@ -26,6 +26,14 @@ Copy the folder "thePlatform-video-manager" with all included files into the "wp
 5. Upload media to your MPX account
 
 # == Changelog ==
+
+## = 1.2.5 = 
+* Fixed a bug where publishing profiles didn't work if they existing in more than one authorized account
+* Added a new setting section - Embedding options
+* Removed Full Video/Embed only setting
+* Categories are now sorted by title instead of fullTitle
+* Moved embed and edit buttons from the media into the metadata container
+* Added a feaure to set the featured image from the video thumbnail
 
 ## = 1.2.0 =
 * Completely redesigned the Upload, Browse, Edit and Embed pages
@@ -75,25 +83,27 @@ Copy the folder "thePlatform-video-manager" with all included files into the "wp
 This plugin requires an account with thePlatform's MPX. Please contact your Account Manager for additional information.
 
 ## = MPX Account Options =
-* MPX Username (Required) - The MPX username to use for all of the plugin capabilities
-* MPX Password (Required) - The password for the entered MPX username
-* MPX Account (Required) - The MPX account to upload and retrieve media from
-* MPX Namespace (Optional) - You can choose a specific namespace to use when grabbing Metadata fields, otherwise all metadata fields will be used.
+* MPX Username - The MPX username to use for all of the plugin capabilities
+* MPX Password - The password for the entered MPX username
+* MPX Account - The MPX account to upload and retrieve media from
+
+## = Embedding Preferences =
+* Default Player - The default player used for embedding and in the Media Browser
+* Embed Tag Type - IFrame or Script embed
+* Force Autoplay - Pass the autoplay parameter to embedded players
 
 ## = General Preferences =
-* Default Player (Optional) - The default player used for embedding and previews
-* Default Embed Type (Required) - Default player embed style (i.e. player.theplatform.com/{accountPID}/embed/{playerPID} or player.theplatform.com/{accountPID}/{playerPID})
-* Filter Users Own Video (Required) - Filter by the User ID custom field, ignored if the User ID is blank
-* User ID Custom Field (Optional) - Name of the Custom Field to store the Wordpress User ID, (None) to disable
-* Default Upload Server (Required) - Default MPX server to upload new media to
-* Default Publish Profile (Required) - If set, uploaded media will automatically publish to the selected profile. 
+* Filter Users Own Video - Filter by the User ID custom field, ignored if the User ID is blank
+* User ID Custom Field - Name of the Custom Field to store the Wordpress User ID, (None) to disable
+* Default Upload Server - Default MPX server to upload new media to
+* Default Publish Profile - If set, uploaded media will automatically publish to the selected profile. 
 
 ## = Filters =
 * tp_base_embed_url - Just the player URL
 * tp_full_embed_url - The player URL with all parameters, applied after tp_base_embed_url
-* tp_embed_code - The complete embed code, applied after tp_full_embed_url
-* 'tp_viewer_cap', 'edit_posts' - View the MPX Media Browser	
-* 'tp_embedder_cap', 'edit_posts' - Embed MPX media into a post
-* 'tp_editor_cap', 'upload_files' - Edit MPX Media
-* 'tp_uploader_cap' - 'upload_files' - Upload MPX media	
-* 'tp_admin_cap', 'manage_options' - Manage thePlatform's plugin settings
+* tp_embed_code - The complete embed code, with surrounding HTML, applied after tp_full_embed_url
+* tp_viewer_cap, default - 'edit_posts' - View the MPX Media Browser	
+* tp_embedder_cap, default - 'edit_posts' - Embed MPX media into a post
+* tp_editor_cap, default - 'upload_files' - Edit MPX Media
+* tp_uploader_cap - default - 'upload_files' - Upload MPX media	
+* tp_admin_cap, default - 'manage_options' - Manage thePlatform's plugin settings

@@ -79,8 +79,7 @@ function writePlayers($players, $preferences) {
 	tpHelper.token = "<?php echo $tp_api->mpx_signin();?>";
 	tpHelper.account = "<?php echo $preferences['mpx_account_id'];?>";
 	tpHelper.accountPid = "<?php echo $preferences['mpx_account_pid'];?>";
-	tpHelper.isEmbed = "<?php echo $IS_EMBED;?>";	
-	window.parent.document.body.style.overflowY="hidden";
+	tpHelper.isEmbed = "<?php echo $IS_EMBED;?>";		
 </script>
 
 </head>
@@ -201,6 +200,17 @@ function writePlayers($players, $preferences) {
 								}				
                         ?>                      
                         </div>
+                        <div id="btn-container">
+	                        <?php 
+	                        	if ($IS_EMBED) { ?>
+	                        <button type="button" id="btn-embed" class="btn btn-primary btn-xs">Embed</button>
+	                        <button type="button" id="btn-embed-close" class="btn btn-primary btn-xs">Embed and close</button>
+	                        <button type="button" id="btn-set-image" class="btn btn-primary btn-xs">Set Featured Image</button>  
+							<?php }
+								else { ?>
+	                        <button type="button" id="btn-edit" class="btn btn-primary btn-xs">Edit Media</button>
+	                        <?php } ?>
+	                    </div>
                     </div>
                 </div>
             </div>

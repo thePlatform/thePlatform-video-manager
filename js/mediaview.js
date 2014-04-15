@@ -25,6 +25,69 @@ jQuery(document).ready(function () {
     jQuery('#load-overlay').hide();
     mpxHelper.getCategoryList(buildCategoryAccordion);
 
+     jQuery('#btn-embed').click(function() {
+
+        var player = jQuery('#selectpick-player').val();
+
+        var shortcode = '[theplatform media="' + tpHelper.currentRelease + '" player="' + player + '"]';
+        
+        var win = window.dialogArguments || opener || parent || top;
+        var editor = win.tinyMCE.activeEditor;
+        var isVisual = (typeof win.tinyMCE != "undefined") && editor && !editor.isHidden(); 
+        if (isVisual) {
+            editor.execCommand('mceInsertContent', false, shortcode);
+        } 
+        else {
+            var currentContent = jQuery('#content', window.parent.document).val();
+            if ( typeof currentContent == 'undefined' )
+                currentContent = '';        
+            jQuery( '#content', window.parent.document ).val( currentContent + shortcode );
+        }
+        self.parent.tb_remove();
+    })
+
+    jQuery('#btn-embed-close').click(function() {
+        jQuery('#btn-embed').click();
+        window.parent.jQuery('#tp-embed-dialog').dialog('close');        
+    })
+
+    jQuery('#btn-set-image').click(function() {
+        var post_id = window.parent.jQuery('#post_ID').val();
+        if (!tpHelper.selectedThumb || ! post_id)
+            return;
+
+        var data = {
+                action: 'set_thumbnail',                
+                img: tpHelper.selectedThumb,  
+                id: post_id,          
+                _wpnonce: localscript.tp_nonce
+        };
+                        
+        jQuery.post( ajaxurl, data, function(response) {
+            if (response.indexOf('set-post-thumbnail') != -1)
+                window.parent.jQuery('#postimagediv .inside').html(response);
+        });
+    })
+
+    // if (location.search.indexOf('&embed=true') != -1)
+    //     newMedia += '<button class="btn btn-xs media-embed pull-right" data-toggle="tooltip" data-placement="bottom" title="Embed this Media"><div class="dashicons dashicons-migrate"></div></button>';
+    // if (jQuery('#tp-edit-dialog').length !== 0)
+    //     newMedia += '<button class="btn btn-xs media-edit pull-right" data-toggle="tooltip" data-placement="bottom" title="Edit this Media"><div class="dashicons dashicons-edit"></div></button>';
+    jQuery('#btn-edit').click(function() {
+       
+        jQuery("#tp-edit-dialog").dialog({
+                dialogClass: "wp-dialog", 
+                modal: true, 
+                resizable: true, 
+                minWidth: 800, 
+                width: 1024,
+                position: ['center',20]                   
+            }).css("overflow","hidden");    
+        
+
+        return false;
+    });
+
     /**
      * Set up the infinite scrolling media list
      */
@@ -107,7 +170,9 @@ jQuery(document).ready(function () {
         jQuery('.media').css('background-color', '');
         jQuery(this).css('background-color', '#D8E8FF');
         jQuery(this).data('bgc', '#D8E8FF');
-        tpHelper.currentRelease = jQuery(this).data('release');    
+        tpHelper.currentRelease = jQuery(this).data('release'); 
+        tpHelper.mediaId = jQuery(this).data('id');
+        tpHelper.selectedThumb = jQuery(this).data('media')['defaultThumbnailUrl'];   
         $pdk.controller.resetPlayer();
         if (tpHelper.currentRelease !== "undefined") {
             jQuery('#modal-player-placeholder').hide();        
@@ -261,10 +326,6 @@ function addMediaObject(media) {
         placeHolder = "holder.js/128x72/text:No Thumbnail";
 
     var newMedia = '<div class="media" id="' + media.guid + '"><img class="media-object pull-left thumb-img" data-src="' + placeHolder + '" alt="128x72" src="' + media.defaultThumbnailUrl + '">'
-    if (location.search.indexOf('&embed=true') != -1)
-        newMedia += '<button class="btn btn-xs media-embed pull-right" data-toggle="tooltip" data-placement="bottom" title="Embed this Media"><div class="dashicons dashicons-migrate"></div></button>';
-    if (jQuery('#tp-edit-dialog').length !== 0)
-        newMedia += '<button class="btn btn-xs media-edit pull-right" data-toggle="tooltip" data-placement="bottom" title="Edit this Media"><div class="dashicons dashicons-edit"></div></button>';
     newMedia += '<div class="media-body">' + '<div id="head"><strong class="media-heading"></strong></div>' + '<div id="source"></div>' + '<div id="desc"></div>' + '</div>' + '</div>';
 
     newMedia = jQuery(newMedia);
@@ -284,62 +345,12 @@ function addMediaObject(media) {
         return; 
     
     newMedia.data('release', previewUrl.pop()) 
-    jQuery('.media-embed', newMedia).hover(function() {
-        jQuery(this).tooltip();
-    }, function() {
-        jQuery(this).attr('title', 'Embed this Media').tooltip('fixTitle');
-    });
-
-    jQuery('.media-embed', newMedia).click(function() {
-
-        var player = jQuery('#selectpick-player').val();
-        jQuery(this).attr('title', 'Media Embedded').tooltip('fixTitle').tooltip('show');
-
-        if (newMedia != '') {
-            var shortcode = '[theplatform media="' + newMedia.data('release') + '" player="' + player + '"]';
-        
-            var win = window.dialogArguments || opener || parent || top;
-            var editor = win.tinyMCE.activeEditor;
-            var isVisual = (typeof win.tinyMCE != "undefined") && editor && !editor.isHidden(); 
-            if (isVisual) {
-                editor.execCommand('mceInsertContent', false, shortcode);
-            } else {
-                var currentContent = jQuery('#content', window.parent.document).val();
-                if ( typeof currentContent == 'undefined' )
-                    currentContent = '';        
-                jQuery( '#content', window.parent.document ).val( currentContent + shortcode );
-            }
-            self.parent.tb_remove();
-        }
-        return false;
-
-    });
-
-    jQuery('.media-edit', newMedia).hover(function() {
-        jQuery(this).tooltip();
-    }, function() {
-        jQuery(this).attr('title', 'Edit this Media').tooltip('fixTitle');
-    });
-
-    jQuery('.media-edit', newMedia).click(function() {
-        jQuery(newMedia).click();
-        tpHelper.mediaId = newMedia.data('id');
-    
-        if (newMedia != '') {
-            jQuery("#tp-edit-dialog").dialog({
-                    dialogClass: "wp-dialog", 
-                    modal: true, 
-                    resizable: true, 
-                    minWidth: 800, 
-                    width: 1024,
-                    position: ['center',20]                   
-                }).css("overflow","hidden");    
-        }
-
-        return false;
-    });
 
     jQuery('#media-list').append(newMedia);
+
+     //Select the first one on the page.
+    if (jQuery('#media-list').children().length < 2)
+        jQuery('.media','#media-list').click();
 }
 
 function updateContentPane(mediaItem) {

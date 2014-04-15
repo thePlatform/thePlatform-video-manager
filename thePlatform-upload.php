@@ -168,7 +168,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		</div>
 		<div class="row">
 			<div class="col-xs-3">			
-				<label class="control-label" for="theplatform_upload_file">File</label><input type="file" accept="video/*" id="theplatform_upload_file" />
+				<label class="control-label" for="theplatform_upload_file">File</label><input type="file" accept="audio/*|video/*|image/*" id="theplatform_upload_file" />
 			</div>
 		</div>	
 		<div class="row">
