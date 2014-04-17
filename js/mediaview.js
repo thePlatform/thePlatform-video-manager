@@ -43,12 +43,15 @@ jQuery(document).ready(function () {
                 currentContent = '';        
             jQuery( '#content', window.parent.document ).val( currentContent + shortcode );
         }
-        self.parent.tb_remove();
     })
 
     jQuery('#btn-embed-close').click(function() {
         jQuery('#btn-embed').click();
-        window.parent.jQuery('#tp-embed-dialog').dialog('close');        
+        var win = opener || parent
+        if (win.tinyMCE.majorVersion > 3)
+            win.tinyMCE.activeEditor.windowManager.close();
+        else
+            win.jQuery('#cnn-embed-dialog').dialog('close');        
     })
 
     jQuery('#btn-set-image').click(function() {
@@ -109,7 +112,10 @@ jQuery(document).ready(function () {
                 tpHelper.feedResultCount = resp['totalResults'];
                 tpHelper.feedStartRange = resp['startIndex'];
                 tpHelper.feedEndRange = 0;
-                if (resp['entryCount'] > 0) tpHelper.feedEndRange = resp['startIndex'] + resp['entryCount'] - 1;
+                if (resp['entryCount'] > 0) 
+                    tpHelper.feedEndRange = resp['startIndex'] + resp['entryCount'] - 1;
+                else
+                    notifyUser('info','No Results');
 
                 var entries = resp['entries'];
                 for (var i = 0; i < entries.length; i++)
@@ -226,6 +232,7 @@ jQuery(document).ready(function () {
  * @return {void} 
  */
 function refreshView() {
+    notifyUser('clear'); //clear alert box.
     var $mediaList = jQuery('#media-list');
     //TODO: If sorting clear search?
     var queryObject = {
@@ -267,20 +274,6 @@ function getSort() {
     return sortMethod || "added";
 }
 
-function setSort(val) {
-    var $sortBox = jQuery('#selectpick-sort');
-    switch (val.toLowerCase()) {
-    case "updated":
-        $sortBox.val('Updated');
-        break;
-    case "title":
-        $sortBox.val('Title');
-        break;
-    default:
-        $sortBox.val('Added');
-    }
-}
-
 function getSearch() {
     return jQuery('#input-search').val();
 }
@@ -312,6 +305,19 @@ function buildCategoryAccordion(resp) {
 
         refreshView();
     });
+}
+
+function notifyUser(type, msg){
+    var $msgPanel = jQuery('#message-panel');
+    $msgPanel.attr('class','');
+    if (type === 'clear'){
+        $msgPanel.attr('class','');
+        msg = '';
+    }else{
+        $msgPanel.addClass('alert alert-' + type);
+        $msgPanel.alert();
+    }
+    $msgPanel.text(msg);
 }
 
 function addMediaObject(media) {

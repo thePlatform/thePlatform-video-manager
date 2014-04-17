@@ -23,10 +23,20 @@ tinymce.PluginManager.add('theplatform', function(editor, url) {
         onclick: function() {
             // Open window         
             
+            var iframeUrl = ajaxurl + "?action=theplatform_media&embed=true"
             tinyMCE.activeEditor = editor;
-            if (jQuery(".tp-embed-dialog").length == 0)
-            	jQuery('body').append('<div id="tp-embed-dialog"></div>');
-            jQuery("#tp-embed-dialog").html('<iframe src="' + ajaxurl + '?action=theplatform_media&embed=true" height="100%" width="100%">').dialog({dialogClass: "wp-dialog", modal: true, resizable: true, minWidth: 1024, width: 1200, height: 1024}).css("overflow-y","hidden");                       
+            if (tinyMCE.majorVersion > 3) {
+                editor.windowManager.open({
+                    width: 1200,
+                    height: 1024,
+                    url: iframeUrl
+                });      
+            }
+            else {
+                if (jQuery(".tp-embed-dialog").length == 0)
+                jQuery('body').append('<div id="tp-embed-dialog"></div>');
+            jQuery("#tp-embed-dialog").html('<iframe src="' + iframeUrl + '" height="100%" width="100%">').dialog({dialogClass: "wp-dialog", modal: true, resizable: true, minWidth: 1024, width: 1200, height: 1024}).css("overflow-y","hidden");                           
+            }
         }
     });
 

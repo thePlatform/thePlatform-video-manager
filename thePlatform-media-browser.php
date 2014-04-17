@@ -134,6 +134,7 @@ function writePlayers($players, $preferences) {
         </div>
 
         <div id="content-container">
+        	<div id="message-panel"></div>
             <div id="media-list"></div>
         </div>
         <div id="info-container">
