@@ -1,391 +1,398 @@
 /* thePlatform Video Manager Wordpress Plugin
-Copyright (C) 2013-2014  thePlatform for Media Inc.
+ Copyright (C) 2013-2014  thePlatform for Media Inc.
+ 
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License along
+ with this program; if not, write to the Free Software Foundation, Inc.,
+ 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+jQuery( document ).ready( function() {
+	//Parse params and basic setup.
+	var queryParams = mpxHelper.getParameters();
+	tpHelper.selectedCategory = '';
+	tpHelper.feedEndRange = 0;
+	tpHelper.queryString = ''
+	$pdk.bind( "player" );
+	jQuery( '#load-overlay' ).hide();
+	mpxHelper.getCategoryList( buildCategoryAccordion );
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+	jQuery( '#btn-embed' ).click( function() {
 
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
+		var player = jQuery( '#selectpick-player' ).val();
 
-jQuery(document).ready(function () {
-    //Parse params and basic setup.
-    var queryParams = mpxHelper.getParameters();
-    tpHelper.selectedCategory = '';
-    tpHelper.feedEndRange = 0;
-    tpHelper.queryString = ''
-    $pdk.bind("player");    
-    jQuery('#load-overlay').hide();
-    mpxHelper.getCategoryList(buildCategoryAccordion);
+		var shortcode = '[theplatform media="' + tpHelper.currentRelease + '" player="' + player + '"]';
 
-     jQuery('#btn-embed').click(function() {
+		var win = window.dialogArguments || opener || parent || top;
+		var editor = win.tinyMCE.activeEditor;
+		var isVisual = ( typeof win.tinyMCE != "undefined" ) && editor && !editor.isHidden();
+		if ( isVisual ) {
+			editor.execCommand( 'mceInsertContent', false, shortcode );
+		}
+		else {
+			var currentContent = jQuery( '#content', window.parent.document ).val();
+			if ( typeof currentContent == 'undefined' )
+				currentContent = '';
+			jQuery( '#content', window.parent.document ).val( currentContent + shortcode );
+		}
+	} )
 
-        var player = jQuery('#selectpick-player').val();
+	jQuery( '#btn-embed-close' ).click( function() {
+		jQuery( '#btn-embed' ).click();
+		var win = opener || parent
+		if ( win.tinyMCE.majorVersion > 3 )
+			win.tinyMCE.activeEditor.windowManager.close();
+		else
+			win.jQuery( '#tp-embed-dialog' ).dialog( 'close' );
+	} )
 
-        var shortcode = '[theplatform media="' + tpHelper.currentRelease + '" player="' + player + '"]';
-        
-        var win = window.dialogArguments || opener || parent || top;
-        var editor = win.tinyMCE.activeEditor;
-        var isVisual = (typeof win.tinyMCE != "undefined") && editor && !editor.isHidden(); 
-        if (isVisual) {
-            editor.execCommand('mceInsertContent', false, shortcode);
-        } 
-        else {
-            var currentContent = jQuery('#content', window.parent.document).val();
-            if ( typeof currentContent == 'undefined' )
-                currentContent = '';        
-            jQuery( '#content', window.parent.document ).val( currentContent + shortcode );
-        }
-    })
+	jQuery( '#btn-set-image' ).click( function() {
+		var post_id = window.parent.jQuery( '#post_ID' ).val();
+		if ( !tpHelper.selectedThumb || !post_id )
+			return;
 
-    jQuery('#btn-embed-close').click(function() {
-        jQuery('#btn-embed').click();
-        var win = opener || parent
-        if (win.tinyMCE.majorVersion > 3)
-            win.tinyMCE.activeEditor.windowManager.close();
-        else
-            win.jQuery('#cnn-embed-dialog').dialog('close');        
-    })
+		var data = {
+			action: 'set_thumbnail',
+			img: tpHelper.selectedThumb,
+			id: post_id,
+			_wpnonce: localscript.tp_nonce
+		};
 
-    jQuery('#btn-set-image').click(function() {
-        var post_id = window.parent.jQuery('#post_ID').val();
-        if (!tpHelper.selectedThumb || ! post_id)
-            return;
+		jQuery.post( ajaxurl, data, function( response ) {
+			if ( response.indexOf( 'set-post-thumbnail' ) != -1 )
+				window.parent.jQuery( '#postimagediv .inside' ).html( response );
+		} );
+	} );
 
-        var data = {
-                action: 'set_thumbnail',                
-                img: tpHelper.selectedThumb,  
-                id: post_id,          
-                _wpnonce: localscript.tp_nonce
-        };
-                        
-        jQuery.post( ajaxurl, data, function(response) {
-            if (response.indexOf('set-post-thumbnail') != -1)
-                window.parent.jQuery('#postimagediv .inside').html(response);
-        });
-    })
+	// if (location.search.indexOf('&embed=true') != -1)
+	//     newMedia += '<button class="btn btn-xs media-embed pull-right" data-toggle="tooltip" data-placement="bottom" title="Embed this Media"><div class="dashicons dashicons-migrate"></div></button>';
+	// if (jQuery('#tp-edit-dialog').length !== 0)
+	//     newMedia += '<button class="btn btn-xs media-edit pull-right" data-toggle="tooltip" data-placement="bottom" title="Edit this Media"><div class="dashicons dashicons-edit"></div></button>';
+	jQuery( '#btn-edit' ).click( function() {
 
-    // if (location.search.indexOf('&embed=true') != -1)
-    //     newMedia += '<button class="btn btn-xs media-embed pull-right" data-toggle="tooltip" data-placement="bottom" title="Embed this Media"><div class="dashicons dashicons-migrate"></div></button>';
-    // if (jQuery('#tp-edit-dialog').length !== 0)
-    //     newMedia += '<button class="btn btn-xs media-edit pull-right" data-toggle="tooltip" data-placement="bottom" title="Edit this Media"><div class="dashicons dashicons-edit"></div></button>';
-    jQuery('#btn-edit').click(function() {
-       
-        jQuery("#tp-edit-dialog").dialog({
-                dialogClass: "wp-dialog", 
-                modal: true, 
-                resizable: true, 
-                minWidth: 800, 
-                width: 1024,
-                position: ['center',20]                   
-            }).css("overflow","hidden");    
-        
+		jQuery( "#tp-edit-dialog" ).dialog( {
+			dialogClass: "wp-dialog",
+			modal: true,
+			resizable: true,
+			minWidth: 800,
+			width: 1024,
+			position: [ 'center', 20 ]
+		} ).css( "overflow", "hidden" );
 
-        return false;
-    });
 
-    /**
-     * Set up the infinite scrolling media list
-     */
-    jQuery('#media-list').infiniteScroll({
-        threshold: 100,
-        onEnd: function () {
-            //No more results
-        },
-        onBottom: function (callback) {
-            jQuery('#load-overlay').show(); // show loading before we call getVideos
-            var theRange = parseInt(tpHelper.feedEndRange);
-            theRange = (theRange + 1) + '-' + (theRange + 20);
-            mpxHelper.getVideos(theRange, function (resp) {
-                if (resp['isException']) {
-                    jQuery('#load-overlay').hide();
-                    //what do we do on error?
-                }
+		return false;
+	} );
 
-                tpHelper.feedResultCount = resp['totalResults'];
-                tpHelper.feedStartRange = resp['startIndex'];
-                tpHelper.feedEndRange = 0;
-                if (resp['entryCount'] > 0) 
-                    tpHelper.feedEndRange = resp['startIndex'] + resp['entryCount'] - 1;
-                else
-                    notifyUser('info','No Results');
+	/**
+	 * Set up the infinite scrolling media list
+	 */
+	jQuery( '#media-list' ).infiniteScroll( {
+		threshold: 100,
+		onEnd: function() {
+			//No more results
+		},
+		onBottom: function( callback ) {
+			jQuery( '#load-overlay' ).show(); // show loading before we call getVideos
+			var theRange = parseInt( tpHelper.feedEndRange );
+			theRange = ( theRange + 1 ) + '-' + ( theRange + 20 );
+			mpxHelper.getVideos( theRange, function( resp ) {
+				if ( resp['isException'] ) {
+					jQuery( '#load-overlay' ).hide();
+					//what do we do on error?
+				}
 
-                var entries = resp['entries'];
-                for (var i = 0; i < entries.length; i++)
-                    addMediaObject(entries[i]);
+				tpHelper.feedResultCount = resp['totalResults'];
+				tpHelper.feedStartRange = resp['startIndex'];
+				tpHelper.feedEndRange = 0;
+				if ( resp['entryCount'] > 0 )
+					tpHelper.feedEndRange = resp['startIndex'] + resp['entryCount'] - 1;
+				else
+					notifyUser( 'info', 'No Results' );
 
-                jQuery('#load-overlay').hide();
-                Holder.run();
-                callback(parseInt(tpHelper.feedEndRange) < parseInt(tpHelper.feedResultCount)); //True if there are still more results.
-            });
-        }
-    });
+				var entries = resp['entries'];
+				for ( var i = 0; i < entries.length; i++ )
+					addMediaObject( entries[i] );
 
-    //This is for setting a section "scrollable" so it will scroll without scrolling everything else.
-    jQuery('.scrollable').on('DOMMouseScroll mousewheel', function (ev) {
-        var $this = jQuery(this),
-            scrollTop = this.scrollTop,
-            scrollHeight = this.scrollHeight,
-            height = $this.height(),
-            delta = (ev.type == 'DOMMouseScroll' ? ev.originalEvent.detail * -40 : ev.originalEvent.wheelDelta),
-            up = delta > 0;
+				jQuery( '#load-overlay' ).hide();
+				Holder.run();
+				callback( parseInt( tpHelper.feedEndRange ) < parseInt( tpHelper.feedResultCount ) ); //True if there are still more results.
+			} );
+		}
+	} );
 
-        var prevent = function () {
-                ev.stopPropagation();
-                ev.preventDefault();
-                ev.returnValue = false;
-                return false;
-            };
+	//This is for setting a section "scrollable" so it will scroll without scrolling everything else.
+	jQuery( '.scrollable' ).on( 'DOMMouseScroll mousewheel', function( ev ) {
+		var $this = jQuery( this ),
+				scrollTop = this.scrollTop,
+				scrollHeight = this.scrollHeight,
+				height = $this.height(),
+				delta = ( ev.type == 'DOMMouseScroll' ? ev.originalEvent.detail * -40 : ev.originalEvent.wheelDelta ),
+				up = delta > 0;
 
-        if (!up && -delta > scrollHeight - height - scrollTop) {
-            // Scrolling down, but this will take us past the bottom.
-            $this.scrollTop(scrollHeight);
-            return prevent();
-        } else if (up && delta > scrollTop) {
-            // Scrolling up, but this will take us past the top.
-            $this.scrollTop(0);
-            return prevent();
-        }
-    });
+		var prevent = function() {
+			ev.stopPropagation();
+			ev.preventDefault();
+			ev.returnValue = false;
+			return false;
+		};
 
-    /**
-     * Search form event handlers
-     */
-    jQuery('#btn-feed-preview').click(refreshView);
+		if ( !up && -delta > scrollHeight - height - scrollTop ) {
+			// Scrolling down, but this will take us past the bottom.
+			$this.scrollTop( scrollHeight );
+			return prevent();
+		} else if ( up && delta > scrollTop ) {
+			// Scrolling up, but this will take us past the top.
+			$this.scrollTop( 0 );
+			return prevent();
+		}
+	} );
 
-    jQuery('input:checkbox', '#my-content').click(refreshView);
+	/**
+	 * Search form event handlers
+	 */
+	jQuery( '#btn-feed-preview' ).click( refreshView );
 
-    jQuery('#selectpick-sort').on('change', refreshView);
+	jQuery( 'input:checkbox', '#my-content' ).click( refreshView );
 
-    jQuery('#input-search').keyup(function (event) {
-        if (event.keyCode == 13) refreshView();
-    });
+	jQuery( '#selectpick-sort' ).on( 'change', refreshView );
 
-    /**
-     * Look and feel event handlers
-     */    
-    jQuery(document).on('click', '.media', function () {
-        updateContentPane(jQuery(this).data('media'));    
-        jQuery('.media').css('background-color', '');
-        jQuery(this).css('background-color', '#D8E8FF');
-        jQuery(this).data('bgc', '#D8E8FF');
-        tpHelper.currentRelease = jQuery(this).data('release'); 
-        tpHelper.mediaId = jQuery(this).data('id');
-        tpHelper.selectedThumb = jQuery(this).data('media')['defaultThumbnailUrl'];   
-        $pdk.controller.resetPlayer();
-        if (tpHelper.currentRelease !== "undefined") {
-            jQuery('#modal-player-placeholder').hide();        
-            $pdk.controller.loadReleaseURL("http://link.theplatform.com/s/" + tpHelper.accountPid + "/" + tpHelper.currentRelease,true);
-        }
-        else {
-            jQuery('#modal-player-placeholder').show()        
-        }
-    });
+	jQuery( '#input-search' ).keyup( function( event ) {
+		if ( event.keyCode == 13 )
+			refreshView();
+	} );
 
-    //Update background color when hovering over media
-    jQuery(document).on('mouseenter', '.media', function () {
-        $this = jQuery(this);
-        $this.data('bgc', $this.css('background-color'));
-        $this.css('background-color', '#f5f5f5');
-    });
+	/**
+	 * Look and feel event handlers
+	 */
+	jQuery( document ).on( 'click', '.media', function() {
+		updateContentPane( jQuery( this ).data( 'media' ) );
+		jQuery( '.media' ).css( 'background-color', '' );
+		jQuery( this ).css( 'background-color', '#D8E8FF' );
+		jQuery( this ).data( 'bgc', '#D8E8FF' );
+		tpHelper.currentRelease = jQuery( this ).data( 'release' );
+		tpHelper.mediaId = jQuery( this ).data( 'id' );
+		tpHelper.selectedThumb = jQuery( this ).data( 'media' )['defaultThumbnailUrl'];
+		$pdk.controller.resetPlayer();
+		if ( tpHelper.currentRelease !== "undefined" ) {
+			jQuery( '#modal-player-placeholder' ).hide();
+			$pdk.controller.loadReleaseURL( "http://link.theplatform.com/s/" + tpHelper.accountPid + "/" + tpHelper.currentRelease, true );
+		}
+		else {
+			jQuery( '#modal-player-placeholder' ).show()
+		}
+	} );
 
-    //Update background color when hovering off media
-    jQuery(document).on('mouseleave', '.media', function () {
-        $this = jQuery(this);
-        var oldbgc = $this.data('bgc');
+	//Update background color when hovering over media
+	jQuery( document ).on( 'mouseenter', '.media', function() {
+		$this = jQuery( this );
+		$this.data( 'bgc', $this.css( 'background-color' ) );
+		$this.css( 'background-color', '#f5f5f5' );
+	} );
 
-        if (oldbgc) $this.css('background-color', oldbgc);
-        else $this.css('background-color', '');
+	//Update background color when hovering off media
+	jQuery( document ).on( 'mouseleave', '.media', function() {
+		$this = jQuery( this );
+		var oldbgc = $this.data( 'bgc' );
 
-    });
+		if ( oldbgc )
+			$this.css( 'background-color', oldbgc );
+		else
+			$this.css( 'background-color', '' );
 
-    /**
-     * Set the page layout 
-     */
-    var container = window.parent.document.getElementById('tp-container')
-    if (container)
-        container.style.height = window.parent.innerHeight;
+	} );
 
-    jQuery('#info-affix').affix({
-        offset: {
-            top: 0
-        }
-    });
+	/**
+	 * Set the page layout 
+	 */
+	var container = window.parent.document.getElementById( 'tp-container' )
+	if ( container )
+		container.style.height = window.parent.innerHeight;
 
-    jQuery('#filter-affix').affix({
-        offset: {
-            top: 0
-        }
-    });
+	jQuery( '#info-affix' ).affix( {
+		offset: {
+			top: 0
+		}
+	} );
 
-});
+	jQuery( '#filter-affix' ).affix( {
+		offset: {
+			top: 0
+		}
+	} );
+
+} );
 
 /**
  * Refresh the infinite scrolling media list based on the selected category and search options
  * @return {void} 
  */
 function refreshView() {
-    notifyUser('clear'); //clear alert box.
-    var $mediaList = jQuery('#media-list');
-    //TODO: If sorting clear search?
-    var queryObject = {
-        search: jQuery('#input-search').val(),
-        category: tpHelper.selectedCategory,
-        sort: getSort(),
-        desc: jQuery('#sort-desc').data('sort'),
-        myContent: jQuery('#my-content-cb').prop('checked')        
-    };
+	notifyUser( 'clear' ); //clear alert box.
+	var $mediaList = jQuery( '#media-list' );
+	//TODO: If sorting clear search?
+	var queryObject = {
+		search: jQuery( '#input-search' ).val(),
+		category: tpHelper.selectedCategory,
+		sort: getSort(),
+		desc: jQuery( '#sort-desc' ).data( 'sort' ),
+		myContent: jQuery( '#my-content-cb' ).prop( 'checked' )
+	};
 
-    tpHelper.queryParams = queryObject
-    var newFeed = mpxHelper.buildMediaQuery(queryObject);
+	tpHelper.queryParams = queryObject
+	var newFeed = mpxHelper.buildMediaQuery( queryObject );
 
-    delete queryObject.selectedGuids;
-    tpHelper.queryString = mpxHelper.buildMediaQuery(queryObject);
+	delete queryObject.selectedGuids;
+	tpHelper.queryString = mpxHelper.buildMediaQuery( queryObject );
 
-    displayMessage('');
+	displayMessage( '' );
 
-    tpHelper.feedEndRange = 0;
-    $mediaList.empty();
-    $mediaList.infiniteScroll('reset');
+	tpHelper.feedEndRange = 0;
+	$mediaList.empty();
+	$mediaList.infiniteScroll( 'reset' );
 }
 
 function getSort() {
-    var sortMethod = jQuery('option:selected', '#selectpick-sort').val();
+	var sortMethod = jQuery( 'option:selected', '#selectpick-sort' ).val();
 
-    switch (sortMethod) {
-    case "Added":
-        sortMethod = "added|desc";
-        break;
-    case "Updated":
-        sortMethod = "updated|desc";
-        break;
-    case "Title":
-        sortMethod = "title";
-        break;
-    }
+	switch ( sortMethod ) {
+		case "Added":
+			sortMethod = "added|desc";
+			break;
+		case "Updated":
+			sortMethod = "updated|desc";
+			break;
+		case "Title":
+			sortMethod = "title";
+			break;
+	}
 
-    return sortMethod || "added";
+	return sortMethod || "added";
 }
 
 function getSearch() {
-    return jQuery('#input-search').val();
+	return jQuery( '#input-search' ).val();
 }
 
-function buildCategoryAccordion(resp) {
-    var entries = resp['entries'];
-    for (var idx in entries) {
-        var entryTitle = entries[idx]['title'];
-        jQuery('#list-categories').append('<a href="#" class="list-group-item cat-list-selector">' + entryTitle + '</a>');
-    }
+function buildCategoryAccordion( resp ) {
+	var entries = resp['entries'];
+	for ( var idx in entries ) {
+		var entryTitle = entries[idx]['title'];
+		jQuery( '#list-categories' ).append( '<a href="#" class="list-group-item cat-list-selector">' + entryTitle + '</a>' );
+	}
 
-    jQuery('#list-categories').on('mouseover', function () {
-        jQuery('body')[0].style.overflowY = 'none';
-    });
-    jQuery('#list-categories').on('mouseout', function () {
-        jQuery('body')[0].style.overflowY = 'auto';
-    });
+	jQuery( '#list-categories' ).on( 'mouseover', function() {
+		jQuery( 'body' )[0].style.overflowY = 'none';
+	} );
+	jQuery( '#list-categories' ).on( 'mouseout', function() {
+		jQuery( 'body' )[0].style.overflowY = 'auto';
+	} );
 
-    jQuery('.cat-list-selector', '#list-categories').click(function () {
-        tpHelper.selectedCategory = jQuery(this).text();
-        if (tpHelper.selectedCategory == "All Videos") tpHelper.selectedCategory = '';
-        jQuery('.cat-list-selector', '#list-categories').each(function (idx, item) {
-            var $item = jQuery(item);
+	jQuery( '.cat-list-selector', '#list-categories' ).click( function() {
+		tpHelper.selectedCategory = jQuery( this ).text();
+		if ( tpHelper.selectedCategory == "All Videos" )
+			tpHelper.selectedCategory = '';
+		jQuery( '.cat-list-selector', '#list-categories' ).each( function( idx, item ) {
+			var $item = jQuery( item );
 
-            if ((tpHelper.selectedCategory == $item.text()) || (tpHelper.selectedCategory == '' && $item.text() == 'All Videos')) $item.css('background-color', '#D8E8FF');
-            else jQuery(item).css('background-color', '');
-        });
-        jQuery('#input-search').val(''); //Clear the searching when we choose a category        
+			if ( ( tpHelper.selectedCategory == $item.text() ) || ( tpHelper.selectedCategory == '' && $item.text() == 'All Videos' ) )
+				$item.css( 'background-color', '#D8E8FF' );
+			else
+				jQuery( item ).css( 'background-color', '' );
+		} );
+		jQuery( '#input-search' ).val( '' ); //Clear the searching when we choose a category        
 
-        refreshView();
-    });
+		refreshView();
+	} );
 }
 
-function notifyUser(type, msg){
-    var $msgPanel = jQuery('#message-panel');
-    $msgPanel.attr('class','');
-    if (type === 'clear'){
-        $msgPanel.attr('class','');
-        msg = '';
-    }else{
-        $msgPanel.addClass('alert alert-' + type);
-        $msgPanel.alert();
-    }
-    $msgPanel.text(msg);
+function notifyUser( type, msg ) {
+	var $msgPanel = jQuery( '#message-panel' );
+	$msgPanel.attr( 'class', '' );
+	if ( type === 'clear' ) {
+		$msgPanel.attr( 'class', '' );
+		msg = '';
+	} else {
+		$msgPanel.addClass( 'alert alert-' + type );
+		$msgPanel.alert();
+	}
+	$msgPanel.text( msg );
 }
 
-function addMediaObject(media) {
-    //Prevent adding the same media twice.
-    // This cannot be filtered out earlier because it only really occurs when
-    // Something just gets added.
-    if (document.getElementById(media.guid) != null) //Can't use jquery because of poor guid format convention.
-    return;
-    
-    var placeHolder = "";
-    if (media.defaultThumbnailUrl === "")
-        placeHolder = "holder.js/128x72/text:No Thumbnail";
+function addMediaObject( media ) {
+	//Prevent adding the same media twice.
+	// This cannot be filtered out earlier because it only really occurs when
+	// Something just gets added.
+	if ( document.getElementById( media.guid ) != null ) //Can't use jquery because of poor guid format convention.
+		return;
 
-    var newMedia = '<div class="media" id="' + media.guid + '"><img class="media-object pull-left thumb-img" data-src="' + placeHolder + '" alt="128x72" src="' + media.defaultThumbnailUrl + '">'
-    newMedia += '<div class="media-body">' + '<div id="head"><strong class="media-heading"></strong></div>' + '<div id="source"></div>' + '<div id="desc"></div>' + '</div>' + '</div>';
+	var placeHolder = "";
+	if ( media.defaultThumbnailUrl === "" )
+		placeHolder = "holder.js/128x72/text:No Thumbnail";
 
-    newMedia = jQuery(newMedia);
+	var newMedia = '<div class="media" id="' + media.guid + '"><img class="media-object pull-left thumb-img" data-src="' + placeHolder + '" alt="128x72" src="' + media.defaultThumbnailUrl + '">'
+	newMedia += '<div class="media-body">' + '<div id="head"><strong class="media-heading"></strong></div>' + '<div id="source"></div>' + '<div id="desc"></div>' + '</div>' + '</div>';
 
-    jQuery('#head > strong', newMedia).text(media.title);    
-    if (media.description) {
-        if (media.description.length > 300)
-            media.description = media.description.substring(0,297) + '...'
-        jQuery('#desc', newMedia).text(media.description);
-    }    
-    
-    newMedia.data('guid', media.guid);
-    newMedia.data('media', media);
-    newMedia.data('id', media.id)
-    var previewUrl = mpxHelper.extractVideoUrlfromMedia(media);
-    if (previewUrl.length == 0 && tpHelper.isEmbed == "1")
-        return; 
-    
-    newMedia.data('release', previewUrl.pop()) 
+	newMedia = jQuery( newMedia );
 
-    jQuery('#media-list').append(newMedia);
+	jQuery( '#head > strong', newMedia ).text( media.title );
+	if ( media.description ) {
+		if ( media.description.length > 300 )
+			media.description = media.description.substring( 0, 297 ) + '...'
+		jQuery( '#desc', newMedia ).text( media.description );
+	}
 
-     //Select the first one on the page.
-    if (jQuery('#media-list').children().length < 2)
-        jQuery('.media','#media-list').click();
+	newMedia.data( 'guid', media.guid );
+	newMedia.data( 'media', media );
+	newMedia.data( 'id', media.id )
+	var previewUrl = mpxHelper.extractVideoUrlfromMedia( media );
+	if ( previewUrl.length == 0 && tpHelper.isEmbed == "1" )
+		return;
+
+	newMedia.data( 'release', previewUrl.pop() )
+
+	jQuery( '#media-list' ).append( newMedia );
+
+	//Select the first one on the page.
+	if ( jQuery( '#media-list' ).children().length < 2 )
+		jQuery( '.media', '#media-list' ).click();
 }
 
-function updateContentPane(mediaItem) {
-    var i, catArray, catList;
+function updateContentPane( mediaItem ) {
+	var i, catArray, catList;
 
-    var $fields = jQuery('.panel-body span')
+	var $fields = jQuery( '.panel-body span' )
 
-    $fields.each(function(index, value) {
-        var name = jQuery(value).data('name');
-        var fullName = name
-        var prefix = jQuery(value).data('prefix');
-        if (prefix !== undefined)
-            fullName = prefix + '$' + name;
-        var value = mediaItem[fullName]
-        if (name === 'categories') {
-            var catArray = mediaItem.categories || [];
-            var catList = '';
-            for (i = 0; i < catArray.length; i++) {
-                if (catList.length > 0) catList += ', ';
-                catList += catArray[i].name;
-            }
-            value = catList
-        }              
-        jQuery('#media-' + name).text(value || '')
-        jQuery('#theplatform_upload_' + fullName.replace('$', "\\$")).val(value || '')
-    })  
+	$fields.each( function( index, value ) {
+		var name = jQuery( value ).data( 'name' );
+		var fullName = name
+		var prefix = jQuery( value ).data( 'prefix' );
+		if ( prefix !== undefined )
+			fullName = prefix + '$' + name;
+		var value = mediaItem[fullName]
+		if ( name === 'categories' ) {
+			var catArray = mediaItem.categories || [ ];
+			var catList = '';
+			for ( i = 0; i < catArray.length; i++ ) {
+				if ( catList.length > 0 )
+					catList += ', ';
+				catList += catArray[i].name;
+			}
+			value = catList
+		}
+		jQuery( '#media-' + name ).text( value || '' )
+		jQuery( '#theplatform_upload_' + fullName.replace( '$', "\\$" ) ).val( value || '' )
+	} )
 }
 
-function displayMessage(msg) {
-    jQuery('#msg').text(msg);
+function displayMessage( msg ) {
+	jQuery( '#msg' ).text( msg );
 }
 
