@@ -76,7 +76,7 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 				if ( $col === 0 ) {
 					echo '<div class="row">';
 				}
-        $default_value = isset($media[$upload_field]) ? esc_attr( $media[$upload_field] ) : '';
+				$default_value = isset($media[$upload_field]) ? esc_attr( $media[$upload_field] ) : '';
 				$html = '';
 				$html .= '<div class="col-xs-3">';
 				$html .= '<label class="control-label" for="theplatform_upload_' . esc_attr( $upload_field ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
@@ -122,7 +122,7 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 
 		if ( $val == 'allow' ) {
 			$field_name = $field_prefix . '$' . $field_title;
-      $field_value = isset($media[$field_prefix . '$' . $field_title]) ? $media[$field_prefix . '$' . $field_title] : '';
+			$field_value = isset($media[$field_prefix . '$' . $field_title]) ? $media[$field_prefix . '$' . $field_title] : '';
 
 			$html = '';
 			if ( $col === 0 ) {
@@ -155,7 +155,7 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 		?>
 
 		<div class="row">
-			<div class="col-xs-3">			
+			<div class="col-xs-3">
 				<?php
 				$profiles = $tp_api->get_publish_profiles();
 				$html = '<label class="control-label" for="publishing_profile">Publishing Profile</label>';
@@ -170,23 +170,23 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-xs-3">			
+			<div class="col-xs-3">
 				<label class="control-label" for="theplatform_upload_file">File</label><input type="file" accept="audio/*|video/*|image/*" id="theplatform_upload_file" />
 			</div>
-		</div>	
+		</div>
 		<div class="row">
 			<div class="col-xs-3">
-				<button id="theplatform_upload_button" class="form-control btn btn-primary" type="button" name="theplatform-upload-button">Upload Media</button>		
+				<button id="theplatform_upload_button" class="form-control btn btn-primary" type="button" name="theplatform-upload-button">Upload Media</button>
 			</div>
 		</div>
 	<?php } else {
 		?>
 		<div class="row" style="margin-top: 10px;">
 			<div class="col-xs-3">
-				<button id="theplatform_edit_button" class="form-control btn btn-primary" type="button" name="theplatform-edit-button">Submit</button>		
+				<button id="theplatform_edit_button" class="form-control btn btn-primary" type="button" name="theplatform-edit-button">Submit</button>
 			</div>
 		</div>
 	<?php } ?>
-</form>	
+</form>
 </div>
 
