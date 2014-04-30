@@ -149,7 +149,7 @@ class ThePlatform_Plugin {
 	 * @return void
 	 */
 	function embed() {
-		require_once( $this->plugin_dir . 'thePlatform-media-browser.php' );
+		require_once( $this->plugin_base_dir . 'thePlatform-media-browser.php' );
 		die();
 	}
 
@@ -168,7 +168,7 @@ class ThePlatform_Plugin {
 	 * @return void
 	 */
 	function upload() {
-		require_once( $this->plugin_dir . 'thePlatform-upload-window.php' );
+		require_once( $this->plugin_base_dir . 'thePlatform-upload-window.php' );
 		die();
 	}
 
