@@ -145,7 +145,7 @@ wp_print_styles( 'wp-jquery-ui-dialog' );
 						<div id="info-player-container">
 							<div id="modal-player" class="marketplacePlayer">
 								<img id="modal-player-placeholder" data-src="holder.js/320x180/text:No Preview Available" src="" style="position: absolute"><!-- holder.js/128x72/text:No Thumbnail" -->
-								<iframe id="player" width="320px" height="180px" frameBorder="0" seamless="seamless" src="http://player.theplatform.com/p/<?php echo $preferences['mpx_account_pid'] . '/' . $preferences['default_player_pid']; ?>/embed?autoPlay=false"
+								<iframe id="player" width="320px" height="180px" frameBorder="0" seamless="seamless" src="<?php echo TP_API_PLAYER_EMBED_BASE_URL; ?><?php echo $preferences['mpx_account_pid'] . '/' . $preferences['default_player_pid']; ?>/embed?autoPlay=false"
 										webkitallowfullscreen mozallowfullscreen msallowfullscreen allowfullscreen></iframe>
 							</div>
 							<br>

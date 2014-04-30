@@ -54,10 +54,12 @@ class ThePlatform_Plugin {
 	 * Constructor
 	 */
 	function __construct() {
+		require_once(dirname( __FILE__ ) . '/thePlatform-URLs.php');
 		require_once(dirname( __FILE__ ) . '/thePlatform-API.php');
 		require_once(dirname( __FILE__ ) . '/thePlatform-helper.php');
 		require_once(dirname( __FILE__ ) . '/thePlatform-proxy.php');
 
+		new MPXURLConstantInstantiator('theplatform_preferences_options');
 		$this->tp_api = new ThePlatform_API;
 
 		$this->plugin_base_dir = plugin_dir_path( __FILE__ );
@@ -227,7 +229,7 @@ class ThePlatform_Plugin {
 			require_once( dirname( __FILE__ ) . '/thePlatform-API.php' );
 		}
 
-		if ( !$this->preferences ) {
+		if ( !isset($this->preferences) ) {
 			$this->preferences = get_option( 'theplatform_preferences_options' );
 		}
 
@@ -317,7 +319,7 @@ class ThePlatform_Plugin {
 	 */
 	function get_embed_shortcode( $accountPID, $releasePID, $playerPID, $player_width, $player_height, $autoplay, $tag, $loop = false, $mute = false, $params ) {
 
-		$url = 'http://player.theplatform.com/p/' . urlencode( $accountPID ) . '/' . urlencode( $playerPID );
+		$url = TP_API_PLAYER_EMBED_BASE_URL . urlencode( $accountPID ) . '/' . urlencode( $playerPID );
 		$url .= '/embed/select/' . urlencode( $releasePID );
 
 		$url = apply_filters( 'tp_base_embed_url', $url );

@@ -43,6 +43,7 @@ function connection_options_validate( $input ) {
     'mpx_password' => '',
     'embed_tag_type' => 'embed',
     'mpx_account_pid' => '',
+  	'mpx_region' => 'us|us',
     'default_player_name' => '',
     'default_player_pid' => '',
     'mpx_server_id' => '',
@@ -70,6 +71,11 @@ function connection_options_validate( $input ) {
 		$input['default_player_pid'] = $ids[1];
 	}
 
+	if ( strpos( $input['mpx_region'], '|' ) !== FALSE ) {
+		$ids = explode( '|', $input['mpx_region'] );
+		$input['mpx_region'] = $ids[0];
+	}
+
 	foreach ( $input as $key => $value ) {
 		if ( $key == 'videos_per_page' || $key === 'default_width' || $key === 'default_height' ) {
 			$input[$key] = intval( $value );
@@ -78,21 +84,32 @@ function connection_options_validate( $input ) {
 		}
 	}
 
-  // If username or account id is changed, reset settings to default
+  // If username, account id, or region is changed, reset settings to default
   $old_preferences = get_option( 'theplatform_preferences_options' );
   if($old_preferences) {
-    $updates = false;
-    // If the username changes, reset all settings
-    if(isset($old_preferences['mpx_username']) && strlen($old_preferences['mpx_username'])
-      && isset($input['mpx_username']) && strlen($input['mpx_username'])
-      && $old_preferences['mpx_username'] != $input['mpx_username']
-    ) {
-      $defaults['mpx_username'] = $input['mpx_username'];
-      $defaults['mpx_password'] = $input['mpx_password'];
-      $updates = true;
-    }
+	$updates = false;
+	// If the username changes, reset all settings
+	if(isset($old_preferences['mpx_username']) && strlen($old_preferences['mpx_username'])
+	  && isset($input['mpx_username']) && strlen($input['mpx_username'])
+	  && $old_preferences['mpx_username'] != $input['mpx_username']
+	) {
+	  $defaults['mpx_username'] = $input['mpx_username'];
+	  $defaults['mpx_password'] = $input['mpx_password'];
+	  $updates = true;
+	}
 
-    // If the account changed, reset all settings except the user/pass
+	// If the region changed, reset all settings except the user/pass
+	if(isset($old_preferences['mpx_region']) && strlen($old_preferences['mpx_region'])
+		&& isset($input['mpx_region']) && strlen($input['mpx_region'])
+		&& $old_preferences['mpx_region'] != $input['mpx_region']
+	) {
+		$defaults['mpx_username'] = $input['mpx_username'];
+		$defaults['mpx_password'] = $input['mpx_password'];
+		$defaults['mpx_region'] = $input['mpx_region'];
+		$updates = true;
+	}
+
+	  // If the account changed, reset all settings except the user/pass
     else if(isset($input['mpx_account_id']) && strlen($input['mpx_account_id'])
       && isset($old_preferences['mpx_account_id']) && strlen($old_preferences['mpx_account_id'])
       && $input['mpx_account_id'] != $old_preferences['mpx_account_id']
@@ -102,7 +119,7 @@ function connection_options_validate( $input ) {
       $defaults['mpx_account_id'] = $input['mpx_account_id'];
       $updates = true;
     }
-    // If the old user or account changed, clear old options
+    // Clear old options
     if($updates) {
       $input = $defaults;
       update_option('theplatform_metadata_options', array());

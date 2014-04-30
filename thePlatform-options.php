@@ -22,7 +22,7 @@ class ThePlatform_Options {
 	private $metadata_options_key = 'theplatform_metadata_options';
 	private $upload_options_key = 'theplatform_upload_options';
 	private $account_is_verified;
-
+	private $regions = array('us', 'eu');
 	/*
 	 * WP Option key
 	 */
@@ -116,6 +116,7 @@ class ThePlatform_Options {
 			'mpx_password' => '',
 			'embed_tag_type' => 'iframe',
 			'mpx_account_pid' => '',
+			'mpx_region' => 'us',
 			'default_player_name' => '',
 			'default_player_pid' => '',
 			'mpx_server_id' => '',
@@ -153,6 +154,7 @@ class ThePlatform_Options {
 		add_settings_section( 'section_mpx_account_options', 'MPX Account Options', array( &$this, 'section_mpx_account_desc' ), $this->preferences_options_key );
 		add_settings_field( 'mpx_username_option', 'MPX Username', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_mpx_account_options', array( 'field' => 'mpx_username' ) );
 		add_settings_field( 'mpx_password_option', 'MPX Password', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_mpx_account_options', array( 'field' => 'mpx_password' ) );
+		add_settings_field( 'mpx_region_option', 'MPX Region', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_mpx_account_options', array( 'field' => 'mpx_region' ) );
 		add_settings_field( 'mpx_accountid_option', 'MPX Account', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_mpx_account_options', array( 'field' => 'mpx_account_id' ) );
 		add_settings_field( 'mpx_account_pid', 'MPX Account PID', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_mpx_account_options', array( 'field' => 'mpx_account_pid' ) );
 
@@ -310,6 +312,14 @@ class ThePlatform_Options {
 				if ( $this->preferences['mpx_account_id'] === '' ) {
 					$html .= "<span> Please pick the MPX account you'd like to manage through Wordpress</span>";
 				}
+				break;
+			case 'mpx_region':
+				$html = '<select id="' . esc_attr( $field ) . '" name="theplatform_preferences_options[' . esc_attr( $field ) . ']">';
+				$regions = $this->regions;
+				foreach ( $regions as $region ) {
+					$html .= '<option value="' . esc_attr( $region ) . '|' . esc_attr( $region ) . '"' . selected( $opts[$field], $region, false ) . '>' . esc_html( strtoupper($region) ) . '</option>';
+				}
+				$html .= '</select>';
 				break;
 			case 'embed_tag_type':
 				$html = '<select id="' . esc_attr( $field ) . '" name="theplatform_preferences_options[' . esc_attr( $field ) . ']">';
