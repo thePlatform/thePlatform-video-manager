@@ -107,7 +107,7 @@ class ThePlatform_Plugin {
 	}
 
 	/**
-	 * Add admin pages 
+	 * Add admin pages
 	 */
 	function add_admin_page() {
 		$tp_admin_cap = apply_filters( 'tp_admin_cap', 'manage_options' );
@@ -149,7 +149,7 @@ class ThePlatform_Plugin {
 	 * @return void
 	 */
 	function embed() {
-		require_once( $this->plugin_dir . 'thePlatform-media-browser.php' );
+		require_once( $this->plugin_base_dir . 'thePlatform-media-browser.php' );
 		die();
 	}
 
@@ -168,7 +168,7 @@ class ThePlatform_Plugin {
 	 * @return void
 	 */
 	function upload() {
-		require_once( $this->plugin_dir . 'thePlatform-upload-window.php' );
+		require_once( $this->plugin_base_dir . 'thePlatform-upload-window.php' );
 		die();
 	}
 
@@ -304,7 +304,7 @@ class ThePlatform_Plugin {
 
 	/**
 	 * Called by the plugin shortcode callback function to construct a media embed iframe.
-	 * 
+	 *
 	 * @param string $account_id Account of the user embedding the media asset
 	 * @param string $media_id Identifier of the media object to embed
 	 * @param string $player_id Identifier of the player to display the embedded media asset in
