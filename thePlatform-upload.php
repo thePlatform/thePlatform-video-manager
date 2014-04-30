@@ -76,10 +76,11 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 				if ( $col === 0 ) {
 					echo '<div class="row">';
 				}
+        $default_value = isset($media[$upload_field]) ? esc_attr( $media[$upload_field] ) : '';
 				$html = '';
 				$html .= '<div class="col-xs-3">';
 				$html .= '<label class="control-label" for="theplatform_upload_' . esc_attr( $upload_field ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
-				$html .= '<input name="' . esc_attr( $upload_field ) . '" id="theplatform_upload_' . esc_attr( $upload_field ) . '" class="form-control upload_field" type="text" value="' . esc_attr( $media[$upload_field] ) . '"/>'; //upload_field
+				$html .= '<input name="' . esc_attr( $upload_field ) . '" id="theplatform_upload_' . esc_attr( $upload_field ) . '" class="form-control upload_field" type="text" value="' . $default_value . '"/>'; //upload_field
 				$html .= '</div>';
 				echo $html;
 				if ( $col === 2 ) {
@@ -121,7 +122,7 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 
 		if ( $val == 'allow' ) {
 			$field_name = $field_prefix . '$' . $field_title;
-			$field_value = $media[$field_prefix . '$' . $field_title];
+      $field_value = isset($media[$field_prefix . '$' . $field_title]) ? $media[$field_prefix . '$' . $field_title] : '';
 
 			$html = '';
 			if ( $col === 0 ) {
