@@ -94,10 +94,6 @@ class ThePlatform_API {
 	}
 
 	/**
-	 * Gets URLs
-	 */
-
-	/**
 	 * Construct a Basic Authorization header
 	 *
 	 * @return array 
