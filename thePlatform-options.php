@@ -65,7 +65,11 @@ class ThePlatform_Options {
 	function enqueue_scripts() {
 		wp_enqueue_script( 'jquery' );
 		wp_enqueue_script( 'theplatform_js' );
+		wp_enqueue_script( 'field_views' );
+		wp_enqueue_script( 'jquery-ui-sortable' );
 		wp_enqueue_style( 'dashicons' );
+		wp_enqueue_style( 'field_views' );
+
 	}
 
 	/**
@@ -198,7 +202,7 @@ class ThePlatform_Options {
 
 		foreach ( $this->metadata_fields as $field ) {
 			if ( !array_key_exists( $field['id'], $this->metadata_options ) ) {
-				$this->metadata_options[$field['id']] = 'omit';
+				$this->metadata_options[$field['id']] = 'hide';
 			}
 
 			if ( $field['fieldName'] === $this->preferences['user_id_customfield'] ) {
@@ -241,7 +245,7 @@ class ThePlatform_Options {
 
 		foreach ( $upload_fields as $field ) {
 			if ( !array_key_exists( $field, $this->upload_options ) ) {
-				$this->upload_options[$field] = 'allow';
+				$this->upload_options[$field] = 'write';
 			}
 
 			update_option( $this->upload_options_key, $this->upload_options );
@@ -271,7 +275,7 @@ class ThePlatform_Options {
 	}
 
 	function section_metadata_desc() {
-		echo 'Select the custom metadata fields that you would like to be allowed or omitted when uploading media to MPX.';
+		echo 'Drag and drop the custom metadata fields that you would like to be readable, writable, or omitted when uploading media to MPX.';
 	}
 
 	function section_upload_desc() {
@@ -391,9 +395,10 @@ class ThePlatform_Options {
 	function field_metadata_option( $args ) {
 		$field_id = $args['id'];
 
-		$html = '<select id="' . esc_attr( $field_id ) . '" name="theplatform_metadata_options[' . esc_attr( $field_id ) . ']">';
-		$html .= '<option value="allow"' . selected( $this->metadata_options[$field_id], 'allow', false ) . '>Allow</option>';
-		$html .= '<option value="omit"' . selected( $this->metadata_options[$field_id], 'omit', false ) . '>Omit</option>';
+		$html = '<select id="' . esc_attr( $field_id ) . '" name="theplatform_metadata_options[' . esc_attr( $field_id ) . ']" class="sortableField">';
+		$html .= '<option value="read"' . selected( $this->metadata_options[$field_id], 'read', false ) . '>Read</option>';
+		$html .= '<option value="write"' . selected( $this->metadata_options[$field_id], 'write', false ) . '>Write</option>';
+		$html .= '<option value="hide"' . selected( $this->metadata_options[$field_id], 'hide', false ) . '>Hide</option>';
 		$html .= '</select>';
 
 		echo $html;
@@ -406,9 +411,10 @@ class ThePlatform_Options {
 	function field_upload_option( $args ) {
 		$field = $args['field'];
 
-		$html = '<select id="' . esc_attr( $field ) . '" name="theplatform_upload_options[' . esc_attr( $field ) . ']">';
-		$html .= '<option value="allow"' . selected( $this->upload_options[$field], 'allow', false ) . '>Allow</option>';
-		$html .= '<option value="omit"' . selected( $this->upload_options[$field], 'omit', false ) . '>Omit</option>';
+		$html = '<select id="' . esc_attr( $field ) . '" name="theplatform_upload_options[' . esc_attr( $field ) . ']" class="sortableField">';
+		$html .= '<option value="read"' . selected( $this->upload_options[$field], 'read', false ) . '>Read</option>';
+		$html .= '<option value="write"' . selected( $this->upload_options[$field], 'write', false ) . '>Write</option>';
+		$html .= '<option value="hide"' . selected( $this->upload_options[$field], 'hide', false ) . '>Hide</option>';
 		$html .= '</select>';
 
 		echo $html;

@@ -24,8 +24,8 @@
  */
 function dropdown_options_validate( $input ) {
 	foreach ( $input as $key => $value ) {
-		if ( $value != "allow" && $value != "omit" ) {
-			$input[$key] = "omit";
+		if ( !in_array($value, array('read', 'write', 'hide')) ) {
+			$input[$key] = "hide";
 		}
 	}
 	return $input;
@@ -199,7 +199,7 @@ function get_query_fields( $metadata ) {
 	$fields = 'id,defaultThumbnailUrl,content';
 
 	foreach ( $upload_options as $upload_field => $val ) {
-		if ( $val !== 'allow' ) {
+		if ( $val == 'hide' ) {
 			continue;
 		}
 
@@ -211,7 +211,7 @@ function get_query_fields( $metadata ) {
 	}
 
 	foreach ( $metadata_options as $custom_field => $val ) {
-		if ( $val !== 'allow' ) {
+		if ( $val == 'hide' ) {
 			continue;
 		}
 

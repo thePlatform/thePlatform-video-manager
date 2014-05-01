@@ -59,7 +59,7 @@ wp_print_styles( 'wp-jquery-ui-dialog' );
 			wp_die( 'MPX Account ID is not set, please configure the plugin before attempting to manage media' );
 		}
 
-//Embed only stuff
+		//Embed only stuff
 		$players = $tp_api->get_players();
 		$IS_EMBED = strpos( $_SERVER['QUERY_STRING'], '&embed=true' ) !== false ? true : false;
 
@@ -156,7 +156,7 @@ wp_print_styles( 'wp-jquery-ui-dialog' );
 								<div class="panel-body">
 									<?php
 									foreach ( $upload_options as $upload_field => $val ) {
-										if ( $val !== 'allow' ) {
+										if ( $val == 'hide' ) {
 											continue;
 										}
 
@@ -177,7 +177,7 @@ wp_print_styles( 'wp-jquery-ui-dialog' );
 									}
 
 									foreach ( $metadata_options as $custom_field => $val ) {
-										if ( $val !== 'allow' ) {
+										if ( $val == 'hide' ) {
 											continue;
 										}
 

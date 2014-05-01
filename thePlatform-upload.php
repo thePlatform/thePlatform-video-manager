@@ -59,7 +59,7 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 	foreach ( $upload_options as $upload_field => $val ) {
 		$field_title = (strstr( $upload_field, '$' ) !== false) ? substr( strstr( $upload_field, '$' ), 1 ) : $upload_field;
 
-		if ( $val == 'allow' ) {
+		if ( $val == 'write' ) {
 			if ( $upload_field == 'categories' ) {
 				$categories = $tp_api->get_categories( true );
 				$catHtml .= '<div class="row">';
@@ -120,7 +120,7 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 			continue;
 		}
 
-		if ( $val == 'allow' ) {
+		if ( $val == 'write' ) {
 			$field_name = $field_prefix . '$' . $field_title;
 			$field_value = isset($media[$field_prefix . '$' . $field_title]) ? $media[$field_prefix . '$' . $field_title] : '';
 
