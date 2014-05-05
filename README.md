@@ -27,6 +27,14 @@ Copy the folder "thePlatform-video-manager" with all included files into the "wp
 
 # == Changelog ==
 
+## = 1.3.0 =
+* Plugin settings are now cleaned up when switching accounts or deactivating
+* Plugin settings now gracefully fall back when login fails
+* Added support for EU accounts
+* Updated metadata and upload field settings to allow Read/Write/Hide
+* Default values are now provided for player ID and upload server ID when account is selected
+*
+
 ## = 1.2.5 = 
 * Fixed a bug where publishing profiles didn't work if they existing in more than one authorized account
 * Added a new setting section - Embedding options
