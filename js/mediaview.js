@@ -374,9 +374,11 @@ function updateContentPane( mediaItem ) {
 		var name = jQuery( value ).data( 'name' );
 		var fullName = name
 		var prefix = jQuery( value ).data( 'prefix' );
+    var dataType = jQuery( value).data( 'type' );
+    var dataStructure = jQuery( value).data( 'structure' );
 		if ( prefix !== undefined )
 			fullName = prefix + '$' + name;
-		var value = mediaItem[fullName]
+		var value = mediaItem[fullName];
 		if ( name === 'categories' ) {
 			var catArray = mediaItem.categories || [ ];
 			var catList = '';
@@ -387,12 +389,63 @@ function updateContentPane( mediaItem ) {
 			}
 			value = catList
 		}
-		jQuery( '#media-' + name ).text( value || '' )
+    // This handles list and map display
+    else if (dataStructure == 'List' || dataStructure == 'Map') {
+      var valString = '';
+      // Lists
+      if(dataStructure == 'List') {
+        for(var i = 0; i < value.length; i++) {
+          valString += formatValue(value[i], dataType) + ', ';
+        }
+      }
+      // Maps
+      else {
+        for(var propName in value) {
+          valString += propName + ': ' + formatValue(value[propName], dataType) + ', ';
+        }
+      }
+      // Remove the last comma
+      if(valString.length)
+        value = valString.substr(0, valString.length - 2);
+      else
+        value = '';
+    }
+    else {
+      value = formatValue(value, dataType);
+    }
+		jQuery( '#media-' + name ).html( value || '' )
 		jQuery( '#theplatform_upload_' + fullName.replace( '$', "\\$" ) ).val( value || '' )
 	} )
+}
+
+function formatValue(value, dataType) {
+  switch(dataType) {
+    case 'DateTime':
+      value = new Date(value);
+      break;
+    case 'Duration':
+      value = secondsToDuration(value);
+      break;
+    case 'Link':
+      value = '<a href="'+value.href+'" target="_blank">'+value.title+'</a>';
+      break;
+  }
+  return value;
 }
 
 function displayMessage( msg ) {
 	jQuery( '#msg' ).text( msg );
 }
 
+function isArray(o) {
+  return Object.prototype.toString.call(o) === '[object Array]';
+}
+
+function secondsToDuration(secs) {
+  var t = new Date(1970,0,1);
+  t.setSeconds(secs);
+  var s = t.toTimeString().substr(0,8);
+  if(secs > 86399)
+    s = Math.floor((t - Date.parse("1/1/70")) / 3600000) + s.substr(2);
+  return s;
+}

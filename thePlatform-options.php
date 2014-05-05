@@ -211,10 +211,8 @@ class ThePlatform_Options {
 
 			update_option( $this->metadata_options_key, $this->metadata_options );
 
-			$types = array( 'String', 'Time', 'Date', 'Integer', 'Decimal', 'Duration', 'Boolean', 'URI' );
-			if ( $field['dataStructure'] === 'Single' && in_array( $field['dataType'], $types ) ) { //TODO: Remove this and support all types and structures of fields
-				add_settings_field( $field['id'], $field['title'], array( &$this, 'field_metadata_option' ), $this->metadata_options_key, 'section_metadata_options', array( 'id' => $field['id'], 'title' => $field['title'], 'fieldName' => $field['fieldName'] ) );
-			}
+			$types = array( 'String', 'Time', 'Date', 'DateTime', 'Integer', 'Decimal', 'Duration', 'Boolean', 'URI', 'Link' );
+		  add_settings_field( $field['id'], $field['title'], array( &$this, 'field_metadata_option' ), $this->metadata_options_key, 'section_metadata_options', array( 'id' => $field['id'], 'title' => $field['title'], 'fieldName' => $field['fieldName'] ) );
 		}
 	}
 
