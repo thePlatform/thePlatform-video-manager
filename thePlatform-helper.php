@@ -37,6 +37,7 @@ function dropdown_options_validate( $input ) {
  * @return array A cleaned up copy of the array, invalid values will be cleared.
  */
 function connection_options_validate( $input ) {
+	$tp_api = new ThePlatform_API;
   $defaults = array(
     'mpx_account_id' => '',
     'mpx_username' => 'mpx/',
@@ -69,6 +70,23 @@ function connection_options_validate( $input ) {
 		$ids = explode( '|', $input['default_player_name'] );
 		$input['default_player_name'] = $ids[0];
 		$input['default_player_pid'] = $ids[1];
+	}
+
+	// If the account is selected, but no player has been set, use the first
+  // returned as the default.
+	if ( isset($input['mpx_account_id']) && !isset($input['default_player_name']) ) {
+		$players = $tp_api->get_players();
+		$player = $players[0];
+		$input['default_player_name'] = $player['title'];
+		$input['default_player_pid'] = $player['pid'];
+	}
+
+  // If the account is selected, but no upload server has been set, use the first
+  // returned as the default.
+	if( isset($input['mpx_account_id']) && !isset($input['mpx_server_id']) ) {
+		$servers = $tp_api->get_servers();
+    $server = $servers[0];
+    $input['mpx_server_id'] = $server['id'];
 	}
 
 	if ( strpos( $input['mpx_region'], '|' ) !== FALSE ) {
