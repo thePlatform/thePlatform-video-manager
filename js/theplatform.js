@@ -111,7 +111,7 @@ var validate_media = function( event ) {
     var dataType = $field.data('type');
     var value = jQuery( this ).val();
     var fieldError = false;
-    // Detect HTML, this can happen before doing anything with Maps/Lists
+    // Detect HTML, this runs against all fields regardless of type/structure
     if( value.match( /<(\w+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/ ) ) {
       validation_error = true;
     }
@@ -169,8 +169,54 @@ var validate_media = function( event ) {
 var validateFormat = function (value, dataType) {
   var validation_error = false;
 
+  switch(dataType) {
+    case 'Integer':
+      var intRegex = /^-?\d+$/;
+      validation_error = !intRegex.test(value)
+      break;
+    case 'Decimal':
+      var decRegex = /^-?(\d+)?(\.[\d]+)?$/;
+      validation_error = !decRegex.test(value)
+      break;
+    case 'Boolean':
+      var validValues = ['true', 'false', 'unset'];
+      validation_error = validValues.indexOf(value) > -1;
+      break;
+    case 'URI':
+      var uriRegex = /^([a-z][a-z0-9+.-]*):(?:\/\/((?:(?=((?:[a-z0-9-._~!$&'()*+,;=:]|%[0-9A-F]{2})*))(\3)@)?(?=(\[[0-9A-F:.]{2,}\]|(?:[a-z0-9-._~!$&'()*+,;=]|%[0-9A-F]{2})*))\5(?::(?=(\d*))\6)?)(\/(?=((?:[a-z0-9-._~!$&'()*+,;=:@\/]|%[0-9A-F]{2})*))\8)?|(\/?(?!\/)(?=((?:[a-z0-9-._~!$&'()*+,;=:@\/]|%[0-9A-F]{2})*))\10)?)(?:\?(?=((?:[a-z0-9-._~!$&'()*+,;=:@\/?]|%[0-9A-F]{2})*))\11)?(?:#(?=((?:[a-z0-9-._~!$&'()*+,;=:@\/?]|%[0-9A-F]{2})*))\12)?$/i;
+      validation_error = !uriRegex.test(value);
+      break;
+    case 'Time':
+      var timeRegex = /^\d{1,2}:\d{2}$/;
+      validation_error = !timeRegex.test(value);
+      break;
+    case 'Duration':
+      var durationRegex = /^(\d+:)?([0-5]?[0-9]:)?([0-5]?[0-9])?$/;
+      validation_error = !durationRegex.test(value);
+      break;
+    case 'DateTime':
+      validation_error = !isValidDate(new Date(value));
+      break;
+    case 'Date':
+      var dateRegex = /^(\d{4})-(([0][1-9])|([1][0-2]))-(([0][1-9])|([1][0-9])|([2][0-9])|([3][0-1]))$/
+      validation_error = !dateRegex.test(value);
+      break;
+    case 'Link':
+      break;
+    case 'String':
+    default:
+      // nothing to do
+      break;
+  }
+
   return validation_error;
 };
+
+var isValidDate = function(d) {
+  if ( Object.prototype.toString.call(d) !== "[object Date]" )
+    return false;
+  return !isNaN(d.getTime());
+}
 
 var parseMediaParams = function() {
 	var params = { };
