@@ -179,8 +179,8 @@ var validateFormat = function (value, dataType) {
       validation_error = !decRegex.test(value)
       break;
     case 'Boolean':
-      var validValues = ['true', 'false', 'unset'];
-      validation_error = validValues.indexOf(value) > -1;
+      var validValues = ['true', 'false', ''];
+      validation_error = validValues.indexOf(value) < 0;
       break;
     case 'URI':
       var uriRegex = /^([a-z][a-z0-9+.-]*):(?:\/\/((?:(?=((?:[a-z0-9-._~!$&'()*+,;=:]|%[0-9A-F]{2})*))(\3)@)?(?=(\[[0-9A-F:.]{2,}\]|(?:[a-z0-9-._~!$&'()*+,;=]|%[0-9A-F]{2})*))\5(?::(?=(\d*))\6)?)(\/(?=((?:[a-z0-9-._~!$&'()*+,;=:@\/]|%[0-9A-F]{2})*))\8)?|(\/?(?!\/)(?=((?:[a-z0-9-._~!$&'()*+,;=:@\/]|%[0-9A-F]{2})*))\10)?)(?:\?(?=((?:[a-z0-9-._~!$&'()*+,;=:@\/?]|%[0-9A-F]{2})*))\11)?(?:#(?=((?:[a-z0-9-._~!$&'()*+,;=:@\/?]|%[0-9A-F]{2})*))\12)?$/i;
@@ -198,10 +198,13 @@ var validateFormat = function (value, dataType) {
       validation_error = !isValidDate(new Date(value));
       break;
     case 'Date':
-      var dateRegex = /^(\d{4})-(([0][1-9])|([1][0-2]))-(([0][1-9])|([1][0-9])|([2][0-9])|([3][0-1]))$/
+      var dateRegex = /^(\d{4})-(([0][1-9])|([1][0-2]))-(([0][1-9])|([1][0-9])|([2][0-9])|([3][0-1]))$/;
       validation_error = !dateRegex.test(value);
       break;
     case 'Link':
+      // @todo: this could do more, right now just checks that the structure is correct
+      var linkRegex = /^(((title:)(.*),(\s+)?(href:).*)|((href:)(.*),(\s+)?(title:).*))$/;
+      validation_error = !linkRegex.test(value);
       break;
     case 'String':
     default:

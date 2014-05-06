@@ -39,6 +39,24 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 	$upload_options = get_option( 'theplatform_upload_options' );
 	$metadata_options = get_option( 'theplatform_metadata_options' );
 
+  $dataTypeDesc = array(
+    'Integer' => 'Integer',
+    'Decimal' => 'Decimal',
+    'String' => 'String',
+    'DateTime' => 'MM/DD/YYYY HH:MM:SS',
+    'Date' => 'YYYY/MM/DD',
+    'Time' => '24 hr time (20:00)',
+    'Link' => 'title: Link Title, href: http://www.wordpress.com',
+    'Duration' => 'HH:MM:SS',
+    'Boolean' => 'true, false, or empty',
+    'URI' => 'http://www.wordpress.com',
+  );
+
+  $structureDesc = array(
+    'Map' => 'Map (field1: value1, field2: value2)',
+    'List' => 'List (value1, value2)',
+  );
+
 	echo '<h1> Upload Media to MPX </h1><div id="media-mpx-upload-form" class="tp">';
 }
 ?>
@@ -63,7 +81,7 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 			if ( $upload_field == 'categories' ) {
 				$categories = $tp_api->get_categories( true );
 				$catHtml .= '<div class="row">';
-				$catHtml .= '<div class="col-xs-3">';
+				$catHtml .= '<div class="col-xs-5">';
 				$catHtml .= '<label class="control-label" for="theplatform_upload_' . esc_attr( $upload_field ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
 				$catHtml .= '<select class="category_field form-control" multiple id="theplatform_upload_' . esc_attr( $upload_field ) . '" name="' . esc_attr( $upload_field ) . '">';
 				foreach ( $categories as $category ) {
@@ -73,22 +91,16 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 				$catHtml .= '</div>';
 				$catHtml .= '</div>';
 			} else {
-				if ( $col === 0 ) {
-					echo '<div class="row">';
-				}
 				$default_value = isset($media[$upload_field]) ? esc_attr( $media[$upload_field] ) : '';
 				$html = '';
-				$html .= '<div class="col-xs-3">';
+        $html .= '<div class="row">';
+				$html .= '<div class="col-xs-5">';
 				$html .= '<label class="control-label" for="theplatform_upload_' . esc_attr( $upload_field ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
 				$html .= '<input name="' . esc_attr( $upload_field ) . '" id="theplatform_upload_' . esc_attr( $upload_field ) . '" class="form-control upload_field" type="text" value="' . $default_value . '"/>'; //upload_field
+        $html .= '<br />';
 				$html .= '</div>';
+        $html .= '</div>';
 				echo $html;
-				if ( $col === 2 ) {
-					echo '</div>';
-					$col = 0;
-				} else {
-					$col++;
-				}
 			}
 		}
 	}
@@ -125,26 +137,19 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 			$field_value = isset($media[$field_prefix . '$' . $field_title]) ? $media[$field_prefix . '$' . $field_title] : '';
 
 			$html = '';
-			if ( $col === 0 ) {
-				echo '<div class="row">';
-			}
-			$html .= '<div class="col-xs-3">';
+      $html .= '<div class="row">';
+			$html .= '<div class="col-xs-5">';
 			$html .= '<label class="control-label" for="theplatform_upload_' . esc_attr( $field_name ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
 			$html .= '<input name="' . esc_attr( $field_title ) . '" id="theplatform_upload_' . esc_attr( $field_name ) . '" class="form-control custom_field" type="text" value="' . esc_attr( $field_value ) . '" data-type="' . esc_attr( $field_type ) . '" data-structure="' . esc_attr( $field_structure ) . '" data-name="' . esc_attr( strtolower( $field_title ) ) . '" data-prefix="' . esc_attr( strtolower( $field_prefix ) ) . '" data-namespace="' . esc_attr( strtolower( $field_namespace ) ) . '"/>';
+      if(isset($structureDesc[$field_structure]))
+        $html .= '<div class="structureDesc"><strong>Structure</strong> '.$structureDesc[$field_structure].'</div>';
+      if(isset($dataTypeDesc[$field_type]))
+        $html .= '<div class="dataTypeDesc"><strong>Format:</strong> '.$dataTypeDesc[$field_type].'</div>';
+      $html .= '<br />';
 			$html .= '</div>';
+      $html .= '</div>';
 			echo $html;
-
-			if ( $col === 2 ) {
-				echo '</div>';
-				$col = 0;
-			} else {
-				$col++;
-			}
 		}
-	}
-	if ( $col !== 0 ) {
-		echo '</div>';
-		$col = 0;
 	}
 
 	if ( !empty( $catHtml ) ) {
