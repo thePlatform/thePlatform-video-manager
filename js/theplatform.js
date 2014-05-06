@@ -83,7 +83,7 @@ var message_nag = function( msg, fade, isError ) {
 	if ( fade == true ) {
 		jQuery( '#message_nag' ).delay( 6000 ).fadeOut( 10000 );
 	}
-}
+};
 
 /**
  @function error_nag Display an error message to the user
@@ -92,7 +92,7 @@ var message_nag = function( msg, fade, isError ) {
  */
 var error_nag = function( msg, fade ) {
 	message_nag( msg, fade, true );
-}
+};
 
 /**
  * Validate Media data is valid before submitting upload/edit
@@ -105,28 +105,72 @@ var validate_media = function( event ) {
 	//TODO: Validate that file has been selected for upload but not edit
 	var validation_error = false;
 
-	jQuery( '.edit_field' ).each( function() {
-		if ( jQuery( this ).val().match( /<(\w+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/ ) ) {
-			jQuery( this ).css( { border: 'solid 1px #FF0000' } );
-			validation_error = true;
-		}
-	} );
+  jQuery( '.upload_field, .custom_field' ).each( function() {
+    var $field = jQuery( this );
+    var dataStructure = $field.data('structure');
+    var dataType = $field.data('type');
+    var value = jQuery( this ).val();
+    var fieldError = false;
+    // Detect HTML, this can happen before doing anything with Maps/Lists
+    if( value.match( /<(\w+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/ ) ) {
+      validation_error = true;
+    }
+    // We're not requiring any fields at the moment,
+    // so only test fields which have a value
+    else if(value.length > 0) {
+      switch(dataStructure) {
+        case 'Map':
+          var values = value.indexOf(',') ? value.split(',') : [value];
+          for(var i = 0; i < values.length; i++) {
+            // Use substring to break apart to avoid issues with values that use colons
+            var index = values[i].indexOf(':');
+            var key = values[i].substr(0, index).trim();
+            var val = values[i].substr(index+1).trim();
+            if(index ===  -1 || key.length == 0 || val.length === 0 || validateFormat(val, dataType)) {
+              fieldError = true;
+              break;
+            }
+          }
+          break;
+        case 'List':
+          var values = value.indexOf(',') ? value.split(',') : [value];
+          for(var i = 0; i < values.length; i++) {
+            if(validateFormat(values[i].trim(), dataType)) {
+              fieldError = true;
+              break;
+            }
+          }
+          break;
+        case 'Single':
+        default:
+          if(validateFormat(value, dataType)) {
+            fieldError = true;
+          }
+          break;
+      }
+    }
+    if(fieldError) {
+      $field.css( { border: 'solid 1px #FF0000' } );
+      validation_error = fieldError;
+    } else {
+      $field.css( { border: '1px solid #ccc' } );
+    }
+  } );
 
-	jQuery( '.edit_custom_field' ).each( function() {
-		if ( jQuery( this ).val().match( /<(\w+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/ ) ) {
-			jQuery( this ).css( { border: 'solid 1px #FF0000' } );
-			validation_error = true;
-		}
-	} );
-
-	if ( jQuery( '#theplatform_upload_title' ).val() === "" ) {
+  var $titleField = jQuery( '#theplatform_upload_title' );
+	if ( $titleField.val() === "" ) {
 		validation_error = true;
-		jQuery( '#theplatform_upload_title' ).addClass( 'has-error' );
+    $titleField.css( { border: 'solid 1px #FF0000' } );
 	}
 
-
 	return validation_error;
-}
+};
+
+var validateFormat = function (value, dataType) {
+  var validation_error = false;
+
+  return validation_error;
+};
 
 var parseMediaParams = function() {
 	var params = { };
@@ -149,7 +193,7 @@ var parseMediaParams = function() {
 	params['categories'] = categories;
 
 	return params;
-}
+};
 
 var parseCustomParams = function() {
 	var custom_params = { };
@@ -158,7 +202,15 @@ var parseCustomParams = function() {
 			custom_params[jQuery( this ).attr( 'name' )] = jQuery( this ).val();
 	} );
 	return custom_params;
-}
+};
+
+var objSize = function (obj) {
+  var size = 0, key;
+  for (key in obj) {
+    if (obj.hasOwnProperty(key)) size++;
+  }
+  return size;
+};
 
 jQuery( document ).ready( function() {
 
