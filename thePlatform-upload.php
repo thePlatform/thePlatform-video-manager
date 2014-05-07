@@ -20,6 +20,29 @@ if ( !defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+$tp_api = new ThePlatform_API;
+$metadata = $tp_api->get_metadata_fields();
+$preferences = get_option( 'theplatform_preferences_options' );
+$upload_options = get_option( 'theplatform_upload_options' );
+$metadata_options = get_option( 'theplatform_metadata_options' );
+
+$dataTypeDesc = array(
+  'Integer' => 'Integer',
+  'Decimal' => 'Decimal',
+  'String' => 'String',
+  'DateTime' => 'MM/DD/YYYY HH:MM:SS',
+  'Date' => 'YYYY-MM-DD',
+  'Time' => '24 hr time (20:00)',
+  'Link' => 'title: Link Title, href: http://www.wordpress.com',
+  'Duration' => 'HH:MM:SS',
+  'Boolean' => 'true, false, or empty',
+  'URI' => 'http://www.wordpress.com',
+);
+
+$structureDesc = array(
+  'Map' => 'Map (field1: value1, field2: value2)',
+  'List' => 'List (value1, value2)',
+);
 
 if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 	wp_enqueue_style( 'bootstrap_tp_css' );
@@ -30,32 +53,7 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 	if ( !current_user_can( $tp_uploader_cap ) ) {
 		wp_die( '<p>' . __( 'You do not have sufficient permissions to upload MPX Media' ) . '</p>' );
 	}
-
-	$tp_api = new ThePlatform_API;
 	$media = array();
-
-	$metadata = $tp_api->get_metadata_fields();
-	$preferences = get_option( 'theplatform_preferences_options' );
-	$upload_options = get_option( 'theplatform_upload_options' );
-	$metadata_options = get_option( 'theplatform_metadata_options' );
-
-  $dataTypeDesc = array(
-    'Integer' => 'Integer',
-    'Decimal' => 'Decimal',
-    'String' => 'String',
-    'DateTime' => 'MM/DD/YYYY HH:MM:SS',
-    'Date' => 'YYYY-MM-DD',
-    'Time' => '24 hr time (20:00)',
-    'Link' => 'title: Link Title, href: http://www.wordpress.com',
-    'Duration' => 'HH:MM:SS',
-    'Boolean' => 'true, false, or empty',
-    'URI' => 'http://www.wordpress.com',
-  );
-
-  $structureDesc = array(
-    'Map' => 'Map (field1: value1, field2: value2)',
-    'List' => 'List (value1, value2)',
-  );
 
 	echo '<h1> Upload Media to MPX </h1><div id="media-mpx-upload-form" class="tp">';
 }

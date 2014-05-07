@@ -372,7 +372,8 @@ jQuery( document ).ready( function() {
 	//Edit Media Validation	
 	jQuery( "#theplatform_edit_button" ).click( function( event ) {
 		var validation_error = validate_media( event );
-		;
+    if(validation_error)
+      return false;
 		var params = parseMediaParams();
 		var custom_params = parseCustomParams();
 		params.id = tpHelper.mediaId;

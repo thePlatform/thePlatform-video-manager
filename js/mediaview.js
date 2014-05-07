@@ -389,30 +389,33 @@ function updateContentPane( mediaItem ) {
 			}
 			value = catList
 		}
-    // This handles list and map display
-    else if (dataStructure == 'List' || dataStructure == 'Map') {
-      var valString = '';
-      // Lists
-      if(dataStructure == 'List') {
-        for(var i = 0; i < value.length; i++) {
-          valString += formatValue(value[i], dataType) + ', ';
+    else if(typeof(value) != 'undefined' && (value.length || objSize(value) > 0)) {
+      if (dataStructure == 'List' || dataStructure == 'Map') {
+        var valString = '';
+        // Lists
+        if(dataStructure == 'List') {
+          for(var i = 0; i < value.length; i++) {
+            valString += formatValue(value[i], dataType) + ', ';
+          }
         }
+        // Maps
+        else {
+          for(var propName in value) {
+            if(value.hasOwnProperty(propName))
+              valString += propName + ': ' + formatValue(value[propName], dataType) + ', ';
+          }
+        }
+        // Remove the last comma
+        if(valString.length)
+          value = valString.substr(0, valString.length - 2);
+        else
+          value = '';
       }
-      // Maps
       else {
-        for(var propName in value) {
-          valString += propName + ': ' + formatValue(value[propName], dataType) + ', ';
-        }
+        value = formatValue(value, dataType);
       }
-      // Remove the last comma
-      if(valString.length)
-        value = valString.substr(0, valString.length - 2);
-      else
-        value = '';
     }
-    else {
-      value = formatValue(value, dataType);
-    }
+
 		jQuery( '#media-' + name ).html( value || '' )
 		jQuery( '#theplatform_upload_' + fullName.replace( '$', "\\$" ) ).val( value || '' )
 	} )
@@ -449,3 +452,11 @@ function secondsToDuration(secs) {
     s = Math.floor((t - Date.parse("1/1/70")) / 3600000) + s.substr(2);
   return s;
 }
+
+var objSize = function (obj) {
+  var size = 0, key;
+  for (key in obj) {
+    if (obj.hasOwnProperty(key)) size++;
+  }
+  return size;
+};
