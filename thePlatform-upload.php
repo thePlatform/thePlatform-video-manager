@@ -93,14 +93,19 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 			} else {
 				$default_value = isset($media[$upload_field]) ? esc_attr( $media[$upload_field] ) : '';
 				$html = '';
-        $html .= '<div class="row">';
+        if($col % 2 == 0) {
+          $html .= '<div class="row">';
+        }
 				$html .= '<div class="col-xs-5">';
 				$html .= '<label class="control-label" for="theplatform_upload_' . esc_attr( $upload_field ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
 				$html .= '<input name="' . esc_attr( $upload_field ) . '" id="theplatform_upload_' . esc_attr( $upload_field ) . '" class="form-control upload_field" type="text" value="' . $default_value . '"/>'; //upload_field
-        $html .= '<br />';
 				$html .= '</div>';
-        $html .= '</div>';
+        if($col % 2 !== 0) {
+          $html .= '</div>';
+        }
+
 				echo $html;
+        $col++;
 			}
 		}
 	}
@@ -137,7 +142,9 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 			$field_value = isset($media[$field_prefix . '$' . $field_title]) ? $media[$field_prefix . '$' . $field_title] : '';
 
 			$html = '';
-      $html .= '<div class="row">';
+      if($col % 2 == 0) {
+        $html .= '<div class="row">';
+      }
 			$html .= '<div class="col-xs-5">';
 			$html .= '<label class="control-label" for="theplatform_upload_' . esc_attr( $field_name ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
 			$html .= '<input name="' . esc_attr( $field_title ) . '" id="theplatform_upload_' . esc_attr( $field_name ) . '" class="form-control custom_field" type="text" value="' . esc_attr( $field_value ) . '" data-type="' . esc_attr( $field_type ) . '" data-structure="' . esc_attr( $field_structure ) . '" data-name="' . esc_attr( strtolower( $field_title ) ) . '" data-prefix="' . esc_attr( strtolower( $field_prefix ) ) . '" data-namespace="' . esc_attr( strtolower( $field_namespace ) ) . '"/>';
@@ -147,9 +154,12 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
         $html .= '<div class="dataTypeDesc"><strong>Format:</strong> '.$dataTypeDesc[$field_type].'</div>';
       $html .= '<br />';
 			$html .= '</div>';
-      $html .= '</div>';
+      if($col % 2 !== 0) {
+        $html .= '</div>';
+      }
 			echo $html;
 		}
+    $col++;
 	}
 
 	if ( !empty( $catHtml ) ) {
