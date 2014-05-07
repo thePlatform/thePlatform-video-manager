@@ -246,11 +246,57 @@ var parseMediaParams = function() {
 
 var parseCustomParams = function() {
 	var custom_params = { };
+
 	jQuery( '.custom_field' ).each( function( i ) {
-		if ( jQuery( this ).val().length != 0 )
-			custom_params[jQuery( this ).attr( 'name' )] = jQuery( this ).val();
+		if ( jQuery( this ).val().length != 0 ) {
+      var $field = jQuery(this);
+      var dataStructure = $field.data('structure');
+      var dataType = $field.data('type');
+      var value = $field.val();
+
+      // Convert maps to object
+      if(dataStructure == 'Map') {
+        var values = value.indexOf(',') ? value.split(',') : [value];
+        value = {};
+        for(var i = 0; i < values.length; i++) {
+          // Use substring to break apart to avoid issues with values that use colons
+          var index = values[i].indexOf(':');
+          var key = values[i].substr(0, index).trim();
+          var val = values[i].substr(index+1).trim();
+          value[key] = parseDataType(val, dataType);
+        }
+      }
+      // Convert lists to array
+      else if(dataStructure == 'List') {
+        var values = value.indexOf(',') ? value.split(',') : [value];
+        value = [];
+        for(var i = 0; i < values.length; i++) {
+          value.push(parseDataType(values[i].trim(), dataType));
+        }
+      }
+      else {
+        value = parseDataType(value, dataType);
+      }
+
+      custom_params[jQuery( this ).attr( 'name' )] = value;
+    }
+
 	} );
+
 	return custom_params;
+};
+
+var parseDataType = function(value, dataType) {
+  switch(dataType) {
+    case 'Link':
+      var titleRegex = /title[\s+]?:[\s+]?([^,]+)/;
+      var hrefRegex = /href[\s+]?:[\s+]?([^,]+)/;
+      var title = titleRegex.exec(value)[1];
+      var href = hrefRegex.exec(value)[1];
+      value = {href:href, title: title};
+      break;
+  }
+  return value;
 };
 
 var objSize = function (obj) {

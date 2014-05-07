@@ -17,7 +17,7 @@
   with this program; if not, write to the Free Software Foundation, Inc.,
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-
+defined('JSON_UNESCAPED_SLASHES') or define('JSON_UNESCAPED_SLASHES', 64);
 
 /**
  * Wrapper class around Wordpress HTTP methods
@@ -61,7 +61,8 @@ class ThePlatform_API_HTTP {
 		$url = esc_url_raw( $url );
 		$args = array(
 			'method' => $method,
-			'body' => $data
+			'body' => $data,
+      'timeout' => 10,
 		);
 
 		if ( $isJSON ) {
@@ -219,6 +220,7 @@ class ThePlatform_API {
 		$url .= '&account=' . urlencode( $this->preferences['mpx_account_id'] );
 		$url .= '&token=' . $token;
 
+
 		$response = ThePlatform_API_HTTP::post( $url, json_encode( $payload, JSON_UNESCAPED_SLASHES ), true );
 
 		$data = decode_json_from_server( $response, TRUE );
@@ -286,12 +288,12 @@ class ThePlatform_API {
 		}
 
 		$args = array(
-			'filesize' => $_POST[filesize],
-			'filetype' => $_POST[filetype],
-			'filename' => $_POST[filename],
-			'fields' => $_POST[fields],
-			'profile' => $_POST[profile],
-			'custom_fields' => $_POST[custom_fields]
+			'filesize' => $_POST['filesize'],
+			'filetype' => $_POST['filetype'],
+			'filename' => $_POST['filename'],
+			'fields' => $_POST['fields'],
+			'profile' => $_POST['profile'],
+			'custom_fields' => $_POST['custom_fields']
 		);
 
 		$token = $this->mpx_signin();

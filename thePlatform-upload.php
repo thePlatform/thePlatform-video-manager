@@ -44,7 +44,7 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
     'Decimal' => 'Decimal',
     'String' => 'String',
     'DateTime' => 'MM/DD/YYYY HH:MM:SS',
-    'Date' => 'YYYY/MM/DD',
+    'Date' => 'YYYY-MM-DD',
     'Time' => '24 hr time (20:00)',
     'Link' => 'title: Link Title, href: http://www.wordpress.com',
     'Duration' => 'HH:MM:SS',
@@ -68,7 +68,7 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 	$upload_options = get_option( 'theplatform_upload_options' );
 	$html = '';
 
-	if ( $preferences['user_id_customfield'] !== '(None)' ) {
+	if ( strlen($preferences['user_id_customfield']) && $preferences['user_id_customfield'] !== '(None)' ) {
 		echo '<input type="hidden" name="' . esc_attr( $preferences['user_id_customfield'] ) . '" class="custom_field" value="' . wp_get_current_user()->ID . '" />';
 	}
 
