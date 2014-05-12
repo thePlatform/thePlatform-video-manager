@@ -25,10 +25,18 @@ tinymce.PluginManager.add( 'theplatform', function( editor, url ) {
 
 			var iframeUrl = ajaxurl + "?action=theplatform_media&embed=true";
 			tinyMCE.activeEditor = editor;
+
+			var screenHeight = window.innerHeight            
+
+            if (screenHeight < 1200)
+                height = screenHeight - 50;
+            else
+                height = 1024;
+            
 			if ( tinyMCE.majorVersion > 3 ) {
 				editor.windowManager.open( {
 					width: 1220,
-					height: 1024,
+					height: height,
 					url: iframeUrl
 				} );
 			}
@@ -36,7 +44,7 @@ tinymce.PluginManager.add( 'theplatform', function( editor, url ) {
 				if ( jQuery( "#tp-embed-dialog" ).length == 0 ) {
 					jQuery( 'body' ).append( '<div id="tp-embed-dialog"></div>' );
 				}
-				jQuery( "#tp-embed-dialog" ).html( '<iframe src="' + iframeUrl + '" height="100%" width="100%">' ).dialog( { dialogClass: "wp-dialog", modal: true, resizable: true, minWidth: 1024, width: 1220, height: 1024 } ).css( "overflow-y", "hidden" );
+				jQuery( "#tp-embed-dialog" ).html( '<iframe src="' + iframeUrl + '" height="100%" width="100%">' ).dialog( { dialogClass: "wp-dialog", modal: true, resizable: true, minWidth: 1024, width: 1220, height: height } ).css( "overflow-y", "hidden" );
 			}
 		}
 	} );

@@ -288,6 +288,9 @@ function buildCategoryAccordion( resp ) {
 		jQuery( '#list-categories' ).append( '<a href="#" class="list-group-item cat-list-selector">' + entryTitle + '</a>' );
 	}
 
+	//Add an empty row for scrolling
+	jQuery( '#list-categories' ).append('<div style="height: 50px;"></div>');
+
 	jQuery( '#list-categories' ).on( 'mouseover', function() {
 		jQuery( 'body' )[0].style.overflowY = 'none';
 	} );
