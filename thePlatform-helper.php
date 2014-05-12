@@ -60,6 +60,8 @@ function connection_options_validate( $input ) {
 		return $defaults;
 	}
 
+	$region_is_verified = $tp_api->internal_verify_account_region();
+
 	if ( strpos( $input['mpx_account_id'], '|' ) !== FALSE ) {
 		$ids = explode( '|', $input['mpx_account_id'] );
 		$input['mpx_account_id'] = $ids[0];
@@ -75,18 +77,28 @@ function connection_options_validate( $input ) {
 	// If the account is selected, but no player has been set, use the first
   // returned as the default.
 	if ( isset($input['mpx_account_id']) && !isset($input['default_player_name']) ) {
-		$players = $tp_api->get_players();
-		$player = $players[0];
-		$input['default_player_name'] = $player['title'];
-		$input['default_player_pid'] = $player['pid'];
+		if ( $region_is_verified ) {
+			$players = $tp_api->get_players();
+			$player = $players[0];
+			$input['default_player_name'] = $player['title'];
+			$input['default_player_pid'] = $player['pid'];
+		} else {
+			$input['default_player_name'] = '';
+			$input['default_player_pid'] = '';
+		}		
+		
 	}
 
   // If the account is selected, but no upload server has been set, use the first
   // returned as the default.
 	if( isset($input['mpx_account_id']) && !isset($input['mpx_server_id']) ) {
-		$servers = $tp_api->get_servers();
-    $server = $servers[0];
-    $input['mpx_server_id'] = $server['id'];
+		if ( $region_is_verified ) {
+			$servers = $tp_api->get_servers();
+		    $server = $servers[0];
+		    $input['mpx_server_id'] = $server['id'];
+		} else {
+			$input['mpx_server_id'] = '';
+		}
 	}
 
 	if ( strpos( $input['mpx_region'], '|' ) !== FALSE ) {
@@ -116,18 +128,19 @@ function connection_options_validate( $input ) {
 	  $updates = true;
 	}
 
-	// If the region changed, reset all settings except the user/pass
+	// If the region changed, reset all settings except the user/pass & account
 	if(isset($old_preferences['mpx_region']) && strlen($old_preferences['mpx_region'])
 		&& isset($input['mpx_region']) && strlen($input['mpx_region'])
 		&& $old_preferences['mpx_region'] != $input['mpx_region']
 	) {
 		$defaults['mpx_username'] = $input['mpx_username'];
 		$defaults['mpx_password'] = $input['mpx_password'];
+		$defaults['mpx_account_id'] = $input['mpx_account_id'];
 		$defaults['mpx_region'] = $input['mpx_region'];
 		$updates = true;
 	}
 
-	  // If the account changed, reset all settings except the user/pass
+	  // If the account changed, reset all settings except the user/pass & region
     else if(isset($input['mpx_account_id']) && strlen($input['mpx_account_id'])
       && isset($old_preferences['mpx_account_id']) && strlen($old_preferences['mpx_account_id'])
       && $input['mpx_account_id'] != $old_preferences['mpx_account_id']
@@ -135,6 +148,7 @@ function connection_options_validate( $input ) {
       $defaults['mpx_username'] = $input['mpx_username'];
       $defaults['mpx_password'] = $input['mpx_password'];
       $defaults['mpx_account_id'] = $input['mpx_account_id'];
+      $defaults['mpx_region'] = $input['mpx_region'];
       $updates = true;
     }
     // Clear old options
@@ -187,7 +201,7 @@ function decode_json_from_server( $input, $assoc, $die_on_error = TRUE ) {
 
 	$response = json_decode( wp_remote_retrieve_body( $input ), $assoc );
 
-	if ( !$die_on_error ) {
+	if ( FALSE === $die_on_error ) {
 		return $response;
 	}
 

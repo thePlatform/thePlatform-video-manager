@@ -528,6 +528,31 @@ class ThePlatform_API {
 	}
 
 	/**
+	 * Returns the account setting objects, this is actually used to test our connection
+	 * @return array AccountSettings response
+	 */
+	function get_account_settings( ) {
+		if ( !$this->preferences ) {
+			$this->preferences = get_option( $this->preferences_options_key );
+		}
+
+		$token = $this->mpx_signin();
+
+		$url = TP_API_MEDIA_ACCOUNTSETTINGS_ENDPOINT . '&token=' . $token;
+
+		if ( !empty( $this->preferences['mpx_account_id'] ) ) {
+			$url .= '&account=' . urlencode( $this->preferences['mpx_account_id'] );
+		}
+
+		$response = ThePlatform_API_HTTP::get( $url );
+		$data = decode_json_from_server( $response, TRUE, FALSE );
+
+		$this->mpx_signout( $token );
+
+		return $data;
+	}
+
+	/**
 	 * Query MPX for account categories
 	 *
 	 * @param array $query Query fields to append to the request URL
@@ -618,6 +643,65 @@ class ThePlatform_API {
 		$this->mpx_signout( $token );
 
 		return $data['entries'];
+	}
+
+	/**
+	 * Used to verify the account server settings on the server side
+	 * @return type
+	 */
+	function internal_verify_account_settings() {
+		if ( !$this->preferences ) {
+			$this->preferences = get_option( $this->preferences_options_key );
+		}
+
+		$username = trim( $this->preferences['mpx_username'] );
+		$password = trim( $this->preferences['mpx_password'] );
+
+		if ( $username === "mpx/" || $username === "" || $password === "" ) {
+			return FALSE;
+		}
+
+		$hash = base64_encode( $username . ':' . $password );
+
+		$response = ThePlatform_API_HTTP::get( TP_API_SIGNIN_URL, array( 'headers' => array( 'Authorization' => 'Basic ' . $hash ) ) );
+
+		$payload = decode_json_from_server( $response, TRUE, FALSE );
+
+		if ( is_null( $response ) ) {
+			return FALSE;
+		}
+
+		if ( !array_key_exists( 'isException', $payload ) ) {
+			return TRUE;
+		} else {
+			return FALSE;
+		}
+	}
+
+	/**
+	 * Verify that the account you've selected is within the region you've selected
+	 * @return bool account is within the same region
+	 */	
+	function internal_verify_account_region() {		
+		if ( !$this->preferences ) {
+			$this->preferences = get_option( $this->preferences_options_key );
+		}
+
+		if ( $this->preferences['mpx_account_id'] === '' ) {
+			return FALSE;
+		}
+
+		$response = $this->get_account_settings();
+		
+		if ( is_null( $response ) && !is_array( $response ) ) {
+			return FALSE;
+		}
+			
+		if ( !array_key_exists( 'isException', $response ) ) {			
+			return TRUE;
+		} else {			
+			return FALSE;
+		}
 	}
 
 }

@@ -17,13 +17,13 @@
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 /**
- * Class MPXURLConstantInstantiator
+ * Class ThePlatform_Endpoints
  * This was added to support regions other than the US.
  * Constants are already used throughout the plugin, so rather than
  * change that, this will define them once when the plugin is started
  * but use the region to determine the base URLs.
  */
-class MPXURLConstantInstantiator {
+class ThePlatform_Endpoints {
 
 	/**
 	 * Define MPX endpoints and associated parameters
@@ -70,6 +70,7 @@ class MPXURLConstantInstantiator {
 		define( 'TP_API_MEDIA_SERVER_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Server?schema=1.0&form=cjson' );
 		define( 'TP_API_MEDIA_RELEASE_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Release?schema=1.5.0&form=cjson' );
 		define( 'TP_API_MEDIA_CATEGORY_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Category?schema=1.6.0&form=cjson' );
+		define( 'TP_API_MEDIA_ACCOUNTSETTINGS_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'AccountSettings?schema=1.6.0&form=cjson' );
 
 		// Player Data Service URLs
 		define( 'TP_API_PLAYER_PLAYER_ENDPOINT', TP_API_PLAYER_BASE_URL . 'Player?schema=1.3.0&form=cjson' );

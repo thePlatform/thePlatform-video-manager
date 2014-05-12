@@ -76,7 +76,7 @@ var message_nag = function( msg, fade, isError ) {
 		jQuery( '#message_nag' ).addClass( messageType );
 		jQuery( '#message_nag' ).fadeIn( 500 );
 		jQuery( '#message_nag_text' ).animate( { 'opacity': 0 }, 500, function() {
-			jQuery( this ).text( msg );
+			jQuery( this ).html( msg );
 		} ).animate( { 'opacity': 1 }, 500 );
 	}
 
