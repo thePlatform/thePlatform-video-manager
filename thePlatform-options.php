@@ -22,7 +22,7 @@ class ThePlatform_Options {
 	private $metadata_options_key = 'theplatform_metadata_options';
 	private $upload_options_key = 'theplatform_upload_options';
 	private $account_is_verified;
-
+	private $regions = array('us', 'eu');
 	/*
 	 * WP Option key
 	 */
@@ -65,7 +65,11 @@ class ThePlatform_Options {
 	function enqueue_scripts() {
 		wp_enqueue_script( 'jquery' );
 		wp_enqueue_script( 'theplatform_js' );
+		wp_enqueue_script( 'field_views' );
+		wp_enqueue_script( 'jquery-ui-sortable' );
 		wp_enqueue_style( 'dashicons' );
+		wp_enqueue_style( 'field_views' );
+
 	}
 
 	/**
@@ -116,6 +120,7 @@ class ThePlatform_Options {
 			'mpx_password' => '',
 			'embed_tag_type' => 'iframe',
 			'mpx_account_pid' => '',
+			'mpx_region' => 'us',
 			'default_player_name' => '',
 			'default_player_pid' => '',
 			'mpx_server_id' => '',
@@ -153,6 +158,7 @@ class ThePlatform_Options {
 		add_settings_section( 'section_mpx_account_options', 'MPX Account Options', array( &$this, 'section_mpx_account_desc' ), $this->preferences_options_key );
 		add_settings_field( 'mpx_username_option', 'MPX Username', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_mpx_account_options', array( 'field' => 'mpx_username' ) );
 		add_settings_field( 'mpx_password_option', 'MPX Password', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_mpx_account_options', array( 'field' => 'mpx_password' ) );
+		add_settings_field( 'mpx_region_option', 'MPX Region', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_mpx_account_options', array( 'field' => 'mpx_region' ) );
 		add_settings_field( 'mpx_accountid_option', 'MPX Account', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_mpx_account_options', array( 'field' => 'mpx_account_id' ) );
 		add_settings_field( 'mpx_account_pid', 'MPX Account PID', array( &$this, 'field_preference_option' ), $this->preferences_options_key, 'section_mpx_account_options', array( 'field' => 'mpx_account_pid' ) );
 
@@ -196,7 +202,7 @@ class ThePlatform_Options {
 
 		foreach ( $this->metadata_fields as $field ) {
 			if ( !array_key_exists( $field['id'], $this->metadata_options ) ) {
-				$this->metadata_options[$field['id']] = 'omit';
+				$this->metadata_options[$field['id']] = 'hide';
 			}
 
 			if ( $field['fieldName'] === $this->preferences['user_id_customfield'] ) {
@@ -205,10 +211,8 @@ class ThePlatform_Options {
 
 			update_option( $this->metadata_options_key, $this->metadata_options );
 
-			$types = array( 'String', 'Time', 'Date', 'Integer', 'Decimal', 'Duration', 'Boolean', 'URI' );
-			if ( $field['dataStructure'] === 'Single' && in_array( $field['dataType'], $types ) ) { //TODO: Remove this and support all types and structures of fields
-				add_settings_field( $field['id'], $field['title'], array( &$this, 'field_metadata_option' ), $this->metadata_options_key, 'section_metadata_options', array( 'id' => $field['id'], 'title' => $field['title'], 'fieldName' => $field['fieldName'] ) );
-			}
+			$types = array( 'String', 'Time', 'Date', 'DateTime', 'Integer', 'Decimal', 'Duration', 'Boolean', 'URI', 'Link' );
+		  add_settings_field( $field['id'], $field['title'], array( &$this, 'field_metadata_option' ), $this->metadata_options_key, 'section_metadata_options', array( 'id' => $field['id'], 'title' => $field['title'], 'fieldName' => $field['fieldName'] ) );
 		}
 	}
 
@@ -239,7 +243,7 @@ class ThePlatform_Options {
 
 		foreach ( $upload_fields as $field ) {
 			if ( !array_key_exists( $field, $this->upload_options ) ) {
-				$this->upload_options[$field] = 'allow';
+				$this->upload_options[$field] = 'write';
 			}
 
 			update_option( $this->upload_options_key, $this->upload_options );
@@ -269,7 +273,7 @@ class ThePlatform_Options {
 	}
 
 	function section_metadata_desc() {
-		echo 'Select the custom metadata fields that you would like to be allowed or omitted when uploading media to MPX.';
+		echo 'Drag and drop the custom metadata fields that you would like to be readable, writable, or omitted when uploading media to MPX.';
 	}
 
 	function section_upload_desc() {
@@ -310,6 +314,14 @@ class ThePlatform_Options {
 				if ( $this->preferences['mpx_account_id'] === '' ) {
 					$html .= "<span> Please pick the MPX account you'd like to manage through Wordpress</span>";
 				}
+				break;
+			case 'mpx_region':
+				$html = '<select id="' . esc_attr( $field ) . '" name="theplatform_preferences_options[' . esc_attr( $field ) . ']">';
+				$regions = $this->regions;
+				foreach ( $regions as $region ) {
+					$html .= '<option value="' . esc_attr( $region ) . '|' . esc_attr( $region ) . '"' . selected( $opts[$field], $region, false ) . '>' . esc_html( strtoupper($region) ) . '</option>';
+				}
+				$html .= '</select>';
 				break;
 			case 'embed_tag_type':
 				$html = '<select id="' . esc_attr( $field ) . '" name="theplatform_preferences_options[' . esc_attr( $field ) . ']">';
@@ -381,9 +393,10 @@ class ThePlatform_Options {
 	function field_metadata_option( $args ) {
 		$field_id = $args['id'];
 
-		$html = '<select id="' . esc_attr( $field_id ) . '" name="theplatform_metadata_options[' . esc_attr( $field_id ) . ']">';
-		$html .= '<option value="allow"' . selected( $this->metadata_options[$field_id], 'allow', false ) . '>Allow</option>';
-		$html .= '<option value="omit"' . selected( $this->metadata_options[$field_id], 'omit', false ) . '>Omit</option>';
+		$html = '<select id="' . esc_attr( $field_id ) . '" name="theplatform_metadata_options[' . esc_attr( $field_id ) . ']" class="sortableField">';
+		$html .= '<option value="read"' . selected( $this->metadata_options[$field_id], 'read', false ) . '>Read</option>';
+		$html .= '<option value="write"' . selected( $this->metadata_options[$field_id], 'write', false ) . '>Write</option>';
+		$html .= '<option value="hide"' . selected( $this->metadata_options[$field_id], 'hide', false ) . '>Hide</option>';
 		$html .= '</select>';
 
 		echo $html;
@@ -396,9 +409,10 @@ class ThePlatform_Options {
 	function field_upload_option( $args ) {
 		$field = $args['field'];
 
-		$html = '<select id="' . esc_attr( $field ) . '" name="theplatform_upload_options[' . esc_attr( $field ) . ']">';
-		$html .= '<option value="allow"' . selected( $this->upload_options[$field], 'allow', false ) . '>Allow</option>';
-		$html .= '<option value="omit"' . selected( $this->upload_options[$field], 'omit', false ) . '>Omit</option>';
+		$html = '<select id="' . esc_attr( $field ) . '" name="theplatform_upload_options[' . esc_attr( $field ) . ']" class="sortableField">';
+		$html .= '<option value="read"' . selected( $this->upload_options[$field], 'read', false ) . '>Read</option>';
+		$html .= '<option value="write"' . selected( $this->upload_options[$field], 'write', false ) . '>Write</option>';
+		$html .= '<option value="hide"' . selected( $this->upload_options[$field], 'hide', false ) . '>Hide</option>';
 		$html .= '</select>';
 
 		echo $html;

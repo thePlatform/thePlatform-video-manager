@@ -59,7 +59,7 @@ wp_print_styles( 'wp-jquery-ui-dialog' );
 			wp_die( 'MPX Account ID is not set, please configure the plugin before attempting to manage media' );
 		}
 
-//Embed only stuff
+		//Embed only stuff
 		$players = $tp_api->get_players();
 		$IS_EMBED = strpos( $_SERVER['QUERY_STRING'], '&embed=true' ) !== false ? true : false;
 
@@ -145,7 +145,7 @@ wp_print_styles( 'wp-jquery-ui-dialog' );
 						<div id="info-player-container">
 							<div id="modal-player" class="marketplacePlayer">
 								<img id="modal-player-placeholder" data-src="holder.js/320x180/text:No Preview Available" src="" style="position: absolute"><!-- holder.js/128x72/text:No Thumbnail" -->
-								<iframe id="player" width="320px" height="180px" frameBorder="0" seamless="seamless" src="http://player.theplatform.com/p/<?php echo $preferences['mpx_account_pid'] . '/' . $preferences['default_player_pid']; ?>/embed?autoPlay=false"
+								<iframe id="player" width="320px" height="180px" frameBorder="0" seamless="seamless" src="<?php echo TP_API_PLAYER_EMBED_BASE_URL; ?><?php echo $preferences['mpx_account_pid'] . '/' . $preferences['default_player_pid']; ?>/embed?autoPlay=false"
 										webkitallowfullscreen mozallowfullscreen msallowfullscreen allowfullscreen></iframe>
 							</div>
 							<br>
@@ -156,7 +156,7 @@ wp_print_styles( 'wp-jquery-ui-dialog' );
 								<div class="panel-body">
 									<?php
 									foreach ( $upload_options as $upload_field => $val ) {
-										if ( $val !== 'allow' ) {
+										if ( $val == 'hide' ) {
 											continue;
 										}
 
@@ -177,7 +177,7 @@ wp_print_styles( 'wp-jquery-ui-dialog' );
 									}
 
 									foreach ( $metadata_options as $custom_field => $val ) {
-										if ( $val !== 'allow' ) {
+										if ( $val == 'hide' ) {
 											continue;
 										}
 
@@ -205,7 +205,7 @@ wp_print_styles( 'wp-jquery-ui-dialog' );
 
 										$html = '<div class="row">';
 										$html .= '<strong>' . esc_html( mb_convert_case( $field_title, MB_CASE_TITLE ) ) . ': </strong>';
-										$html .= '<span id="media-' . esc_attr( strtolower( $field_title ) ) . '" data-type="' . esc_attr( $field_type ) . '" data-structure="' . esc_attr( $field_structure ) . '" data-name="' . esc_attr( strtolower( $field_title ) ) . '" data-prefix="' . esc_attr( strtolower( $field_prefix ) ) . '" data-namespace="' . esc_attr( strtolower( $field_namespace ) ) . '"></span></div>';
+										$html .= '<span id="media-' . esc_attr( $field_title ) . '" data-type="' . esc_attr( $field_type ) . '" data-structure="' . esc_attr( $field_structure ) . '" data-name="' . esc_attr( $field_title ) . '" data-prefix="' . esc_attr( $field_prefix ) . '" data-namespace="' . esc_attr( $field_namespace ) . '"></span></div>';
 										echo $html;
 									}
 									?>                      

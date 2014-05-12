@@ -54,10 +54,12 @@ class ThePlatform_Plugin {
 	 * Constructor
 	 */
 	function __construct() {
+		require_once(dirname( __FILE__ ) . '/thePlatform-URLs.php');
 		require_once(dirname( __FILE__ ) . '/thePlatform-API.php');
 		require_once(dirname( __FILE__ ) . '/thePlatform-helper.php');
 		require_once(dirname( __FILE__ ) . '/thePlatform-proxy.php');
 
+		new MPXURLConstantInstantiator('theplatform_preferences_options');
 		$this->tp_api = new ThePlatform_API;
 
 		$this->plugin_base_dir = plugin_dir_path( __FILE__ );
@@ -90,6 +92,7 @@ class ThePlatform_Plugin {
 		wp_register_script( 'mpxhelper_js', plugins_url( '/js/mpxHelper.js', __FILE__ ), array( 'jquery' ) );
 		wp_register_script( 'theplatform_uploader_js', plugins_url( '/js/theplatform-uploader.js', __FILE__ ), array( 'jquery', 'theplatform_js' ) );
 		wp_register_script( 'mediaview_js', plugins_url( '/js/mediaview.js', __FILE__ ), array( 'jquery', 'holder', 'mpxhelper_js', 'theplatform_js', 'pdk_external_controller', 'infiniscroll_js', 'bootstrap_js' ) );
+		wp_register_script( 'field_views', plugins_url( '/js/fieldViews.js', __FILE__ ), array( 'jquery' ) );
 
 		wp_localize_script( 'theplatform_js', 'theplatform', array(
 			'ajaxurl' => admin_url( 'admin-ajax.php' ),
@@ -104,10 +107,11 @@ class ThePlatform_Plugin {
 
 		wp_register_style( 'theplatform_css', plugins_url( '/css/thePlatform.css', __FILE__ ) );
 		wp_register_style( 'bootstrap_tp_css', plugins_url( '/css/bootstrap_tp.min.css', __FILE__ ) );
+		wp_register_style( 'field_views', plugins_url( '/css/fieldViews.css', __FILE__ ) );
 	}
 
 	/**
-	 * Add admin pages 
+	 * Add admin pages
 	 */
 	function add_admin_page() {
 		$tp_admin_cap = apply_filters( 'tp_admin_cap', 'manage_options' );
@@ -149,7 +153,7 @@ class ThePlatform_Plugin {
 	 * @return void
 	 */
 	function embed() {
-		require_once( $this->plugin_dir . 'thePlatform-media-browser.php' );
+		require_once( $this->plugin_base_dir . 'thePlatform-media-browser.php' );
 		die();
 	}
 
@@ -168,7 +172,7 @@ class ThePlatform_Plugin {
 	 * @return void
 	 */
 	function upload() {
-		require_once( $this->plugin_dir . 'thePlatform-upload-window.php' );
+		require_once( $this->plugin_base_dir . 'thePlatform-upload-window.php' );
 		die();
 	}
 
@@ -227,7 +231,7 @@ class ThePlatform_Plugin {
 			require_once( dirname( __FILE__ ) . '/thePlatform-API.php' );
 		}
 
-		if ( !$this->preferences ) {
+		if ( !isset($this->preferences) ) {
 			$this->preferences = get_option( 'theplatform_preferences_options' );
 		}
 
@@ -304,7 +308,7 @@ class ThePlatform_Plugin {
 
 	/**
 	 * Called by the plugin shortcode callback function to construct a media embed iframe.
-	 * 
+	 *
 	 * @param string $account_id Account of the user embedding the media asset
 	 * @param string $media_id Identifier of the media object to embed
 	 * @param string $player_id Identifier of the player to display the embedded media asset in
@@ -317,7 +321,7 @@ class ThePlatform_Plugin {
 	 */
 	function get_embed_shortcode( $accountPID, $releasePID, $playerPID, $player_width, $player_height, $autoplay, $tag, $loop = false, $mute = false, $params ) {
 
-		$url = 'http://player.theplatform.com/p/' . urlencode( $accountPID ) . '/' . urlencode( $playerPID );
+		$url = TP_API_PLAYER_EMBED_BASE_URL . urlencode( $accountPID ) . '/' . urlencode( $playerPID );
 		$url .= '/embed/select/' . urlencode( $releasePID );
 
 		$url = apply_filters( 'tp_base_embed_url', $url );

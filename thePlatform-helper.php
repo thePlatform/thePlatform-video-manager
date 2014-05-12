@@ -24,8 +24,8 @@
  */
 function dropdown_options_validate( $input ) {
 	foreach ( $input as $key => $value ) {
-		if ( $value != "allow" && $value != "omit" ) {
-			$input[$key] = "omit";
+		if ( !in_array($value, array('read', 'write', 'hide')) ) {
+			$input[$key] = "hide";
 		}
 	}
 	return $input;
@@ -37,24 +37,27 @@ function dropdown_options_validate( $input ) {
  * @return array A cleaned up copy of the array, invalid values will be cleared.
  */
 function connection_options_validate( $input ) {
+	$tp_api = new ThePlatform_API;
+  $defaults = array(
+    'mpx_account_id' => '',
+    'mpx_username' => 'mpx/',
+    'mpx_password' => '',
+    'embed_tag_type' => 'embed',
+    'mpx_account_pid' => '',
+  	'mpx_region' => 'us|us',
+    'default_player_name' => '',
+    'default_player_pid' => '',
+    'mpx_server_id' => '',
+    'default_publish_id' => '',
+    'user_id_customfield' => '',
+    'filter_by_user_id' => 'FALSE',
+    'autoplay' => 'TRUE',
+    'default_width' => $GLOBALS['content_width'],
+    'default_height' => ($GLOBALS['content_width'] / 16) * 9
+  );
+
 	if ( !is_array( $input ) ) {
-		return array(
-			'mpx_account_id' => '',
-			'mpx_username' => 'mpx/',
-			'mpx_password' => '',
-			'embed_tag_type' => 'embed',
-			'mpx_account_pid' => '',
-			'default_player_name' => '',
-			'default_player_pid' => '',
-			'mpx_server_id' => '',
-			'default_publish_id' => '',
-			'user_id_customfield' => '',
-			'filter_by_user_id' => 'FALSE',
-			'autoplay' => 'TRUE',
-			'default_width' => $GLOBALS['content_width'],
-			'default_height' => ($GLOBALS['content_width'] / 16) * 9
-		);
-		;
+		return $defaults;
 	}
 
 	if ( strpos( $input['mpx_account_id'], '|' ) !== FALSE ) {
@@ -69,6 +72,28 @@ function connection_options_validate( $input ) {
 		$input['default_player_pid'] = $ids[1];
 	}
 
+	// If the account is selected, but no player has been set, use the first
+  // returned as the default.
+	if ( isset($input['mpx_account_id']) && !isset($input['default_player_name']) ) {
+		$players = $tp_api->get_players();
+		$player = $players[0];
+		$input['default_player_name'] = $player['title'];
+		$input['default_player_pid'] = $player['pid'];
+	}
+
+  // If the account is selected, but no upload server has been set, use the first
+  // returned as the default.
+	if( isset($input['mpx_account_id']) && !isset($input['mpx_server_id']) ) {
+		$servers = $tp_api->get_servers();
+    $server = $servers[0];
+    $input['mpx_server_id'] = $server['id'];
+	}
+
+	if ( strpos( $input['mpx_region'], '|' ) !== FALSE ) {
+		$ids = explode( '|', $input['mpx_region'] );
+		$input['mpx_region'] = $ids[0];
+	}
+
 	foreach ( $input as $key => $value ) {
 		if ( $key == 'videos_per_page' || $key === 'default_width' || $key === 'default_height' ) {
 			$input[$key] = intval( $value );
@@ -76,6 +101,59 @@ function connection_options_validate( $input ) {
 			$input[$key] = sanitize_text_field( $value );
 		}
 	}
+
+  // If username, account id, or region is changed, reset settings to default
+  $old_preferences = get_option( 'theplatform_preferences_options' );
+  if($old_preferences) {
+	$updates = false;
+	// If the username changes, reset all settings
+	if(isset($old_preferences['mpx_username']) && strlen($old_preferences['mpx_username'])
+	  && isset($input['mpx_username']) && strlen($input['mpx_username'])
+	  && $old_preferences['mpx_username'] != $input['mpx_username']
+	) {
+	  $defaults['mpx_username'] = $input['mpx_username'];
+	  $defaults['mpx_password'] = $input['mpx_password'];
+	  $updates = true;
+	}
+
+	// If the region changed, reset all settings except the user/pass
+	if(isset($old_preferences['mpx_region']) && strlen($old_preferences['mpx_region'])
+		&& isset($input['mpx_region']) && strlen($input['mpx_region'])
+		&& $old_preferences['mpx_region'] != $input['mpx_region']
+	) {
+		$defaults['mpx_username'] = $input['mpx_username'];
+		$defaults['mpx_password'] = $input['mpx_password'];
+		$defaults['mpx_region'] = $input['mpx_region'];
+		$updates = true;
+	}
+
+	  // If the account changed, reset all settings except the user/pass
+    else if(isset($input['mpx_account_id']) && strlen($input['mpx_account_id'])
+      && isset($old_preferences['mpx_account_id']) && strlen($old_preferences['mpx_account_id'])
+      && $input['mpx_account_id'] != $old_preferences['mpx_account_id']
+    ) {
+      $defaults['mpx_username'] = $input['mpx_username'];
+      $defaults['mpx_password'] = $input['mpx_password'];
+      $defaults['mpx_account_id'] = $input['mpx_account_id'];
+      $updates = true;
+    }
+    // Clear old options
+    if($updates) {
+      $input = $defaults;
+      update_option('theplatform_metadata_options', array());
+      update_option('theplatform_upload_options', array());
+    }
+    // If someone has re-logged in to a previously active account (e.g. their password changed),
+    // preserve their previous settings.
+    else {
+      foreach($old_preferences as $key => $old_preference) {
+        if(!isset($input[$key]) || !strlen($input[$key])) {
+          $input[$key] = $old_preference;
+        }
+      }
+    }
+  }
+
 	return $input;
 }
 
@@ -139,7 +217,7 @@ function get_query_fields( $metadata ) {
 	$fields = 'id,defaultThumbnailUrl,content';
 
 	foreach ( $upload_options as $upload_field => $val ) {
-		if ( $val !== 'allow' ) {
+		if ( $val == 'hide' ) {
 			continue;
 		}
 
@@ -151,7 +229,7 @@ function get_query_fields( $metadata ) {
 	}
 
 	foreach ( $metadata_options as $custom_field => $val ) {
-		if ( $val !== 'allow' ) {
+		if ( $val == 'hide' ) {
 			continue;
 		}
 

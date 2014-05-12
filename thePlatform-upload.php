@@ -20,6 +20,29 @@ if ( !defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+$tp_api = new ThePlatform_API;
+$metadata = $tp_api->get_metadata_fields();
+$preferences = get_option( 'theplatform_preferences_options' );
+$upload_options = get_option( 'theplatform_upload_options' );
+$metadata_options = get_option( 'theplatform_metadata_options' );
+
+$dataTypeDesc = array(
+  'Integer' => 'Integer',
+  'Decimal' => 'Decimal',
+  'String' => 'String',
+  'DateTime' => 'MM/DD/YYYY HH:MM:SS',
+  'Date' => 'YYYY-MM-DD',
+  'Time' => '24 hr time (20:00)',
+  'Link' => 'title: Link Title, href: http://www.wordpress.com',
+  'Duration' => 'HH:MM:SS',
+  'Boolean' => 'true, false, or empty',
+  'URI' => 'http://www.wordpress.com',
+);
+
+$structureDesc = array(
+  'Map' => 'Map (field1: value1, field2: value2)',
+  'List' => 'List (value1, value2)',
+);
 
 if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 	wp_enqueue_style( 'bootstrap_tp_css' );
@@ -30,14 +53,7 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 	if ( !current_user_can( $tp_uploader_cap ) ) {
 		wp_die( '<p>' . __( 'You do not have sufficient permissions to upload MPX Media' ) . '</p>' );
 	}
-
-	$tp_api = new ThePlatform_API;
 	$media = array();
-
-	$metadata = $tp_api->get_metadata_fields();
-	$preferences = get_option( 'theplatform_preferences_options' );
-	$upload_options = get_option( 'theplatform_upload_options' );
-	$metadata_options = get_option( 'theplatform_metadata_options' );
 
 	echo '<h1> Upload Media to MPX </h1><div id="media-mpx-upload-form" class="tp">';
 }
@@ -50,7 +66,7 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 	$upload_options = get_option( 'theplatform_upload_options' );
 	$html = '';
 
-	if ( $preferences['user_id_customfield'] !== '(None)' ) {
+	if ( strlen($preferences['user_id_customfield']) && $preferences['user_id_customfield'] !== '(None)' ) {
 		echo '<input type="hidden" name="' . esc_attr( $preferences['user_id_customfield'] ) . '" class="custom_field" value="' . wp_get_current_user()->ID . '" />';
 	}
 
@@ -59,11 +75,11 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 	foreach ( $upload_options as $upload_field => $val ) {
 		$field_title = (strstr( $upload_field, '$' ) !== false) ? substr( strstr( $upload_field, '$' ), 1 ) : $upload_field;
 
-		if ( $val == 'allow' ) {
+		if ( $val == 'write' ) {
 			if ( $upload_field == 'categories' ) {
 				$categories = $tp_api->get_categories( true );
 				$catHtml .= '<div class="row">';
-				$catHtml .= '<div class="col-xs-3">';
+				$catHtml .= '<div class="col-xs-5">';
 				$catHtml .= '<label class="control-label" for="theplatform_upload_' . esc_attr( $upload_field ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
 				$catHtml .= '<select class="category_field form-control" multiple id="theplatform_upload_' . esc_attr( $upload_field ) . '" name="' . esc_attr( $upload_field ) . '">';
 				foreach ( $categories as $category ) {
@@ -73,21 +89,21 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 				$catHtml .= '</div>';
 				$catHtml .= '</div>';
 			} else {
-				if ( $col === 0 ) {
-					echo '<div class="row">';
-				}
+				$default_value = isset($media[$upload_field]) ? esc_attr( $media[$upload_field] ) : '';
 				$html = '';
-				$html .= '<div class="col-xs-3">';
+        if($col % 2 == 0) {
+          $html .= '<div class="row">';
+        }
+				$html .= '<div class="col-xs-5">';
 				$html .= '<label class="control-label" for="theplatform_upload_' . esc_attr( $upload_field ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
-				$html .= '<input name="' . esc_attr( $upload_field ) . '" id="theplatform_upload_' . esc_attr( $upload_field ) . '" class="form-control upload_field" type="text" value="' . esc_attr( $media[$upload_field] ) . '"/>'; //upload_field
+				$html .= '<input name="' . esc_attr( $upload_field ) . '" id="theplatform_upload_' . esc_attr( $upload_field ) . '" class="form-control upload_field" type="text" value="' . $default_value . '"/>'; //upload_field
 				$html .= '</div>';
+        if($col % 2 !== 0) {
+          $html .= '</div>';
+        }
+
 				echo $html;
-				if ( $col === 2 ) {
-					echo '</div>';
-					$col = 0;
-				} else {
-					$col++;
-				}
+        $col++;
 			}
 		}
 	}
@@ -119,31 +135,29 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 			continue;
 		}
 
-		if ( $val == 'allow' ) {
+		if ( $val == 'write' ) {
 			$field_name = $field_prefix . '$' . $field_title;
-			$field_value = $media[$field_prefix . '$' . $field_title];
+			$field_value = isset($media[$field_prefix . '$' . $field_title]) ? $media[$field_prefix . '$' . $field_title] : '';
 
 			$html = '';
-			if ( $col === 0 ) {
-				echo '<div class="row">';
-			}
-			$html .= '<div class="col-xs-3">';
+      if($col % 2 == 0) {
+        $html .= '<div class="row">';
+      }
+			$html .= '<div class="col-xs-5">';
 			$html .= '<label class="control-label" for="theplatform_upload_' . esc_attr( $field_name ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
 			$html .= '<input name="' . esc_attr( $field_title ) . '" id="theplatform_upload_' . esc_attr( $field_name ) . '" class="form-control custom_field" type="text" value="' . esc_attr( $field_value ) . '" data-type="' . esc_attr( $field_type ) . '" data-structure="' . esc_attr( $field_structure ) . '" data-name="' . esc_attr( strtolower( $field_title ) ) . '" data-prefix="' . esc_attr( strtolower( $field_prefix ) ) . '" data-namespace="' . esc_attr( strtolower( $field_namespace ) ) . '"/>';
+      if(isset($structureDesc[$field_structure]))
+        $html .= '<div class="structureDesc"><strong>Structure</strong> '.$structureDesc[$field_structure].'</div>';
+      if(isset($dataTypeDesc[$field_type]))
+        $html .= '<div class="dataTypeDesc"><strong>Format:</strong> '.$dataTypeDesc[$field_type].'</div>';
+      $html .= '<br />';
 			$html .= '</div>';
+      if($col % 2 !== 0) {
+        $html .= '</div>';
+      }
 			echo $html;
-
-			if ( $col === 2 ) {
-				echo '</div>';
-				$col = 0;
-			} else {
-				$col++;
-			}
 		}
-	}
-	if ( $col !== 0 ) {
-		echo '</div>';
-		$col = 0;
+    $col++;
 	}
 
 	if ( !empty( $catHtml ) ) {
@@ -154,7 +168,7 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 		?>
 
 		<div class="row">
-			<div class="col-xs-3">			
+			<div class="col-xs-3">
 				<?php
 				$profiles = $tp_api->get_publish_profiles();
 				$html = '<label class="control-label" for="publishing_profile">Publishing Profile</label>';
@@ -169,23 +183,23 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-xs-3">			
+			<div class="col-xs-3">
 				<label class="control-label" for="theplatform_upload_file">File</label><input type="file" accept="audio/*|video/*|image/*" id="theplatform_upload_file" />
 			</div>
-		</div>	
+		</div>
 		<div class="row">
 			<div class="col-xs-3">
-				<button id="theplatform_upload_button" class="form-control btn btn-primary" type="button" name="theplatform-upload-button">Upload Media</button>		
+				<button id="theplatform_upload_button" class="form-control btn btn-primary" type="button" name="theplatform-upload-button">Upload Media</button>
 			</div>
 		</div>
 	<?php } else {
 		?>
 		<div class="row" style="margin-top: 10px;">
 			<div class="col-xs-3">
-				<button id="theplatform_edit_button" class="form-control btn btn-primary" type="button" name="theplatform-edit-button">Submit</button>		
+				<button id="theplatform_edit_button" class="form-control btn btn-primary" type="button" name="theplatform-edit-button">Submit</button>
 			</div>
 		</div>
 	<?php } ?>
-</form>	
+</form>
 </div>
 
