@@ -102,6 +102,7 @@ class ThePlatform_Options {
 			'user_id_customfield' => '',
 			'filter_by_user_id' => 'FALSE',
 			'autoplay' => 'TRUE',
+			'rss_embed_type' => 'article',
 			'default_width' => $GLOBALS['content_width'],
 			'default_height' => ($GLOBALS['content_width'] / 16) * 9,
 				), $this->preferences_options );
@@ -155,6 +156,7 @@ class ThePlatform_Options {
 		add_settings_field( 'default_player_name', 'Default Player', array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_embed_options', array( 'field' => 'default_player_name' ) );
 		add_settings_field( 'default_player_pid', 'Default Player PID', array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_embed_options', array( 'field' => 'default_player_pid' ) );
 		add_settings_field( 'embed_tag_type_option', 'Embed Tag Type', array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_embed_options', array( 'field' => 'embed_tag_type' ) );
+		add_settings_field( 'rss_embed_type_option', 'RSS Embed Type', array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_embed_options', array( 'field' => 'rss_embed_type' ) );
 		add_settings_field( 'autoplay', 'Force Autoplay', array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_embed_options', array( 'field' => 'autoplay' ) );
 		add_settings_field( 'default_width', 'Default Player Width', array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_embed_options', array( 'field' => 'default_width' ) );
 		add_settings_field( 'default_height', 'Default Player Height', array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_embed_options', array( 'field' => 'default_height' ) );
@@ -313,6 +315,13 @@ class ThePlatform_Options {
 				$html = '<select id="' . esc_attr( $field ) . '" name="theplatform_preferences_options[' . esc_attr( $field ) . ']">';
 				$html .= '<option value="IFrame"' . selected( $opts[$field], 'iframe', false ) . '>IFrame</option>';
 				$html .= '<option value="Script"' . selected( $opts[$field], 'script', false ) . '>Script</option>';
+				$html .= '</select>';
+				break;
+			case 'rss_embed_type':
+				$html = '<select id="' . esc_attr( $field ) . '" name="theplatform_preferences_options[' . esc_attr( $field ) . ']">';
+				$html .= '<option value="article"' . selected( $opts[$field], 'article', false ) . '>Article</option>';
+				$html .= '<option value="iframe"' . selected( $opts[$field], 'iframe', false ) . '>IFrame</option>';
+				$html .= '<option value="script"' . selected( $opts[$field], 'script', false ) . '>Script</option>';
 				$html .= '</select>';
 				break;
 			case 'mpx_password':

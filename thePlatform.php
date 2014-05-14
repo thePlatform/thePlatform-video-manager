@@ -299,9 +299,24 @@ class ThePlatform_Plugin {
 			$accountPID = $this->preferences['mpx_account_pid'];
 			$output = $this->get_embed_shortcode( $accountPID, $media, $player, $width, $height, $autoplay, $tag, $loop, $mute, $params );
 			$output = apply_filters( 'tp_embed_code', $output );
-		} else {
-			$output = '[Sorry. This video cannot be displayed in this feed. <a href="' . get_permalink() . '">View your video here.]</a>';
+		} else {			
+			switch ($this->preferences['rss_embed_type']) {
+				case 'article':
+					$output = '[Sorry. This video cannot be displayed in this feed. <a href="' . get_permalink() . '">View your video here.]</a>';
+					break;				
+				case 'iframe':
+					$output = $this->get_embed_shortcode( $accountPID, $media, $player, $width, $height, $autoplay, 'iframe', $loop, $mute, $params );
+					break;
+				case 'script':
+					$output = $this->get_embed_shortcode( $accountPID, $media, $player, $width, $height, $autoplay, 'script', $loop, $mute, $params );
+					break;
+				default:
+					$output = '[Sorry. This video cannot be displayed in this feed. <a href="' . get_permalink() . '">View your video here.]</a>';
+					break;
+			}
+			$output	= apply_filters( 'tp_rss_embed_code', $output );
 		}
+
 
 		return $output;
 	}

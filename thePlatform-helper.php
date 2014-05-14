@@ -52,6 +52,7 @@ function connection_options_validate( $input ) {
     'user_id_customfield' => '',
     'filter_by_user_id' => 'FALSE',
     'autoplay' => 'TRUE',
+    'rss_embed_type' => 'article',
     'default_width' => $GLOBALS['content_width'],
     'default_height' => ($GLOBALS['content_width'] / 16) * 9
   );
