@@ -172,8 +172,8 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 				<?php
 				$profiles = $tp_api->get_publish_profiles();
 				$html = '<label class="control-label" for="publishing_profile">Publishing Profile</label>';
-				$html .= '<select name="profile" id="publishing_profile" name="publishing_profile" class="form-control upload_profile">';
-				$html .= '<option value="tp_wp_none">Do not publish</option>';
+				$html .= '<select id="publishing_profile" name="publishing_profile" class="form-control upload_profile">';
+				$html .= '<option value="tp_wp_none"' . selected( $entry['title'], $preferences['default_publish_id'], false ) . '>Do not publish</option>';
 				foreach ( $profiles as $entry ) {
 					$html .= '<option value="' . esc_attr( $entry['title'] ) . '"' . selected( $entry['title'], $preferences['default_publish_id'], false ) . '>' . esc_html( $entry['title'] ) . '</option>';
 				}
@@ -183,6 +183,19 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 			</div>
 		</div>
 		<div class="row">
+			<div class="col-xs-3">				
+				<?php
+					$servers = $tp_api->get_servers();
+					$html = '<label class="control-label" for="theplatform_server">Server</label>';
+					$html .= '<select id="theplatform_server" name="theplatform_server" class="form-control server_id">';
+					$html .= '<option value="DEFAULT_SERVER"' . selected( $preferences['mpx_server_id'], "DEFAULT_SERVER", false ) . '>Default Server</option>';
+					foreach ( $servers as $entry ) {
+						$html .= '<option value="' . esc_attr( $entry['id'] ) . '"' . selected( $entry['id'], $preferences['mpx_server_id'], false ) . '>' . esc_html( $entry['title'] ) . '</option>';
+					}
+					$html .= '</select>';
+					echo $html;
+				?>
+			</div>
 			<div class="col-xs-3">
 				<label class="control-label" for="theplatform_upload_file">File</label><input type="file" accept="audio/*|video/*|image/*" id="theplatform_upload_file" />
 			</div>

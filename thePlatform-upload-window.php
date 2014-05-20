@@ -42,6 +42,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
     </body>
     <script type="text/javascript">
 		message_nag( "Preparing for upload.." );
-		var theplatformUploader = new TheplatformUploader( uploaderData.file, uploaderData.params, uploaderData.custom_params, uploaderData.profile );
+		var theplatformUploader = new TheplatformUploader( uploaderData.file, uploaderData.params, uploaderData.custom_params, uploaderData.profile, uploaderData.server );
     </script>
 </html>

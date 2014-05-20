@@ -376,7 +376,7 @@ TheplatformUploader = ( function() {
 	 @function constructor Inform the API proxy to create placeholder media assets in MPX and begin uploading
 	 @param {File} file - The media file to upload
 	 */
-	function TheplatformUploader( file, fields, custom_fields, profile ) {
+	function TheplatformUploader( file, fields, custom_fields, profile, server ) {
 		var me = this;
 		this.file = file;
 
@@ -391,6 +391,7 @@ TheplatformUploader = ( function() {
 			filesize: file.size,
 			filetype: file.type,
 			filename: file.name,
+			server_id: server,
 			fields: fields,
 			custom_fields: custom_fields,
 			profile: profile

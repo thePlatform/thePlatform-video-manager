@@ -403,6 +403,7 @@ jQuery( document ).ready( function() {
 		var custom_params = parseCustomParams();
 
 		var profile = jQuery( '.upload_profile' );
+		var server = jQuery( '.server_id' );
 
 		var upload_window = window.open( theplatform.ajaxurl + '?action=theplatform_upload', '_blank', 'menubar=no,location=no,resizable=yes,scrollbars=no,status=no,width=700,height=150' )
 
@@ -410,7 +411,8 @@ jQuery( document ).ready( function() {
 			file: file,
 			params: JSON.stringify( params ),
 			custom_params: JSON.stringify( custom_params ),
-			profile: profile.val()
+			profile: profile.val(),
+			server: server.val()
 		}
 
 		upload_window.parentLocation = window.location;

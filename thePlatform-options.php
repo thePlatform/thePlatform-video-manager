@@ -277,6 +277,7 @@ class ThePlatform_Options {
 				$html = '<select id="' . esc_attr( $field ) . '" name="theplatform_preferences_options[' . esc_attr( $field ) . ']">';
 				if ( $this->preferences['mpx_account_id'] !== '' ) {
 					$servers = $this->tp_api->get_servers();
+					$html .= '<option value="DEFAULT_SERVER"' . selected( $opts[$field], "DEFAULT_SERVER", false ) . '>Default Server</option>';
 					foreach ( $servers as $server ) {
 						$html .= '<option value="' . esc_attr( $server['id'] ) . '"' . selected( $opts[$field], $server['id'], false ) . '>' . esc_html( $server['title'] ) . '</option>';
 					}

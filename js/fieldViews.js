@@ -37,6 +37,7 @@ function buildDragColumns() {
     $dragColumnsContainer.append('<div class="clear"></div>');
 
     $( ".sortable" ).sortable({
+      items: "li:not([data-id=title])",
       connectWith: ".sortable",
       receive: function(e, ui) {
         var receiver = $(e.target).data('col');

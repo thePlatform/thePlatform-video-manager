@@ -293,7 +293,8 @@ class ThePlatform_API {
 			'filename' => $_POST['filename'],
 			'fields' => $_POST['fields'],
 			'profile' => $_POST['profile'],
-			'custom_fields' => $_POST['custom_fields']
+			'custom_fields' => $_POST['custom_fields'],
+			'server_id' => $_POST['server_id']
 		);
 
 		$token = $this->mpx_signin();
@@ -304,9 +305,32 @@ class ThePlatform_API {
 		$media_id = $response['id'];
 
 		$format = $this->get_format( $args['filetype'] );
+		$formatTitle = (string) $format->title;
 
-		$upload_server_id = $this->preferences['mpx_server_id'];
+		$upload_server_id = $args['server_id'];
 
+		if ($upload_server_id === 'DEFAULT_SERVER') {
+			$accountSettings = $this->get_account_settings();
+			$defaultServers = $accountSettings['entries'][0]['defaultServers'];	
+			$defaultServerURN = "urn:theplatform:format:default";
+
+
+			if ( array_key_exists( $formatTitle, $defaultServers ) ) {				
+				$upload_server_id = $defaultServers[ $formatTitle ];				
+			} else if ( array_key_exists( $defaultServerURN, $defaultServers ) ) {
+				$upload_server_id = $defaultServers[ $defaultServerURN ];	
+			} else {				
+				$servers = $this->get_servers( array('formats'), '&byFormats=' . $formatTitle );
+				if ( array_key_exists( 0, $servers ) ) {
+					$upload_server_id = $servers[0]["id"];	
+				} else {
+					die("Unable to determine a proper Server");
+				}
+				
+			}
+			
+		}
+		
 		$upload_server_base_url = $this->get_upload_urls( $upload_server_id, $token );
 
 		if ( is_wp_error( $upload_server_base_url ) ) {
@@ -320,7 +344,7 @@ class ThePlatform_API {
 			'account_id' => $this->preferences['mpx_account_id'],
 			'server_id' => $upload_server_id,
 			'upload_base' => $upload_server_base_url,
-			'format' => (string) $format->title,
+			'format' => $formatTitle,
 			'contentType' => (string) $format->defaultContentType,
 			'success' => 'true'
 		);
@@ -497,11 +521,11 @@ class ThePlatform_API {
 	 * Query MPX for available servers
 	 *
 	 * @param array $fields Optional set of fields to request from the data service
-	 * @param array $query Query fields to append to the request URL
+	 * @param String $query Query fields to append to the request URL
 	 * @param array $sort Sort parameters to pass to the data service
 	 * @return array The Media data service response
 	 */
-	function get_servers( $fields = array(), $query = array(), $sort = array() ) {
+	function get_servers( $fields = array(), $query = "", $sort = array() ) {
 		$default_fields = array( 'id', 'title', 'description', 'added' );
 
 		$fields = array_merge( $default_fields, $fields );
@@ -517,6 +541,10 @@ class ThePlatform_API {
 
 		if ( !empty( $this->preferences['mpx_account_id'] ) ) {
 			$url .= '&account=' . urlencode( $this->preferences['mpx_account_id'] );
+		}
+
+		if ( !empty( $query ) ) {
+			$url .= $query;
 		}
 
 		$response = ThePlatform_API_HTTP::get( $url );
