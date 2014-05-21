@@ -34,61 +34,61 @@ class ThePlatform_Endpoints {
 		// Set the base URLs based on the region
 		switch($region) {
 			case 'us':
-				define( 'TP_API_ADMIN_IDENTITY_BASE_URL', 'https://identity.auth.theplatform.com/idm/web/Authentication/' );
-				define( 'TP_API_MEDIA_DATA_BASE_URL', 'http://data.media.theplatform.com/media/data/' );
-				define( 'TP_API_PLAYER_BASE_URL', 'http://data.player.theplatform.com/player/data/' );
-				define( 'TP_API_ACCESS_BASE_URL', 'http://access.auth.theplatform.com/' );
-				define( 'TP_API_WORKFLOW_BASE_URL', 'http://data.workflow.theplatform.com/workflow/data/' );
-				define( 'TP_API_PUBLISH_BASE_URL', 'http://publish.theplatform.com/web/Publish/publish?schema=1.2&form=json' );
-				define( 'TP_API_PUBLISH_DATA_BASE_URL', 'http://data.publish.theplatform.com/publish/data/' );
-				define( 'TP_API_FMS_BASE_URL', 'http://fms.theplatform.com/web/FileManagement/' );
-				define( 'TP_API_PLAYER_EMBED_BASE_URL', '//player.theplatform.com/p/' );
+				define( 'TP_API_ADMIN_IDENTITY_BASE_URL', 	'https://identity.auth.theplatform.com/idm/web/Authentication/' );
+				define( 'TP_API_MEDIA_DATA_BASE_URL', 		'http://data.media.theplatform.com/media/data/' );
+				define( 'TP_API_PLAYER_BASE_URL', 			'http://data.player.theplatform.com/player/data/' );
+				define( 'TP_API_ACCESS_BASE_URL', 			'http://access.auth.theplatform.com/' );
+				define( 'TP_API_WORKFLOW_BASE_URL', 		'http://data.workflow.theplatform.com/workflow/data/' );
+				define( 'TP_API_PUBLISH_BASE_URL', 			'http://publish.theplatform.com/web/Publish/publish?schema=1.2&form=json' );
+				define( 'TP_API_PUBLISH_DATA_BASE_URL', 	'http://data.publish.theplatform.com/publish/data/' );
+				define( 'TP_API_FMS_BASE_URL', 				'http://fms.theplatform.com/web/FileManagement/' );
+				define( 'TP_API_PLAYER_EMBED_BASE_URL', 	'//player.theplatform.com/p/' );
 				break;
 			case 'eu':
-				define( 'TP_API_ADMIN_IDENTITY_BASE_URL', 'https://identity.auth.theplatform.eu/idm/web/Authentication/' );
-				define( 'TP_API_MEDIA_DATA_BASE_URL', 'http://data.media.theplatform.eu/media/data/' );
-				define( 'TP_API_PLAYER_BASE_URL', 'http://data.player.theplatform.eu/player/data/' );
-				define( 'TP_API_ACCESS_BASE_URL', 'http://access.auth.theplatform.eu/' );
-				define( 'TP_API_WORKFLOW_BASE_URL', 'http://data.workflow.theplatform.eu/workflow/data/' );
-				define( 'TP_API_PUBLISH_BASE_URL', 'http://publish.theplatform.eu/web/Publish/publish?schema=1.2&form=json' );
-				define( 'TP_API_PUBLISH_DATA_BASE_URL', 'http://data.publish.theplatform.eu/publish/data/' );
-				define( 'TP_API_FMS_BASE_URL', 'http://fms.theplatform.eu/web/FileManagement/' );
-				define( 'TP_API_PLAYER_EMBED_BASE_URL', '//player.theplatform.eu/p/' );
+				define( 'TP_API_ADMIN_IDENTITY_BASE_URL', 	'https://identity.auth.theplatform.eu/idm/web/Authentication/' );
+				define( 'TP_API_MEDIA_DATA_BASE_URL', 		'http://data.media.theplatform.eu/media/data/' );
+				define( 'TP_API_PLAYER_BASE_URL', 			'http://data.player.theplatform.eu/player/data/' );
+				define( 'TP_API_ACCESS_BASE_URL', 			'http://access.auth.theplatform.eu/' );
+				define( 'TP_API_WORKFLOW_BASE_URL', 		'http://data.workflow.theplatform.eu/workflow/data/' );
+				define( 'TP_API_PUBLISH_BASE_URL', 			'http://publish.theplatform.eu/web/Publish/publish?schema=1.2&form=json' );
+				define( 'TP_API_PUBLISH_DATA_BASE_URL', 	'http://data.publish.theplatform.eu/publish/data/' );
+				define( 'TP_API_FMS_BASE_URL', 				'http://fms.theplatform.eu/web/FileManagement/' );
+				define( 'TP_API_PLAYER_EMBED_BASE_URL', 	'//player.theplatform.eu/p/' );
 				break;
 		}
 
 		// XML File containing format definitions
-		define( 'TP_API_FORMATS_XML_URL', 'http://web.theplatform.com/descriptors/enums/format.xml' );
+		define( 'TP_API_FORMATS_XML_URL', 					'http://web.theplatform.com/descriptors/enums/format.xml' );
 
 		// Identity Management Service URLs
-		define( 'TP_API_SIGNIN_URL', TP_API_ADMIN_IDENTITY_BASE_URL . 'signIn?schema=1.0&form=json&_duration=28800000&_idleTimeout=3600000' );
-		define( 'TP_API_SIGNOUT_URL', TP_API_ADMIN_IDENTITY_BASE_URL . 'signOut?schema=1.0&form=json&_token=' );
+		define( 'TP_API_SIGNIN_URL', 						TP_API_ADMIN_IDENTITY_BASE_URL . 'signIn?schema=1.0&form=json&_duration=28800000&_idleTimeout=3600000' );
+		define( 'TP_API_SIGNOUT_URL', 						TP_API_ADMIN_IDENTITY_BASE_URL . 'signOut?schema=1.0&form=json&_token=' );
 
 		// Media Data Service URLs
-		define( 'TP_API_MEDIA_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Media?schema=1.5&form=cjson' );
-		define( 'TP_API_MEDIA_FIELD_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Media/Field?schema=1.3&form=cjson' );
-		define( 'TP_API_MEDIA_SERVER_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Server?schema=1.0&form=cjson' );
-		define( 'TP_API_MEDIA_RELEASE_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Release?schema=1.5.0&form=cjson' );
-		define( 'TP_API_MEDIA_CATEGORY_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Category?schema=1.6.0&form=cjson' );
-		define( 'TP_API_MEDIA_ACCOUNTSETTINGS_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'AccountSettings?schema=1.6.0&form=cjson' );
+		define( 'TP_API_MEDIA_ENDPOINT',					TP_API_MEDIA_DATA_BASE_URL . 'Media?schema=1.5&form=cjson' );
+		define( 'TP_API_MEDIA_FIELD_ENDPOINT', 				TP_API_MEDIA_DATA_BASE_URL . 'Media/Field?schema=1.3&form=cjson' );
+		define( 'TP_API_MEDIA_SERVER_ENDPOINT', 			TP_API_MEDIA_DATA_BASE_URL . 'Server?schema=1.0&form=cjson' );
+		define( 'TP_API_MEDIA_RELEASE_ENDPOINT', 			TP_API_MEDIA_DATA_BASE_URL . 'Release?schema=1.5.0&form=cjson' );
+		define( 'TP_API_MEDIA_CATEGORY_ENDPOINT', 			TP_API_MEDIA_DATA_BASE_URL . 'Category?schema=1.6.0&form=cjson' );
+		define( 'TP_API_MEDIA_ACCOUNTSETTINGS_ENDPOINT', 	TP_API_MEDIA_DATA_BASE_URL . 'AccountSettings?schema=1.6.0&form=cjson' );
 
 		// Player Data Service URLs
-		define( 'TP_API_PLAYER_PLAYER_ENDPOINT', TP_API_PLAYER_BASE_URL . 'Player?schema=1.3.0&form=cjson' );
+		define( 'TP_API_PLAYER_PLAYER_ENDPOINT', 			TP_API_PLAYER_BASE_URL . 'Player?schema=1.3.0&form=cjson' );
 
 		// Access Data Service URLs
-		define( 'TP_API_ACCESS_ACCOUNT_ENDPOINT', TP_API_ACCESS_BASE_URL . 'data/Account?schema=1.3.0&form=cjson' );
+		define( 'TP_API_ACCESS_ACCOUNT_ENDPOINT', 			TP_API_ACCESS_BASE_URL . 'data/Account?schema=1.3.0&form=cjson' );
 
 		// Authorization Service URLs
-		define( 'TP_API_ACCESS_AUTH_ENDPOINT', TP_API_ACCESS_BASE_URL . 'web/Authorization/authorize?schema=1.3&form=json' );
+		define( 'TP_API_ACCESS_AUTH_ENDPOINT', 				TP_API_ACCESS_BASE_URL . 'web/Authorization/authorize?schema=1.3&form=json' );
 
 		// Workflow Data Service URLs
-		define( 'TP_API_WORKFLOW_PROFILE_RESULT_ENDPOINT', TP_API_WORKFLOW_BASE_URL . 'ProfileResult?schema=1.0&form=cjson' );
+		define( 'TP_API_WORKFLOW_PROFILE_RESULT_ENDPOINT', 	TP_API_WORKFLOW_BASE_URL . 'ProfileResult?schema=1.0&form=cjson' );
 
 		// Publish Data Service URLs
-		define( 'TP_API_PUBLISH_PROFILE_ENDPOINT', TP_API_PUBLISH_DATA_BASE_URL . 'PublishProfile?schema=1.5.0&form=json' );
+		define( 'TP_API_PUBLISH_PROFILE_ENDPOINT', 			TP_API_PUBLISH_DATA_BASE_URL . 'PublishProfile?schema=1.5.0&form=json' );
 
 		// FMS URLs
-		define( 'TP_API_FMS_GET_UPLOAD_URLS_ENDPOINT', TP_API_FMS_BASE_URL . 'getUploadUrls?schema=1.4&form=json' );
+		define( 'TP_API_FMS_GET_UPLOAD_URLS_ENDPOINT', 		TP_API_FMS_BASE_URL . 'getUploadUrls?schema=1.4&form=json' );
 	}
 
 	private function getRegion($preference_key) {

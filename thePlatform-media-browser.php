@@ -89,7 +89,7 @@ wp_print_styles( 'wp-jquery-ui-dialog' );
 			<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
 				<div class="row">
 					<div class="navbar-header" style="margin-left: 15px">
-						<a class="navbar-brand" href="#"><img height="25px" width="25px" src="<?php echo plugins_url( '/images/embed_button.png', __FILE__ ); ?>"> thePlatform</a>
+						<a class="navbar-brand" href="#"><img height="25px" width="25px" src="<?php echo esc_url( plugins_url( '/images/embed_button.png', __FILE__ ) ); ?>"> thePlatform</a>
 					</div>            
 					<form class="navbar-form navbar-left" role="search" onsubmit="return false;"><!--TODO: Add seach functionality on Enter -->
 						<div class="form-group">
@@ -122,7 +122,7 @@ wp_print_styles( 'wp-jquery-ui-dialog' );
 						writePlayers( $players, $preferences );
 					}
 					?>    
-					<img id="load-overlay" src="<?php echo plugins_url( '/images/loading.gif', __FILE__ ) ?>" class="loadimg navbar-right">
+					<img id="load-overlay" src="<?php echo esc_url( plugins_url( '/images/loading.gif', __FILE__ ) ) ?>" class="loadimg navbar-right">
 				</div>           
 			</nav>
 
@@ -191,8 +191,8 @@ wp_print_styles( 'wp-jquery-ui-dialog' );
 									tp:scrubberColor="0x111111"
 									tp:scrubTrackColor="0x111111"
 									tp:pageBackgroundColor="0xcccccc"
-									tp:plugin1="type=content|url=http://pdk.theplatform.com/current/pdk/swf/akamaiHD.swf|fallback=switch%3Dhttp|bufferProfile=livestable|priority=1|videoLayer=akamaihd"
-									tp:plugin2="type=content|url=http://pdk.theplatform.com/current/pdk/js/plugins/akamaiHD.js|fallback=switch%3Dhttp|bufferProfile=livestable|priority=1|videoLayer=akamaihd">
+									tp:plugin1="type=content|url=//pdk.theplatform.com/current/pdk/swf/akamaiHD.swf|fallback=switch%3Dhttp|bufferProfile=livestable|priority=1|videoLayer=akamaihd"
+									tp:plugin2="type=content|url=//pdk.theplatform.com/current/pdk/js/plugins/akamaiHD.js|fallback=switch%3Dhttp|bufferProfile=livestable|priority=1|videoLayer=akamaihd">
 									<noscript class="tpError">To view this site, you need to have JavaScript enabled in your browser, and either the Flash Plugin or an HTML5-Video enabled browser. Download <a href="http://get.adobe.com/flashplayer/" target="_black">the latest Flash player</a> and try again.</noscript>
 								</div>
 							</div>

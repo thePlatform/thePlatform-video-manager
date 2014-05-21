@@ -185,9 +185,15 @@ class ThePlatform_Plugin {
 			die( "Post ID not found" );
 		}
 
-		$post_ID = $_POST['id'];
+		$post_ID = intval ( $_POST['id'] );
+
+		if ( !$post_ID) {
+			die("Illegal Post ID");
+		}
 
 		$url = isset( $_POST['img'] ) ? $_POST['img'] : '';
+
+		$url = esc_url_raw( $url );
 
 		$thumbnail_id = $this->set_thumbnail( $url, $post_ID );
 
@@ -235,18 +241,19 @@ class ThePlatform_Plugin {
 			$this->preferences = get_option( 'theplatform_preferences_options' );
 		}
 
-		list( $width, $height, $media, $player, $mute, $autoplay, $loop, $tag, $params ) = array_values( shortcode_atts( array(
-			'width' => '',
-			'height' => '',
-			'media' => '',
-			'player' => '',
-			'mute' => '',
-			'autoplay' => '',
-			'loop' => '',
-			'tag' => '',
-			'params' => ''
-						), $atts
-		) );
+		list( $width, $height, $media, $player, $mute, $autoplay, $loop, $tag, $params ) = 
+			array_values( shortcode_atts( array(
+				'width' => '',
+				'height' => '',
+				'media' => '',
+				'player' => '',
+				'mute' => '',
+				'autoplay' => '',
+				'loop' => '',
+				'tag' => '',
+				'params' => '' ), $atts
+			) 
+		);
 
 		if ( empty( $width ) ) {
 			$width = $this->preferences['default_width'];
@@ -367,7 +374,6 @@ class ThePlatform_Plugin {
 			return '<iframe src="' . esc_url_raw( $url ) . '" height=' . esc_attr( $player_height ) . ' width=' . esc_attr( $player_width ) . ' frameBorder="0" seamless="seamless" allowFullScreen></iframe>';
 		}
 	}
-
 }
 
 // Instantiate thePlatform plugin on WordPress init
