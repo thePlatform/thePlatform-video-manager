@@ -84,14 +84,14 @@ class ThePlatform_Plugin {
 	 * Registers javascripts and css
 	 */
 	function register_scripts() {
-		wp_register_script( 'pdk_external_controller', "http://pdk.theplatform.com/pdk/tpPdkController.js" );
+		wp_register_script( 'pdk', "//pdk.theplatform.com/pdk/tpPdk.js" );
 		wp_register_script( 'holder', plugins_url( '/js/holder.js', __FILE__ ) );
 		wp_register_script( 'bootstrap_js', plugins_url( '/js/bootstrap.min.js', __FILE__ ), array( 'jquery' ) );
 		wp_register_script( 'theplatform_js', plugins_url( '/js/theplatform.js', __FILE__ ), array( 'jquery' ) );
 		wp_register_script( 'infiniscroll_js', plugins_url( '/js/jquery.infinitescroll.min.js', __FILE__ ), array( 'jquery' ) );
 		wp_register_script( 'mpxhelper_js', plugins_url( '/js/mpxHelper.js', __FILE__ ), array( 'jquery' ) );
 		wp_register_script( 'theplatform_uploader_js', plugins_url( '/js/theplatform-uploader.js', __FILE__ ), array( 'jquery', 'theplatform_js' ) );
-		wp_register_script( 'mediaview_js', plugins_url( '/js/mediaview.js', __FILE__ ), array( 'jquery', 'holder', 'mpxhelper_js', 'theplatform_js', 'pdk_external_controller', 'infiniscroll_js', 'bootstrap_js' ) );
+		wp_register_script( 'mediaview_js', plugins_url( '/js/mediaview.js', __FILE__ ), array( 'jquery', 'holder', 'mpxhelper_js', 'theplatform_js', 'pdk', 'infiniscroll_js', 'bootstrap_js' ) );
 		wp_register_script( 'field_views', plugins_url( '/js/fieldViews.js', __FILE__ ), array( 'jquery' ) );
 
 		wp_localize_script( 'theplatform_js', 'theplatform', array(

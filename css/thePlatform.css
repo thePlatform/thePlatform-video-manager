@@ -149,6 +149,24 @@ header {
     width: 320px;
 }
 
+#player {
+    position: absolute;    
+    width: 320px;
+    height: 180px;    
+}
+
+#modal-player-placeholder {
+    position: absolute;    
+    width: 320px;
+    height: 180px;
+}
+
+#modal-player {
+    position: relative;    
+    width: 320px;
+    height: 180px;
+}
+
 #bm-panel {
     margin-bottom:150px;
 }

@@ -20,8 +20,8 @@ jQuery( document ).ready( function() {
 	var queryParams = mpxHelper.getParameters();
 	tpHelper.selectedCategory = '';
 	tpHelper.feedEndRange = 0;
-	tpHelper.queryString = ''
-	$pdk.bind( "player" );
+	tpHelper.queryString = ''	
+	$pdk.initialize();
 	jQuery( '#load-overlay' ).hide();
 	mpxHelper.getCategoryList( buildCategoryAccordion );
 
@@ -181,11 +181,13 @@ jQuery( document ).ready( function() {
 		tpHelper.mediaId = jQuery( this ).data( 'id' );
 		tpHelper.selectedThumb = jQuery( this ).data( 'media' )['defaultThumbnailUrl'];
 		$pdk.controller.resetPlayer();
-		if ( tpHelper.currentRelease !== "undefined" ) {
+		if ( tpHelper.currentRelease !== undefined ) {
 			jQuery( '#modal-player-placeholder' ).hide();
-			$pdk.controller.loadReleaseURL( "http://link.theplatform.com/s/" + tpHelper.accountPid + "/" + tpHelper.currentRelease, true );
+			jQuery( '.tpPlayer' ).css('visibility','visible');
+			$pdk.controller.loadReleaseURL( "//link.theplatform.com/s/" + tpHelper.accountPid + "/" + tpHelper.currentRelease, true );
 		}
 		else {
+			jQuery( '.tpPlayer' ).css('visibility','hidden');
 			jQuery( '#modal-player-placeholder' ).show()
 		}
 	} );
