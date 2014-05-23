@@ -59,7 +59,7 @@ class ThePlatform_Plugin {
 		require_once(dirname( __FILE__ ) . '/thePlatform-helper.php');
 		require_once(dirname( __FILE__ ) . '/thePlatform-proxy.php');
 
-		new ThePlatform_Endpoints('theplatform_preferences_options');
+		new ThePlatform_Endpoints( 'theplatform_preferences_options' );
 		$this->tp_api = new ThePlatform_API;
 
 		$this->plugin_base_dir = plugin_dir_path( __FILE__ );
@@ -185,10 +185,10 @@ class ThePlatform_Plugin {
 			die( "Post ID not found" );
 		}
 
-		$post_ID = intval ( $_POST['id'] );
+		$post_ID = intval( $_POST['id'] );
 
-		if ( !$post_ID) {
-			die("Illegal Post ID");
+		if ( !$post_ID ) {
+			die( "Illegal Post ID" );
 		}
 
 		$url = isset( $_POST['img'] ) ? $_POST['img'] : '';
@@ -237,22 +237,21 @@ class ThePlatform_Plugin {
 			require_once( dirname( __FILE__ ) . '/thePlatform-API.php' );
 		}
 
-		if ( !isset($this->preferences) ) {
+		if ( !isset( $this->preferences ) ) {
 			$this->preferences = get_option( 'theplatform_preferences_options' );
 		}
 
-		list( $width, $height, $media, $player, $mute, $autoplay, $loop, $tag, $params ) = 
-			array_values( shortcode_atts( array(
-				'width' => '',
-				'height' => '',
-				'media' => '',
-				'player' => '',
-				'mute' => '',
-				'autoplay' => '',
-				'loop' => '',
-				'tag' => '',
-				'params' => '' ), $atts
-			) 
+		list( $width, $height, $media, $player, $mute, $autoplay, $loop, $tag, $params ) = array_values( shortcode_atts( array(
+			'width' => '',
+			'height' => '',
+			'media' => '',
+			'player' => '',
+			'mute' => '',
+			'autoplay' => '',
+			'loop' => '',
+			'tag' => '',
+			'params' => '' ), $atts
+				)
 		);
 
 		if ( empty( $width ) ) {
@@ -306,11 +305,11 @@ class ThePlatform_Plugin {
 			$accountPID = $this->preferences['mpx_account_pid'];
 			$output = $this->get_embed_shortcode( $accountPID, $media, $player, $width, $height, $autoplay, $tag, $loop, $mute, $params );
 			$output = apply_filters( 'tp_embed_code', $output );
-		} else {			
-			switch ($this->preferences['rss_embed_type']) {
+		} else {
+			switch ( $this->preferences['rss_embed_type'] ) {
 				case 'article':
 					$output = '[Sorry. This video cannot be displayed in this feed. <a href="' . get_permalink() . '">View your video here.]</a>';
-					break;				
+					break;
 				case 'iframe':
 					$output = $this->get_embed_shortcode( $accountPID, $media, $player, $width, $height, $autoplay, 'iframe', $loop, $mute, $params );
 					break;
@@ -321,7 +320,7 @@ class ThePlatform_Plugin {
 					$output = '[Sorry. This video cannot be displayed in this feed. <a href="' . get_permalink() . '">View your video here.]</a>';
 					break;
 			}
-			$output	= apply_filters( 'tp_rss_embed_code', $output );
+			$output = apply_filters( 'tp_rss_embed_code', $output );
 		}
 
 
@@ -374,6 +373,7 @@ class ThePlatform_Plugin {
 			return '<iframe src="' . esc_url_raw( $url ) . '" height=' . esc_attr( $player_height ) . ' width=' . esc_attr( $player_width ) . ' frameBorder="0" seamless="seamless" allowFullScreen></iframe>';
 		}
 	}
+
 }
 
 // Instantiate thePlatform plugin on WordPress init

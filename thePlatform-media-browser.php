@@ -148,51 +148,51 @@ wp_print_styles( 'wp-jquery-ui-dialog' );
 							<div id="modal-player" class="marketplacePlayer">
 								<img id="modal-player-placeholder" data-src="holder.js/320x180/text:No Preview Available" src=""><!-- holder.js/128x72/text:No Thumbnail" -->
 								<div class="tpPlayer" id="player"
-									tp:allowFullScreen="true"
-									tp:skinUrl="//pdk.theplatform.com/current/pdk/skins/glass/glass.json"
-									tp:layout="&lt;controls&gt;
-						&lt;region id=&quot;tpAdCountdownRegion&quot;&gt;
-							&lt;row id=&quot;tpAdCountdownContainer&quot;&gt;
-								&lt;control id=&quot;tpAdCountdown&quot;/&gt;
-							&lt;/row&gt;
-						&lt;/region&gt;
-						&lt;region id=&quot;tpBottomFloatRegion&quot; alpha=&quot;85&quot;&gt;
-							&lt;row height=&quot;10&quot;&gt;
-								&lt;group percentWidth=&quot;100&quot; direction=&quot;horizontal&quot; verticalAlign=&quot;middle&quot;&gt;
-									&lt;control id=&quot;tpScrubber&quot;/&gt;				
-								&lt;/group&gt;
-							&lt;/row&gt;
-							&lt;row&gt;
-								&lt;control id=&quot;tpPlay&quot;/&gt;								
-								&lt;spacer/&gt;
-									&lt;control id=&quot;tpCurrentTime&quot;/&gt;
-									&lt;control id=&quot;tpTimeDivider&quot;/&gt;
-									&lt;control id=&quot;tpTotalTime&quot;/&gt;
-									&lt;spacer percentWidth=&quot;100&quot;/&gt;
-								&lt;control id=&quot;tpVolumeSlider&quot;/&gt;
-								&lt;control id=&quot;tpFullScreen&quot;/&gt;			
-							&lt;/row&gt;
-						&lt;/region&gt;
-					&lt;/controls&gt;"									
-									tp:showFullTime="true"
-									tp:controlBackgroundColor="0xbbbbbb"
-									tp:backgroundColor="0xbbbbbb"
-									tp:controlFrameColor="0x666666"
-									tp:frameColor="0x666666"
-									tp:textBackgroundColor="0xcccccc"
-									tp:controlHighlightColor="0x666666"
-									tp:controlHoverColor="0x444444"
-									tp:loadProgressColor="0x111111"
-									tp:controlSelectedColor="0x48821d"
-									tp:playProgressColor="0x48821d"
-									tp:scrubberFrameColor="0x48821d"
-									tp:controlColor="0x111111"
-									tp:textColor="0x111111"
-									tp:scrubberColor="0x111111"
-									tp:scrubTrackColor="0x111111"
-									tp:pageBackgroundColor="0xcccccc"
-									tp:plugin1="type=content|url=//pdk.theplatform.com/current/pdk/swf/akamaiHD.swf|fallback=switch%3Dhttp|bufferProfile=livestable|priority=1|videoLayer=akamaihd"
-									tp:plugin2="type=content|url=//pdk.theplatform.com/current/pdk/js/plugins/akamaiHD.js|fallback=switch%3Dhttp|bufferProfile=livestable|priority=1|videoLayer=akamaihd">
+									 tp:allowFullScreen="true"
+									 tp:skinUrl="//pdk.theplatform.com/current/pdk/skins/glass/glass.json"
+									 tp:layout="&lt;controls&gt;
+									 &lt;region id=&quot;tpAdCountdownRegion&quot;&gt;
+									 &lt;row id=&quot;tpAdCountdownContainer&quot;&gt;
+									 &lt;control id=&quot;tpAdCountdown&quot;/&gt;
+									 &lt;/row&gt;
+									 &lt;/region&gt;
+									 &lt;region id=&quot;tpBottomFloatRegion&quot; alpha=&quot;85&quot;&gt;
+									 &lt;row height=&quot;10&quot;&gt;
+									 &lt;group percentWidth=&quot;100&quot; direction=&quot;horizontal&quot; verticalAlign=&quot;middle&quot;&gt;
+									 &lt;control id=&quot;tpScrubber&quot;/&gt;				
+									 &lt;/group&gt;
+									 &lt;/row&gt;
+									 &lt;row&gt;
+									 &lt;control id=&quot;tpPlay&quot;/&gt;								
+									 &lt;spacer/&gt;
+									 &lt;control id=&quot;tpCurrentTime&quot;/&gt;
+									 &lt;control id=&quot;tpTimeDivider&quot;/&gt;
+									 &lt;control id=&quot;tpTotalTime&quot;/&gt;
+									 &lt;spacer percentWidth=&quot;100&quot;/&gt;
+									 &lt;control id=&quot;tpVolumeSlider&quot;/&gt;
+									 &lt;control id=&quot;tpFullScreen&quot;/&gt;			
+									 &lt;/row&gt;
+									 &lt;/region&gt;
+									 &lt;/controls&gt;"									
+									 tp:showFullTime="true"
+									 tp:controlBackgroundColor="0xbbbbbb"
+									 tp:backgroundColor="0xbbbbbb"
+									 tp:controlFrameColor="0x666666"
+									 tp:frameColor="0x666666"
+									 tp:textBackgroundColor="0xcccccc"
+									 tp:controlHighlightColor="0x666666"
+									 tp:controlHoverColor="0x444444"
+									 tp:loadProgressColor="0x111111"
+									 tp:controlSelectedColor="0x48821d"
+									 tp:playProgressColor="0x48821d"
+									 tp:scrubberFrameColor="0x48821d"
+									 tp:controlColor="0x111111"
+									 tp:textColor="0x111111"
+									 tp:scrubberColor="0x111111"
+									 tp:scrubTrackColor="0x111111"
+									 tp:pageBackgroundColor="0xcccccc"
+									 tp:plugin1="type=content|url=//pdk.theplatform.com/current/pdk/swf/akamaiHD.swf|fallback=switch%3Dhttp|bufferProfile=livestable|priority=1|videoLayer=akamaihd"
+									 tp:plugin2="type=content|url=//pdk.theplatform.com/current/pdk/js/plugins/akamaiHD.js|fallback=switch%3Dhttp|bufferProfile=livestable|priority=1|videoLayer=akamaihd">
 									<noscript class="tpError">To view this site, you need to have JavaScript enabled in your browser, and either the Flash Plugin or an HTML5-Video enabled browser. Download <a href="http://get.adobe.com/flashplayer/" target="_black">the latest Flash player</a> and try again.</noscript>
 								</div>
 							</div>

@@ -27,21 +27,21 @@ $upload_options = get_option( 'theplatform_upload_options' );
 $metadata_options = get_option( 'theplatform_metadata_options' );
 
 $dataTypeDesc = array(
-  'Integer' => 'Integer',
-  'Decimal' => 'Decimal',
-  'String' => 'String',
-  'DateTime' => 'MM/DD/YYYY HH:MM:SS',
-  'Date' => 'YYYY-MM-DD',
-  'Time' => '24 hr time (20:00)',
-  'Link' => 'title: Link Title, href: http://www.wordpress.com',
-  'Duration' => 'HH:MM:SS',
-  'Boolean' => 'true, false, or empty',
-  'URI' => 'http://www.wordpress.com',
+	'Integer' => 'Integer',
+	'Decimal' => 'Decimal',
+	'String' => 'String',
+	'DateTime' => 'MM/DD/YYYY HH:MM:SS',
+	'Date' => 'YYYY-MM-DD',
+	'Time' => '24 hr time (20:00)',
+	'Link' => 'title: Link Title, href: http://www.wordpress.com',
+	'Duration' => 'HH:MM:SS',
+	'Boolean' => 'true, false, or empty',
+	'URI' => 'http://www.wordpress.com',
 );
 
 $structureDesc = array(
-  'Map' => 'Map (field1: value1, field2: value2)',
-  'List' => 'List (value1, value2)',
+	'Map' => 'Map (field1: value1, field2: value2)',
+	'List' => 'List (value1, value2)',
 );
 
 if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
@@ -66,7 +66,7 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 	$upload_options = get_option( 'theplatform_upload_options' );
 	$html = '';
 
-	if ( strlen($preferences['user_id_customfield']) && $preferences['user_id_customfield'] !== '(None)' ) {
+	if ( strlen( $preferences['user_id_customfield'] ) && $preferences['user_id_customfield'] !== '(None)' ) {
 		echo '<input type="hidden" name="' . esc_attr( $preferences['user_id_customfield'] ) . '" class="custom_field" value="' . wp_get_current_user()->ID . '" />';
 	}
 
@@ -89,21 +89,21 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 				$catHtml .= '</div>';
 				$catHtml .= '</div>';
 			} else {
-				$default_value = isset($media[$upload_field]) ? esc_attr( $media[$upload_field] ) : '';
+				$default_value = isset( $media[$upload_field] ) ? esc_attr( $media[$upload_field] ) : '';
 				$html = '';
-        if($col % 2 == 0) {
-          $html .= '<div class="row">';
-        }
+				if ( $col % 2 == 0 ) {
+					$html .= '<div class="row">';
+				}
 				$html .= '<div class="col-xs-5">';
 				$html .= '<label class="control-label" for="theplatform_upload_' . esc_attr( $upload_field ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
 				$html .= '<input name="' . esc_attr( $upload_field ) . '" id="theplatform_upload_' . esc_attr( $upload_field ) . '" class="form-control upload_field" type="text" value="' . $default_value . '"/>'; //upload_field
 				$html .= '</div>';
-        if($col % 2 !== 0) {
-          $html .= '</div>';
-        }
+				if ( $col % 2 !== 0 ) {
+					$html .= '</div>';
+				}
 
 				echo $html;
-        $col++;
+				$col++;
 			}
 		}
 	}
@@ -137,27 +137,27 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 
 		if ( $val == 'write' ) {
 			$field_name = $field_prefix . '$' . $field_title;
-			$field_value = isset($media[$field_prefix . '$' . $field_title]) ? $media[$field_prefix . '$' . $field_title] : '';
+			$field_value = isset( $media[$field_prefix . '$' . $field_title] ) ? $media[$field_prefix . '$' . $field_title] : '';
 
 			$html = '';
-      if($col % 2 == 0) {
-        $html .= '<div class="row">';
-      }
+			if ( $col % 2 == 0 ) {
+				$html .= '<div class="row">';
+			}
 			$html .= '<div class="col-xs-5">';
 			$html .= '<label class="control-label" for="theplatform_upload_' . esc_attr( $field_name ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
 			$html .= '<input name="' . esc_attr( $field_title ) . '" id="theplatform_upload_' . esc_attr( $field_name ) . '" class="form-control custom_field" type="text" value="' . esc_attr( $field_value ) . '" data-type="' . esc_attr( $field_type ) . '" data-structure="' . esc_attr( $field_structure ) . '" data-name="' . esc_attr( strtolower( $field_title ) ) . '" data-prefix="' . esc_attr( strtolower( $field_prefix ) ) . '" data-namespace="' . esc_attr( strtolower( $field_namespace ) ) . '"/>';
-      if(isset($structureDesc[$field_structure]))
-        $html .= '<div class="structureDesc"><strong>Structure</strong> '.$structureDesc[$field_structure].'</div>';
-      if(isset($dataTypeDesc[$field_type]))
-        $html .= '<div class="dataTypeDesc"><strong>Format:</strong> '.$dataTypeDesc[$field_type].'</div>';
-      $html .= '<br />';
+			if ( isset( $structureDesc[$field_structure] ) )
+				$html .= '<div class="structureDesc"><strong>Structure</strong> ' . $structureDesc[$field_structure] . '</div>';
+			if ( isset( $dataTypeDesc[$field_type] ) )
+				$html .= '<div class="dataTypeDesc"><strong>Format:</strong> ' . $dataTypeDesc[$field_type] . '</div>';
+			$html .= '<br />';
 			$html .= '</div>';
-      if($col % 2 !== 0) {
-        $html .= '</div>';
-      }
+			if ( $col % 2 !== 0 ) {
+				$html .= '</div>';
+			}
 			echo $html;
 		}
-    $col++;
+		$col++;
 	}
 
 	if ( !empty( $catHtml ) ) {
@@ -185,15 +185,15 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 		<div class="row">
 			<div class="col-xs-3">				
 				<?php
-					$servers = $tp_api->get_servers();
-					$html = '<label class="control-label" for="theplatform_server">Server</label>';
-					$html .= '<select id="theplatform_server" name="theplatform_server" class="form-control server_id">';
-					$html .= '<option value="DEFAULT_SERVER"' . selected( $preferences['mpx_server_id'], "DEFAULT_SERVER", false ) . '>Default Server</option>';
-					foreach ( $servers as $entry ) {
-						$html .= '<option value="' . esc_attr( $entry['id'] ) . '"' . selected( $entry['id'], $preferences['mpx_server_id'], false ) . '>' . esc_html( $entry['title'] ) . '</option>';
-					}
-					$html .= '</select>';
-					echo $html;
+				$servers = $tp_api->get_servers();
+				$html = '<label class="control-label" for="theplatform_server">Server</label>';
+				$html .= '<select id="theplatform_server" name="theplatform_server" class="form-control server_id">';
+				$html .= '<option value="DEFAULT_SERVER"' . selected( $preferences['mpx_server_id'], "DEFAULT_SERVER", false ) . '>Default Server</option>';
+				foreach ( $servers as $entry ) {
+					$html .= '<option value="' . esc_attr( $entry['id'] ) . '"' . selected( $entry['id'], $preferences['mpx_server_id'], false ) . '>' . esc_html( $entry['title'] ) . '</option>';
+				}
+				$html .= '</select>';
+				echo $html;
 				?>
 			</div>
 			<div class="col-xs-3">

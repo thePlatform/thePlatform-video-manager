@@ -23,7 +23,7 @@ class ThePlatform_Options {
 	private $upload_options_key = 'theplatform_upload_options';
 	private $account_is_verified;
 	private $region_is_verified;
-	private $regions = array('us', 'eu');
+	private $regions = array( 'us', 'eu' );
 	/*
 	 * WP Option key
 	 */
@@ -70,10 +70,7 @@ class ThePlatform_Options {
 		wp_enqueue_script( 'jquery-ui-sortable' );
 		wp_enqueue_style( 'dashicons' );
 		wp_enqueue_style( 'field_views' );
-
 	}
-
-	
 
 	/**
 	 * Loads thePlatform plugin options from
@@ -120,13 +117,12 @@ class ThePlatform_Options {
 		$this->preferences = get_option( 'theplatform_preferences_options' );
 
 		$this->account_is_verified = $this->tp_api->internal_verify_account_settings();
-		
-		if ( $this->account_is_verified ) {			
-			$this->region_is_verified = $this->tp_api->internal_verify_account_region();			
+
+		if ( $this->account_is_verified ) {
+			$this->region_is_verified = $this->tp_api->internal_verify_account_region();
 		} else {
 			$this->region_is_verified = FALSE;
-		}	
-
+		}
 	}
 
 	/*
@@ -140,11 +136,11 @@ class ThePlatform_Options {
 		add_settings_section( 'section_mpx_account_options', 'MPX Account Options', array( $this, 'section_mpx_account_desc' ), $this->preferences_options_key );
 		add_settings_field( 'mpx_username_option', 'MPX Username', array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_mpx_account_options', array( 'field' => 'mpx_username' ) );
 		add_settings_field( 'mpx_password_option', 'MPX Password', array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_mpx_account_options', array( 'field' => 'mpx_password' ) );
-		add_settings_field( 'mpx_region_option', 'MPX Region', array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_mpx_account_options', array( 'field' => 'mpx_region' ) );	
+		add_settings_field( 'mpx_region_option', 'MPX Region', array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_mpx_account_options', array( 'field' => 'mpx_region' ) );
 		add_settings_field( 'mpx_accountid_option', 'MPX Account', array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_mpx_account_options', array( 'field' => 'mpx_account_id' ) );
-		add_settings_field( 'mpx_account_pid', 'MPX Account PID', array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_mpx_account_options', array( 'field' => 'mpx_account_pid' ) );				
-		
-		if ( !$this->account_is_verified || !$this->region_is_verified) {
+		add_settings_field( 'mpx_account_pid', 'MPX Account PID', array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_mpx_account_options', array( 'field' => 'mpx_account_pid' ) );
+
+		if ( !$this->account_is_verified || !$this->region_is_verified ) {
 			return;
 		}
 
@@ -176,7 +172,7 @@ class ThePlatform_Options {
 	function register_metadata_options() {
 
 		//Check for uninitialized options	
-		if ( FALSE === $this->account_is_verified || !$this->region_is_verified) {
+		if ( FALSE === $this->account_is_verified || !$this->region_is_verified ) {
 			return;
 		}
 
@@ -196,7 +192,7 @@ class ThePlatform_Options {
 			update_option( $this->metadata_options_key, $this->metadata_options );
 
 			$types = array( 'String', 'Time', 'Date', 'DateTime', 'Integer', 'Decimal', 'Duration', 'Boolean', 'URI', 'Link' );
-		  add_settings_field( $field['id'], $field['title'], array( $this, 'field_metadata_option' ), $this->metadata_options_key, 'section_metadata_options', array( 'id' => $field['id'], 'title' => $field['title'], 'fieldName' => $field['fieldName'] ) );
+			add_settings_field( $field['id'], $field['title'], array( $this, 'field_metadata_option' ), $this->metadata_options_key, 'section_metadata_options', array( 'id' => $field['id'], 'title' => $field['title'], 'fieldName' => $field['fieldName'] ) );
 		}
 	}
 
@@ -207,7 +203,7 @@ class ThePlatform_Options {
 
 	function register_upload_options() {
 
-		if ( !$this->account_is_verified || !$this->region_is_verified) {
+		if ( !$this->account_is_verified || !$this->region_is_verified ) {
 			return;
 		}
 
@@ -304,7 +300,7 @@ class ThePlatform_Options {
 				$html = '<select id="' . esc_attr( $field ) . '" name="theplatform_preferences_options[' . esc_attr( $field ) . ']">';
 				$regions = $this->regions;
 				foreach ( $regions as $region ) {
-					$html .= '<option value="' . esc_attr( $region ) . '|' . esc_attr( $region ) . '"' . selected( $opts[$field], $region, false ) . '>' . esc_html( strtoupper($region) ) . '</option>';
+					$html .= '<option value="' . esc_attr( $region ) . '|' . esc_attr( $region ) . '"' . selected( $opts[$field], $region, false ) . '>' . esc_html( strtoupper( $region ) ) . '</option>';
 				}
 				$html .= '</select>';
 

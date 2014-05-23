@@ -17,7 +17,7 @@
   with this program; if not, write to the Free Software Foundation, Inc.,
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-defined('JSON_UNESCAPED_SLASHES') or define('JSON_UNESCAPED_SLASHES', 64);
+defined( 'JSON_UNESCAPED_SLASHES' ) or define( 'JSON_UNESCAPED_SLASHES', 64 );
 
 /**
  * Wrapper class around Wordpress HTTP methods
@@ -33,8 +33,8 @@ class ThePlatform_API_HTTP {
 	static function get( $url, $data = array() ) {
 		// esc_url_raw eats []'s , so I'm forced to skip it for urls containing
 		// those characters - at this time only the account list request
-		if(!strpos($url, '[0]'))
-			$url = esc_url_raw($url);
+		if ( !strpos( $url, '[0]' ) )
+			$url = esc_url_raw( $url );
 		$response = wp_remote_get( $url, $data );
 		return $response;
 	}
@@ -62,7 +62,7 @@ class ThePlatform_API_HTTP {
 		$args = array(
 			'method' => $method,
 			'body' => $data,
-      'timeout' => 10,
+			'timeout' => 10,
 		);
 
 		if ( $isJSON ) {
@@ -309,28 +309,26 @@ class ThePlatform_API {
 
 		$upload_server_id = $args['server_id'];
 
-		if ($upload_server_id === 'DEFAULT_SERVER') {
+		if ( $upload_server_id === 'DEFAULT_SERVER' ) {
 			$accountSettings = $this->get_account_settings();
-			$defaultServers = $accountSettings['entries'][0]['defaultServers'];	
+			$defaultServers = $accountSettings['entries'][0]['defaultServers'];
 			$defaultServerURN = "urn:theplatform:format:default";
 
 
-			if ( array_key_exists( $formatTitle, $defaultServers ) ) {				
-				$upload_server_id = $defaultServers[ $formatTitle ];				
+			if ( array_key_exists( $formatTitle, $defaultServers ) ) {
+				$upload_server_id = $defaultServers[$formatTitle];
 			} else if ( array_key_exists( $defaultServerURN, $defaultServers ) ) {
-				$upload_server_id = $defaultServers[ $defaultServerURN ];	
-			} else {				
-				$servers = $this->get_servers( array('formats'), '&byFormats=' . $formatTitle );
+				$upload_server_id = $defaultServers[$defaultServerURN];
+			} else {
+				$servers = $this->get_servers( array( 'formats' ), '&byFormats=' . $formatTitle );
 				if ( array_key_exists( 0, $servers ) ) {
-					$upload_server_id = $servers[0]["id"];	
+					$upload_server_id = $servers[0]["id"];
 				} else {
-					die("Unable to determine a proper Server");
+					die( "Unable to determine a proper Server" );
 				}
-				
 			}
-			
 		}
-		
+
 		$upload_server_base_url = $this->get_upload_urls( $upload_server_id, $token );
 
 		if ( is_wp_error( $upload_server_base_url ) ) {
@@ -416,7 +414,7 @@ class ThePlatform_API {
 		$response = ThePlatform_API_HTTP::get( $url, array( "timeout" => 120 ) );
 		$this->mpx_signout( $token );
 
-		die(wp_remote_retrieve_body( $response ));
+		die( wp_remote_retrieve_body( $response ) );
 	}
 
 	/**
@@ -559,7 +557,7 @@ class ThePlatform_API {
 	 * Returns the account setting objects, this is actually used to test our connection
 	 * @return array AccountSettings response
 	 */
-	function get_account_settings( ) {
+	function get_account_settings() {
 		if ( !$this->preferences ) {
 			$this->preferences = get_option( $this->preferences_options_key );
 		}
@@ -709,8 +707,8 @@ class ThePlatform_API {
 	/**
 	 * Verify that the account you've selected is within the region you've selected
 	 * @return bool account is within the same region
-	 */	
-	function internal_verify_account_region() {		
+	 */
+	function internal_verify_account_region() {
 		if ( !$this->preferences ) {
 			$this->preferences = get_option( $this->preferences_options_key );
 		}
@@ -720,14 +718,14 @@ class ThePlatform_API {
 		}
 
 		$response = $this->get_account_settings();
-		
+
 		if ( is_null( $response ) && !is_array( $response ) ) {
 			return FALSE;
 		}
-			
-		if ( !array_key_exists( 'isException', $response ) ) {			
+
+		if ( !array_key_exists( 'isException', $response ) ) {
 			return TRUE;
-		} else {			
+		} else {
 			return FALSE;
 		}
 	}

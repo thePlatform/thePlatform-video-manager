@@ -80,7 +80,7 @@ class MPXProxy {
 			die();
 		}
 
-		if ( isset($response['data']) && $response['data'] === false ) {
+		if ( isset( $response['data'] ) && $response['data'] === false ) {
 			$ret['success'] = 'false';
 			$ret['code'] = $response['status']['http_code'];
 		} else {
@@ -115,7 +115,7 @@ class MPXProxy {
 			die();
 		}
 
-		if ( isset($response['data']) && $response['data'] === false ) {
+		if ( isset( $response['data'] ) && $response['data'] === false ) {
 			$ret['success'] = 'false';
 			$ret['code'] = $response['status']['http_code'];
 		} else {
@@ -188,7 +188,7 @@ class MPXProxy {
 				die();
 			}
 
-			if ( isset($response['data']) && $response['data'] === false ) {
+			if ( isset( $response['data'] ) && $response['data'] === false ) {
 				$ret['success'] = 'false';
 				$ret['code'] = 'Unable to publish media.';
 				echo json_encode( $ret );

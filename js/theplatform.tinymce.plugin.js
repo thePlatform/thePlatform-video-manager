@@ -26,13 +26,13 @@ tinymce.PluginManager.add( 'theplatform', function( editor, url ) {
 			var iframeUrl = ajaxurl + "?action=theplatform_media&embed=true";
 			tinyMCE.activeEditor = editor;
 
-			var screenHeight = window.innerHeight            
+			var screenHeight = window.innerHeight
 
-            if (screenHeight < 1200)
-                height = screenHeight - 50;
-            else
-                height = 1024;
-            
+			if ( screenHeight < 1200 )
+				height = screenHeight - 50;
+			else
+				height = 1024;
+
 			if ( tinyMCE.majorVersion > 3 ) {
 				editor.windowManager.open( {
 					width: 1220,

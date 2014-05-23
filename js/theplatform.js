@@ -105,120 +105,120 @@ var validate_media = function( event ) {
 	//TODO: Validate that file has been selected for upload but not edit
 	var validation_error = false;
 
-  jQuery( '.upload_field, .custom_field' ).each( function() {
-    var $field = jQuery( this );
-    var dataStructure = $field.data('structure');
-    var dataType = $field.data('type');
-    var value = jQuery( this ).val();
-    var fieldError = false;
-    // Detect HTML, this runs against all fields regardless of type/structure
-    if( value.match( /<(\w+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/ ) ) {
-      validation_error = true;
-    }
-    // We're not requiring any fields at the moment,
-    // so only test fields which have a value
-    else if(value.length > 0) {
-      switch(dataStructure) {
-        case 'Map':
-          var values = value.indexOf(',') ? value.split(',') : [value];
-          for(var i = 0; i < values.length; i++) {
-            // Use substring to break apart to avoid issues with values that use colons
-            var index = values[i].indexOf(':');
-            var key = values[i].substr(0, index).trim();
-            var val = values[i].substr(index+1).trim();
-            if(index ===  -1 || key.length == 0 || val.length === 0 || validateFormat(val, dataType)) {
-              fieldError = true;
-              break;
-            }
-          }
-          break;
-        case 'List':
-          var values = value.indexOf(',') ? value.split(',') : [value];
-          for(var i = 0; i < values.length; i++) {
-            if(validateFormat(values[i].trim(), dataType)) {
-              fieldError = true;
-              break;
-            }
-          }
-          break;
-        case 'Single':
-        default:
-          if(validateFormat(value, dataType)) {
-            fieldError = true;
-          }
-          break;
-      }
-    }
-    if(fieldError) {
-      $field.css( { border: 'solid 1px #FF0000' } );
-      validation_error = fieldError;
-    } else {
-      $field.css( { border: '1px solid #ccc' } );
-    }
-  } );
+	jQuery( '.upload_field, .custom_field' ).each( function() {
+		var $field = jQuery( this );
+		var dataStructure = $field.data( 'structure' );
+		var dataType = $field.data( 'type' );
+		var value = jQuery( this ).val();
+		var fieldError = false;
+		// Detect HTML, this runs against all fields regardless of type/structure
+		if ( value.match( /<(\w+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/ ) ) {
+			validation_error = true;
+		}
+		// We're not requiring any fields at the moment,
+		// so only test fields which have a value
+		else if ( value.length > 0 ) {
+			switch ( dataStructure ) {
+				case 'Map':
+					var values = value.indexOf( ',' ) ? value.split( ',' ) : [ value ];
+					for ( var i = 0; i < values.length; i++ ) {
+						// Use substring to break apart to avoid issues with values that use colons
+						var index = values[i].indexOf( ':' );
+						var key = values[i].substr( 0, index ).trim();
+						var val = values[i].substr( index + 1 ).trim();
+						if ( index === -1 || key.length == 0 || val.length === 0 || validateFormat( val, dataType ) ) {
+							fieldError = true;
+							break;
+						}
+					}
+					break;
+				case 'List':
+					var values = value.indexOf( ',' ) ? value.split( ',' ) : [ value ];
+					for ( var i = 0; i < values.length; i++ ) {
+						if ( validateFormat( values[i].trim(), dataType ) ) {
+							fieldError = true;
+							break;
+						}
+					}
+					break;
+				case 'Single':
+				default:
+					if ( validateFormat( value, dataType ) ) {
+						fieldError = true;
+					}
+					break;
+			}
+		}
+		if ( fieldError ) {
+			$field.css( { border: 'solid 1px #FF0000' } );
+			validation_error = fieldError;
+		} else {
+			$field.css( { border: '1px solid #ccc' } );
+		}
+	} );
 
-  var $titleField = jQuery( '#theplatform_upload_title' );
+	var $titleField = jQuery( '#theplatform_upload_title' );
 	if ( $titleField.val() === "" ) {
 		validation_error = true;
-    $titleField.css( { border: 'solid 1px #FF0000' } );
+		$titleField.css( { border: 'solid 1px #FF0000' } );
 	}
 
 	return validation_error;
 };
 
-var validateFormat = function (value, dataType) {
-  var validation_error = false;
+var validateFormat = function( value, dataType ) {
+	var validation_error = false;
 
-  switch(dataType) {
-    case 'Integer':
-      var intRegex = /^-?\d+$/;
-      validation_error = !intRegex.test(value)
-      break;
-    case 'Decimal':
-      var decRegex = /^-?(\d+)?(\.[\d]+)?$/;
-      validation_error = !decRegex.test(value)
-      break;
-    case 'Boolean':
-      var validValues = ['true', 'false', ''];
-      validation_error = validValues.indexOf(value) < 0;
-      break;
-    case 'URI':
-      var uriRegex = /^([a-z][a-z0-9+.-]*):(?:\/\/((?:(?=((?:[a-z0-9-._~!$&'()*+,;=:]|%[0-9A-F]{2})*))(\3)@)?(?=(\[[0-9A-F:.]{2,}\]|(?:[a-z0-9-._~!$&'()*+,;=]|%[0-9A-F]{2})*))\5(?::(?=(\d*))\6)?)(\/(?=((?:[a-z0-9-._~!$&'()*+,;=:@\/]|%[0-9A-F]{2})*))\8)?|(\/?(?!\/)(?=((?:[a-z0-9-._~!$&'()*+,;=:@\/]|%[0-9A-F]{2})*))\10)?)(?:\?(?=((?:[a-z0-9-._~!$&'()*+,;=:@\/?]|%[0-9A-F]{2})*))\11)?(?:#(?=((?:[a-z0-9-._~!$&'()*+,;=:@\/?]|%[0-9A-F]{2})*))\12)?$/i;
-      validation_error = !uriRegex.test(value);
-      break;
-    case 'Time':
-      var timeRegex = /^\d{1,2}:\d{2}$/;
-      validation_error = !timeRegex.test(value);
-      break;
-    case 'Duration':
-      var durationRegex = /^(\d+:)?([0-5]?[0-9]:)?([0-5]?[0-9])?$/;
-      validation_error = !durationRegex.test(value);
-      break;
-    case 'DateTime':
-      validation_error = !isValidDate(new Date(value));
-      break;
-    case 'Date':
-      var dateRegex = /^(\d{4})-(([0][1-9])|([1][0-2]))-(([0][1-9])|([1][0-9])|([2][0-9])|([3][0-1]))$/;
-      validation_error = !dateRegex.test(value);
-      break;
-    case 'Link':
-      // @todo: this could do more, right now just checks that the structure is correct
-      var linkRegex = /^(((title:)(.*),(\s+)?(href:).*)|((href:)(.*),(\s+)?(title:).*))$/;
-      validation_error = !linkRegex.test(value);
-      break;
-    case 'String':
-    default:
-      // nothing to do
-      break;
-  }
+	switch ( dataType ) {
+		case 'Integer':
+			var intRegex = /^-?\d+$/;
+			validation_error = !intRegex.test( value )
+			break;
+		case 'Decimal':
+			var decRegex = /^-?(\d+)?(\.[\d]+)?$/;
+			validation_error = !decRegex.test( value )
+			break;
+		case 'Boolean':
+			var validValues = [ 'true', 'false', '' ];
+			validation_error = validValues.indexOf( value ) < 0;
+			break;
+		case 'URI':
+			var uriRegex = /^([a-z][a-z0-9+.-]*):(?:\/\/((?:(?=((?:[a-z0-9-._~!$&'()*+,;=:]|%[0-9A-F]{2})*))(\3)@)?(?=(\[[0-9A-F:.]{2,}\]|(?:[a-z0-9-._~!$&'()*+,;=]|%[0-9A-F]{2})*))\5(?::(?=(\d*))\6)?)(\/(?=((?:[a-z0-9-._~!$&'()*+,;=:@\/]|%[0-9A-F]{2})*))\8)?|(\/?(?!\/)(?=((?:[a-z0-9-._~!$&'()*+,;=:@\/]|%[0-9A-F]{2})*))\10)?)(?:\?(?=((?:[a-z0-9-._~!$&'()*+,;=:@\/?]|%[0-9A-F]{2})*))\11)?(?:#(?=((?:[a-z0-9-._~!$&'()*+,;=:@\/?]|%[0-9A-F]{2})*))\12)?$/i;
+			validation_error = !uriRegex.test( value );
+			break;
+		case 'Time':
+			var timeRegex = /^\d{1,2}:\d{2}$/;
+			validation_error = !timeRegex.test( value );
+			break;
+		case 'Duration':
+			var durationRegex = /^(\d+:)?([0-5]?[0-9]:)?([0-5]?[0-9])?$/;
+			validation_error = !durationRegex.test( value );
+			break;
+		case 'DateTime':
+			validation_error = !isValidDate( new Date( value ) );
+			break;
+		case 'Date':
+			var dateRegex = /^(\d{4})-(([0][1-9])|([1][0-2]))-(([0][1-9])|([1][0-9])|([2][0-9])|([3][0-1]))$/;
+			validation_error = !dateRegex.test( value );
+			break;
+		case 'Link':
+			// @todo: this could do more, right now just checks that the structure is correct
+			var linkRegex = /^(((title:)(.*),(\s+)?(href:).*)|((href:)(.*),(\s+)?(title:).*))$/;
+			validation_error = !linkRegex.test( value );
+			break;
+		case 'String':
+		default:
+			// nothing to do
+			break;
+	}
 
-  return validation_error;
+	return validation_error;
 };
 
-var isValidDate = function(d) {
-  if ( Object.prototype.toString.call(d) !== "[object Date]" )
-    return false;
-  return !isNaN(d.getTime());
+var isValidDate = function( d ) {
+	if ( Object.prototype.toString.call( d ) !== "[object Date]" )
+		return false;
+	return !isNaN( d.getTime() );
 }
 
 var parseMediaParams = function() {
@@ -249,62 +249,63 @@ var parseCustomParams = function() {
 
 	jQuery( '.custom_field' ).each( function( i ) {
 		if ( jQuery( this ).val().length != 0 ) {
-      var $field = jQuery(this);
-      var dataStructure = $field.data('structure');
-      var dataType = $field.data('type');
-      var value = $field.val();
+			var $field = jQuery( this );
+			var dataStructure = $field.data( 'structure' );
+			var dataType = $field.data( 'type' );
+			var value = $field.val();
 
-      // Convert maps to object
-      if(dataStructure == 'Map') {
-        var values = value.indexOf(',') ? value.split(',') : [value];
-        value = {};
-        for(var i = 0; i < values.length; i++) {
-          // Use substring to break apart to avoid issues with values that use colons
-          var index = values[i].indexOf(':');
-          var key = values[i].substr(0, index).trim();
-          var val = values[i].substr(index+1).trim();
-          value[key] = parseDataType(val, dataType);
-        }
-      }
-      // Convert lists to array
-      else if(dataStructure == 'List') {
-        var values = value.indexOf(',') ? value.split(',') : [value];
-        value = [];
-        for(var i = 0; i < values.length; i++) {
-          value.push(parseDataType(values[i].trim(), dataType));
-        }
-      }
-      else {
-        value = parseDataType(value, dataType);
-      }
+			// Convert maps to object
+			if ( dataStructure == 'Map' ) {
+				var values = value.indexOf( ',' ) ? value.split( ',' ) : [ value ];
+				value = { };
+				for ( var i = 0; i < values.length; i++ ) {
+					// Use substring to break apart to avoid issues with values that use colons
+					var index = values[i].indexOf( ':' );
+					var key = values[i].substr( 0, index ).trim();
+					var val = values[i].substr( index + 1 ).trim();
+					value[key] = parseDataType( val, dataType );
+				}
+			}
+			// Convert lists to array
+			else if ( dataStructure == 'List' ) {
+				var values = value.indexOf( ',' ) ? value.split( ',' ) : [ value ];
+				value = [ ];
+				for ( var i = 0; i < values.length; i++ ) {
+					value.push( parseDataType( values[i].trim(), dataType ) );
+				}
+			}
+			else {
+				value = parseDataType( value, dataType );
+			}
 
-      custom_params[jQuery( this ).attr( 'name' )] = value;
-    }
+			custom_params[jQuery( this ).attr( 'name' )] = value;
+		}
 
 	} );
 
 	return custom_params;
 };
 
-var parseDataType = function(value, dataType) {
-  switch(dataType) {
-    case 'Link':
-      var titleRegex = /title[\s+]?:[\s+]?([^,]+)/;
-      var hrefRegex = /href[\s+]?:[\s+]?([^,]+)/;
-      var title = titleRegex.exec(value)[1];
-      var href = hrefRegex.exec(value)[1];
-      value = {href:href, title: title};
-      break;
-  }
-  return value;
+var parseDataType = function( value, dataType ) {
+	switch ( dataType ) {
+		case 'Link':
+			var titleRegex = /title[\s+]?:[\s+]?([^,]+)/;
+			var hrefRegex = /href[\s+]?:[\s+]?([^,]+)/;
+			var title = titleRegex.exec( value )[1];
+			var href = hrefRegex.exec( value )[1];
+			value = { href: href, title: title };
+			break;
+	}
+	return value;
 };
 
-var objSize = function (obj) {
-  var size = 0, key;
-  for (key in obj) {
-    if (obj.hasOwnProperty(key)) size++;
-  }
-  return size;
+var objSize = function( obj ) {
+	var size = 0, key;
+	for ( key in obj ) {
+		if ( obj.hasOwnProperty( key ) )
+			size++;
+	}
+	return size;
 };
 
 jQuery( document ).ready( function() {
@@ -372,8 +373,8 @@ jQuery( document ).ready( function() {
 	//Edit Media Validation	
 	jQuery( "#theplatform_edit_button" ).click( function( event ) {
 		var validation_error = validate_media( event );
-    if(validation_error)
-      return false;
+		if ( validation_error )
+			return false;
 		var params = parseMediaParams();
 		var custom_params = parseCustomParams();
 		params.id = tpHelper.mediaId;
