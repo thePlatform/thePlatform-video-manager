@@ -215,4 +215,3 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 	<?php } ?>
 </form>
 </div>
-

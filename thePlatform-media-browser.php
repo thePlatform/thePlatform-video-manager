@@ -284,5 +284,4 @@ wp_print_styles( 'wp-jquery-ui-dialog' );
 				</div>
 			<?php } ?>
     </body>
-
 </html>

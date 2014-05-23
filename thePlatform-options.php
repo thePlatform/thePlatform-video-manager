@@ -16,6 +16,9 @@
   with this program; if not, write to the Free Software Foundation, Inc.,
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
+/**
+ * Handle WordPress Settings API
+ */
 class ThePlatform_Options {
 
 	private $preferences_options_key = 'theplatform_preferences_options';
@@ -35,10 +38,6 @@ class ThePlatform_Options {
 	private $plugin_settings_tabs = array();
 	private $tp_api;
 	private $preferences;
-
-	/*
-	 * Fired during plugins_loaded
-	 */
 
 	function __construct() {
 		$tp_admin_cap = apply_filters( 'tp_admin_cap', 'manage_options' );
@@ -129,7 +128,6 @@ class ThePlatform_Options {
 	 * Registers the preference options via the Settings API,
 	 * appends the setting to the tabs array of the object.
 	 */
-
 	function register_preferences_options() {
 		$this->plugin_settings_tabs[$this->preferences_options_key] = 'Preferences';
 
@@ -168,7 +166,6 @@ class ThePlatform_Options {
 	 * Registers the metadata options and appends the
 	 * key to the plugin settings tabs array.
 	 */
-
 	function register_metadata_options() {
 
 		//Check for uninitialized options	
@@ -200,7 +197,6 @@ class ThePlatform_Options {
 	 * Registers the upload options and appends the
 	 * key to the plugin settings tabs array.
 	 */
-
 	function register_upload_options() {
 
 		if ( !$this->account_is_verified || !$this->region_is_verified ) {
@@ -233,37 +229,45 @@ class ThePlatform_Options {
 			add_settings_field( $field, ucfirst( $field_title ), array( $this, 'field_upload_option' ), $this->upload_options_key, 'section_upload_options', array( 'field' => $field ) );
 		}
 	}
-
-	/*
-	 * The following methods provide descriptions
-	 * for their respective sections, used as callbacks
-	 * with add_settings_section
+	
+	/**
+	 * Provide a description to the MPX Account Settings Section	 
 	 */
-
 	function section_mpx_account_desc() {
 		echo 'Set your MPX credentials and Account. If you do not have an account, please reach out to thePlatform.';
 	}
 
+	/**
+	 * Provide a description to the MPX Prefences Section	 
+	 */
 	function section_preferences_desc() {
 		echo 'Configure general preferences below.';
 	}
 
+	/**
+	 * Provide a description to the MPX Embed Settings Section	 
+	 */
 	function section_embed_desc() {
 		echo 'Configure embedding defaults.';
 	}
 
+	/**
+	 * Provide a description to the MPX Metadata Section	 
+	 */
 	function section_metadata_desc() {
 		echo 'Drag and drop the custom metadata fields that you would like to be readable, writable, or omitted when uploading media to MPX.';
 	}
 
+	/**
+	 * Provide a description to the MPX Upload Fields Section	 
+	 */
 	function section_upload_desc() {
 		echo 'Select the fields that you would like to be allowed or omitted when uploading media to MPX.';
 	}
 
-	/*
+	/**
 	 * MPX Account Option field callbacks.
 	 */
-
 	function field_preference_option( $args ) {
 		$opts = get_option( $this->preferences_options_key, array() );
 		$field = $args['field'];
@@ -378,10 +382,9 @@ class ThePlatform_Options {
 		echo $html;
 	}
 
-	/*
+	/**
 	 * Metadata Option field callback.
 	 */
-
 	function field_metadata_option( $args ) {
 		$field_id = $args['id'];
 
@@ -394,10 +397,9 @@ class ThePlatform_Options {
 		echo $html;
 	}
 
-	/*
+	/**
 	 * Upload Option field callback.
 	 */
-
 	function field_upload_option( $args ) {
 		$field = $args['field'];
 
@@ -410,23 +412,21 @@ class ThePlatform_Options {
 		echo $html;
 	}
 
-	/*
+	/**
 	 * Called during admin_menu, adds an options
 	 * page under Settings called My Settings, rendered
 	 * using the plugin_options_page method.
 	 */
-
 	function add_admin_menus() {
 		add_options_page( 'thePlatform Plugin Settings', 'thePlatform', 'manage_options', $this->plugin_options_key, array( $this, 'plugin_options_page' ) );
 	}
 
-	/*
+	/**
 	 * Plugin Options page rendering goes here, checks
 	 * for active tab and replaces key with the related
 	 * settings key. Uses the plugin_options_tabs method
 	 * to render the tabs.
 	 */
-
 	function plugin_options_page() {
 		$tab = isset( $_GET['tab'] ) ? $_GET['tab'] : $this->preferences_options_key;
 		?>
@@ -441,13 +441,12 @@ class ThePlatform_Options {
 		<?php
 	}
 
-	/*
+	/**
 	 * Renders our tabs in the plugin options page,
 	 * walks through the object's tabs array and prints
 	 * them one by one. Provides the heading for the
 	 * plugin_options_page method.
 	 */
-
 	function plugin_options_tabs() {
 		$current_tab = isset( $_GET['tab'] ) ? $_GET['tab'] : $this->preferences_options_key;
 
@@ -459,10 +458,7 @@ class ThePlatform_Options {
 		}
 		echo '</h2>';
 	}
-
 }
-
-;
 
 if ( !class_exists( 'ThePlatform_API' ) ) {
 	require_once( dirname( __FILE__ ) . '/thePlatform-API.php' );

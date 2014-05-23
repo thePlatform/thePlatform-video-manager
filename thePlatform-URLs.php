@@ -18,13 +18,13 @@
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 /**
- * Class ThePlatform_Endpoints
+ * Class ThePlatform_URLs
  * This was added to support regions other than the US.
  * Constants are already used throughout the plugin, so rather than
  * change that, this will define them once when the plugin is started
  * but use the region to determine the base URLs.
  */
-class ThePlatform_Endpoints {
+class ThePlatform_URLs {
 
 	/**
 	 * Define MPX endpoints and associated parameters
@@ -92,6 +92,11 @@ class ThePlatform_Endpoints {
 		define( 'TP_API_FMS_GET_UPLOAD_URLS_ENDPOINT', TP_API_FMS_BASE_URL . 'getUploadUrls?schema=1.4&form=json' );
 	}
 
+	/**
+	 * Determine the region based the plugin's preferences
+	 * @param  string $preference_key Our plugin's preference key
+	 * @return string                 The current region, either us or eu
+	 */
 	private function getRegion( $preference_key ) {
 		$preferences = get_option( $preference_key );
 		if ( $preferences && isset( $preferences['mpx_region'] ) && strlen( $preferences['mpx_region'] ) ) {
@@ -103,5 +108,4 @@ class ThePlatform_Endpoints {
 		}
 		return $region;
 	}
-
 }

@@ -38,7 +38,6 @@ add_action( 'wp_ajax_establishSession', 'ThePlatform_Proxy::establishSession' );
 
 /**
  * This class is responsible for uploading and publishing Media to MPX
- * @package default
  */
 class ThePlatform_Proxy {
 
@@ -52,7 +51,6 @@ class ThePlatform_Proxy {
 
 	/**
 	 * Initiate a file upload
-	 *
 	 * @return mixed JSON response or instance of WP_Error
 	 */
 	public static function startUpload() {
@@ -92,7 +90,6 @@ class ThePlatform_Proxy {
 
 	/**
 	 * Retrieve the current status of a file upload
-	 *
 	 * @return mixed JSON response or instance of WP_Error
 	 */
 	public static function uploadStatus() {
@@ -128,7 +125,6 @@ class ThePlatform_Proxy {
 
 	/**
 	 * Publish an uploaded media asset using the 'Wordpress' profile
-	 *
 	 * @return mixed JSON response or instance of WP_Error
 	 */
 	public static function publishMedia() {
@@ -206,7 +202,6 @@ class ThePlatform_Proxy {
 
 	/**
 	 * Cancel a file upload process
-	 *
 	 * @return mixed JSON response or instance of WP_Error
 	 */
 	public static function cancelUpload() {
@@ -256,7 +251,6 @@ class ThePlatform_Proxy {
 
 	/**
 	 * Retrieve the current publishing status of a newly uploaded media asset
-	 *
 	 * @return mixed JSON response or instance of WP_Error
 	 */
 	public static function establishSession() {
@@ -270,5 +264,4 @@ class ThePlatform_Proxy {
 
 		die( "OK" ); //doesn't matter what we return here
 	}
-
 }

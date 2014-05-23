@@ -20,14 +20,14 @@
 defined( 'JSON_UNESCAPED_SLASHES' ) or define( 'JSON_UNESCAPED_SLASHES', 64 );
 
 /**
- * Wrapper class around Wordpress HTTP methods
+ * Simple wrapper class for the WordPress HTTP API methods
  */
 class ThePlatform_API_HTTP {
 
 	/**
-	 * HTTP GET wrapper
+	 * Make a HTTP GET request to the provided URL
 	 * @param string $url URL to make the request to
-	 * @param array $data Data to send with the request, default is a blank array
+	 * @param array $data optional Data to send with the request
 	 * @return wp_response Results of the GET request
 	 */
 	static function get( $url, $data = array() ) {
@@ -40,24 +40,25 @@ class ThePlatform_API_HTTP {
 	}
 
 	/**
-	 * HTTP PUT wrapper
+	 * Make a HTTP PUT request to the provided URL
 	 * @param string $url URL to make the request to
-	 * @param array $data Data to send with the request, default is a blank array
-	 * @return wp_response Results of the GET request
+	 * @param array $data optional Data to send with the request
+	 * @param boolean $isJSON optional|TRUE Whether our data is JSON encoded or not
+	 * @return wp_response Results of the PUT request
 	 */
-	static function put( $url, $data = array() ) {
-		return ThePlatform_API_HTTP::post( $url, $data, TRUE, 'PUT' );
+	static function put( $url, $data = array(), $isJSON = TRUE ) {
+		return ThePlatform_API_HTTP::post( $url, $data, $isJSON, 'PUT' );
 	}
 
 	/**
-	 * HTTP POST wrapper
+	 * Make a HTTP POST request to the provided URL
 	 * @param string $url URL to make the request to
 	 * @param array $data Data to send with the request, default is a blank array
-	 * @param boolean $isJSON Whether our data is JSON encoded or not, default is FALSE
-	 * @param string $method Sets the header HTTP request method, default is POST
-	 * @return wp_response Results of the GET request
+	 * @param boolean $isJSON optional|TRUE Whether our data is JSON encoded or not
+	 * @param string $method optional|POST Sets the header HTTP request method
+	 * @return wp_response Results of the POST request
 	 */
-	static function post( $url, $data, $isJSON = FALSE, $method = 'POST' ) {
+	static function post( $url, $data, $isJSON = TRUE, $method = 'POST' ) {
 		$url = esc_url_raw( $url );
 		$args = array(
 			'method' => $method,
@@ -73,17 +74,13 @@ class ThePlatform_API_HTTP {
 
 		return $response;
 	}
-
 }
 
 /**
- * Wrapper for MPX's API calls
- * @package default
+ * Handle all calls to MPX API
  */
 class ThePlatform_API {
-
-	private $auth;
-	private $token;
+		
 	// Plugin preferences option table key
 	private $preferences_options_key = 'theplatform_preferences_options';
 
@@ -95,11 +92,10 @@ class ThePlatform_API {
 	}
 
 	/**
-	 * Construct a Basic Authorization header
-	 *
+	 * Construct a Basic Authorization header	 
 	 * @return array 
 	 */
-	function basicAuthHeader() {
+	private function basicAuthHeader() {
 		if ( !$this->preferences ) {
 			$this->preferences = get_option( $this->preferences_options_key );
 		}
@@ -117,7 +113,6 @@ class ThePlatform_API {
 
 	/**
 	 * Convert a MIME type to an MPX-compliant format identifier
-	 *
 	 * @param string $mime A MIME-type string
 	 * @return string MPX-compliant format string
 	 */
@@ -141,23 +136,21 @@ class ThePlatform_API {
 	}
 
 	/**
-	 * Signs into MPX and retrieves an access token.
-	 *
-	 * @return string An access token
+	 * Authenticate using MPX Identity service
+	 * @return string API Authentication Token
 	 */
 	function mpx_signin() {
 		$response = ThePlatform_API_HTTP::get( TP_API_SIGNIN_URL, $this->basicAuthHeader() );
 
 		$payload = decode_json_from_server( $response, TRUE );
 
-		$this->token = $payload['signInResponse']['token'];
+		$token = $payload['signInResponse']['token'];
 
-		return $this->token;
+		return $token;
 	}
 
 	/**
 	 * Deactivates an MPX access token.
-	 *
 	 * @param string $token The token to deactivate
 	 * @return WP_Error|array The response or WP_Error on failure.
 	 */
@@ -167,8 +160,7 @@ class ThePlatform_API {
 	}
 
 	/**
-	 * Update a media asset in MPX
-	 *
+	 * Update a Media Object's Metadata
 	 * @param string $mediaID The ID of the media asset to update
 	 * @param array $payload JSON payload containing field-data pairs to update
 	 * @return string A message indicating whether or not the update succeeded
@@ -729,7 +721,4 @@ class ThePlatform_API {
 			return FALSE;
 		}
 	}
-
 }
-
-?>

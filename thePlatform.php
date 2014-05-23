@@ -30,8 +30,7 @@ if ( !defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Main class
- * @package default
+ * This is thePlatform's plugin entry class, all initalization and AJAX handlers are defined here.
  */
 class ThePlatform_Plugin {
 
@@ -40,7 +39,8 @@ class ThePlatform_Plugin {
 	private static $instance;
 
 	/**
-	 * Initialize plugin
+	 * Creates one instance of the plugin
+	 * @return ThePlatform_Plugin New or existing instance of ThePlatform_Plugin
 	 */
 	public static function init() {
 		if ( !isset( self::$instance ) ) {
@@ -50,16 +50,13 @@ class ThePlatform_Plugin {
 		return self::$instance;
 	}
 
-	/**
-	 * Constructor
-	 */
 	function __construct() {
 		require_once(dirname( __FILE__ ) . '/thePlatform-URLs.php');
 		require_once(dirname( __FILE__ ) . '/thePlatform-API.php');
 		require_once(dirname( __FILE__ ) . '/thePlatform-helper.php');
 		require_once(dirname( __FILE__ ) . '/thePlatform-proxy.php');
 
-		new ThePlatform_Endpoints( 'theplatform_preferences_options' );
+		new ThePlatform_URLs( 'theplatform_preferences_options' );
 		$this->tp_api = new ThePlatform_API;
 
 		$this->plugin_base_dir = plugin_dir_path( __FILE__ );
@@ -81,7 +78,7 @@ class ThePlatform_Plugin {
 	}
 
 	/**
-	 * Registers javascripts and css
+	 * Registers javascripts and css used throughout the plugin	 
 	 */
 	function register_scripts() {
 		wp_register_script( 'pdk', "//pdk.theplatform.com/pdk/tpPdk.js" );
@@ -111,7 +108,7 @@ class ThePlatform_Plugin {
 	}
 
 	/**
-	 * Add admin pages
+	 * Add admin pages to Wordpress sidebar
 	 */
 	function add_admin_page() {
 		$tp_admin_cap = apply_filters( 'tp_admin_cap', 'manage_options' );
@@ -125,8 +122,7 @@ class ThePlatform_Plugin {
 	}
 
 	/**
-	 * Calls the plugin's options page template
-	 * @return type
+	 * Calls the plugin's options page template	 
 	 */
 	function admin_page() {
 		require_once(dirname( __FILE__ ) . '/thePlatform-options.php' );
@@ -134,7 +130,6 @@ class ThePlatform_Plugin {
 
 	/**
 	 * Calls the Media Manager template
-	 * @return type
 	 */
 	function media_page() {
 		require_once( dirname( __FILE__ ) . '/thePlatform-media.php' );
@@ -142,7 +137,6 @@ class ThePlatform_Plugin {
 
 	/**
 	 * Calls the Media Manager template
-	 * @return type
 	 */
 	function upload_page() {
 		require_once( dirname( __FILE__ ) . '/thePlatform-upload.php' );
@@ -150,7 +144,6 @@ class ThePlatform_Plugin {
 
 	/**
 	 * Calls the Embed template in an IFrame and Dialog
-	 * @return void
 	 */
 	function embed() {
 		require_once( $this->plugin_base_dir . 'thePlatform-media-browser.php' );
@@ -159,7 +152,6 @@ class ThePlatform_Plugin {
 
 	/**
 	 * Calls the Embed template in an IFrame and Dialog
-	 * @return void
 	 */
 	function edit() {
 		$args = array( 'fields' => $_POST['params'], 'custom_fields' => $_POST['custom_params'] );
@@ -169,13 +161,16 @@ class ThePlatform_Plugin {
 
 	/**
 	 * Calls the Upload Window template in a popup
-	 * @return void
 	 */
 	function upload() {
 		require_once( $this->plugin_base_dir . 'thePlatform-upload-window.php' );
 		die();
 	}
 
+	/**
+	 * Ajax callback to initiate the change of a Post default thumbnail
+	 * @return string HTML code to update the Post page to display the new thumbnail
+	 */
 	function set_thumbnail_ajax() {
 		check_admin_referer( 'theplatform-ajax-nonce' );
 
@@ -206,6 +201,12 @@ class ThePlatform_Plugin {
 		die( "Something went wrong" );
 	}
 
+	/**
+	 * Change the provided Post ID default thumbnail
+	 * @param string $url  Link to the image URL
+	 * @param int $post_id WordPress Post ID to apply the change to
+	 * @return int The newly created WordPress Thumbnail ID
+	 */
 	function set_thumbnail( $url, $post_id ) {
 		$file = download_url( $url );
 
@@ -231,6 +232,7 @@ class ThePlatform_Plugin {
 	/**
 	 * Shortcode Callback
 	 * @param array $atts Shortcode attributes
+	 * @return string thePlatform video embed shortcode
 	 */
 	function shortcode( $atts ) {
 		if ( !class_exists( 'ThePlatform_API' ) ) {
@@ -382,6 +384,9 @@ add_action( 'wp_ajax_verify_account', 'verify_account_settings' );
 add_action( 'admin_init', 'register_plugin_settings' );
 add_action( 'init', 'theplatform_buttonhooks' );
 
+/**
+ * TinyMCE filter hooks to add a new button
+ */
 function theplatform_buttonhooks() {
 	$tp_embedder_cap = apply_filters( 'tp_embedder_cap', 'edit_posts' );
 	if ( current_user_can( $tp_embedder_cap ) ) {
@@ -390,12 +395,19 @@ function theplatform_buttonhooks() {
 	}
 }
 
+/**
+ * Register a new button in TinyMCE
+ */
 function theplatform_register_buttons( $buttons ) {
 	array_push( $buttons, "|", "theplatform" );
 	return $buttons;
 }
 
-// Load the TinyMCE plugin : editor_plugin.js (wp2.5)
+/**
+ * Load the TinyMCE plugin
+ * @param  array $plugin_array Array of TinyMCE Plugins
+ * @return array               The array of TinyMCE plugins with our plugin added
+ */
 function theplatform_register_tinymce_javascript( $plugin_array ) {
 	$plugin_array['theplatform'] = plugins_url( '/js/theplatform.tinymce.plugin.js', __file__ );
 	return $plugin_array;
@@ -403,7 +415,6 @@ function theplatform_register_tinymce_javascript( $plugin_array ) {
 
 /**
  * Registers initial plugin settings during initalization
- * @return type
  */
 function register_plugin_settings() {
 	$preferences_options_key = 'theplatform_preferences_options';

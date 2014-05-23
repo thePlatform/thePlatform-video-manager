@@ -95,7 +95,4 @@ class ThePlatform_FieldTypes {
 		$html = '<input type="text"></input><input type="url"></input>';
 		return $html;
 	}
-
 }
-?>
-

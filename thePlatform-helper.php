@@ -266,5 +266,3 @@ function get_query_fields( $metadata ) {
 
 	return $fields;
 }
-
-?>
