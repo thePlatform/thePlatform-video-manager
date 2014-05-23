@@ -156,8 +156,9 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 				$html .= '</div>';
 			}
 			echo $html;
+			$col++;
 		}
-		$col++;
+		
 	}
 
 	if ( !empty( $catHtml ) ) {
@@ -166,7 +167,6 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 
 	if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 		?>
-
 		<div class="row">
 			<div class="col-xs-3">
 				<?php
@@ -181,8 +181,6 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 				echo $html;
 				?>
 			</div>
-		</div>
-		<div class="row">
 			<div class="col-xs-3">				
 				<?php
 				$servers = $tp_api->get_servers();
@@ -196,6 +194,8 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 				echo $html;
 				?>
 			</div>
+		</div>
+		<div class="row">
 			<div class="col-xs-3">
 				<label class="control-label" for="theplatform_upload_file">File</label><input type="file" accept="audio/*|video/*|image/*" id="theplatform_upload_file" />
 			</div>
