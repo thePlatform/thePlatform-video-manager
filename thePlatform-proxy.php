@@ -29,18 +29,18 @@ if ( !isset( $preferences ) ) {
 	$preferences = get_option( 'theplatform_preferences_options' );
 }
 
-add_action( 'wp_ajax_startUpload', 'MPXProxy::startUpload' );
-add_action( 'wp_ajax_uploadStatus', 'MPXProxy::uploadStatus' );
-add_action( 'wp_ajax_publishMedia', 'MPXProxy::publishMedia' );
-add_action( 'wp_ajax_cancelUpload', 'MPXProxy::cancelUpload' );
-add_action( 'wp_ajax_uploadFragment', 'MPXProxy::uploadFragment' );
-add_action( 'wp_ajax_establishSession', 'MPXProxy::establishSession' );
+add_action( 'wp_ajax_startUpload', 'ThePlatform_Proxy::startUpload' );
+add_action( 'wp_ajax_uploadStatus', 'ThePlatform_Proxy::uploadStatus' );
+add_action( 'wp_ajax_publishMedia', 'ThePlatform_Proxy::publishMedia' );
+add_action( 'wp_ajax_cancelUpload', 'ThePlatform_Proxy::cancelUpload' );
+add_action( 'wp_ajax_uploadFragment', 'ThePlatform_Proxy::uploadFragment' );
+add_action( 'wp_ajax_establishSession', 'ThePlatform_Proxy::establishSession' );
 
 /**
  * This class is responsible for uploading and publishing Media to MPX
  * @package default
  */
-class MPXProxy {
+class ThePlatform_Proxy {
 
 	public static function check_nonce_and_permissions() {
 		check_admin_referer( 'theplatform-ajax-nonce' );
@@ -56,7 +56,7 @@ class MPXProxy {
 	 * @return mixed JSON response or instance of WP_Error
 	 */
 	public static function startUpload() {
-		MPXProxy::check_nonce_and_permissions();
+		ThePlatform_Proxy::check_nonce_and_permissions();
 
 		$ret = array();
 
@@ -96,7 +96,7 @@ class MPXProxy {
 	 * @return mixed JSON response or instance of WP_Error
 	 */
 	public static function uploadStatus() {
-		MPXProxy::check_nonce_and_permissions();
+		ThePlatform_Proxy::check_nonce_and_permissions();
 
 		$ret = array();
 
@@ -132,7 +132,7 @@ class MPXProxy {
 	 * @return mixed JSON response or instance of WP_Error
 	 */
 	public static function publishMedia() {
-		MPXProxy::check_nonce_and_permissions();
+		ThePlatform_Proxy::check_nonce_and_permissions();
 
 		$ret = array();
 		if ( !isset( $preferences ) ) {
@@ -210,7 +210,7 @@ class MPXProxy {
 	 * @return mixed JSON response or instance of WP_Error
 	 */
 	public static function cancelUpload() {
-		MPXProxy::check_nonce_and_permissions();
+		ThePlatform_Proxy::check_nonce_and_permissions();
 
 		$ret = array();
 
@@ -260,7 +260,7 @@ class MPXProxy {
 	 * @return mixed JSON response or instance of WP_Error
 	 */
 	public static function establishSession() {
-		MPXProxy::check_nonce_and_permissions();
+		ThePlatform_Proxy::check_nonce_and_permissions();
 
 		$ret = array();
 
