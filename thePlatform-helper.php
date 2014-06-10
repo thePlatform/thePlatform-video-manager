@@ -57,7 +57,7 @@ function connection_options_validate( $input ) {
 		'default_height' => ($GLOBALS['content_width'] / 16) * 9
 	);
 
-	if ( !is_array( $input ) ) {
+	if ( !is_array( $input ) || $input['mpx_username'] == 'mpx/' ) {
 		return $defaults;
 	}
 
