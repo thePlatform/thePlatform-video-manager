@@ -121,6 +121,12 @@ class ThePlatform_Options {
 			$this->region_is_verified = $this->tp_api->internal_verify_account_region();
 		} else {
 			$this->region_is_verified = FALSE;
+
+			if ($this->preferences_options['mpx_username'] != 'mpx/') {
+				echo '<div id="message" class="error">';
+				echo '<p><strong>Sign in to thePlatform failed, please check your account settings.</strong></p>';
+				echo '</div>';
+			}
 		}
 	}
 
@@ -326,11 +332,11 @@ class ThePlatform_Options {
 				$html .= '</select>';
 				break;
 			case 'mpx_password':
-				$html = '<input id="mpx_password" type="password" name="theplatform_preferences_options[' . esc_attr( $field ) . ']" value="' . esc_attr( $opts[$field] ) . '" />';
+				$html = '<input id="mpx_password" type="password" name="theplatform_preferences_options[' . esc_attr($field) . ']" value="' . $opts[$field] . '" autocomplete="off" />';
 				$html .= '<span id="verify-account"><button id="verify-account-button" type="button" name="verify-account-button">Verify Account Settings</button><div id="verify-account-dashicon" class="dashicons"></div></span>';
 				break;
 			case 'mpx_username':
-				$html = '<input id="mpx_username" type="text" name="theplatform_preferences_options[' . esc_attr( $field ) . ']" value="' . esc_attr( $opts[$field] ) . '" />';
+				$html = '<input id="mpx_username" type="text" name="theplatform_preferences_options[' . esc_attr($field) . ']" value="' . esc_attr($opts[$field]) . '" autocomplete="off" />';
 				break;
 			case 'mpx_account_pid':
 				$html = '<input disabled style="background-color: lightgray" id="mpx_account_pid" type="text" name="theplatform_preferences_options[' . esc_attr( $field ) . ']" value="' . esc_attr( $opts[$field] ) . '" />';
@@ -432,8 +438,8 @@ class ThePlatform_Options {
 		?>
 		<div class="wrap">
 			<?php $this->plugin_options_tabs(); ?>
-			<form method="POST" action="options.php">				
-				<?php settings_fields( $tab ); ?>
+			<form method="POST" action="options.php" autocomplete="off">
+			<?php settings_fields( $tab ); ?>
 				<?php do_settings_sections( $tab ); ?>
 				<?php submit_button(); ?>
 			</form>

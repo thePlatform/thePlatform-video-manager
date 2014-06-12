@@ -61,59 +61,64 @@ function connection_options_validate( $input ) {
 		return $defaults;
 	}
 
-	$region_is_verified = $tp_api->internal_verify_account_region();
+	$account_is_verified = $tp_api->internal_verify_account_settings();
+	if ($account_is_verified) {
+		$region_is_verified = $tp_api->internal_verify_account_region();
 
-	if ( strpos( $input['mpx_account_id'], '|' ) !== FALSE ) {
-		$ids = explode( '|', $input['mpx_account_id'] );
-		$input['mpx_account_id'] = $ids[0];
-		$input['mpx_account_pid'] = $ids[1];
-	}
+		if (strpos($input['mpx_account_id'], '|') !== FALSE) {
+			$ids = explode('|', $input['mpx_account_id']);
+			$input['mpx_account_id'] = $ids[0];
+			$input['mpx_account_pid'] = $ids[1];
+		}
 
-	if ( strpos( $input['default_player_name'], '|' ) !== FALSE ) {
-		$ids = explode( '|', $input['default_player_name'] );
-		$input['default_player_name'] = $ids[0];
-		$input['default_player_pid'] = $ids[1];
-	}
+		if (strpos($input['default_player_name'], '|') !== FALSE) {
+			$ids = explode('|', $input['default_player_name']);
+			$input['default_player_name'] = $ids[0];
+			$input['default_player_pid'] = $ids[1];
+		}
 
-	// If the account is selected, but no player has been set, use the first
-	// returned as the default.
-	if ( isset( $input['mpx_account_id'] ) && !isset( $input['default_player_name'] ) ) {
-		if ( $region_is_verified ) {
-			$players = $tp_api->get_players();
-			$player = $players[0];
-			$input['default_player_name'] = $player['title'];
-			$input['default_player_pid'] = $player['pid'];
-		} else {
-			$input['default_player_name'] = '';
-			$input['default_player_pid'] = '';
+		// If the account is selected, but no player has been set, use the first
+		// returned as the default.
+		if (isset($input['mpx_account_id']) && !isset($input['default_player_name'])) {
+			if ($region_is_verified) {
+				$players = $tp_api->get_players();
+				$player = $players[0];
+				$input['default_player_name'] = $player['title'];
+				$input['default_player_pid'] = $player['pid'];
+			}
+			else {
+				$input['default_player_name'] = '';
+				$input['default_player_pid'] = '';
+			}
+		}
+
+		// If the account is selected, but no upload server has been set, use the first
+		// returned as the default.
+		if (isset($input['mpx_account_id']) && !isset($input['mpx_server_id'])) {
+			if ($region_is_verified) {
+				$servers = $tp_api->get_servers();
+				$server = $servers[0];
+				$input['mpx_server_id'] = $server['id'];
+			}
+			else {
+				$input['mpx_server_id'] = '';
+			}
+		}
+
+		if (strpos($input['mpx_region'], '|') !== FALSE) {
+			$ids = explode('|', $input['mpx_region']);
+			$input['mpx_region'] = $ids[0];
+		}
+
+		foreach ($input as $key => $value) {
+			if ($key == 'videos_per_page' || $key === 'default_width' || $key === 'default_height') {
+				$input[$key] = intval($value);
+			}
+			else {
+				$input[$key] = sanitize_text_field($value);
+			}
 		}
 	}
-
-	// If the account is selected, but no upload server has been set, use the first
-	// returned as the default.
-	if ( isset( $input['mpx_account_id'] ) && !isset( $input['mpx_server_id'] ) ) {
-		if ( $region_is_verified ) {
-			$servers = $tp_api->get_servers();
-			$server = $servers[0];
-			$input['mpx_server_id'] = $server['id'];
-		} else {
-			$input['mpx_server_id'] = '';
-		}
-	}
-
-	if ( strpos( $input['mpx_region'], '|' ) !== FALSE ) {
-		$ids = explode( '|', $input['mpx_region'] );
-		$input['mpx_region'] = $ids[0];
-	}
-
-	foreach ( $input as $key => $value ) {
-		if ( $key == 'videos_per_page' || $key === 'default_width' || $key === 'default_height' ) {
-			$input[$key] = intval( $value );
-		} else {
-			$input[$key] = sanitize_text_field( $value );
-		}
-	}
-
 	// If username, account id, or region is changed, reset settings to default
 	$old_preferences = get_option( 'theplatform_preferences_options' );
 	if ( $old_preferences ) {
