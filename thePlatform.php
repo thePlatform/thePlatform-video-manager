@@ -56,7 +56,7 @@ class ThePlatform_Plugin {
 		require_once(dirname( __FILE__ ) . '/thePlatform-helper.php');
 		require_once(dirname( __FILE__ ) . '/thePlatform-proxy.php');
 
-		new ThePlatform_URLs( 'theplatform_preferences_options' );
+		new ThePlatform_URLs( 'theplatform_account_options' );
 		$this->tp_api = new ThePlatform_API;
 
 		$this->plugin_base_dir = plugin_dir_path( __FILE__ );
@@ -242,6 +242,10 @@ class ThePlatform_Plugin {
 		if ( !isset( $this->preferences ) ) {
 			$this->preferences = get_option( 'theplatform_preferences_options' );
 		}
+		
+		if ( !isset( $this->account ) ) {
+			$this->account = get_option( 'theplatform_account_options' );
+		}
 
 		list( $width, $height, $media, $player, $mute, $autoplay, $loop, $tag, $params ) = array_values( shortcode_atts( array(
 			'width' => '',
@@ -257,13 +261,11 @@ class ThePlatform_Plugin {
 		);
 
 		if ( empty( $width ) ) {
-			$width = $this->preferences['default_width'];
+			$width = (int) $this->preferences['default_width'];
 		}
 		if ( strval( $width ) === '0' ) {
 			$width = 500;
-		}
-
-		$width = (int) $width;
+		}		
 
 		if ( empty( $height ) ) {
 			$height = $this->preferences['default_height'];
@@ -279,6 +281,7 @@ class ThePlatform_Plugin {
 		if ( empty( $autoplay ) ) {
 			$autoplay = $this->preferences['autoplay'];
 		}
+		
 		if ( empty( $autoplay ) ) {
 			$autoplay = 'false';
 		}
@@ -302,9 +305,9 @@ class ThePlatform_Plugin {
 			return '<!--Syntax Error: Required Player parameter missing. -->';
 		}
 
-
-		if ( !is_feed() ) {
-			$accountPID = $this->preferences['mpx_account_pid'];
+		$accountPID = $this->account['mpx_account_pid'];
+		
+		if ( !is_feed() ) {			
 			$output = $this->get_embed_shortcode( $accountPID, $media, $player, $width, $height, $autoplay, $tag, $loop, $mute, $params );
 			$output = apply_filters( 'tp_embed_code', $output );
 		} else {
@@ -325,24 +328,25 @@ class ThePlatform_Plugin {
 			$output = apply_filters( 'tp_rss_embed_code', $output );
 		}
 
-
 		return $output;
 	}
 
 	/**
 	 * Called by the plugin shortcode callback function to construct a media embed iframe.
 	 *
-	 * @param string $account_id Account of the user embedding the media asset
-	 * @param string $media_id Identifier of the media object to embed
-	 * @param string $player_id Identifier of the player to display the embedded media asset in
+	 * @param string $accountPID Account of the user embedding the media asset
+	 * @param string $releasePID Identifier of the media object to embed
+	 * @param string $playerPID Identifier of the player to display the embedded media asset in
 	 * @param string $player_width The width of the embedded player
 	 * @param string $player_height The height of the embedded player
-	 * @param boolean $loop Whether or not to loop the embedded media automatically
-	 * @param boolean $auto_play Whether or not to autoplay the embedded media asset on page load
-	 * @param boolean $mute Whether or not to mute the audio channel of the embedded media asset
+	 * @param boolean $autoplay Whether or not to loop the embedded media automatically
+	 * @param boolean $tag script or iframe embed tag style
+	 * @param boolean $loop Set the embedded media to loop, false by default
+	 * @param boolean $mute Whether or not to mute the audio channel of the embedded media asset, false by default
+	 * @param string $params Any additional parameters to add to the embed code
 	 * @return string An iframe tag sourced from the selected media embed URL
 	 */
-	function get_embed_shortcode( $accountPID, $releasePID, $playerPID, $player_width, $player_height, $autoplay, $tag, $loop = false, $mute = false, $params ) {
+	function get_embed_shortcode( $accountPID, $releasePID, $playerPID, $player_width, $player_height, $autoplay, $tag, $loop = false, $mute = false, $params = '' ) {
 
 		$url = TP_API_PLAYER_EMBED_BASE_URL . urlencode( $accountPID ) . '/' . urlencode( $playerPID );
 		$url .= '/embed/select/' . urlencode( $releasePID );
@@ -380,7 +384,7 @@ class ThePlatform_Plugin {
 
 // Instantiate thePlatform plugin on WordPress init
 add_action( 'init', array( 'ThePlatform_Plugin', 'init' ) );
-add_action( 'wp_ajax_verify_account', 'verify_account_settings' );
+add_action( 'wp_ajax_verify_account', 'theplatform_verify_account_settings' );
 add_action( 'admin_init', 'register_plugin_settings' );
 add_action( 'init', 'theplatform_buttonhooks' );
 
@@ -418,9 +422,11 @@ function theplatform_register_tinymce_javascript( $plugin_array ) {
  */
 function register_plugin_settings() {
 	$preferences_options_key = 'theplatform_preferences_options';
+	$account_options_key = 'theplatform_account_options';	
 	$metadata_options_key = 'theplatform_metadata_options';
 	$upload_options_key = 'theplatform_upload_options';
-	register_setting( $preferences_options_key, $preferences_options_key, 'connection_options_validate' );
-	register_setting( $metadata_options_key, $metadata_options_key, 'dropdown_options_validate' );
-	register_setting( $upload_options_key, $upload_options_key, 'dropdown_options_validate' );
+	register_setting( $account_options_key, $account_options_key, 'theplatform_account_options_validate' );	
+	register_setting( $preferences_options_key, $preferences_options_key, 'theplatform_preferences_options_validate' );
+	register_setting( $metadata_options_key, $metadata_options_key, 'theplatform_dropdown_options_validate' );
+	register_setting( $upload_options_key, $upload_options_key, 'theplatform_dropdown_options_validate' );
 }

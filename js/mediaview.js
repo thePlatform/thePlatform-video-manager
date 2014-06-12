@@ -20,7 +20,7 @@ jQuery( document ).ready( function() {
 	var queryParams = mpxHelper.getParameters();
 	tpHelper.selectedCategory = '';
 	tpHelper.feedEndRange = 0;
-	tpHelper.queryString = ''
+	tpHelper.queryString = '';
 	$pdk.initialize();
 	jQuery( '#load-overlay' ).hide();
 	mpxHelper.getCategoryList( buildCategoryAccordion );

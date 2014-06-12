@@ -20,9 +20,13 @@ if ( !defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$tp_api = new ThePlatform_API;
+if ( !isset( $tp_api ) ) {
+	$tp_api = new ThePlatform_API;
+}
+
 $metadata = $tp_api->get_metadata_fields();
 $preferences = get_option( 'theplatform_preferences_options' );
+$account = get_option( 'theplatform_account_options' );
 $upload_options = get_option( 'theplatform_upload_options' );
 $metadata_options = get_option( 'theplatform_metadata_options' );
 
@@ -62,8 +66,7 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 <form role="form">
 	<?php
 	wp_nonce_field( 'theplatform_upload_nonce' );
-
-	$upload_options = get_option( 'theplatform_upload_options' );
+	
 	$html = '';
 
 	if ( strlen( $preferences['user_id_customfield'] ) && $preferences['user_id_customfield'] !== '(None)' ) {
@@ -112,9 +115,7 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 			$i++;
 		}
 	}
-
-	$metadata_options = get_option( 'theplatform_metadata_options' );
-
+	
 	$html = '';
 	$write_fields = array();
 
@@ -184,30 +185,30 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 		?>
 		<div class="row">
 			<div class="col-xs-3">
-	<?php
-	$profiles = $tp_api->get_publish_profiles();
-	$html = '<label class="control-label" for="publishing_profile">Publishing Profile</label>';
-	$html .= '<select id="publishing_profile" name="publishing_profile" class="form-control upload_profile">';
-	$html .= '<option value="tp_wp_none"' . selected( $entry['title'], $preferences['default_publish_id'], false ) . '>Do not publish</option>';
-	foreach ( $profiles as $entry ) {
-		$html .= '<option value="' . esc_attr( $entry['title'] ) . '"' . selected( $entry['title'], $preferences['default_publish_id'], false ) . '>' . esc_html( $entry['title'] ) . '</option>';
-	}
-	$html .= '</select>';
-	echo $html;
-	?>
+				<?php
+				$profiles = $tp_api->get_publish_profiles();
+				$html = '<label class="control-label" for="publishing_profile">Publishing Profile</label>';
+				$html .= '<select id="publishing_profile" name="publishing_profile" class="form-control upload_profile">';
+				$html .= '<option value="tp_wp_none"' . selected( $preferences['default_publish_id'], 'wp_tp_none', false ) . '>Do not publish</option>';
+				foreach ( $profiles as $entry ) {
+					$html .= '<option value="' . esc_attr( $entry['title'] ) . '"' . selected( $entry['title'], $preferences['default_publish_id'], false ) . '>' . esc_html( $entry['title'] ) . '</option>';
+				}
+				$html .= '</select>';
+				echo $html;
+				?>
 			</div>
 			<div class="col-xs-3">
-	<?php
-	$servers = $tp_api->get_servers();
-	$html = '<label class="control-label" for="theplatform_server">Server</label>';
-	$html .= '<select id="theplatform_server" name="theplatform_server" class="form-control server_id">';
-	$html .= '<option value="DEFAULT_SERVER"' . selected( $preferences['mpx_server_id'], "DEFAULT_SERVER", false ) . '>Default Server</option>';
-	foreach ( $servers as $entry ) {
-		$html .= '<option value="' . esc_attr( $entry['id'] ) . '"' . selected( $entry['id'], $preferences['mpx_server_id'], false ) . '>' . esc_html( $entry['title'] ) . '</option>';
-	}
-	$html .= '</select>';
-	echo $html;
-	?>
+				<?php
+				$servers = $tp_api->get_servers();
+				$html = '<label class="control-label" for="theplatform_server">Server</label>';
+				$html .= '<select id="theplatform_server" name="theplatform_server" class="form-control server_id">';
+				$html .= '<option value="DEFAULT_SERVER"' . selected( $preferences['mpx_server_id'], "DEFAULT_SERVER", false ) . '>Default Server</option>';
+				foreach ( $servers as $entry ) {
+					$html .= '<option value="' . esc_attr( $entry['id'] ) . '"' . selected( $entry['id'], $preferences['mpx_server_id'], false ) . '>' . esc_html( $entry['title'] ) . '</option>';
+				}
+				$html .= '</select>';
+				echo $html;
+				?>
 			</div>
 		</div>
 		<div class="row">
@@ -220,13 +221,13 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 				<button id="theplatform_upload_button" class="form-control btn btn-primary" type="button" name="theplatform-upload-button">Upload Media</button>
 			</div>
 		</div>
-<?php } else {
-	?>
+	<?php } else {
+		?>
 		<div class="row" style="margin-top: 10px;">
 			<div class="col-xs-3">
 				<button id="theplatform_edit_button" class="form-control btn btn-primary" type="button" name="theplatform-edit-button">Submit</button>
 			</div>
 		</div>
-<?php } ?>
+	<?php } ?>
 </form>
 </div>

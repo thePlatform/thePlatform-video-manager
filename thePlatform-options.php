@@ -21,7 +21,8 @@
  */
 class ThePlatform_Options {
 
-	private $preferences_options_key = 'theplatform_preferences_options';
+	private $account_options_key = 'theplatform_account_options';
+	private $preferences_options_key = 'theplatform_preferences_options';	
 	private $metadata_options_key = 'theplatform_metadata_options';
 	private $upload_options_key = 'theplatform_upload_options';
 	private $account_is_verified;
@@ -50,6 +51,7 @@ class ThePlatform_Options {
 
 		$this->load_options();
 		$this->enqueue_scripts();
+		$this->register_account_options();
 		$this->register_preferences_options();
 		$this->register_metadata_options();
 		$this->register_upload_options();
@@ -79,28 +81,32 @@ class ThePlatform_Options {
 	 */
 	function load_options() {
 		// Get existing options, or empty arrays if no options exist
+		$this->account_options = get_option( $this->account_options_key, array() );		
 		$this->preferences_options = get_option( $this->preferences_options_key, array() );
 		$this->metadata_options = get_option( $this->metadata_options_key, array() );
 		$this->upload_options = get_option( $this->upload_options_key, array() );
 
-		// Initialize option defaults		
-		$this->preferences_options = array_merge( array(
+		// Initialize option defaults	
+		$this->account_options = array_merge( array(
 			'mpx_account_id' => '',
 			'mpx_username' => 'mpx/',
 			'mpx_password' => '',
-			'embed_tag_type' => 'iframe',
 			'mpx_account_pid' => '',
-			'mpx_region' => 'us',
+			'mpx_region' => 'us'
+				), $this->account_options );
+
+		$this->preferences_options = array_merge( array(
+			'embed_tag_type' => 'embed',
 			'default_player_name' => '',
 			'default_player_pid' => '',
-			'mpx_server_id' => '',
-			'default_publish_id' => '',
-			'user_id_customfield' => '',
+			'mpx_server_id' => 'DEFAULT_SERVER',
+			'default_publish_id' => 'tp_wp_none',
+			'user_id_customfield' => '(None)',
 			'filter_by_user_id' => 'FALSE',
 			'autoplay' => 'TRUE',
 			'rss_embed_type' => 'article',
 			'default_width' => $GLOBALS['content_width'],
-			'default_height' => ($GLOBALS['content_width'] / 16) * 9,
+			'default_height' => ($GLOBALS['content_width'] / 16) * 9
 				), $this->preferences_options );
 
 		$this->metadata_options = array_merge( array(), $this->metadata_options );
@@ -108,12 +114,14 @@ class ThePlatform_Options {
 		$this->upload_options = array_merge( array(), $this->upload_options );
 
 		// Create options table entries in DB if none exist. Initialize with defaults
+		update_option( $this->account_options_key, $this->account_options );
 		update_option( $this->preferences_options_key, $this->preferences_options );
 		update_option( $this->metadata_options_key, $this->metadata_options );
 		update_option( $this->upload_options_key, $this->upload_options );
 
 		//Get preferences from the database for sanity checks
-		$this->preferences = get_option( 'theplatform_preferences_options' );
+		$this->preferences = get_option( $this->preferences_options_key );
+		$this->account = get_option ( $this->account_options_key );
 
 		$this->account_is_verified = $this->tp_api->internal_verify_account_settings();
 
@@ -122,7 +130,7 @@ class ThePlatform_Options {
 		} else {
 			$this->region_is_verified = FALSE;
 
-			if ( $this->preferences_options['mpx_username'] != 'mpx/' ) {
+			if ( $this->account_options['mpx_username'] != 'mpx/' ) {
 				echo '<div id="message" class="error">';
 				echo '<p><strong>Sign in to thePlatform failed, please check your account settings.</strong></p>';
 				echo '</div>';
@@ -131,53 +139,60 @@ class ThePlatform_Options {
 	}
 
 	/*
+	 * Registers the account options via the Settings API,
+	 * appends the setting to the tabs array of the object.
+	 */
+	function register_account_options() {
+		$this->plugin_settings_tabs[$this->account_options_key] = 'Account';
+
+		add_settings_section( 'section_mpx_account_options', 'MPX Account Options', array( $this, 'section_mpx_account_desc' ), $this->account_options_key );
+		add_settings_field( 'mpx_username_option',	'MPX Username',		array( $this, 'field_account_option' ), $this->account_options_key, 'section_mpx_account_options', array( 'field' => 'mpx_username' ) );
+		add_settings_field( 'mpx_password_option',	'MPX Password',		array( $this, 'field_account_option' ), $this->account_options_key, 'section_mpx_account_options', array( 'field' => 'mpx_password' ) );
+		add_settings_field( 'mpx_region_option',	'MPX Region',		array( $this, 'field_account_option' ), $this->account_options_key, 'section_mpx_account_options', array( 'field' => 'mpx_region' ) );
+		add_settings_field( 'mpx_accountid_option', 'MPX Account',		array( $this, 'field_account_option' ), $this->account_options_key, 'section_mpx_account_options', array( 'field' => 'mpx_account_id' ) );
+		add_settings_field( 'mpx_account_pid',		'MPX Account PID',	array( $this, 'field_account_option' ), $this->account_options_key, 'section_mpx_account_options', array( 'field' => 'mpx_account_pid' ) );
+		
+	}
+
+	/*
 	 * Registers the preference options via the Settings API,
 	 * appends the setting to the tabs array of the object.
 	 */
-
-	function register_preferences_options() {
-		$this->plugin_settings_tabs[$this->preferences_options_key] = 'Preferences';
-
-		add_settings_section( 'section_mpx_account_options', 'MPX Account Options', array( $this, 'section_mpx_account_desc' ), $this->preferences_options_key );
-		add_settings_field( 'mpx_username_option', 'MPX Username', array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_mpx_account_options', array( 'field' => 'mpx_username' ) );
-		add_settings_field( 'mpx_password_option', 'MPX Password', array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_mpx_account_options', array( 'field' => 'mpx_password' ) );
-		add_settings_field( 'mpx_region_option', 'MPX Region', array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_mpx_account_options', array( 'field' => 'mpx_region' ) );
-		add_settings_field( 'mpx_accountid_option', 'MPX Account', array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_mpx_account_options', array( 'field' => 'mpx_account_id' ) );
-		add_settings_field( 'mpx_account_pid', 'MPX Account PID', array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_mpx_account_options', array( 'field' => 'mpx_account_pid' ) );
-
+	function register_preferences_options() {				
 		if ( !$this->account_is_verified || !$this->region_is_verified ) {
 			return;
 		}
 
-		if ( $this->preferences['mpx_account_id'] === '' ) {
+		if ( empty ( $this->account['mpx_account_id'] ) ) {
 			return;
 		}
+		
+		$this->plugin_settings_tabs[$this->preferences_options_key] = 'Preferences';
 
 		add_settings_section( 'section_embed_options', 'Embedding Preferences', array( $this, 'section_embed_desc' ), $this->preferences_options_key );
-		add_settings_field( 'default_player_name', 'Default Player', array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_embed_options', array( 'field' => 'default_player_name' ) );
-		add_settings_field( 'default_player_pid', 'Default Player PID', array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_embed_options', array( 'field' => 'default_player_pid' ) );
-		add_settings_field( 'embed_tag_type_option', 'Embed Tag Type', array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_embed_options', array( 'field' => 'embed_tag_type' ) );
-		add_settings_field( 'rss_embed_type_option', 'RSS Embed Type', array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_embed_options', array( 'field' => 'rss_embed_type' ) );
-		add_settings_field( 'autoplay', 'Force Autoplay', array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_embed_options', array( 'field' => 'autoplay' ) );
-		add_settings_field( 'default_width', 'Default Player Width', array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_embed_options', array( 'field' => 'default_width' ) );
-		add_settings_field( 'default_height', 'Default Player Height', array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_embed_options', array( 'field' => 'default_height' ) );
+		add_settings_field( 'default_player_name',		'Default Player',			array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_embed_options', array( 'field' => 'default_player_name' ) );
+		add_settings_field( 'default_player_pid',		'Default Player PID',		array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_embed_options', array( 'field' => 'default_player_pid' ) );
+		add_settings_field( 'embed_tag_type_option',	'Embed Tag Type',			array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_embed_options', array( 'field' => 'embed_tag_type' ) );
+		add_settings_field( 'rss_embed_type_option',	'RSS Embed Type',			array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_embed_options', array( 'field' => 'rss_embed_type' ) );
+		add_settings_field( 'autoplay',					'Force Autoplay',			array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_embed_options', array( 'field' => 'autoplay' ) );
+		add_settings_field( 'default_width',			'Default Player Width',		array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_embed_options', array( 'field' => 'default_width' ) );
+		add_settings_field( 'default_height',			'Default Player Height',	array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_embed_options', array( 'field' => 'default_height' ) );
 
 		add_settings_section( 'section_preferences_options', 'General Preferences', array( $this, 'section_preferences_desc' ), $this->preferences_options_key );
-		add_settings_field( 'filter_by_user_id', 'Filter Users Own Videos', array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_preferences_options', array( 'field' => 'filter_by_user_id' ) );
-		add_settings_field( 'user_id_customfield', 'User ID Custom Field', array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_preferences_options', array( 'field' => 'user_id_customfield' ) );
-		add_settings_field( 'mpx_server_id', 'MPX Upload Server', array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_preferences_options', array( 'field' => 'mpx_server_id' ) );
-		add_settings_field( 'default_publish_id', 'Default Publishing Profile', array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_preferences_options', array( 'field' => 'default_publish_id' ) );
+		add_settings_field( 'filter_by_user_id',	'Filter Users Own Videos',		array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_preferences_options', array( 'field' => 'filter_by_user_id' ) );
+		add_settings_field( 'user_id_customfield',	'User ID Custom Field',			array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_preferences_options', array( 'field' => 'user_id_customfield' ) );
+		add_settings_field( 'mpx_server_id',		'MPX Upload Server',			array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_preferences_options', array( 'field' => 'mpx_server_id' ) );
+		add_settings_field( 'default_publish_id',	'Default Publishing Profile',	array( $this, 'field_preference_option' ), $this->preferences_options_key, 'section_preferences_options', array( 'field' => 'default_publish_id' ) );
 	}
 
 	/*
 	 * Registers the metadata options and appends the
 	 * key to the plugin settings tabs array.
 	 */
-
 	function register_metadata_options() {
 
 		//Check for uninitialized options	
-		if ( FALSE === $this->account_is_verified || !$this->region_is_verified ) {
+		if ( !$this->account_is_verified || !$this->region_is_verified ) {
 			return;
 		}
 
@@ -205,7 +220,6 @@ class ThePlatform_Options {
 	 * Registers the upload options and appends the
 	 * key to the plugin settings tabs array.
 	 */
-
 	function register_upload_options() {
 
 		if ( !$this->account_is_verified || !$this->region_is_verified ) {
@@ -277,25 +291,13 @@ class ThePlatform_Options {
 	/**
 	 * MPX Account Option field callbacks.
 	 */
-	function field_preference_option( $args ) {
-		$opts = get_option( $this->preferences_options_key, array() );
+	function field_account_option ( $args ) {
+		$opts = get_option( $this->account_options_key, array() );
 		$field = $args['field'];
-
+		
 		switch ( $field ) {
-			case 'mpx_server_id':
-				$html = '<select id="' . esc_attr( $field ) . '" name="theplatform_preferences_options[' . esc_attr( $field ) . ']">';
-				if ( $this->preferences['mpx_account_id'] !== '' ) {
-					$servers = $this->tp_api->get_servers();
-					$html .= '<option value="DEFAULT_SERVER"' . selected( $opts[$field], "DEFAULT_SERVER", false ) . '>Default Server</option>';
-					foreach ( $servers as $server ) {
-						$html .= '<option value="' . esc_attr( $server['id'] ) . '"' . selected( $opts[$field], $server['id'], false ) . '>' . esc_html( $server['title'] ) . '</option>';
-					}
-				}
-
-				$html .= '</select>';
-				break;
 			case 'mpx_account_id':
-				$html = '<select id="' . esc_attr( $field ) . '" name="theplatform_preferences_options[' . esc_attr( $field ) . ']">';
+				$html = '<select id="' . esc_attr( $field ) . '" name="theplatform_account_options[' . esc_attr( $field ) . ']">';
 
 				if ( $this->account_is_verified ) {
 					$subaccounts = $this->tp_api->get_subaccounts();
@@ -305,12 +307,12 @@ class ThePlatform_Options {
 				}
 				$html .= '</select>';
 
-				if ( $this->preferences['mpx_account_id'] === '' ) {
+				if ( $this->account['mpx_account_id'] === '' ) {
 					$html .= "<span> Please pick the MPX account you'd like to manage through Wordpress</span>";
 				}
 				break;
 			case 'mpx_region':
-				$html = '<select id="' . esc_attr( $field ) . '" name="theplatform_preferences_options[' . esc_attr( $field ) . ']">';
+				$html = '<select id="' . esc_attr( $field ) . '" name="theplatform_account_options[' . esc_attr( $field ) . ']">';
 				$regions = $this->regions;
 				foreach ( $regions as $region ) {
 					$html .= '<option value="' . esc_attr( $region ) . '|' . esc_attr( $region ) . '"' . selected( $opts[$field], $region, false ) . '>' . esc_html( strtoupper( $region ) ) . '</option>';
@@ -320,6 +322,41 @@ class ThePlatform_Options {
 				if ( !$this->region_is_verified ) {
 					$html .= "<span> Please select the correct region the MPX account is located at</span>";
 				}
+				break;
+			case 'mpx_password':
+				$html = '<input id="mpx_password" type="password" name="theplatform_account_options[' . esc_attr( $field ) . ']" value="' . $opts[$field] . '" autocomplete="off" />';
+				$html .= '<span id="verify-account"><button id="verify-account-button" type="button" name="verify-account-button">Verify Account Settings</button><div id="verify-account-dashicon" class="dashicons"></div></span>';
+				break;
+			case 'mpx_username':
+				$html = '<input id="mpx_username" type="text" name="theplatform_account_options[' . esc_attr( $field ) . ']" value="' . esc_attr( $opts[$field] ) . '" autocomplete="off" />';
+				break;
+			case 'mpx_account_pid':
+				$html = '<input disabled style="background-color: lightgray" id="mpx_account_pid" type="text" name="theplatform_account_options[' . esc_attr( $field ) . ']" value="' . esc_attr( $opts[$field] ) . '" />';
+				break;
+		}
+		
+		echo $html;
+	}
+	
+	/**
+	 * MPX Preferences Option field callbacks.
+	 */
+	function field_preference_option( $args ) {
+		$opts = get_option( $this->preferences_options_key, array() );
+		$field = $args['field'];
+
+		switch ( $field ) {
+			case 'mpx_server_id':
+				$html = '<select id="' . esc_attr( $field ) . '" name="theplatform_preferences_options[' . esc_attr( $field ) . ']">';
+				if ( $this->account['mpx_account_id'] !== '' ) {
+					$servers = $this->tp_api->get_servers();
+					$html .= '<option value="DEFAULT_SERVER"' . selected( $opts[$field], "DEFAULT_SERVER", false ) . '>Default Server</option>';
+					foreach ( $servers as $server ) {
+						$html .= '<option value="' . esc_attr( $server['id'] ) . '"' . selected( $opts[$field], $server['id'], false ) . '>' . esc_html( $server['title'] ) . '</option>';
+					}
+				}
+
+				$html .= '</select>';
 				break;
 			case 'embed_tag_type':
 				$html = '<select id="' . esc_attr( $field ) . '" name="theplatform_preferences_options[' . esc_attr( $field ) . ']">';
@@ -333,20 +370,10 @@ class ThePlatform_Options {
 				$html .= '<option value="iframe"' . selected( $opts[$field], 'iframe', false ) . '>IFrame</option>';
 				$html .= '<option value="script"' . selected( $opts[$field], 'script', false ) . '>Script</option>';
 				$html .= '</select>';
-				break;
-			case 'mpx_password':
-				$html = '<input id="mpx_password" type="password" name="theplatform_preferences_options[' . esc_attr( $field ) . ']" value="' . $opts[$field] . '" autocomplete="off" />';
-				$html .= '<span id="verify-account"><button id="verify-account-button" type="button" name="verify-account-button">Verify Account Settings</button><div id="verify-account-dashicon" class="dashicons"></div></span>';
-				break;
-			case 'mpx_username':
-				$html = '<input id="mpx_username" type="text" name="theplatform_preferences_options[' . esc_attr( $field ) . ']" value="' . esc_attr( $opts[$field] ) . '" autocomplete="off" />';
-				break;
-			case 'mpx_account_pid':
-				$html = '<input disabled style="background-color: lightgray" id="mpx_account_pid" type="text" name="theplatform_preferences_options[' . esc_attr( $field ) . ']" value="' . esc_attr( $opts[$field] ) . '" />';
-				break;
+				break;			
 			case 'default_player_name':
 				$html = '<select id="' . esc_attr( $field ) . '" name="theplatform_preferences_options[' . esc_attr( $field ) . ']">';
-				if ( $this->preferences['mpx_account_id'] !== '' ) {
+				if ( $this->account['mpx_account_id'] !== '' ) {
 					$players = $this->tp_api->get_players();
 					foreach ( $players as $player ) {
 						$html .= '<option value="' . esc_attr( $player['id'] ) . '|' . esc_attr( $player['pid'] ) . '"' . selected( $opts[$field], $player['id'], false ) . '>' . esc_html( $player['title'] ) . '</option>';
@@ -358,7 +385,7 @@ class ThePlatform_Options {
 				$html = '<select id="' . esc_attr( $field ) . '" name="theplatform_preferences_options[' . esc_attr( $field ) . ']">';
 				$html .= '<option value="tp_wp_none">Do not publish</option>';
 
-				if ( $this->preferences['mpx_account_id'] !== '' ) {
+				if ( $this->account['mpx_account_id'] !== '' ) {
 					$profiles = $this->tp_api->get_publish_profiles();
 					foreach ( $profiles as $profile ) {
 						$html .= '<option value="' . esc_attr( $profile['title'] ) . '"' . selected( $opts[$field], $profile['title'], false ) . '>' . esc_html( $profile['title'] ) . '</option>';
@@ -437,14 +464,15 @@ class ThePlatform_Options {
 	 * to render the tabs.
 	 */
 	function plugin_options_page() {
-		$tab = isset( $_GET['tab'] ) ? $_GET['tab'] : $this->preferences_options_key;
+		$tab = isset( $_GET['tab'] ) ? $_GET['tab'] : $this->account_options_key;
+		
 		?>
 		<div class="wrap">
-				<?php $this->plugin_options_tabs(); ?>
+		<?php $this->plugin_options_tabs(); ?>
 			<form method="POST" action="options.php" autocomplete="off">
-		<?php settings_fields( $tab ); ?>
-		<?php do_settings_sections( $tab ); ?>
-		<?php submit_button(); ?>
+			<?php settings_fields( $tab ); ?>
+			<?php do_settings_sections( $tab ); ?>
+				<?php submit_button(); ?>
 			</form>
 		</div>
 		<?php
@@ -457,7 +485,7 @@ class ThePlatform_Options {
 	 * plugin_options_page method.
 	 */
 	function plugin_options_tabs() {
-		$current_tab = isset( $_GET['tab'] ) ? $_GET['tab'] : $this->preferences_options_key;
+		$current_tab = isset( $_GET['tab'] ) ? $_GET['tab'] : $this->account_options_key;
 
 		screen_icon( 'theplatform' );
 		echo '<h2 class="nav-tab-wrapper">';
@@ -467,7 +495,6 @@ class ThePlatform_Options {
 		}
 		echo '</h2>';
 	}
-
 }
 
 if ( !class_exists( 'ThePlatform_API' ) ) {
@@ -475,3 +502,4 @@ if ( !class_exists( 'ThePlatform_API' ) ) {
 }
 
 new ThePlatform_Options;
+		

@@ -56,8 +56,9 @@ wp_print_styles( 'wp-jquery-ui-dialog' );
 		$metadata_options = get_option( 'theplatform_metadata_options' );
 		$upload_options = get_option( 'theplatform_upload_options' );
 		$preferences = get_option( 'theplatform_preferences_options' );
+		$account = get_option( 'theplatform_account_options' );
 
-		if ( strcmp( $preferences['mpx_account_id'], "" ) == 0 ) {
+		if ( strcmp( $account['mpx_account_id'], "" ) == 0 ) {
 			wp_die( 'MPX Account ID is not set, please configure the plugin before attempting to manage media' );
 		}
 
@@ -78,8 +79,8 @@ wp_print_styles( 'wp-jquery-ui-dialog' );
 		<script type="text/javascript">
 			tpHelper = { };
 			tpHelper.token = "<?php echo $tp_api->mpx_signin(); ?>";
-			tpHelper.account = "<?php echo $preferences['mpx_account_id']; ?>";
-			tpHelper.accountPid = "<?php echo $preferences['mpx_account_pid']; ?>";
+			tpHelper.account = "<?php echo $account['mpx_account_id']; ?>";
+			tpHelper.accountPid = "<?php echo $account['mpx_account_pid']; ?>";
 			tpHelper.isEmbed = "<?php echo $IS_EMBED; ?>";
 		</script>
 

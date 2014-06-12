@@ -25,8 +25,8 @@ if ( !isset( $tp_api ) ) {
 	$tp_api = new ThePlatform_API;
 }
 
-if ( !isset( $preferences ) ) {
-	$preferences = get_option( 'theplatform_preferences_options' );
+if ( !isset( $account ) ) {
+	$account = get_option( 'theplatform_account_options' );
 }
 
 add_action( 'wp_ajax_startUpload', 'ThePlatform_Proxy::startUpload' );
@@ -117,7 +117,7 @@ class ThePlatform_Proxy {
 			$ret['code'] = $response['status']['http_code'];
 		} else {
 			$ret['success'] = 'true';
-			$ret['content'] = decode_json_from_server( $response, TRUE );
+			$ret['content'] = theplatform_decode_json_from_server( $response, TRUE );
 		}
 
 		die( json_encode( $ret ) );
@@ -131,8 +131,8 @@ class ThePlatform_Proxy {
 		ThePlatform_Proxy::check_nonce_and_permissions();
 
 		$ret = array();
-		if ( !isset( $preferences ) ) {
-			$preferences = get_option( 'theplatform_preferences_options' );
+		if ( !isset( $account ) ) {
+			$account = get_option( 'theplatform_account_options' );
 		}
 
 		$url = TP_API_PUBLISH_PROFILE_ENDPOINT;
@@ -142,7 +142,7 @@ class ThePlatform_Proxy {
 			$url .= '&byTitle=' . urlencode( $_POST['profile'] );
 		}
 		$url .= '&token=' . $_POST['token'];
-		$url .= '&account=' . $preferences['mpx_account_id'];
+		$url .= '&account=' . $account['mpx_account_id'];
 
 		$response = ThePlatform_API_HTTP::get( $url );
 
@@ -157,7 +157,7 @@ class ThePlatform_Proxy {
 			$ret['success'] = 'false';
 			$ret['code'] = $response['status']['http_code'];
 		} else {
-			$content = decode_json_from_server( $response, TRUE );
+			$content = theplatform_decode_json_from_server( $response, TRUE );
 
 			if ( $content['entryCount'] == 0 ) {
 				$ret['success'] = 'false';
@@ -191,7 +191,7 @@ class ThePlatform_Proxy {
 				die();
 			}
 
-			$content = decode_json_from_server( $response, TRUE );
+			$content = theplatform_decode_json_from_server( $response, TRUE );
 
 			$ret['content'] = $content['publishResponse']['profileResultId'];
 			$ret['success'] = 'true';
@@ -242,7 +242,7 @@ class ThePlatform_Proxy {
 				die( json_encode( $ret ) );
 			}
 
-			$content = decode_json_from_server( $response, TRUE );
+			$content = theplatform_decode_json_from_server( $response, TRUE );
 			$ret['success'] = 'true';
 		}
 
