@@ -122,7 +122,7 @@ class ThePlatform_Options {
 		} else {
 			$this->region_is_verified = FALSE;
 
-			if ($this->preferences_options['mpx_username'] != 'mpx/') {
+			if ( $this->preferences_options['mpx_username'] != 'mpx/' ) {
 				echo '<div id="message" class="error">';
 				echo '<p><strong>Sign in to thePlatform failed, please check your account settings.</strong></p>';
 				echo '</div>';
@@ -134,6 +134,7 @@ class ThePlatform_Options {
 	 * Registers the preference options via the Settings API,
 	 * appends the setting to the tabs array of the object.
 	 */
+
 	function register_preferences_options() {
 		$this->plugin_settings_tabs[$this->preferences_options_key] = 'Preferences';
 
@@ -172,6 +173,7 @@ class ThePlatform_Options {
 	 * Registers the metadata options and appends the
 	 * key to the plugin settings tabs array.
 	 */
+
 	function register_metadata_options() {
 
 		//Check for uninitialized options	
@@ -203,6 +205,7 @@ class ThePlatform_Options {
 	 * Registers the upload options and appends the
 	 * key to the plugin settings tabs array.
 	 */
+
 	function register_upload_options() {
 
 		if ( !$this->account_is_verified || !$this->region_is_verified ) {
@@ -235,7 +238,7 @@ class ThePlatform_Options {
 			add_settings_field( $field, ucfirst( $field_title ), array( $this, 'field_upload_option' ), $this->upload_options_key, 'section_upload_options', array( 'field' => $field ) );
 		}
 	}
-	
+
 	/**
 	 * Provide a description to the MPX Account Settings Section	 
 	 */
@@ -332,11 +335,11 @@ class ThePlatform_Options {
 				$html .= '</select>';
 				break;
 			case 'mpx_password':
-				$html = '<input id="mpx_password" type="password" name="theplatform_preferences_options[' . esc_attr($field) . ']" value="' . $opts[$field] . '" autocomplete="off" />';
+				$html = '<input id="mpx_password" type="password" name="theplatform_preferences_options[' . esc_attr( $field ) . ']" value="' . $opts[$field] . '" autocomplete="off" />';
 				$html .= '<span id="verify-account"><button id="verify-account-button" type="button" name="verify-account-button">Verify Account Settings</button><div id="verify-account-dashicon" class="dashicons"></div></span>';
 				break;
 			case 'mpx_username':
-				$html = '<input id="mpx_username" type="text" name="theplatform_preferences_options[' . esc_attr($field) . ']" value="' . esc_attr($opts[$field]) . '" autocomplete="off" />';
+				$html = '<input id="mpx_username" type="text" name="theplatform_preferences_options[' . esc_attr( $field ) . ']" value="' . esc_attr( $opts[$field] ) . '" autocomplete="off" />';
 				break;
 			case 'mpx_account_pid':
 				$html = '<input disabled style="background-color: lightgray" id="mpx_account_pid" type="text" name="theplatform_preferences_options[' . esc_attr( $field ) . ']" value="' . esc_attr( $opts[$field] ) . '" />';
@@ -437,11 +440,11 @@ class ThePlatform_Options {
 		$tab = isset( $_GET['tab'] ) ? $_GET['tab'] : $this->preferences_options_key;
 		?>
 		<div class="wrap">
-			<?php $this->plugin_options_tabs(); ?>
+				<?php $this->plugin_options_tabs(); ?>
 			<form method="POST" action="options.php" autocomplete="off">
-			<?php settings_fields( $tab ); ?>
-				<?php do_settings_sections( $tab ); ?>
-				<?php submit_button(); ?>
+		<?php settings_fields( $tab ); ?>
+		<?php do_settings_sections( $tab ); ?>
+		<?php submit_button(); ?>
 			</form>
 		</div>
 		<?php
@@ -464,6 +467,7 @@ class ThePlatform_Options {
 		}
 		echo '</h2>';
 	}
+
 }
 
 if ( !class_exists( 'ThePlatform_API' ) ) {
