@@ -29,7 +29,7 @@ jQuery( document ).ready( function() {
 
 		var player = jQuery( '#selectpick-player' ).val();
 
-		var shortcode = '[theplatform media="' + tpHelper.currentRelease + '" player="' + player + '"]';
+		var shortcode = '[theplatform account="' + tpHelper.accountPid + '" media="' + tpHelper.currentRelease + '" player="' + player + '"]';
 
 		var win = window.dialogArguments || opener || parent || top;
 		var editor = win.tinyMCE.activeEditor;
