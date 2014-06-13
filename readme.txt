@@ -3,7 +3,7 @@ Developed By: thePlatform for Media, Inc.
 Tags: embedding, video, embed, portal, theplatform, shortcode
 Requires at least: 3.7
 Tested up to: 3.9
-Stable tag: 1.3.0
+Stable tag: 1.3.1
 
 Manage your content hosted by thePlatform and embed media in WordPress posts.
 
@@ -22,6 +22,9 @@ Upload media to your MPX account
 
 == Changelog ==
 
+= 1.3.1 =
+Account settings are now separate from the rest of the plugin preferences - Note this will require reconfiguring the plugin.
+
 = 1.3.0 =
 Plugin settings are now cleaned up when switching accounts or deactivating
 Plugin settings now gracefully fall back when login fails
@@ -35,7 +38,7 @@ Added a new setting section - Embedding options
 Removed Full Video/Embed only setting
 Categories are now sorted by title instead of fullTitle
 Moved embed and edit buttons from the media into the metadata container
-Added a feaure to set the featured image from the video thumbnail
+Added a feature to set the featured image from the video thumbnail
 
 = 1.2.0 =
 Completely redesigned the Upload, Browse, Edit and Embed pages
@@ -86,23 +89,28 @@ This plugin requires an account with thePlatform's MPX. Please contact your Acco
 = MPX Account Options =
 MPX Username - The MPX username to use for all of the plugin capabilities
 MPX Password - The password for the entered MPX username
+MPX Region - The region for the MPX account
 MPX Account - The MPX account to upload and retrieve media from
 
 = Embedding Preferences =
 Default Player - The default player used for embedding and in the Media Browser
 Embed Tag Type - IFrame or Script embed
+RSS Embed Type - In an RSS feed, provide a link back to the Article, or an iframe/script tag
 Force Autoplay - Pass the autoplay parameter to embedded players
+Default Player Width - Initially based on the current theme content width
+Default Player Height - a 1.78 aspect ration value based on the content width
 
 = General Preferences =
 Filter Users Own Video - Filter by the User ID custom field, ignored if the User ID is blank
-User ID Custom Field - Name of the Custom Field to store the Wordpress User ID, (None) to disable
-Default Upload Server - Default MPX server to upload new media to
+User ID Custom Field - Name of the Custom Field to store the WordPress User ID, (None) to disable
+MPX Upload Server - Default MPX server to upload new media to, Default Server will attempt to intelligently pick a server
 Default Publish Profile - If set, uploaded media will automatically publish to the selected profile. 
 
 = Filters =
 tp_base_embed_url - Just the player URL
 tp_full_embed_url - The player URL with all parameters, applied after tp_base_embed_url
 tp_embed_code - The complete embed code, with surrounding HTML, applied after tp_full_embed_url
+tp_rss_embed_code - The full embed code used for a RSS feed
 tp_viewer_cap, default - 'edit_posts' - View the MPX Media Browser	
 tp_embedder_cap, default - 'edit_posts' - Embed MPX media into a post
 tp_editor_cap, default - 'upload_files' - Edit MPX Media
