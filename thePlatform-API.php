@@ -299,16 +299,27 @@ class ThePlatform_API {
 		);
 
 		$token = $this->mpx_signin();
-				
+			
+		if ( $args['filetype'] === "audio/mp3" ) {
+			$args['filetype'] = "audio/mpeg";
+		}
+		
 		$format = $this->get_format( $args['filetype'] );
-		$formatTitle = (string) $format->title;
+		
+		if ( $format === "unknown" ) {
+			$formatTitle = $format;
+		} else {
+			$formatTitle = (string) $format->title;
+		}
+		
+		
 
 		$upload_server_id = $args['server_id'];
 
 		if ( $upload_server_id === 'DEFAULT_SERVER' ) {
 			$upload_server_id = $this->get_default_upload_server( $formatTitle );
-		}
-
+		}				
+		
 		$upload_server_base_url = $this->get_upload_urls( $upload_server_id, $token );
 
 		if ( is_wp_error( $upload_server_base_url ) ) {
@@ -337,23 +348,22 @@ class ThePlatform_API {
 	 * @return string MPX Server ID
 	 */
 	function get_default_upload_server($formatTitle) {		
-			$accountSettings = $this->get_account_settings();
-			$defaultServers = $accountSettings['entries'][0]['defaultServers'];
-			$defaultServerURN = "urn:theplatform:format:default";
-
-			if ( array_key_exists( $formatTitle, $defaultServers ) ) {
-				$upload_server_id = $defaultServers[$formatTitle];
-			} else if ( array_key_exists( $defaultServerURN, $defaultServers ) ) {
-				$upload_server_id = $defaultServers[$defaultServerURN];
-			} else {
-				$servers = $this->get_servers( array( 'formats' ), '&byFormats=' . $formatTitle );
-				if ( array_key_exists( 0, $servers ) ) {
-					return $servers[0]["id"];
-				} else {
-					die( "Unable to determine a proper Server" );
-				}
-			}
+		$accountSettings = $this->get_account_settings();
+		$defaultServers = $accountSettings['entries'][0]['defaultServers'];
+		$defaultServerURN = "urn:theplatform:format:default";
 		
+		if ( array_key_exists( $formatTitle, $defaultServers ) ) {
+			return $defaultServers[$formatTitle];
+		} else if ( array_key_exists( $defaultServerURN, $defaultServers ) ) {
+			return $defaultServers[$defaultServerURN];
+		} else {
+			$servers = $this->get_servers( array( 'formats' ), '&byFormats=' . $formatTitle );
+			if ( array_key_exists( 0, $servers ) ) {
+				return $servers[0]["id"];
+			} else {
+				die( "Unable to determine a proper Server" );
+			}
+		}
 	}
 
 	/**
