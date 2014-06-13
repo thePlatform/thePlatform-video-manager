@@ -23,7 +23,8 @@ Upload media to your MPX account
 == Changelog ==
 
 = 1.4.0 =
-Account settings are now separate from the rest of the plugin preferences - Note this will require reconfiguring the plugin.
+Account settings are now separate from the rest of the plugin preferences - Note this will require reconfiguring the plugin
+Added an About page
 
 = 1.3.0 =
 Plugin settings are now cleaned up when switching accounts or deactivating

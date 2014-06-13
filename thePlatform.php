@@ -119,6 +119,7 @@ class ThePlatform_Plugin {
 		add_submenu_page( $slug, 'thePlatform Video Browser', 'Browse MPX Media', $tp_viewer_cap, $slug, array( $this, 'media_page' ) );
 		add_submenu_page( $slug, 'thePlatform Video Uploader', 'Upload Media to MPX', $tp_uploader_cap, 'theplatform-uploader', array( $this, 'upload_page' ) );
 		add_submenu_page( $slug, 'thePlatform Plugin Settings', 'Settings', $tp_admin_cap, 'theplatform-settings', array( $this, 'admin_page' ) );
+		add_submenu_page( $slug, 'thePlatform Plugin About', 'About', $tp_admin_cap, 'theplatform-about', array( $this, 'about_page' ) );
 	}
 
 	/**
@@ -140,6 +141,10 @@ class ThePlatform_Plugin {
 	 */
 	function upload_page() {
 		require_once( dirname( __FILE__ ) . '/thePlatform-upload.php' );
+	}
+	
+	function about_page() {
+		require_once( dirname( __FILE__ ) . '/thePlatform-about.php' );
 	}
 
 	/**
