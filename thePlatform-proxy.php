@@ -26,7 +26,7 @@ if ( !isset( $tp_api ) ) {
 }
 
 if ( !isset( $account ) ) {
-	$account = get_option( 'theplatform_account_options' );
+	$account = get_option( TP_ACCOUNT_OPTIONS_KEY );
 }
 
 add_action( 'wp_ajax_startUpload', 'ThePlatform_Proxy::startUpload' );
@@ -132,7 +132,7 @@ class ThePlatform_Proxy {
 
 		$ret = array();
 		if ( !isset( $account ) ) {
-			$account = get_option( 'theplatform_account_options' );
+			$account = get_option( TP_ACCOUNT_OPTIONS_KEY );
 		}
 
 		$url = TP_API_PUBLISH_PROFILE_ENDPOINT;

@@ -39,13 +39,7 @@ function theplatform_dropdown_options_validate( $input ) {
  */
 function theplatform_account_options_validate ( $input ) {	
 	$tp_api = new ThePlatform_API;
-	$defaults = array(
-		'mpx_account_id' => '',
-		'mpx_username' => 'mpx/',
-		'mpx_password' => '',
-		'mpx_account_pid' => '',
-		'mpx_region' => 'us'
-	);		
+	$defaults = TP_ACCOUNT_OPTIONS_DEFAULTS();
 	
 	if ( !is_array( $input ) || $input['mpx_username'] === 'mpx/' ) {
 		return $defaults;
@@ -73,11 +67,11 @@ function theplatform_account_options_validate ( $input ) {
 	}
 	
 	// If username, account id, or region have changed, reset settings to default	
-	$old_preferences = get_option( 'theplatform_account_options' );			
+	$old_preferences = get_option( TP_ACCOUNT_OPTIONS_KEY );			
 	if ( $old_preferences ) {		
 		$updates = false;
 		// If the username changes, reset all preferences except user/pass
-		if ( theplatform_setting_changed( $old_preferences['mpx_username'], $input['mpx_username'] ) ) {
+		if ( theplatform_setting_changed( 'mpx_username', $old_preferences, $input ) ) {
 			$input['mpx_region'] = $defaults['mpx_region'];
 			$input['mpx_account_pid'] = $defaults['mpx_account_pid'];
 			$input['mpx_account_id'] = $defaults['mpx_account_id'];
@@ -85,35 +79,35 @@ function theplatform_account_options_validate ( $input ) {
 		}
 
 		// If the region changed, reset all preferences, but keep the new account settings
-		if ( theplatform_setting_changed( $old_preferences['mpx_region'], $input['mpx_region'] ) ) {		
+		if ( theplatform_setting_changed( 'mpx_region', $old_preferences, $input ) ) {		
 			$updates = true;
 		}
 
 		// If the account changed, reset all preferences, but keep the new account settings
-		if ( theplatform_setting_changed( $old_preferences['mpx_account_id'], $input['mpx_account_id'] ) ) {
+		if ( theplatform_setting_changed( 'mpx_account_id', $old_preferences, $input ) ) {
 			$updates = true;
 		}
 		// Clear old options
 		if ( $updates ) {			
-			delete_option( 'theplatform_preferences_options' );
-			delete_option( 'theplatform_metadata_options' );
-			delete_option( 'theplatform_upload_options' );
+			delete_option( TP_PREFERENCES_OPTIONS_KEY );
+			delete_option( TP_METADATA_OPTIONS_KEY );
+			delete_option( TP_UPLOAD_OPTIONS_KEY );
 		}
 	}
 		
 	return $input;
 }
 
-function theplatform_setting_changed( $oldValue, $newValue ) {
-	if ( !isset( $oldValue ) && !isset( $newValue ) ){
+function theplatform_setting_changed( $key, $oldArray, $newArray ) {
+	if ( !isset( $oldArray[$key] ) && !isset( $newArray[$key] ) ){
 		return FALSE;
 	}
 	
-	if ( empty( $oldValue ) && empty( $newValue ) ){
+	if ( empty( $oldArray[$key] ) && empty( $newArray[$key] ) ){
 		return FALSE;
 	}
 	
-	if ( $oldValue !== $newValue ) {
+	if ( $oldArray[$key] !== $newArray[$key] ) {
 		return TRUE;
 	}
 	
@@ -126,21 +120,8 @@ function theplatform_setting_changed( $oldValue, $newValue ) {
  */
 function theplatform_preferences_options_validate( $input ) {	
 	$tp_api = new ThePlatform_API;
-	$defaults = array(
-		'embed_tag_type' => 'embed',
-		'default_player_name' => '',
-		'default_player_pid' => '',
-		'mpx_server_id' => 'DEFAULT_SERVER',
-		'default_publish_id' => 'tp_wp_none',
-		'user_id_customfield' => '(None)',
-		'filter_by_user_id' => 'FALSE',
-		'autoplay' => 'TRUE',
-		'rss_embed_type' => 'article',
-		'default_width' => $GLOBALS['content_width'],
-		'default_height' => ($GLOBALS['content_width'] / 16) * 9
-	);
+	$defaults = TP_PREFERENCES_OPTIONS_DEFAULTS();
 
-	
 	$account_is_verified = $tp_api->internal_verify_account_settings();	
 	if ( $account_is_verified ) {
 		$region_is_verified = $tp_api->internal_verify_account_region();		
@@ -170,7 +151,7 @@ function theplatform_preferences_options_validate( $input ) {
 		if ( !isset( $input['mpx_server_id'] ) || empty ( $input['mpx_server_id'] ) ) {			
 				$input['mpx_server_id'] = 'DEFAULT_SERVER';			
 		}
-		
+
 		foreach ( $input as $key => $value ) {
 			if ( $key == 'videos_per_page' || $key === 'default_width' || $key === 'default_height' ) {
 				$input[$key] = intval( $value );
@@ -237,8 +218,8 @@ function theplatform_decode_json_from_server( $input, $assoc, $die_on_error = TR
 }
 
 function theplatform_get_query_fields( $metadata ) {
-	$metadata_options = get_option( 'theplatform_metadata_options' );
-	$upload_options = get_option( 'theplatform_upload_options' );
+	$metadata_options = get_option( TP_METADATA_OPTIONS_KEY );
+	$upload_options = get_option( TP_UPLOAD_OPTIONS_KEY );
 
 	$fields = 'id,defaultThumbnailUrl,content';
 
@@ -284,3 +265,36 @@ function theplatform_get_query_fields( $metadata ) {
 
 	return $fields;
 }
+
+/**
+ * Checks the current version against the last version stored in preferences to determine whether an update happened
+ * @return boolean 
+ */
+function theplatform_plugin_version_changed() {
+	$preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
+	
+	if ( !$preferences ) {
+		return FALSE; //New installation
+	}
+	
+	if ( !isset( $preferences['plugin_version'] ) ) {
+		return TRUE; //Old versions didn't have plugin_version stored
+	}
+	
+	$version = explode( '.', $preferences['plugin_version'] );
+	$currentVersion = TP_PLUGIN_VERSION();
+	if ( $version[0] != $currentVersion['major']) {
+		return TRUE;
+	}
+	
+	if ( $version[1] != $currentVersion['minor']) {
+		return TRUE;
+	}
+	
+	if ( $version[2] != $currentVersion['patch']) {
+		return TRUE;
+	}	
+	
+	return FALSE;
+}
+

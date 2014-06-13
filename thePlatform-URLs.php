@@ -109,3 +109,5 @@ class ThePlatform_URLs {
 		return $region;
 	}
 }
+
+new ThePlatform_URLs( TP_ACCOUNT_OPTIONS_KEY );

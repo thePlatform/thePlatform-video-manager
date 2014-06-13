@@ -2,7 +2,7 @@ function buildDragColumns() {
 	var $ = jQuery;
 	var $optionsPageName = $( 'input[name=option_page]' );
 	if ( $optionsPageName.length
-			&& ( $optionsPageName.val() == 'theplatform_metadata_options' ) || $optionsPageName.val() == 'theplatform_upload_options' )
+			&& ( $optionsPageName.val() == TP_METADATA_OPTIONS_KEY ) || $optionsPageName.val() == TP_UPLOAD_OPTIONS_KEY )
 	{
 		var $table = $optionsPageName.siblings( 'table' );
 		$table.css( 'display', 'none' );

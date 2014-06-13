@@ -53,10 +53,10 @@ wp_print_styles( 'wp-jquery-ui-dialog' );
 
 		define( 'TP_MEDIA_BROWSER', true );
 
-		$metadata_options = get_option( 'theplatform_metadata_options' );
-		$upload_options = get_option( 'theplatform_upload_options' );
-		$preferences = get_option( 'theplatform_preferences_options' );
-		$account = get_option( 'theplatform_account_options' );
+		$metadata_options = get_option( TP_METADATA_OPTIONS_KEY );
+		$upload_options = get_option( TP_UPLOAD_OPTIONS_KEY );
+		$preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
+		$account = get_option( TP_ACCOUNT_OPTIONS_KEY );
 
 		if ( strcmp( $account['mpx_account_id'], "" ) == 0 ) {
 			wp_die( 'MPX Account ID is not set, please configure the plugin before attempting to manage media' );

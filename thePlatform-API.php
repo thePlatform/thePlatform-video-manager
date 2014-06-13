@@ -83,8 +83,8 @@ class ThePlatform_API_HTTP {
 class ThePlatform_API {
 		
 	// Plugin preferences option table key
-	private $preferences_options_key = 'theplatform_preferences_options';
-	private $account_options_key = 'theplatform_account_options';
+	private $preferences_options_key = TP_PREFERENCES_OPTIONS_KEY;
+	private $account_options_key = TP_ACCOUNT_OPTIONS_KEY;
 
 	/**
 	 * Class constructor
@@ -96,7 +96,7 @@ class ThePlatform_API {
 	
 	private function get_account() {
 		if ( !isset ( $this->account ) ) {
-			$this->account = get_option( $this->account_options_key );
+			$this->account = get_option( TP_ACCOUNT_OPTIONS_KEY );
 		}
 	}
 	
@@ -114,7 +114,7 @@ class ThePlatform_API {
 	
 	private function get_preferences() {
 		if ( !isset ( $this->preferences ) ) {
-			$this->preferences = get_option( $this->preferences_options_key );
+			$this->preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
 		}
 	}
 	

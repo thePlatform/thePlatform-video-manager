@@ -51,12 +51,12 @@ class ThePlatform_Plugin {
 	}
 
 	function __construct() {
+		require_once(dirname( __FILE__ ) . '/thePlatform-constants.php');
 		require_once(dirname( __FILE__ ) . '/thePlatform-URLs.php');
 		require_once(dirname( __FILE__ ) . '/thePlatform-API.php');
 		require_once(dirname( __FILE__ ) . '/thePlatform-helper.php');
 		require_once(dirname( __FILE__ ) . '/thePlatform-proxy.php');
-
-		new ThePlatform_URLs( 'theplatform_account_options' );
+				
 		$this->tp_api = new ThePlatform_API;
 
 		$this->plugin_base_dir = plugin_dir_path( __FILE__ );
@@ -240,11 +240,11 @@ class ThePlatform_Plugin {
 		}
 
 		if ( !isset( $this->preferences ) ) {
-			$this->preferences = get_option( 'theplatform_preferences_options' );
+			$this->preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
 		}
 		
 		if ( !isset( $this->account ) ) {
-			$this->account = get_option( 'theplatform_account_options' );
+			$this->account = get_option( TP_ACCOUNT_OPTIONS_KEY );
 		}
 
 		list( $account, $width, $height, $media, $player, $mute, $autoplay, $loop, $tag, $params ) = array_values( shortcode_atts( array(
@@ -389,7 +389,8 @@ class ThePlatform_Plugin {
 // Instantiate thePlatform plugin on WordPress init
 add_action( 'init', array( 'ThePlatform_Plugin', 'init' ) );
 add_action( 'wp_ajax_verify_account', 'theplatform_verify_account_settings' );
-add_action( 'admin_init', 'register_plugin_settings' );
+add_action( 'admin_init', 'theplatform_register_plugin_settings' );
+add_action( 'admin_init', 'theplatform_check_plugin_update');
 add_action( 'init', 'theplatform_buttonhooks' );
 
 /**
@@ -424,13 +425,28 @@ function theplatform_register_tinymce_javascript( $plugin_array ) {
 /**
  * Registers initial plugin settings during initalization
  */
-function register_plugin_settings() {
-	$preferences_options_key = 'theplatform_preferences_options';
-	$account_options_key = 'theplatform_account_options';	
-	$metadata_options_key = 'theplatform_metadata_options';
-	$upload_options_key = 'theplatform_upload_options';
-	register_setting( $account_options_key, $account_options_key, 'theplatform_account_options_validate' );	
-	register_setting( $preferences_options_key, $preferences_options_key, 'theplatform_preferences_options_validate' );
-	register_setting( $metadata_options_key, $metadata_options_key, 'theplatform_dropdown_options_validate' );
-	register_setting( $upload_options_key, $upload_options_key, 'theplatform_dropdown_options_validate' );
+function theplatform_register_plugin_settings() {
+	register_setting( TP_ACCOUNT_OPTIONS_KEY, TP_ACCOUNT_OPTIONS_KEY, 'theplatform_account_options_validate' );	
+	register_setting( TP_PREFERENCES_OPTIONS_KEY, TP_PREFERENCES_OPTIONS_KEY, 'theplatform_preferences_options_validate' );
+	register_setting( TP_METADATA_OPTIONS_KEY, TP_METADATA_OPTIONS_KEY, 'theplatform_dropdown_options_validate' );
+	register_setting( TP_UPLOAD_OPTIONS_KEY, TP_UPLOAD_OPTIONS_KEY, 'theplatform_dropdown_options_validate' );
+}
+
+function theplatform_check_plugin_update() {
+	if ( !theplatform_plugin_version_changed() ) {
+		return;
+	}
+	
+	// Move account settings from preferences (1.4.0)
+	$properties = get_option( TP_PREFERENCES_OPTIONS_KEY, array() );
+	if ( array_key_exists( 'mpx_account_id', $properties ) ) {
+		$accountSettings = TP_ACCOUNT_OPTIONS_DEFAULTS();
+		foreach ( $properties as $key => $value ) {
+			if ( array_key_exists( $key, $accountSettings ) ) {
+				$accountSettings[$key] = $properties[$key];				
+			}
+		}
+		update_option( TP_ACCOUNT_OPTIONS_KEY, $accountSettings );
+	}
+	
 }

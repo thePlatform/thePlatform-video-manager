@@ -25,10 +25,10 @@ if ( !isset( $tp_api ) ) {
 }
 
 $metadata = $tp_api->get_metadata_fields();
-$preferences = get_option( 'theplatform_preferences_options' );
-$account = get_option( 'theplatform_account_options' );
-$upload_options = get_option( 'theplatform_upload_options' );
-$metadata_options = get_option( 'theplatform_metadata_options' );
+$preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
+$account = get_option( TP_ACCOUNT_OPTIONS_KEY );
+$upload_options = get_option( TP_UPLOAD_OPTIONS_KEY );
+$metadata_options = get_option( TP_METADATA_OPTIONS_KEY );
 
 $dataTypeDesc = array(
 	'Integer' => 'Integer',
