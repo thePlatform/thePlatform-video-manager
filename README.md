@@ -88,6 +88,18 @@ Copy the folder "thePlatform-video-manager" with all included files into the "wp
 ## = 1.0.0 =
 * Initial release
 
+# == Short code parameters ==
+* account	- (optional) - Account PID to use in the embed code, if omitted it will be taken from the account settings
+* player	- (required) - Player PID to use in the embed code
+* media		- (required) - Release PID to load in the player
+* width		- (optional) - Player width, if omitted the default value will be taken from the embedding preferences
+* height	- (optional) - Player height, if omitted the default value will be taken from the embedding preferences
+* mute		- (optional) - Force the player to be muted
+* autoplay	- (optional) - Force autoplay on /embed/ players, if omitted the default value will be taken from the embedding preferences
+* loop		- (optional) - Loop the release
+* tag		- (optional) - iframe/script, if omitted the value will be taken from the embedding preferences
+* params	- (optional) - Custom string that will be appended to the embed URL
+
 # == Configuration ==
 
 This plugin requires an account with thePlatform's MPX. Please contact your Account Manager for additional information.
