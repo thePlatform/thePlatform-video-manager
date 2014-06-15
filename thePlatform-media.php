@@ -21,7 +21,7 @@ if ( !defined( 'ABSPATH' ) ) {
 }
 $tp_viewer_cap = apply_filters( 'tp_viewer_cap', 'edit_posts' );
 if ( !current_user_can( $tp_viewer_cap ) ) {
-	wp_die( '<p>' . __( 'You do not have sufficient permissions to browse MPX Media' ) . '</p>' );
+	wp_die( '<p>You do not have sufficient permissions to browse MPX Media</p>' );
 }
 ?>
 

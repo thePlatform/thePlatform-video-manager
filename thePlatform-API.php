@@ -17,8 +17,6 @@
   with this program; if not, write to the Free Software Foundation, Inc.,
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-defined( 'JSON_UNESCAPED_SLASHES' ) or define( 'JSON_UNESCAPED_SLASHES', 64 );
-
 /**
  * Simple wrapper class for the WordPress HTTP API methods
  */
@@ -232,7 +230,7 @@ class ThePlatform_API {
 		$url = TP_API_MEDIA_ENDPOINT;
 		$url .= '&account=' . $this->get_mpx_account_id();
 		$url .= '&token=' . $token;
-
+			
 		$response = ThePlatform_API_HTTP::post( $url, json_encode( $payload, JSON_UNESCAPED_SLASHES ), true );
 		$data = theplatform_decode_json_from_server( $response, TRUE );
 		return $data;
@@ -339,7 +337,7 @@ class ThePlatform_API {
 			'success' => 'true'
 		);
 		
-		die( json_encode( $params ) );		
+		wp_send_json( $params );		
 	}
 	
 	/**
@@ -411,7 +409,7 @@ class ThePlatform_API {
 		if ( $this->get_mpx_account_id() ) {
 			$url .= '&account=' . $this->get_mpx_account_id();
 		} else {
-			wp_die( '<p>' . __( 'MPX Account is not set, unable to retrieve videos.' ) . '</p>' );
+			wp_die( '<p>MPX Account is not set, unable to retrieve videos.</p>' );
 		}
 
 		if ( !empty( $_POST['query'] ) ) {

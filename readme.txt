@@ -3,7 +3,7 @@ Developed By: thePlatform for Media, Inc.
 Tags: embedding, video, embed, portal, theplatform, shortcode
 Requires at least: 3.7
 Tested up to: 3.9
-Stable tag: 1.4.0
+Stable tag: 1.2.0
 
 Manage your content hosted by thePlatform and embed media in WordPress posts.
 
@@ -22,26 +22,20 @@ Upload media to your MPX account
 
 == Changelog ==
 
-= 1.4.0 =
+= 1.2.0 =
 Account settings are now separate from the rest of the plugin preferences - Note this will require reconfiguring the plugin
 Added an About page
-
-= 1.3.0 =
 Plugin settings are now cleaned up when switching accounts or deactivating
 Plugin settings now gracefully fall back when login fails
 Added support for EU accounts
 Updated metadata and upload field settings to allow Read/Write/Hide
 Default values are now provided for player ID and upload server ID when account is selected
-
-= 1.2.5 = 
 Fixed a bug where publishing profiles didn't work if they existing in more than one authorized account
 Added a new setting section - Embedding options
 Removed Full Video/Embed only setting
 Categories are now sorted by title instead of fullTitle
 Moved embed and edit buttons from the media into the metadata container
 Added a feature to set the featured image from the video thumbnail
-
-= 1.2.0 =
 Completely redesigned the Upload, Browse, Edit and Embed pages
 Reworked plugin settings to match the new UI
 Verified up to WordPress 3.9
@@ -55,6 +49,9 @@ Finer control over user capabilities:
 'tp_uploader_cap' - 'upload_files' - Upload MPX media
 'tp_admin_cap', 'manage_options' - Manage thePlatform's plugin settings
 Moved the embedding button into a TinyMCE plugin
+
+= 1.1.1 =
+Fixed an issue where files would not always upload
 
 = 1.1.0 =
 Added an option to submit the Wordpress User ID into a custom field and filter by it

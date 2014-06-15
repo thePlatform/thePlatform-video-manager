@@ -19,17 +19,17 @@
 /*
  * Load scripts and styles 
  */
-wp_print_scripts( 'mediaview_js' );
-wp_print_scripts( 'jquery-ui-dialog' );
-wp_print_styles( 'dashicons' );
-wp_print_styles( 'bootstrap_tp_css' );
-wp_print_styles( 'theplatform_css' );
-wp_print_styles( 'wp-jquery-ui-dialog' );
+wp_enqueue_script( 'mediaview_js' );
+wp_enqueue_script( 'jquery-ui-dialog' );
+wp_enqueue_style( 'dashicons' );
+wp_enqueue_style( 'bootstrap_tp_css' );
+wp_enqueue_style( 'theplatform_css' );
+wp_enqueue_style( 'wp-jquery-ui-dialog' );
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
     <head>
-
+		 
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="tp:PreferredRuntimes" content="Flash, HTML5" />
@@ -41,7 +41,7 @@ wp_print_styles( 'wp-jquery-ui-dialog' );
 		}
 		$tp_viewer_cap = apply_filters( 'tp_viewer_cap', 'edit_posts' );
 		if ( !current_user_can( $tp_viewer_cap ) ) {
-			wp_die( '<p>' . __( 'You do not have sufficient permissions to browse MPX Media' ) . '</p>' );
+			wp_die( '<p>You do not have sufficient permissions to browse MPX Media</p>' );
 		}
 
 		if ( !class_exists( 'ThePlatform_API' ) ) {
@@ -63,8 +63,8 @@ wp_print_styles( 'wp-jquery-ui-dialog' );
 		}
 
 		//Embed only stuff
-		$players = $tp_api->get_players();
-		$IS_EMBED = strpos( $_SERVER['QUERY_STRING'], '&embed=true' ) !== false ? true : false;
+		$players = $tp_api->get_players();		
+		$IS_EMBED = isset( $_GET['embed'] ) ? true : false;
 
 		function writePlayers( $players, $preferences ) {
 			$html = '<p class="navbar-text sort-bar-text">Player:</p><form class="navbar-form navbar-left sort-bar-nav" role="sort"><select id="selectpick-player" class="form-control">';
@@ -78,12 +78,13 @@ wp_print_styles( 'wp-jquery-ui-dialog' );
 
 		<script type="text/javascript">
 			tpHelper = { };
-			tpHelper.token = "<?php echo $tp_api->mpx_signin(); ?>";
-			tpHelper.account = "<?php echo $account['mpx_account_id']; ?>";
-			tpHelper.accountPid = "<?php echo $account['mpx_account_pid']; ?>";
-			tpHelper.isEmbed = "<?php echo $IS_EMBED; ?>";
+			tpHelper.token = "<?php echo esc_js( $tp_api->mpx_signin() ); ?>";
+			tpHelper.account = "<?php echo esc_js( $account['mpx_account_id'] ); ?>";
+			tpHelper.accountPid = "<?php echo esc_js( $account['mpx_account_pid'] ); ?>";
+			tpHelper.isEmbed = "<?php echo esc_js( $IS_EMBED ); ?>";
 		</script>
-
+		
+		<?php wp_head(); ?>
     </head>
     <body>
 		<div class="tp">

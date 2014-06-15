@@ -31,7 +31,9 @@ class ThePlatform_URLs {
 	 */
 	function __construct( $preference_key ) {
 		$region = $this->getRegion( $preference_key );
-
+		if ( !in_array( $region, TP_REGIONS(), TRUE) ) {
+			$region = 'us';
+		}
 		// Set the base URLs based on the region
 		switch ( $region ) {
 			case 'us':
@@ -55,6 +57,9 @@ class ThePlatform_URLs {
 				define( 'TP_API_PUBLISH_DATA_BASE_URL', 'http://data.publish.theplatform.eu/publish/data/' );
 				define( 'TP_API_FMS_BASE_URL', 'http://fms.theplatform.eu/web/FileManagement/' );
 				define( 'TP_API_PLAYER_EMBED_BASE_URL', '//player.theplatform.eu/p/' );
+				break;
+			default:
+				wp_die( 'Invalid Region. Cannot match on region: ' . $region );
 				break;
 		}
 

@@ -385,7 +385,7 @@ class ThePlatform_Plugin {
 		if ( $tag == "script" ) {
 			return '<div style="width:' . esc_attr( $player_width ) . 'px; height:' . esc_attr( $player_height ) . 'px"><script type="text/javascript" src="' . esc_url_raw( $url . "&form=javascript" ) . '"></script></div>';
 		} else { //Assume iframe			
-			return '<iframe src="' . esc_url_raw( $url ) . '" height=' . esc_attr( $player_height ) . ' width=' . esc_attr( $player_width ) . ' frameBorder="0" seamless="seamless" allowFullScreen></iframe>';
+			return '<iframe src="' . esc_url( $url ) . '" height=' . esc_attr( $player_height ) . ' width=' . esc_attr( $player_width ) . ' frameBorder="0" seamless="seamless" allowFullScreen></iframe>';
 		}
 	}
 
@@ -455,3 +455,18 @@ function theplatform_check_plugin_update() {
 	}
 	
 }
+
+function feed_dir_rewrite( $wp_rewrite ) {
+	$wp_rewrite->flush_rules( false );
+    $feed_rules = array(
+        'thePlatform-media-browser.php' => 'index.php?page=theplatform',
+        'thePlatform-upload-window' => 'index.php?page=theplatform-uploader',
+		'hi/1' => "index.php"
+    );
+
+    $wp_rewrite->rules = $feed_rules + $wp_rewrite->rules;
+    return $wp_rewrite->rules;
+}
+
+// Hook in.
+add_filter( 'generate_rewrite_rules', 'feed_dir_rewrite' );

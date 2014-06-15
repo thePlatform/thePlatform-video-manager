@@ -39,7 +39,7 @@ class ThePlatform_Options {
 	function __construct() {
 		$tp_admin_cap = apply_filters( 'tp_admin_cap', 'manage_options' );
 		if ( !current_user_can( $tp_admin_cap ) ) {
-			wp_die( '<p>' . __( 'You do not have sufficient permissions to manage this plugin' ) . '</p>' );
+			wp_die( '<p>You do not have sufficient permissions to manage this plugin</p>' );
 		}
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 

@@ -55,7 +55,7 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 	$tp_uploader_cap = apply_filters( 'tp_uploader_cap', 'upload_files' );
 
 	if ( !current_user_can( $tp_uploader_cap ) ) {
-		wp_die( '<p>' . __( 'You do not have sufficient permissions to upload MPX Media' ) . '</p>' );
+		wp_die( '<p>You do not have sufficient permissions to upload MPX Media</p>' );
 	}
 	$media = array();
 
@@ -70,7 +70,7 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 	$html = '';
 
 	if ( strlen( $preferences['user_id_customfield'] ) && $preferences['user_id_customfield'] !== '(None)' ) {
-		echo '<input type="hidden" name="' . esc_attr( $preferences['user_id_customfield'] ) . '" class="custom_field" value="' . wp_get_current_user()->ID . '" />';
+		echo '<input type="hidden" name="' . esc_attr( $preferences['user_id_customfield'] ) . '" class="custom_field" value="' . esc_attr( wp_get_current_user()->ID ) . '" />';
 	}
 
 	$catHtml = '';
@@ -106,7 +106,7 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 			}
 			$html .= '<div class="col-xs-5">';
 			$html .= '<label class="control-label" for="theplatform_upload_' . esc_attr( $upload_field ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
-			$html .= '<input name="' . esc_attr( $upload_field ) . '" id="theplatform_upload_' . esc_attr( $upload_field ) . '" class="form-control upload_field" type="text" value="' . $default_value . '"/>'; //upload_field
+			$html .= '<input name="' . esc_attr( $upload_field ) . '" id="theplatform_upload_' . esc_attr( $upload_field ) . '" class="form-control upload_field" type="text" value="' . esc_attr( $default_value ) . '"/>'; //upload_field
 			$html .= '</div>';
 			if ( $i % 2 !== 0 ) {
 				$html .= '</div>';
@@ -163,10 +163,10 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 
 		$html .= '<input name="' . esc_attr( $field_title ) . '" id="theplatform_upload_' . esc_attr( $field_name ) . '" class="form-control custom_field" type="text" value="' . esc_attr( $field_value ) . '" data-type="' . esc_attr( $field_type ) . '" data-structure="' . esc_attr( $field_structure ) . '" data-name="' . esc_attr( strtolower( $field_title ) ) . '" data-prefix="' . esc_attr( strtolower( $field_prefix ) ) . '" data-namespace="' . esc_attr( strtolower( $field_namespace ) ) . '"/>';
 		if ( isset( $structureDesc[$field_structure] ) ) {
-			$html .= '<div class="structureDesc"><strong>Structure</strong> ' . $structureDesc[$field_structure] . '</div>';
+			$html .= '<div class="structureDesc"><strong>Structure</strong> ' . esc_html( $structureDesc[$field_structure] ) . '</div>';
 		}
 		if ( isset( $dataTypeDesc[$field_type] ) ) {
-			$html .= '<div class="dataTypeDesc"><strong>Format:</strong> ' . $dataTypeDesc[$field_type] . '</div>';
+			$html .= '<div class="dataTypeDesc"><strong>Format:</strong> ' . esc_html( $dataTypeDesc[$field_type] ) . '</div>';
 		}
 		$html .= '<br />';
 		$html .= '</div>';

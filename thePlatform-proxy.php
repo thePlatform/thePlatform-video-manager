@@ -74,8 +74,7 @@ class ThePlatform_Proxy {
 		if ( is_wp_error( $response ) ) {
 			$ret['success'] = 'false';
 			$ret['code'] = $response->get_error_message();
-			echo json_encode( $ret );
-			die();
+			wp_send_json( $ret );
 		}
 
 		if ( isset( $response['data'] ) && $response['data'] === false ) {
@@ -85,7 +84,7 @@ class ThePlatform_Proxy {
 			$ret['success'] = 'true';
 		}
 
-		die( json_encode( $ret ) );
+		wp_send_json( $ret );
 	}
 
 	/**
@@ -108,8 +107,7 @@ class ThePlatform_Proxy {
 		if ( is_wp_error( $response ) ) {
 			$ret['success'] = 'false';
 			$ret['code'] = $response->get_error_message();
-			echo json_encode( $ret );
-			die();
+			wp_send_json( $ret );
 		}
 
 		if ( isset( $response['data'] ) && $response['data'] === false ) {
@@ -120,7 +118,7 @@ class ThePlatform_Proxy {
 			$ret['content'] = theplatform_decode_json_from_server( $response, TRUE );
 		}
 
-		die( json_encode( $ret ) );
+		wp_send_json( $ret );
 	}
 
 	/**
@@ -149,8 +147,7 @@ class ThePlatform_Proxy {
 		if ( is_wp_error( $response ) ) {
 			$ret['success'] = 'false';
 			$ret['code'] = $response->get_error_message();
-			echo json_encode( $ret );
-			die();
+			wp_send_json( $ret );
 		}
 
 		if ( $response['data'] === false ) {
@@ -162,8 +159,7 @@ class ThePlatform_Proxy {
 			if ( $content['entryCount'] == 0 ) {
 				$ret['success'] = 'false';
 				$ret['code'] = 'No Publishing Profile Found.';
-				echo json_encode( $ret );
-				die();
+				wp_send_json( $ret );
 			}
 
 			$profileId = $content['entries'][0]['id'];
@@ -180,15 +176,13 @@ class ThePlatform_Proxy {
 			if ( is_wp_error( $response ) ) {
 				$ret['success'] = 'false';
 				$ret['code'] = $response->get_error_message();
-				echo json_encode( $ret );
-				die();
+				wp_send_json( $ret );
 			}
 
 			if ( isset( $response['data'] ) && $response['data'] === false ) {
 				$ret['success'] = 'false';
 				$ret['code'] = 'Unable to publish media.';
-				echo json_encode( $ret );
-				die();
+				wp_send_json( $ret );
 			}
 
 			$content = theplatform_decode_json_from_server( $response, TRUE );
@@ -197,7 +191,7 @@ class ThePlatform_Proxy {
 			$ret['success'] = 'true';
 		}
 
-		die( json_encode( $ret ) );
+		wp_send_json( $ret );
 	}
 
 	/**
@@ -219,13 +213,13 @@ class ThePlatform_Proxy {
 		if ( is_wp_error( $response ) ) {
 			$ret['success'] = 'false';
 			$ret['code'] = $response->get_error_message();
-			die( json_encode( $ret ) );
+			wp_send_json( $ret );
 		}
 
 		if ( $response['data'] == false ) {
 			$ret['success'] = 'false';
 			$ret['code'] = 'Unable to cancel upload.';
-			die( json_encode( $ret ) );
+			wp_send_json( $ret );
 		} else {
 			$url = TP_API_MEDIA_DELETE_ENDPOINT;
 			$url .= '&byGuid=' . $_POST['guid'];
@@ -239,14 +233,14 @@ class ThePlatform_Proxy {
 			if ( is_wp_error( $response ) ) {
 				$ret['success'] = 'false';
 				$ret['code'] = $response->get_error_message();
-				die( json_encode( $ret ) );
+				wp_send_json( $ret );
 			}
 
 			$content = theplatform_decode_json_from_server( $response, TRUE );
 			$ret['success'] = 'true';
 		}
 
-		die( json_encode( $ret ) );
+		wp_send_json( $ret );
 	}
 
 	/**

@@ -17,7 +17,7 @@
   with this program; if not, write to the Free Software Foundation, Inc.,
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-define( 'TP_PLUGIN_VERSION', '1.4.0' );
+define( 'TP_PLUGIN_VERSION', '1.2.0' );
 define( 'TP_PREFERENCES_OPTIONS_KEY', 'theplatform_preferences_options' );
 define( 'TP_ACCOUNT_OPTIONS_KEY', 'theplatform_account_options' );
 define( 'TP_METADATA_OPTIONS_KEY', 'theplatform_metadata_options' );
@@ -81,4 +81,7 @@ function TP_CUSTOM_FIELDS_TYPES() {
 function TP_PLUGIN_VERSION() {
 	return array_combine( array( 'major', 'minor', 'patch' ), explode( '.', TP_PLUGIN_VERSION ) );	
 }
-			
+
+function TP_REGIONS() {
+	return array( 'us', 'eu' );
+}
