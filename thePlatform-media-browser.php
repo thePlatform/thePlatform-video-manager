@@ -84,6 +84,26 @@ wp_enqueue_style( 'wp-jquery-ui-dialog' );
 			tpHelper.isEmbed = "<?php echo esc_js( $IS_EMBED ); ?>";
 		</script>
 		
+		<script id="category-template" type="text/x-handlebars-template">
+			<a href="#" class="list-group-item cat-list-selector">{{entryTitle}}</a>
+		</script>
+		
+		<script id="media-template" type="text/x-handlebars-template">
+			<div class="media" id="{{guid}}"><img class="media-object pull-left thumb-img" data-src="{{placeHolder}}" alt="128x72" src="{{defaultThumbnailUrl}}">
+				<div class="media-body">
+					<div id="head">
+							<strong class="media-heading">{{title}}</strong>
+					</div>
+					<div id="source"></div>
+					<div id="desc">{{formatDescription description}}</div>
+				</div>
+			</div>
+		</script>
+		
+		<script id="shortcode-template" type="text/x-handlebars-template">
+			[theplatform account="{{account}}" media="{{release}}" player="{{player}}"]
+		</script>			
+		
 		<?php wp_head(); ?>
     </head>
     <body>

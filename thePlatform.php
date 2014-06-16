@@ -83,12 +83,13 @@ class ThePlatform_Plugin {
 	function register_scripts() {
 		wp_register_script( 'pdk', "//pdk.theplatform.com/pdk/tpPdk.js" );
 		wp_register_script( 'holder', plugins_url( '/js/holder.js', __FILE__ ) );
+		wp_register_script( 'handlebars', plugins_url( '/js/handlebars-v1.3.0.js', __FILE__ ) );
 		wp_register_script( 'bootstrap_js', plugins_url( '/js/bootstrap.min.js', __FILE__ ), array( 'jquery' ) );
 		wp_register_script( 'theplatform_js', plugins_url( '/js/theplatform.js', __FILE__ ), array( 'jquery' ) );
 		wp_register_script( 'infiniscroll_js', plugins_url( '/js/jquery.infinitescroll.min.js', __FILE__ ), array( 'jquery' ) );
 		wp_register_script( 'mpxhelper_js', plugins_url( '/js/mpxHelper.js', __FILE__ ), array( 'jquery' ) );
 		wp_register_script( 'theplatform_uploader_js', plugins_url( '/js/theplatform-uploader.js', __FILE__ ), array( 'jquery', 'theplatform_js' ) );
-		wp_register_script( 'mediaview_js', plugins_url( '/js/mediaview.js', __FILE__ ), array( 'jquery', 'holder', 'mpxhelper_js', 'theplatform_js', 'pdk', 'infiniscroll_js', 'bootstrap_js' ) );
+		wp_register_script( 'mediaview_js', plugins_url( '/js/mediaview.js', __FILE__ ), array( 'jquery', 'jquery-ui-dialog', 'handlebars', 'holder', 'mpxhelper_js', 'theplatform_js', 'pdk', 'infiniscroll_js', 'bootstrap_js' ) );
 		wp_register_script( 'field_views', plugins_url( '/js/fieldViews.js', __FILE__ ), array( 'jquery' ) );
 
 		wp_localize_script( 'theplatform_js', 'theplatform', array(
@@ -456,10 +457,10 @@ function theplatform_check_plugin_update() {
 	
 }
 
-function feed_dir_rewrite( $wp_rewrite ) {
-	$wp_rewrite->flush_rules( false );
+function theplatform_dir_rewrite( $wp_rewrite ) {
+	
     $feed_rules = array(
-        'thePlatform-media-browser.php' => 'index.php?page=theplatform',
+        'thePlatform-media-browser' => 'index.php?page=theplatform',
         'thePlatform-upload-window' => 'index.php?page=theplatform-uploader',
 		'hi/1' => "index.php"
     );

@@ -16,6 +16,14 @@
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 jQuery( document ).ready( function() {
+	
+	Handlebars.registerHelper("formatDescription", function(description) {
+		if ( description && description.length > 300 ) {
+			return description.substring( 0, 297 ) + '...';
+		}
+		return description;
+	});
+ 
 	//Parse params and basic setup.
 	var queryParams = mpxHelper.getParameters();
 	tpHelper.selectedCategory = '';
@@ -28,8 +36,11 @@ jQuery( document ).ready( function() {
 	jQuery( '#btn-embed' ).click( function() {
 
 		var player = jQuery( '#selectpick-player' ).val();
-
-		var shortcode = '[theplatform account="' + tpHelper.accountPid + '" media="' + tpHelper.currentRelease + '" player="' + player + '"]';
+		
+		var shortcodeSource   = jQuery("#shortcode-template").html();
+		var shortcodeTemplate = Handlebars.compile(shortcodeSource);
+		
+		var shortcode = shortcodeTemplate( { account: tpHelper.accountPid, release: tpHelper.currentRelease, player: player } );//'[theplatform account="' + tpHelper.accountPid + '" media="' + tpHelper.currentRelease + '" player="' + player + '"]';
 
 		var win = window.dialogArguments || opener || parent || top;
 		var editor = win.tinyMCE.activeEditor;
@@ -43,7 +54,7 @@ jQuery( document ).ready( function() {
 				currentContent = '';
 			jQuery( '#content', window.parent.document ).val( currentContent + shortcode );
 		}
-	} )
+	} );
 
 	jQuery( '#btn-embed-close' ).click( function() {
 		jQuery( '#btn-embed' ).click();
@@ -52,13 +63,12 @@ jQuery( document ).ready( function() {
 			win.tinyMCE.activeEditor.windowManager.close();
 		else
 			win.jQuery( '#tp-embed-dialog' ).dialog( 'close' );
-	} )
+	} );
 
 	jQuery( '#btn-set-image' ).click( function() {
 		var post_id = window.parent.jQuery( '#post_ID' ).val();
 		if ( !tpHelper.selectedThumb || !post_id )
 			return;
-
 		var data = {
 			action: 'set_thumbnail',
 			img: tpHelper.selectedThumb,
@@ -71,13 +81,8 @@ jQuery( document ).ready( function() {
 				window.parent.jQuery( '#postimagediv .inside' ).html( response );
 		} );
 	} );
-
-	// if (location.search.indexOf('&embed=true') != -1)
-	//     newMedia += '<button class="btn btn-xs media-embed pull-right" data-toggle="tooltip" data-placement="bottom" title="Embed this Media"><div class="dashicons dashicons-migrate"></div></button>';
-	// if (jQuery('#tp-edit-dialog').length !== 0)
-	//     newMedia += '<button class="btn btn-xs media-edit pull-right" data-toggle="tooltip" data-placement="bottom" title="Edit this Media"><div class="dashicons dashicons-edit"></div></button>';
+	
 	jQuery( '#btn-edit' ).click( function() {
-
 		jQuery( "#tp-edit-dialog" ).dialog( {
 			dialogClass: "wp-dialog",
 			modal: true,
@@ -86,8 +91,6 @@ jQuery( document ).ready( function() {
 			width: 1024,
 			position: [ 'center', 20 ]
 		} ).css( "overflow", "hidden" );
-
-
 		return false;
 	} );
 
@@ -188,7 +191,7 @@ jQuery( document ).ready( function() {
 		}
 		else {
 			jQuery( '.tpPlayer' ).css( 'visibility', 'hidden' );
-			jQuery( '#modal-player-placeholder' ).show()
+			jQuery( '#modal-player-placeholder' ).show();
 		}
 	} );
 
@@ -285,9 +288,11 @@ function getSearch() {
 
 function buildCategoryAccordion( resp ) {
 	var entries = resp['entries'];
+	var categorySource   = jQuery("#category-template").html();
+	var categoryTemplate = Handlebars.compile(categorySource);
 	for ( var idx in entries ) {
 		var entryTitle = entries[idx]['title'];
-		jQuery( '#list-categories' ).append( '<a href="#" class="list-group-item cat-list-selector">' + entryTitle + '</a>' );
+		jQuery( '#list-categories' ).append( categoryTemplate({ entryTitle: entryTitle }) );
 	}
 
 	//Add an empty row for scrolling
@@ -342,26 +347,27 @@ function addMediaObject( media ) {
 	if ( media.defaultThumbnailUrl === "" )
 		placeHolder = "holder.js/128x72/text:No Thumbnail";
 
-	var newMedia = '<div class="media" id="' + media.guid + '"><img class="media-object pull-left thumb-img" data-src="' + placeHolder + '" alt="128x72" src="' + media.defaultThumbnailUrl + '">'
-	newMedia += '<div class="media-body">' + '<div id="head"><strong class="media-heading"></strong></div>' + '<div id="source"></div>' + '<div id="desc"></div>' + '</div>' + '</div>';
-
-	newMedia = jQuery( newMedia );
-
-	jQuery( '#head > strong', newMedia ).text( media.title );
-	if ( media.description ) {
-		if ( media.description.length > 300 )
-			media.description = media.description.substring( 0, 297 ) + '...'
-		jQuery( '#desc', newMedia ).text( media.description );
-	}
+	var mediaSource   = jQuery("#media-template").html();
+	var mediaTemplate = Handlebars.compile(mediaSource);
+	
+	var newMedia = mediaTemplate({ 
+		guid: media.guid, 
+		placeHolder: placeHolder, 
+		defaultThumbnailUrl: media.defaultThumbnailUrl,
+		title: media.title,
+		description: media.description
+	});
+	
+	newMedia = jQuery( newMedia );	
 
 	newMedia.data( 'guid', media.guid );
 	newMedia.data( 'media', media );
-	newMedia.data( 'id', media.id )
+	newMedia.data( 'id', media.id );
 	var previewUrl = mpxHelper.extractVideoUrlfromMedia( media );
 	if ( previewUrl.length == 0 && tpHelper.isEmbed == "1" )
 		return;
 
-	newMedia.data( 'release', previewUrl.pop() )
+	newMedia.data( 'release', previewUrl.pop() );
 
 	jQuery( '#media-list' ).append( newMedia );
 
@@ -421,8 +427,8 @@ function updateContentPane( mediaItem ) {
 			}
 		}
 
-		jQuery( '#media-' + name ).html( value || '' )
-		jQuery( '#theplatform_upload_' + fullName.replace( '$', "\\$" ) ).val( value || '' )
+		jQuery( '#media-' + name ).html( value || '' );
+		jQuery( '#theplatform_upload_' + fullName.replace( '$', "\\$" ) ).val( value || '' );
 	} )
 }
 
