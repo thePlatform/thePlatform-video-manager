@@ -80,10 +80,6 @@ class ThePlatform_API_HTTP {
  */
 class ThePlatform_API {
 		
-	// Plugin preferences option table key
-	private $preferences_options_key = TP_PREFERENCES_OPTIONS_KEY;
-	private $account_options_key = TP_ACCOUNT_OPTIONS_KEY;
-
 	/**
 	 * Class constructor
 	 */
@@ -92,13 +88,21 @@ class ThePlatform_API {
 		$this->get_preferences();
 	}
 	
+	/**
+	 * Gets the MPX account options from the database
+	 */
 	private function get_account() {
 		if ( !isset ( $this->account ) ) {
 			$this->account = get_option( TP_ACCOUNT_OPTIONS_KEY );
 		}
 	}
 	
-	private function get_mpx_account_id($urlEncoded = true) {
+	/**
+	 * Checks if the MPX account ID is set and returns it if available
+	 * @param boolean $urlEncoded Return the MPX account id in a url encoded format, TRUE by default
+	 * @return string|boolean MPX account ID or False if not found
+	 */
+	private function get_mpx_account_id($urlEncoded = TRUE) {
 		$this->get_account();
 		if ( empty( $this->account['mpx_account_id'] ) ) {
 			return FALSE;
@@ -110,13 +114,15 @@ class ThePlatform_API {
 		return $this->account['mpx_account_id'];
 	}
 	
+	/**
+	 * Gets the MPX preferences from the database
+	 */
 	private function get_preferences() {
 		if ( !isset ( $this->preferences ) ) {
 			$this->preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
 		}
 	}
 	
-
 	/**
 	 * Construct a Basic Authorization header	 
 	 * @return array 

@@ -138,12 +138,15 @@ class ThePlatform_Plugin {
 	}
 
 	/**
-	 * Calls the Media Manager template
+	 * Calls the Upload form template
 	 */
 	function upload_page() {
 		require_once( dirname( __FILE__ ) . '/thePlatform-upload.php' );
 	}
 	
+	/**
+	 * Calls the About page template
+	 */
 	function about_page() {
 		require_once( dirname( __FILE__ ) . '/thePlatform-about.php' );
 	}
@@ -421,7 +424,7 @@ function theplatform_register_buttons( $buttons ) {
 /**
  * Load the TinyMCE plugin
  * @param  array $plugin_array Array of TinyMCE Plugins
- * @return array               The array of TinyMCE plugins with our plugin added
+ * @return array The array of TinyMCE plugins with our plugin added
  */
 function theplatform_register_tinymce_javascript( $plugin_array ) {
 	$plugin_array['theplatform'] = plugins_url( '/js/theplatform.tinymce.plugin.js', __file__ );
@@ -438,12 +441,15 @@ function theplatform_register_plugin_settings() {
 	register_setting( TP_UPLOAD_OPTIONS_KEY, TP_UPLOAD_OPTIONS_KEY, 'theplatform_dropdown_options_validate' );
 }
 
+/**
+ * Checks if the plugin has been updated and performs any necessary updates.
+ */
 function theplatform_check_plugin_update() {
 	if ( !theplatform_plugin_version_changed() ) {
 		return;
 	}
 	
-	// Move account settings from preferences (1.4.0)
+	// Move account settings from preferences (1.2.0)
 	$properties = get_option( TP_PREFERENCES_OPTIONS_KEY, array() );
 	if ( array_key_exists( 'mpx_account_id', $properties ) ) {
 		$accountSettings = TP_ACCOUNT_OPTIONS_DEFAULTS();

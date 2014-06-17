@@ -98,6 +98,13 @@ function theplatform_account_options_validate ( $input ) {
 	return $input;
 }
 
+/**
+ * Compare a key between the old settings array and current settings array
+ * @param string $key	The key of the setting to compare
+ * @param array $oldArray Current option array
+ * @param array $newArray New option array
+ * @return boolean False if the value is not set or unchanged, True if changed
+ */
 function theplatform_setting_changed( $key, $oldArray, $newArray ) {
 	if ( !isset( $oldArray[$key] ) && !isset( $newArray[$key] ) ){
 		return FALSE;
@@ -113,6 +120,7 @@ function theplatform_setting_changed( $key, $oldArray, $newArray ) {
 	
 	return FALSE;
 }
+
 /**
  * Validate MPX Settings for invalid input
  * @param array $input Passed by Wordpress, an Array of MPX options
@@ -217,6 +225,11 @@ function theplatform_decode_json_from_server( $input, $assoc, $die_on_error = TR
 	return $response;
 }
 
+/**
+ * Parse Custom Fileds and Upload Fields and returns a query string for MPX API calls
+ * @param array $metadata Custom Fields
+ * @return string MPX fields in query form
+ */
 function theplatform_get_query_fields( $metadata ) {
 	$metadata_options = get_option( TP_METADATA_OPTIONS_KEY );
 	$upload_options = get_option( TP_UPLOAD_OPTIONS_KEY );
