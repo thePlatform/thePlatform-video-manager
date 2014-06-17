@@ -362,7 +362,7 @@ jQuery( document ).ready( function() {
 				jQuery( "#verification_image" ).remove();
 			}
 
-			if ( response.indexOf( 'success' ) != -1 ) {
+			if ( response.success ) {
 				jQuery( '#verify-account-dashicon' ).removeClass( 'dashicons-no' ).addClass( 'dashicons-yes' );
 			} else {
 				jQuery( '#verify-account-dashicon' ).removeClass( 'dashicons-yes' ).addClass( 'dashicons-no' );

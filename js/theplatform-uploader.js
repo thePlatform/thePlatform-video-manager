@@ -48,7 +48,7 @@ TheplatformUploader = ( function() {
 	 */
 	TheplatformUploader.prototype.publishMedia = function( params ) {
 		var me = this;
-		params.action = 'publishMedia';
+		params.action = 'publishMedia';		
 		params._wpnonce = theplatform.tp_nonce;
 
 		if ( this.publishing ) {
@@ -63,10 +63,8 @@ TheplatformUploader = ( function() {
 			url: theplatform.ajaxurl,
 			data: params,
 			type: "POST",
-			success: function( responseJSON ) {
-				var response = me.parseJSON( responseJSON );
-
-				if ( response.success == 'true' ) {
+			success: function( response ) {
+				if ( response.success ) {
 					message_nag( "Media is being published. It may take several minutes until the media is available. This window will now close.", true );
 					window.setTimeout( 'window.close()', 10000 );
 				} else {
@@ -90,9 +88,8 @@ TheplatformUploader = ( function() {
 			url: theplatform.ajaxurl,
 			data: params,
 			type: "POST",
-			success: function( responseJSON ) {
-				var response = me.parseJSON( responseJSON );
-				var data = response.content;
+			success: function( response ) {
+				var data = response.data;
 
 				if ( data.entries.length != 0 ) {
 					var state = data.entries[0].state;
@@ -270,30 +267,34 @@ TheplatformUploader = ( function() {
 			url: theplatform.ajaxurl,
 			data: params,
 			type: "POST",
-			success: function( responseJSON ) {
-				var response = me.parseJSON( responseJSON );
-				var data = response.content;
+			success: function( response ) {
+				if ( !response.success ){
+					me.waitForReady(params);
+				}
+				else {
+					var data = response.data;
 
-				if ( data.entries.length != 0 ) {
-					var state = data.entries[0].state;
+					if ( data.entries.length !== 0 ) {
+						var state = data.entries[0].state;
 
-					if ( state == "Ready" ) {
+						if ( state === "Ready" ) {
 
-						var frags = me.fragFile( file );
+							var frags = me.fragFile( file );
 
-						me.frags_uploaded = 0;
-						params.num_fragments = frags.length;
+							me.frags_uploaded = 0;
+							params.num_fragments = frags.length;
 
-						message_nag( "Beginning upload of " + frags.length + " fragments. Please do not close this window." );
+							message_nag( "Beginning upload of " + frags.length + " fragments. Please do not close this window." );
 
-						me.uploadFragments( params, frags, 0 );
+							me.uploadFragments( params, frags, 0 );
 
+						} else {
+							me.waitForReady( params );
+						}
 					} else {
 						me.waitForReady( params );
 					}
-				} else {
-					me.waitForReady( params );
-				}
+				}				
 			},
 			error: function( response ) {
 				error_nag( "An error occurred while waiting for upload server READY status: " + response, true );
@@ -319,14 +320,12 @@ TheplatformUploader = ( function() {
 			xhrFields: {
 				withCredentials: true
 			},
-			success: function( responseJSON ) {
-				var response = me.parseJSON( responseJSON );
-
-				if ( response.success == 'true' ) {
+			success: function( response ) {
+				if ( response.success ) {
 					message_nag( "Waiting for READY status from " + params.upload_base + "." );
 					me.waitForReady( params, file );
 				} else {
-					error_nag( "Startup Upload failed with code: " + response.code, true );
+					error_nag( "Startup Upload failed with code: " + response.data.code, true );
 				}
 			},
 			error: function( result ) {
@@ -397,21 +396,19 @@ TheplatformUploader = ( function() {
 			profile: profile
 		};
 
-		jQuery.post( theplatform.ajaxurl, data, function( responseJSON ) {
-			var response = me.parseJSON( responseJSON );
-
-			if ( response.success == "true" ) {
+		jQuery.post( theplatform.ajaxurl, data, function( response ) {
+			if ( response.success ) {
 				var params = {
 					file_name: file.name,
 					file_size: file.size,
-					token: response.token,
-					guid: response.guid,
-					media_id: response.media_id,
-					account_id: response.account_id,
-					server_id: response.server_id,
-					upload_base: response.upload_base,
-					format: response.format,
-					contentType: response.contentType,
+					token: response.data.token,
+					guid: response.data.guid,
+					media_id: response.data.media_id,
+					account_id: response.data.account_id,
+					server_id: response.data.server_id,
+					upload_base: response.data.upload_base,
+					format: response.data.format,
+					contentType: response.data.contentType,
 					profile: profile
 				};
 
@@ -419,7 +416,7 @@ TheplatformUploader = ( function() {
 				// parentLocation.reload();
 				me.establishSession( params, file );
 			} else {
-				error_nag( "Unable to upload media asset at this time. Please try again later.", true );
+				error_nag( "Unable to upload media asset at this time. Please try again later." + response.data, true );
 			}
 		} );
 	}

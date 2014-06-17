@@ -15,17 +15,20 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. -->
 
+<?php
+	wp_enqueue_script( 'theplatform_uploader_js' );
+	wp_enqueue_style( 'bootstrap_tp_css' );
+	wp_enqueue_style( 'theplatform_css' );
+	wp_enqueue_style( 'wp-admin' );
+?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
     <head>
 		<meta charset="<?php bloginfo( 'charset' ); ?>" />
 
 		<title>thePlatform Video Library</title>
-		<?php
-		wp_print_scripts( array( 'jquery', 'theplatform_uploader_js', 'theplatform_js' ) );
-		wp_print_styles( array( 'theplatform_css', 'global', 'wp-admin', 'colors', 'bootstrap_css' ) );
-		?>
-
+		
+		<?php wp_head(); ?>		
     </head>
 
     <body>

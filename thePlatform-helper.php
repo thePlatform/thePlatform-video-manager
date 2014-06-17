@@ -186,13 +186,11 @@ function theplatform_verify_account_settings() {
 
 	if ( !array_key_exists( 'isException', $payload ) ) {
 		$account_is_verified = TRUE;
-		echo "success";
-	} else {
-		$account_is_verified = FALSE;
-		echo "failed";
-	}
-
-	die();
+		wp_send_json_success();
+	} 
+	
+	$account_is_verified = FALSE;
+	wp_send_json_error();	
 }
 
 /**

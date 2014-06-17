@@ -149,6 +149,7 @@ class ThePlatform_Plugin {
 	 */
 	function about_page() {
 		require_once( dirname( __FILE__ ) . '/thePlatform-about.php' );
+		die();
 	}
 
 	/**
@@ -165,7 +166,6 @@ class ThePlatform_Plugin {
 	function edit() {
 		$args = array( 'fields' => $_POST['params'], 'custom_fields' => $_POST['custom_params'] );
 		$this->tp_api->update_media( $args );
-		die();
 	}
 
 	/**
@@ -186,13 +186,13 @@ class ThePlatform_Plugin {
 		global $post_ID;
 
 		if ( !isset( $_POST['id'] ) ) {
-			die( "Post ID not found" );
+			wp_send_json_error( "Post ID not found" );
 		}
 
 		$post_ID = intval( $_POST['id'] );
 
 		if ( !$post_ID ) {
-			die( "Illegal Post ID" );
+			wp_send_json_error( "Illegal Post ID" );
 		}
 
 		$url = isset( $_POST['img'] ) ? $_POST['img'] : '';
@@ -203,11 +203,11 @@ class ThePlatform_Plugin {
 
 		if ( $thumbnail_id !== FALSE ) {
 			set_post_thumbnail( $post_ID, $thumbnail_id );
-			die( _wp_post_thumbnail_html( $thumbnail_id, $post_ID ) );
+			wp_send_json_success( _wp_post_thumbnail_html( $thumbnail_id, $post_ID ) );
 		}
 
 		//TODO: Better error
-		die( "Something went wrong" );
+		wp_send_json_error( "Something went wrong" );
 	}
 
 	/**

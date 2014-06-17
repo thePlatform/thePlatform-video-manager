@@ -48,6 +48,19 @@ class ThePlatform_Proxy {
 			wp_die( 'You do not have sufficient permissions to modify MPX Media' );
 		}
 	}
+	
+	public static function check_theplatform_proxy_response( $response ) {
+		
+		if ( is_wp_error( $response ) ) {
+			wp_send_json_error( $response->get_error_message() );
+		}
+	
+		if ( isset( $response['data'] ) && $response['data'] === false ) {
+			wp_send_json_error( $response['status']['http_code'] );
+		}
+		
+		wp_send_json_success( theplatform_decode_json_from_server( $response, TRUE, FALSE ) );				
+	}
 
 	/**
 	 * Initiate a file upload
@@ -55,8 +68,6 @@ class ThePlatform_Proxy {
 	 */
 	public static function startUpload() {
 		ThePlatform_Proxy::check_nonce_and_permissions();
-
-		$ret = array();
 
 		$url = $_POST['upload_base'] . '/web/Upload/startUpload';
 		$url .= '?schema=1.1';
@@ -71,20 +82,7 @@ class ThePlatform_Proxy {
 
 		$response = ThePlatform_API_HTTP::put( $url );
 
-		if ( is_wp_error( $response ) ) {
-			$ret['success'] = 'false';
-			$ret['code'] = $response->get_error_message();
-			wp_send_json( $ret );
-		}
-
-		if ( isset( $response['data'] ) && $response['data'] === false ) {
-			$ret['success'] = 'false';
-			$ret['code'] = $response['status']['http_code'];
-		} else {
-			$ret['success'] = 'true';
-		}
-
-		wp_send_json( $ret );
+		ThePlatform_Proxy::check_theplatform_proxy_response( $response );
 	}
 
 	/**
@@ -94,8 +92,6 @@ class ThePlatform_Proxy {
 	public static function uploadStatus() {
 		ThePlatform_Proxy::check_nonce_and_permissions();
 
-		$ret = array();
-
 		$url = $_POST['upload_base'] . '/data/UploadStatus';
 		$url .= '?schema=1.0';
 		$url .= '&account=' . urlencode( $_POST['account_id'] );
@@ -104,21 +100,7 @@ class ThePlatform_Proxy {
 
 		$response = ThePlatform_API_HTTP::get( $url );
 
-		if ( is_wp_error( $response ) ) {
-			$ret['success'] = 'false';
-			$ret['code'] = $response->get_error_message();
-			wp_send_json( $ret );
-		}
-
-		if ( isset( $response['data'] ) && $response['data'] === false ) {
-			$ret['success'] = 'false';
-			$ret['code'] = $response['status']['http_code'];
-		} else {
-			$ret['success'] = 'true';
-			$ret['content'] = theplatform_decode_json_from_server( $response, TRUE );
-		}
-
-		wp_send_json( $ret );
+		ThePlatform_Proxy::check_theplatform_proxy_response( $response );
 	}
 
 	/**
@@ -128,70 +110,35 @@ class ThePlatform_Proxy {
 	public static function publishMedia() {
 		ThePlatform_Proxy::check_nonce_and_permissions();
 
-		$ret = array();
-		if ( !isset( $account ) ) {
-			$account = get_option( TP_ACCOUNT_OPTIONS_KEY );
-		}
-
-		$url = TP_API_PUBLISH_PROFILE_ENDPOINT;
 		if ( $_POST['profile'] == 'wp_tp_none' ) {
-			die();
-		} else {
-			$url .= '&byTitle=' . urlencode( $_POST['profile'] );
-		}
-		$url .= '&token=' . $_POST['token'];
-		$url .= '&account=' . $account['mpx_account_id'];
+			wp_send_json_success();
+		} 
+		
+		$profileUrl = TP_API_PUBLISH_PROFILE_ENDPOINT;
+		$profileUrl .= '&byTitle=' . urlencode( $_POST['profile'] );		
+		$profileUrl .= '&token=' . $_POST['token'];
+		$profileUrl .= '&account=' . urlencode( $_POST['account_id'] );
 
-		$response = ThePlatform_API_HTTP::get( $url );
+		$profileResponse = ThePlatform_API_HTTP::get( $profileUrl );
 
-		if ( is_wp_error( $response ) ) {
-			$ret['success'] = 'false';
-			$ret['code'] = $response->get_error_message();
-			wp_send_json( $ret );
-		}
+		$content = theplatform_decode_json_from_server( $profileResponse, TRUE );
 
-		if ( $response['data'] === false ) {
-			$ret['success'] = 'false';
-			$ret['code'] = $response['status']['http_code'];
-		} else {
-			$content = theplatform_decode_json_from_server( $response, TRUE );
-
-			if ( $content['entryCount'] == 0 ) {
-				$ret['success'] = 'false';
-				$ret['code'] = 'No Publishing Profile Found.';
-				wp_send_json( $ret );
-			}
-
-			$profileId = $content['entries'][0]['id'];
-			$mediaId = $_POST['media_id'];
-
-			$url = TP_API_PUBLISH_BASE_URL;
-			$url .= '&token=' . $_POST['token'];
-			$url .= '&account=' . urlencode( $_POST['account_id'] );
-			$url .= '&_mediaId=' . urlencode( $mediaId );
-			$url .= '&_profileId=' . urlencode( $profileId );
-
-			$response = ThePlatform_API_HTTP::get( $url, array( "timeout" => 120 ) );
-
-			if ( is_wp_error( $response ) ) {
-				$ret['success'] = 'false';
-				$ret['code'] = $response->get_error_message();
-				wp_send_json( $ret );
-			}
-
-			if ( isset( $response['data'] ) && $response['data'] === false ) {
-				$ret['success'] = 'false';
-				$ret['code'] = 'Unable to publish media.';
-				wp_send_json( $ret );
-			}
-
-			$content = theplatform_decode_json_from_server( $response, TRUE );
-
-			$ret['content'] = $content['publishResponse']['profileResultId'];
-			$ret['success'] = 'true';
+		if ( $content['entryCount'] == 0 ) {
+			wp_send_json_error( "No Publishing Profile Found" );
 		}
 
-		wp_send_json( $ret );
+		$profileId = $content['entries'][0]['id'];
+		$mediaId = $_POST['media_id'];
+
+		$publishUrl = TP_API_PUBLISH_BASE_URL;
+		$publishUrl .= '&token=' . $_POST['token'];
+		$publishUrl .= '&account=' . urlencode( $_POST['account_id'] );
+		$publishUrl .= '&_mediaId=' . urlencode( $mediaId );
+		$publishUrl .= '&_profileId=' . urlencode( $profileId );
+
+		$response = ThePlatform_API_HTTP::get( $publishUrl, array( "timeout" => 120 ) );
+
+		ThePlatform_Proxy::check_theplatform_proxy_response( $response );
 	}
 
 	/**
@@ -200,47 +147,24 @@ class ThePlatform_Proxy {
 	 */
 	public static function cancelUpload() {
 		ThePlatform_Proxy::check_nonce_and_permissions();
+		
+		//Send a cancel request to the upload endpoint
+		$uploadUrl = $_POST['upload_base'] . '/web/Upload/cancelUpload?schema=1.1';
+		$uploadUrl .= '&token=' . $_POST['token'];
+		$uploadUrl .= '&account=' . urlencode( $_POST['account_id'] );
+		$uploadUrl .= '&_guid=' . $_POST['guid'];
+		$uploadResponse = ThePlatform_API_HTTP::put( $uploadUrl );
 
-		$ret = array();
+		theplatform_decode_json_from_server( $uploadResponse, TRUE );
+		
+		//Send a delete media request to FMS
+		$deleteUrl = TP_API_MEDIA_DELETE_ENDPOINT;
+		$deleteUrl .= '&byGuid=' . $_POST['guid'];
+		$deleteUrl .= '&token=' . $_POST['token'];
+		$deleteUrl .= '&account=' . urlencode( $_POST['account_id'] );
+		$deleteResponse = ThePlatform_API_HTTP::get( $deleteUrl );
 
-		$url = $_POST['upload_base'] . '/web/Upload/cancelUpload?schema=1.1';
-		$url .= '&token=' . $_POST['token'];
-		$url .= '&account=' . urlencode( $_POST['account_id'] );
-		$url .= '&_guid=' . $_POST['guid'];
-
-		$response = ThePlatform_API_HTTP::put( $url );
-
-		if ( is_wp_error( $response ) ) {
-			$ret['success'] = 'false';
-			$ret['code'] = $response->get_error_message();
-			wp_send_json( $ret );
-		}
-
-		if ( $response['data'] == false ) {
-			$ret['success'] = 'false';
-			$ret['code'] = 'Unable to cancel upload.';
-			wp_send_json( $ret );
-		} else {
-			$url = TP_API_MEDIA_DELETE_ENDPOINT;
-			$url .= '&byGuid=' . $_POST['guid'];
-			$url .= '&token=' . $_POST['token'];
-			$url .= '&account=' . urlencode( $_POST['account_id'] );
-
-			sleep( 30 );
-
-			$response = ThePlatform_API_HTTP::get( $url );
-
-			if ( is_wp_error( $response ) ) {
-				$ret['success'] = 'false';
-				$ret['code'] = $response->get_error_message();
-				wp_send_json( $ret );
-			}
-
-			$content = theplatform_decode_json_from_server( $response, TRUE );
-			$ret['success'] = 'true';
-		}
-
-		wp_send_json( $ret );
+		ThePlatform_Proxy::check_theplatform_proxy_response( $deleteResponse );
 	}
 
 	/**
@@ -249,13 +173,8 @@ class ThePlatform_Proxy {
 	 */
 	public static function establishSession() {
 		ThePlatform_Proxy::check_nonce_and_permissions();
-
-		$ret = array();
-
 		$url = $_POST['url'];
-
-		$response = ThePlatform_API_HTTP::get( $url );
-
-		die( "OK" ); //doesn't matter what we return here
+		ThePlatform_API_HTTP::get( $url );
+		wp_send_json_success(); //doesn't matter what we return here
 	}
 }

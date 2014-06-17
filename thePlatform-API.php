@@ -315,8 +315,6 @@ class ThePlatform_API {
 		} else {
 			$formatTitle = (string) $format->title;
 		}
-		
-		
 
 		$upload_server_id = $args['server_id'];
 
@@ -324,10 +322,14 @@ class ThePlatform_API {
 			$upload_server_id = $this->get_default_upload_server( $formatTitle );
 		}				
 		
+		if ( FALSE === $upload_server_id ) {
+			wp_send_json_error( "Unable to determine MPX Server ID, please check your account configuration" );
+		}
+		
 		$upload_server_base_url = $this->get_upload_urls( $upload_server_id, $token );
 
 		if ( is_wp_error( $upload_server_base_url ) ) {
-			die ( $upload_server_base_url );
+			wp_send_json_error( $upload_server_base_url );
 		}
 		
 		$media = $this->create_media_placeholder( $args, $token );
@@ -339,17 +341,16 @@ class ThePlatform_API {
 			'server_id' => $upload_server_id,
 			'upload_base' => $upload_server_base_url,
 			'format' => $formatTitle,
-			'contentType' => (string) $format->defaultContentType,
-			'success' => 'true'
+			'contentType' => (string) $format->defaultContentType			
 		);
 		
-		wp_send_json( $params );		
+		wp_send_json_success( $params );		
 	}
 	
 	/**
 	 * Returns a default server for the specific format
 	 * @param string $formatTitle MPX Format title
-	 * @return string MPX Server ID
+	 * @return string|boolean MPX Server ID or FALSE
 	 */
 	function get_default_upload_server($formatTitle) {		
 		$accountSettings = $this->get_account_settings();
@@ -365,7 +366,7 @@ class ThePlatform_API {
 			if ( array_key_exists( 0, $servers ) ) {
 				return $servers[0]["id"];
 			} else {
-				die( "Unable to determine a proper Server" );
+				return FALSE;
 			}
 		}
 	}
@@ -424,8 +425,8 @@ class ThePlatform_API {
 
 		$response = ThePlatform_API_HTTP::get( $url, array( "timeout" => 120 ) );
 		$this->mpx_signout( $token );
-
-		die( wp_remote_retrieve_body( $response ) );
+		
+		wp_send_json( wp_remote_retrieve_body( $response ) );
 	}
 
 	/**
@@ -594,8 +595,7 @@ class ThePlatform_API {
 		$this->mpx_signout( $token );
 
 		if ( !$returnResponse ) {
-			echo(wp_remote_retrieve_body( $response ));
-			die();
+			return wp_remote_retrieve_body( $response );
 		}
 
 		$data = theplatform_decode_json_from_server( $response, TRUE );

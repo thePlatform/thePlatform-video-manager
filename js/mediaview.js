@@ -77,8 +77,8 @@ jQuery( document ).ready( function() {
 		};
 
 		jQuery.post( ajaxurl, data, function( response ) {
-			if ( response.indexOf( 'set-post-thumbnail' ) != -1 )
-				window.parent.jQuery( '#postimagediv .inside' ).html( response );
+			if ( response.success )
+				window.parent.jQuery( '#postimagediv .inside' ).html( response.data );
 		} );
 	} );
 	
