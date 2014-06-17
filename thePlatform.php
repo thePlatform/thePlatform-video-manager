@@ -453,21 +453,5 @@ function theplatform_check_plugin_update() {
 			}
 		}
 		update_option( TP_ACCOUNT_OPTIONS_KEY, $accountSettings );
-	}
-	
+	}	
 }
-
-function theplatform_dir_rewrite( $wp_rewrite ) {
-	
-    $feed_rules = array(
-        'thePlatform-media-browser' => 'index.php?page=theplatform',
-        'thePlatform-upload-window' => 'index.php?page=theplatform-uploader',
-		'hi/1' => "index.php"
-    );
-
-    $wp_rewrite->rules = $feed_rules + $wp_rewrite->rules;
-    return $wp_rewrite->rules;
-}
-
-// Hook in.
-add_filter( 'generate_rewrite_rules', 'feed_dir_rewrite' );
