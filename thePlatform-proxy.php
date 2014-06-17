@@ -43,7 +43,7 @@ class ThePlatform_Proxy {
 
 	public static function check_nonce_and_permissions() {
 		check_admin_referer( 'theplatform-ajax-nonce' );
-		$tp_uploader_cap = apply_filters( 'tp_uploader_cap', 'upload_files' );
+		$tp_uploader_cap = apply_filters( TP_UPLOADER_CAP, TP_UPLOADER_DEFAULT_CAP );
 		if ( !current_user_can( $tp_uploader_cap ) ) {
 			wp_die( 'You do not have sufficient permissions to modify MPX Media' );
 		}

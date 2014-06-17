@@ -37,7 +37,7 @@ class ThePlatform_Options {
 	private $preferences;
 
 	function __construct() {
-		$tp_admin_cap = apply_filters( 'tp_admin_cap', 'manage_options' );
+		$tp_admin_cap = apply_filters( TP_ADMIN_CAP, TP_ADMIN_DEFAULT_CAP );
 		if ( !current_user_can( $tp_admin_cap ) ) {
 			wp_die( '<p>You do not have sufficient permissions to manage this plugin</p>' );
 		}

@@ -39,7 +39,7 @@ wp_enqueue_style( 'wp-jquery-ui-dialog' );
 		if ( !defined( 'ABSPATH' ) ) {
 			exit;
 		}
-		$tp_viewer_cap = apply_filters( 'tp_viewer_cap', 'edit_posts' );
+		$tp_viewer_cap = apply_filters( TP_VIEWER_CAP, TP_VIEWER_DEFAULT_CAP );
 		if ( !current_user_can( $tp_viewer_cap ) ) {
 			wp_die( '<p>You do not have sufficient permissions to browse MPX Media</p>' );
 		}

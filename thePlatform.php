@@ -112,9 +112,9 @@ class ThePlatform_Plugin {
 	 * Add admin pages to Wordpress sidebar
 	 */
 	function add_admin_page() {
-		$tp_admin_cap = apply_filters( 'tp_admin_cap', 'manage_options' );
-		$tp_viewer_cap = apply_filters( 'tp_viewer_cap', 'edit_posts' );
-		$tp_uploader_cap = apply_filters( 'tp_uploader_cap', 'upload_files' );
+		$tp_admin_cap = apply_filters( TP_ADMIN_CAP, TP_ADMIN_DEFAULT_CAP );
+		$tp_viewer_cap = apply_filters( TP_VIEWER_CAP, TP_VIEWER_DEFAULT_CAP );
+		$tp_uploader_cap = apply_filters( TP_UPLOADER_CAP, TP_UPLOADER_DEFAULT_CAP );
 		$slug = 'theplatform';
 		add_menu_page( 'thePlatform', 'thePlatform', $tp_viewer_cap, $slug, array( $this, 'media_page' ), 'dashicons-video-alt3', 11 );
 		add_submenu_page( $slug, 'thePlatform Video Browser', 'Browse MPX Media', $tp_viewer_cap, $slug, array( $this, 'media_page' ) );
@@ -403,7 +403,7 @@ add_action( 'init', 'theplatform_buttonhooks' );
  * TinyMCE filter hooks to add a new button
  */
 function theplatform_buttonhooks() {
-	$tp_embedder_cap = apply_filters( 'tp_embedder_cap', 'edit_posts' );
+	$tp_embedder_cap = apply_filters( TP_EMBEDDER_CAP, TP_EMBEDDER_DEFAULT_CAP );
 	if ( current_user_can( $tp_embedder_cap ) ) {
 		add_filter( "mce_external_plugins", "theplatform_register_tinymce_javascript" );
 		add_filter( 'mce_buttons', 'theplatform_register_buttons' );

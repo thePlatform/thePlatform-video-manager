@@ -52,7 +52,7 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 	wp_enqueue_style( 'bootstrap_tp_css' );
 	wp_enqueue_script( 'theplatform_js' );
 
-	$tp_uploader_cap = apply_filters( 'tp_uploader_cap', 'upload_files' );
+	$tp_uploader_cap = apply_filters( TP_UPLOADER_CAP, TP_UPLOADER_DEFAULT_CAP );
 
 	if ( !current_user_can( $tp_uploader_cap ) ) {
 		wp_die( '<p>You do not have sufficient permissions to upload MPX Media</p>' );
