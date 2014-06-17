@@ -1,4 +1,7 @@
 function buildDragColumns() {
+	var TP_METADATA_OPTIONS_KEY = 'theplatform_metadata_options';
+	var TP_UPLOAD_OPTIONS_KEY = 'theplatform_upload_options';
+	
 	var $ = jQuery;
 	var $optionsPageName = $( 'input[name=option_page]' );
 	if ( $optionsPageName.length
