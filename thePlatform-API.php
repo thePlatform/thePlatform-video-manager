@@ -403,10 +403,10 @@ class ThePlatform_API {
 
 		$fields = theplatform_get_query_fields( $this->get_metadata_fields() );
 
-		$url = TP_API_MEDIA_ENDPOINT . '&count=true&fields=guid,' . $fields . '&token=' . $token . '&range=' . $_POST['range'];
+		$url = TP_API_MEDIA_ENDPOINT . '&fields=guid,' . $fields . '&token=' . $token . '&range=' . $_POST['range'];
 
 		if ( $_POST['isEmbed'] === "1" ) {
-			$url .= '&byAvailabilityState=available&byApproved=true&count=true&byContent=byReleases=byDelivery%253Dstreaming';
+			$url .= '&byAvailabilityState=available&byApproved=true&byContent=byReleases=byDelivery%253Dstreaming';
 		}
 
 		if ( !empty( $_POST['myContent'] ) && $_POST['myContent'] === 'true' ) {
@@ -595,7 +595,7 @@ class ThePlatform_API {
 		$this->mpx_signout( $token );
 
 		if ( !$returnResponse ) {
-			return wp_remote_retrieve_body( $response );
+			wp_send_json( wp_remote_retrieve_body( $response ) );
 		}
 
 		$data = theplatform_decode_json_from_server( $response, TRUE );

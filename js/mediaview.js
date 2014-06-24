@@ -103,16 +103,17 @@ jQuery( document ).ready( function() {
 			//No more results
 		},
 		onBottom: function( callback ) {
+			var MAX_RESULTS = 20;
 			jQuery( '#load-overlay' ).show(); // show loading before we call getVideos
 			var theRange = parseInt( tpHelper.feedEndRange );
-			theRange = ( theRange + 1 ) + '-' + ( theRange + 20 );
+			theRange = ( theRange + 1 ) + '-' + ( theRange + MAX_RESULTS );
 			mpxHelper.getVideos( theRange, function( resp ) {
 				if ( resp['isException'] ) {
 					jQuery( '#load-overlay' ).hide();
 					//what do we do on error?
 				}
 
-				tpHelper.feedResultCount = resp['totalResults'];
+				tpHelper.feedResultCount = resp['entryCount'];
 				tpHelper.feedStartRange = resp['startIndex'];
 				tpHelper.feedEndRange = 0;
 				if ( resp['entryCount'] > 0 )
@@ -126,7 +127,7 @@ jQuery( document ).ready( function() {
 
 				jQuery( '#load-overlay' ).hide();
 				Holder.run();
-				callback( parseInt( tpHelper.feedEndRange ) < parseInt( tpHelper.feedResultCount ) ); //True if there are still more results.
+				callback( parseInt( tpHelper.feedResultCount ) == MAX_RESULTS ); //True if there are still more results.
 			} );
 		}
 	} );
