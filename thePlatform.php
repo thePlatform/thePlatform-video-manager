@@ -65,8 +65,7 @@ class ThePlatform_Plugin {
 		if ( is_admin() ) {
 			add_action( 'admin_menu', array( $this, 'add_admin_page' ) );
 			add_action( 'admin_init', array( $this, 'register_scripts' ) );
-			add_action( 'wp_ajax_initialize_media_upload', array( $this->tp_api, 'initialize_media_upload' ) );
-			add_action( 'wp_ajax_get_subaccounts', array( $this->tp_api, 'get_subaccounts' ) );
+			add_action( 'wp_ajax_initialize_media_upload', array( $this->tp_api, 'initialize_media_upload' ) );			
 			add_action( 'wp_ajax_theplatform_media', array( $this, 'embed' ) );
 			add_action( 'wp_ajax_theplatform_upload', array( $this, 'upload' ) );
 			add_action( 'wp_ajax_theplatform_edit', array( $this, 'edit' ) );
@@ -156,6 +155,13 @@ class ThePlatform_Plugin {
 	 * Calls the Embed template in an IFrame and Dialog
 	 */
 	function embed() {
+		check_admin_referer( 'theplatform-ajax-nonce' );
+		
+		$tp_embedder_cap = apply_filters( TP_EMBEDDER_CAP, TP_EMBEDDER_DEFAULT_CAP );
+		if ( !current_user_can( $tp_embedder_cap ) ) {
+			wp_die( 'You do not have sufficient permissions to embed videos' );
+		}
+		
 		require_once( $this->plugin_base_dir . 'thePlatform-media-browser.php' );
 		die();
 	}
@@ -164,6 +170,13 @@ class ThePlatform_Plugin {
 	 * Calls the Embed template in an IFrame and Dialog
 	 */
 	function edit() {
+		check_admin_referer( 'theplatform-ajax-nonce' );
+		
+		$tp_uploader_cap = apply_filters( TP_UPLOADER_CAP, TP_UPLOADER_DEFAULT_CAP );
+		if ( !current_user_can( $tp_uploader_cap ) ) {
+			wp_die( 'You do not have sufficient permissions to edit videos' );
+		}
+		
 		$args = array( 'fields' => $_POST['params'], 'custom_fields' => $_POST['custom_params'] );
 		$this->tp_api->update_media( $args );
 	}
@@ -172,6 +185,13 @@ class ThePlatform_Plugin {
 	 * Calls the Upload Window template in a popup
 	 */
 	function upload() {
+		check_admin_referer( 'theplatform-ajax-nonce' );
+		
+		$tp_uploader_cap = apply_filters( TP_UPLOADER_CAP, TP_UPLOADER_DEFAULT_CAP );
+		if ( !current_user_can( $tp_uploader_cap ) ) {
+			wp_die( 'You do not have sufficient permissions to upload videos' );
+		}
+		
 		require_once( $this->plugin_base_dir . 'thePlatform-upload-window.php' );
 		die();
 	}
@@ -182,6 +202,11 @@ class ThePlatform_Plugin {
 	 */
 	function set_thumbnail_ajax() {
 		check_admin_referer( 'theplatform-ajax-nonce' );
+		
+		$tp_embedder_cap = apply_filters( TP_EMBEDDER_CAP, TP_EMBEDDER_DEFAULT_CAP );
+		if ( !current_user_can( $tp_embedder_cap ) ) {
+			wp_die( 'You do not have sufficient permissions to change the post thumbnail' );
+		}
 
 		global $post_ID;
 

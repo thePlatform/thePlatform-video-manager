@@ -380,6 +380,7 @@ jQuery( document ).ready( function() {
 		params.id = tpHelper.mediaId;
 
 		var data = {
+			_wpnonce: theplatform.tp_nonce,
 			action: 'theplatform_edit',
 			params: JSON.stringify( params ),
 			custom_params: JSON.stringify( custom_params )
@@ -406,7 +407,7 @@ jQuery( document ).ready( function() {
 		var profile = jQuery( '.upload_profile' );
 		var server = jQuery( '.server_id' );
 
-		var upload_window = window.open( theplatform.ajaxurl + '?action=theplatform_upload', '_blank', 'menubar=no,location=no,resizable=yes,scrollbars=no,status=no,width=700,height=150' )
+		var upload_window = window.open( theplatform.ajaxurl + '?action=theplatform_upload&_wpnonce=' + theplatform.tp_nonce, '_blank', 'menubar=no,location=no,resizable=yes,scrollbars=no,status=no,width=700,height=150' )
 
 		upload_window.uploaderData = {
 			file: file,

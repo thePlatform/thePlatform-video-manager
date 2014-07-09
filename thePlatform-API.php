@@ -398,7 +398,8 @@ class ThePlatform_API {
 	 * @return array The Media data service response
 	 */
 	function get_videos() {	
-
+		check_admin_referer( 'theplatform-ajax-nonce' );
+		
 		$token = $this->mpx_signin();
 
 		$fields = theplatform_get_query_fields( $this->get_metadata_fields() );
@@ -582,6 +583,10 @@ class ThePlatform_API {
 	 * @return array The Media data service response
 	 */
 	function get_categories( $returnResponse = false ) {
+		// Check nonce if we got here through an AJAX call
+		if ( !$returnResponse ) {
+			check_admin_referer( 'theplatform-ajax-nonce' );
+		}
 		$token = $this->mpx_signin();
 
 		$url = TP_API_MEDIA_CATEGORY_ENDPOINT . '&fields=title,fullTitle&sort=title,order&token=' . $token;

@@ -40,7 +40,7 @@ if ( !current_user_can( $tp_viewer_cap ) ) {
 
 <div id="tp-container">		
 	<?php
-	$site_url = admin_url( "/admin-ajax.php?action=theplatform_media" );
+	$site_url = wp_nonce_url( admin_url( "/admin-ajax.php?action=theplatform_media" ), 'theplatform-ajax-nonce');
 	echo '<iframe id="tp-iframe" src="' . esc_url( $site_url ) . '"></iframe>'
 	?>		
 </div>
