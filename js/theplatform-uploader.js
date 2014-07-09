@@ -16,7 +16,8 @@
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 TheplatformUploader = ( function() {
-
+	
+	
 	/**
 	 @function fragFile Slices a file into fragments
 	 @param {File} file - file to slice
@@ -25,7 +26,7 @@ TheplatformUploader = ( function() {
 	TheplatformUploader.prototype.fragFile = function( file ) {
 		var fragSize = 1024 * 1024 * 5;
 		var i, j, k;
-		var ret = [ ];
+		var ret = [ ];				
 
 		if ( !( this.file.slice || this.file.mozSlice ) ) {
 			return this.file;
@@ -49,7 +50,7 @@ TheplatformUploader = ( function() {
 	TheplatformUploader.prototype.publishMedia = function( params ) {
 		var me = this;
 		params.action = 'publishMedia';		
-		params._wpnonce = theplatform.tp_nonce;
+		params._wpnonce = theplatform_uploader_local.tp_nonce[params.action];
 
 		if ( this.publishing ) {
 			return;
@@ -60,7 +61,7 @@ TheplatformUploader = ( function() {
 		message_nag( "Publishing media..." );
 
 		jQuery.ajax( {
-			url: theplatform.ajaxurl,
+			url: theplatform_uploader_local.ajaxurl,
 			data: params,
 			type: "POST",
 			success: function( response ) {
@@ -82,10 +83,10 @@ TheplatformUploader = ( function() {
 	TheplatformUploader.prototype.waitForComplete = function( params ) {
 		var me = this;
 		params.action = 'uploadStatus';
-		params._wpnonce = theplatform.tp_nonce;
+		params._wpnonce = theplatform_uploader_local.tp_nonce[params.action];
 
 		jQuery.ajax( {
-			url: theplatform.ajaxurl,
+			url: theplatform_uploader_local.ajaxurl,
 			data: params,
 			type: "POST",
 			success: function( response ) {
@@ -167,12 +168,12 @@ TheplatformUploader = ( function() {
 	TheplatformUploader.prototype.cancel = function( params ) {
 		var me = this;
 		params.action = 'cancelUpload';
-		params._wpnonce = theplatform.tp_nonce;
+		params._wpnonce = theplatform_uploader_local.tp_nonce[params.action];
 
 		this.failed = true;
 
 		jQuery.ajax( {
-			url: theplatform.ajaxurl,
+			url: theplatform_uploader_local.ajaxurl,
 			data: params,
 			type: "POST"
 		} );
@@ -261,10 +262,10 @@ TheplatformUploader = ( function() {
 		var me = this;
 
 		params.action = 'uploadStatus';
-		params._wpnonce = theplatform.tp_nonce;
+		params._wpnonce = theplatform_uploader_local.tp_nonce[params.action];
 
 		jQuery.ajax( {
-			url: theplatform.ajaxurl,
+			url: theplatform_uploader_local.ajaxurl,
 			data: params,
 			type: "POST",
 			success: function( response ) {
@@ -311,10 +312,10 @@ TheplatformUploader = ( function() {
 		var me = this;
 
 		params.action = 'startUpload';
-		params._wpnonce = theplatform.tp_nonce;
+		params._wpnonce = theplatform_uploader_local.tp_nonce[params.action];
 
 		jQuery.ajax( {
-			url: theplatform.ajaxurl,
+			url: theplatform_uploader_local.ajaxurl,
 			data: params,
 			type: "POST",
 			xhrFields: {
@@ -332,30 +333,6 @@ TheplatformUploader = ( function() {
 				error_nag( "Call to startUpload failed. Please try again later.", true );
 			}
 		} );
-	};
-
-	/**
-	 @function establishSession Establish a cross-domain upload session
-	 @param {Object} params - URL parameters
-	 @param {File} file - The media file to upload
-	 */
-	TheplatformUploader.prototype.establishSession = function( params, file ) {
-		var me = this;
-
-		var url = params.upload_base + '/crossdomain.xml';
-
-		var sessionParams = {
-			url: url,
-			action: 'establishSession',
-			_wpnonce: theplatform.tp_nonce
-		};
-
-		jQuery.post( theplatform.ajaxurl, sessionParams, function( result ) {
-			// Cross-domain XML parsing will get us here.. Ignore the error (SB)
-			message_nag( "Session established." );
-			me.startUpload( params, file );
-		}
-		);
 	};
 
 	/**
@@ -385,7 +362,7 @@ TheplatformUploader = ( function() {
 		this.attempts = 0;
 
 		var data = {
-			_wpnonce: theplatform.tp_nonce,
+			_wpnonce: theplatform_uploader_local.tp_nonce['initialize_media_upload'],
 			action: 'initialize_media_upload',
 			filesize: file.size,
 			filetype: file.type,
@@ -396,7 +373,7 @@ TheplatformUploader = ( function() {
 			profile: profile
 		};
 
-		jQuery.post( theplatform.ajaxurl, data, function( response ) {
+		jQuery.post( theplatform_uploader_local.ajaxurl, data, function( response ) {
 			if ( response.success ) {
 				var params = {
 					file_name: file.name,
@@ -414,7 +391,7 @@ TheplatformUploader = ( function() {
 
 				message_nag( "Server " + params.upload_base + " ready for upload of " + file.name + " [" + params.format + "]." );
 				// parentLocation.reload();
-				me.establishSession( params, file );
+				me.startUpload( params, file );
 			} else {
 				error_nag( "Unable to upload media asset at this time. Please try again later." + response.data, true );
 			}

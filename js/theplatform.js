@@ -347,17 +347,17 @@ jQuery( document ).ready( function() {
 	jQuery( "#verify-account-button" ).click( function( $ ) {
 		var usr = jQuery( "#mpx_username" ).val();
 		var pwd = jQuery( "#mpx_password" ).val();
-		var images = theplatform.plugin_base_url;
+		var images = theplatform_local.plugin_base_url;
 
 		var hash = jQuery.base64Encode( usr + ":" + pwd );
 
 		var data = {
 			action: 'verify_account',
-			_wpnonce: theplatform.tp_nonce,
+			_wpnonce: theplatform_local.tp_nonce['verify_account'],
 			auth_hash: hash
 		};
 
-		jQuery.post( theplatform.ajaxurl, data, function( response ) {
+		jQuery.post( theplatform_local.ajaxurl, data, function( response ) {
 			if ( jQuery( "#verification_image" ).length > 0 ) {
 				jQuery( "#verification_image" ).remove();
 			}
@@ -380,14 +380,14 @@ jQuery( document ).ready( function() {
 		params.id = tpHelper.mediaId;
 
 		var data = {
-			_wpnonce: theplatform.tp_nonce,
+			_wpnonce: theplatform_local.tp_nonce['theplatform_edit'],
 			action: 'theplatform_edit',
 			params: JSON.stringify( params ),
 			custom_params: JSON.stringify( custom_params )
 		}
 
 		jQuery( '#tp-edit-dialog' ).dialog( 'close' );
-		jQuery.post( localscript.ajaxurl, data, function( resp ) {
+		jQuery.post( theplatform_local.ajaxurl, data, function( resp ) {
 			refreshView();
 		} );
 	} );
@@ -407,7 +407,7 @@ jQuery( document ).ready( function() {
 		var profile = jQuery( '.upload_profile' );
 		var server = jQuery( '.server_id' );
 
-		var upload_window = window.open( theplatform.ajaxurl + '?action=theplatform_upload&_wpnonce=' + theplatform.tp_nonce, '_blank', 'menubar=no,location=no,resizable=yes,scrollbars=no,status=no,width=700,height=150' )
+		var upload_window = window.open( theplatform_local.ajaxurl + '?action=theplatform_upload&_wpnonce=' + theplatform_local.tp_nonce['theplatform_upload'], '_blank', 'menubar=no,location=no,resizable=yes,scrollbars=no,status=no,width=700,height=150' )
 
 		upload_window.uploaderData = {
 			file: file,

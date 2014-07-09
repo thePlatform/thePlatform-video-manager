@@ -23,7 +23,7 @@ tinymce.PluginManager.add( 'theplatform', function( editor, url ) {
 		onclick: function() {
 			// Open window         
 
-			var iframeUrl = ajaxurl + "?action=theplatform_media&embed=true";
+			var iframeUrl = ajaxurl + "?action=theplatform_media&embed=true&_wpnonce=" + editor.settings.theplatform_media_nonce;
 			tinyMCE.activeEditor = editor;
 
 			var screenHeight = window.innerHeight

@@ -34,8 +34,8 @@ if ( !defined( 'ABSPATH' ) ) {
  */
 class ThePlatform_Plugin {
 
-	var $plugin_base_dir;
-	var $plugin_base_url;
+	private $plugin_base_dir;
+	private $plugin_base_url;
 	private static $instance;
 
 	/**
@@ -91,16 +91,42 @@ class ThePlatform_Plugin {
 		wp_register_script( 'mediaview_js', plugins_url( '/js/mediaview.js', __FILE__ ), array( 'jquery', 'jquery-ui-dialog', 'handlebars', 'holder', 'mpxhelper_js', 'theplatform_js', 'pdk', 'infiniscroll_js', 'bootstrap_js' ) );
 		wp_register_script( 'field_views', plugins_url( '/js/fieldViews.js', __FILE__ ), array( 'jquery' ) );
 
-		wp_localize_script( 'theplatform_js', 'theplatform', array(
+		wp_localize_script( 'theplatform_js', 'theplatform_local', array(
 			'ajaxurl' => admin_url( 'admin-ajax.php' ),
 			'plugin_base_url' => plugins_url( 'images/', __FILE__ ),
-			'tp_nonce' => wp_create_nonce( 'theplatform-ajax-nonce' )
-		) );
+			'tp_nonce' => array( 				
+				'verify_account' => wp_create_nonce( 'theplatform-ajax-nonce-verify_account' ),
+				'theplatform_edit' => wp_create_nonce( 'theplatform-ajax-nonce-theplatform_edit' ),
+				'theplatform_media' => wp_create_nonce( 'theplatform-ajax-nonce-theplatform_media' ),
+				'theplatform_upload' => wp_create_nonce( 'theplatform-ajax-nonce-theplatform_upload' )
+			)
+		) );		
 
-		wp_localize_script( 'mpxhelper_js', 'localscript', array(
-			'ajaxurl' => admin_url( 'admin-ajax.php' ),
-			'tp_nonce' => wp_create_nonce( 'theplatform-ajax-nonce' )
-		) );
+		wp_localize_script( 'theplatform_uploader_js', 'theplatform_uploader_local', array(
+			'ajaxurl' => admin_url( 'admin-ajax.php' ),			
+			'tp_nonce' => array( 				
+				'initialize_media_upload' => wp_create_nonce( 'theplatform-ajax-nonce-initialize_media_upload' ),
+				'publishMedia' => wp_create_nonce( 'theplatform-ajax-nonce-publishMedia' ),
+				'uploadStatus' => wp_create_nonce( 'theplatform-ajax-nonce-uploadStatus' ),
+				'cancelUpload' => wp_create_nonce( 'theplatform-ajax-nonce-cancelUpload' ),
+				'startUpload' => wp_create_nonce( 'theplatform-ajax-nonce-startUpload' ),
+			)
+		) );	
+
+		wp_localize_script( 'mpxhelper_js', 'mpxhelper_local', array(
+			'ajaxurl' => admin_url( 'admin-ajax.php' ),			
+			'tp_nonce' => array( 				
+				'get_videos' => wp_create_nonce( 'theplatform-ajax-nonce-get_videos' ),
+				'get_categories' => wp_create_nonce( 'theplatform-ajax-nonce-get_categories' )
+			)
+		) );	
+
+		wp_localize_script( 'mediaview_js', 'mediaview_local', array(
+			'ajaxurl' => admin_url( 'admin-ajax.php' ),			
+			'tp_nonce' => array( 				
+				'set_thumbnail' => wp_create_nonce( 'theplatform-ajax-nonce-set_thumbnail' )
+			)
+		) );		
 
 		wp_register_style( 'theplatform_css', plugins_url( '/css/thePlatform.css', __FILE__ ) );
 		wp_register_style( 'bootstrap_tp_css', plugins_url( '/css/bootstrap_tp.min.css', __FILE__ ) );
@@ -155,7 +181,7 @@ class ThePlatform_Plugin {
 	 * Calls the Embed template in an IFrame and Dialog
 	 */
 	function embed() {
-		check_admin_referer( 'theplatform-ajax-nonce' );
+		check_admin_referer( 'theplatform-ajax-nonce-theplatform_media' );
 		
 		$tp_embedder_cap = apply_filters( TP_EMBEDDER_CAP, TP_EMBEDDER_DEFAULT_CAP );
 		if ( !current_user_can( $tp_embedder_cap ) ) {
@@ -170,7 +196,7 @@ class ThePlatform_Plugin {
 	 * Calls the Embed template in an IFrame and Dialog
 	 */
 	function edit() {
-		check_admin_referer( 'theplatform-ajax-nonce' );
+		check_admin_referer( 'theplatform-ajax-nonce-theplatform_edit' );
 		
 		$tp_uploader_cap = apply_filters( TP_UPLOADER_CAP, TP_UPLOADER_DEFAULT_CAP );
 		if ( !current_user_can( $tp_uploader_cap ) ) {
@@ -185,7 +211,7 @@ class ThePlatform_Plugin {
 	 * Calls the Upload Window template in a popup
 	 */
 	function upload() {
-		check_admin_referer( 'theplatform-ajax-nonce' );
+		check_admin_referer( 'theplatform-ajax-nonce-theplatform_upload' );
 		
 		$tp_uploader_cap = apply_filters( TP_UPLOADER_CAP, TP_UPLOADER_DEFAULT_CAP );
 		if ( !current_user_can( $tp_uploader_cap ) ) {
@@ -201,7 +227,7 @@ class ThePlatform_Plugin {
 	 * @return string HTML code to update the Post page to display the new thumbnail
 	 */
 	function set_thumbnail_ajax() {
-		check_admin_referer( 'theplatform-ajax-nonce' );
+		check_admin_referer( 'theplatform-ajax-nonce-set_thumbnail' );
 		
 		$tp_embedder_cap = apply_filters( TP_EMBEDDER_CAP, TP_EMBEDDER_DEFAULT_CAP );
 		if ( !current_user_can( $tp_embedder_cap ) ) {
@@ -435,6 +461,7 @@ function theplatform_buttonhooks() {
 	if ( current_user_can( $tp_embedder_cap ) ) {
 		add_filter( "mce_external_plugins", "theplatform_register_tinymce_javascript" );
 		add_filter( 'mce_buttons', 'theplatform_register_buttons' );
+		add_filter('tiny_mce_before_init','theplatform_tinymce_settings');
 	}
 }
 
@@ -452,7 +479,7 @@ function theplatform_register_buttons( $buttons ) {
  * @return array The array of TinyMCE plugins with our plugin added
  */
 function theplatform_register_tinymce_javascript( $plugin_array ) {
-	$plugin_array['theplatform'] = plugins_url( '/js/theplatform.tinymce.plugin.js', __file__ );
+	$plugin_array['theplatform'] = plugins_url( '/js/theplatform.tinymce.plugin.js?matan', __file__ );
 	return $plugin_array;
 }
 
@@ -464,6 +491,18 @@ function theplatform_register_plugin_settings() {
 	register_setting( TP_PREFERENCES_OPTIONS_KEY, TP_PREFERENCES_OPTIONS_KEY, 'theplatform_preferences_options_validate' );
 	register_setting( TP_METADATA_OPTIONS_KEY, TP_METADATA_OPTIONS_KEY, 'theplatform_dropdown_options_validate' );
 	register_setting( TP_UPLOAD_OPTIONS_KEY, TP_UPLOAD_OPTIONS_KEY, 'theplatform_dropdown_options_validate' );
+}
+
+/**
+ * Add our nonce to tinymce so we can call our templates
+ * @param  array $settings tinyMCE settings
+ * @return array The array of tinyMCE settings with our value added
+ */
+function theplatform_tinymce_settings($settings)
+{
+    $settings['theplatform_media_nonce'] = wp_create_nonce( 'theplatform-ajax-nonce-theplatform_media' );
+
+    return $settings;
 }
 
 /**

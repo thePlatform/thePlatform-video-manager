@@ -290,7 +290,7 @@ class ThePlatform_API {
 	 * @return array An array of parameters for the fragmented uploader service
 	 */
 	function initialize_media_upload() {
-		check_admin_referer( 'theplatform-ajax-nonce' );
+		check_admin_referer( 'theplatform-ajax-nonce-initialize_media_upload' );
 
 		$args = array(
 			'filesize' => $_POST['filesize'],
@@ -398,7 +398,7 @@ class ThePlatform_API {
 	 * @return array The Media data service response
 	 */
 	function get_videos() {	
-		check_admin_referer( 'theplatform-ajax-nonce' );
+		check_admin_referer( 'theplatform-ajax-nonce-get_videos' );
 		
 		$token = $this->mpx_signin();
 
@@ -585,7 +585,7 @@ class ThePlatform_API {
 	function get_categories( $returnResponse = false ) {
 		// Check nonce if we got here through an AJAX call
 		if ( !$returnResponse ) {
-			check_admin_referer( 'theplatform-ajax-nonce' );
+			check_admin_referer( 'theplatform-ajax-nonce-get_categories' );
 		}
 		$token = $this->mpx_signin();
 

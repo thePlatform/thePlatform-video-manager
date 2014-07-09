@@ -73,7 +73,7 @@ jQuery( document ).ready( function() {
 			action: 'set_thumbnail',
 			img: tpHelper.selectedThumb,
 			id: post_id,
-			_wpnonce: localscript.tp_nonce
+			_wpnonce: mediaview_local.tp_nonce['set_thumbnail']
 		};
 
 		jQuery.post( ajaxurl, data, function( response ) {

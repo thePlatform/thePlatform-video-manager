@@ -41,8 +41,14 @@ add_action( 'wp_ajax_establishSession', 'ThePlatform_Proxy::establishSession' );
  */
 class ThePlatform_Proxy {
 
-	public static function check_nonce_and_permissions() {
-		check_admin_referer( 'theplatform-ajax-nonce' );
+	public static function check_nonce_and_permissions( $action = "") {
+		if ( empty( $action ) ) {
+			check_admin_referer( 'theplatform-ajax-nonce' );
+		}
+		else {			
+			check_admin_referer( 'theplatform-ajax-nonce-' . $action);
+		}
+		
 		$tp_uploader_cap = apply_filters( TP_UPLOADER_CAP, TP_UPLOADER_DEFAULT_CAP );
 		if ( !current_user_can( $tp_uploader_cap ) ) {
 			wp_die( 'You do not have sufficient permissions to modify MPX Media' );
@@ -67,7 +73,7 @@ class ThePlatform_Proxy {
 	 * @return mixed JSON response or instance of WP_Error
 	 */
 	public static function startUpload() {
-		ThePlatform_Proxy::check_nonce_and_permissions();
+		ThePlatform_Proxy::check_nonce_and_permissions( $_POST['action'] );
 
 		$url = $_POST['upload_base'] . '/web/Upload/startUpload';
 		$url .= '?schema=1.1';
@@ -80,7 +86,7 @@ class ThePlatform_Proxy {
 		$url .= '&_mediaFileInfo.format=' . $_POST['format'];
 		$url .= '&_serverId=' . urlencode( $_POST['server_id'] );
 
-		$response = ThePlatform_API_HTTP::put( $url );
+		$response = ThePlatform_API_HTTP::put( esc_url_raw( $url ) );
 
 		ThePlatform_Proxy::check_theplatform_proxy_response( $response );
 	}
@@ -90,15 +96,15 @@ class ThePlatform_Proxy {
 	 * @return mixed JSON response or instance of WP_Error
 	 */
 	public static function uploadStatus() {
-		ThePlatform_Proxy::check_nonce_and_permissions();
+		ThePlatform_Proxy::check_nonce_and_permissions( $_POST['action'] );
 
 		$url = $_POST['upload_base'] . '/data/UploadStatus';
 		$url .= '?schema=1.0';
 		$url .= '&account=' . urlencode( $_POST['account_id'] );
 		$url .= '&token=' . $_POST['token'];
 		$url .= '&byGuid=' . $_POST['guid'];
-
-		$response = ThePlatform_API_HTTP::get( $url );
+		
+		$response = ThePlatform_API_HTTP::get( esc_url_raw( $url ) );
 
 		ThePlatform_Proxy::check_theplatform_proxy_response( $response );
 	}
@@ -108,7 +114,7 @@ class ThePlatform_Proxy {
 	 * @return mixed JSON response or instance of WP_Error
 	 */
 	public static function publishMedia() {
-		ThePlatform_Proxy::check_nonce_and_permissions();
+		ThePlatform_Proxy::check_nonce_and_permissions( $_POST['action'] );
 
 		if ( $_POST['profile'] == 'wp_tp_none' ) {
 			wp_send_json_success();
@@ -119,7 +125,7 @@ class ThePlatform_Proxy {
 		$profileUrl .= '&token=' . $_POST['token'];
 		$profileUrl .= '&account=' . urlencode( $_POST['account_id'] );
 
-		$profileResponse = ThePlatform_API_HTTP::get( $profileUrl );
+		$profileResponse = ThePlatform_API_HTTP::get( esc_url_raw( $profileUrl ) );
 
 		$content = theplatform_decode_json_from_server( $profileResponse, TRUE );
 
@@ -136,7 +142,7 @@ class ThePlatform_Proxy {
 		$publishUrl .= '&_mediaId=' . urlencode( $mediaId );
 		$publishUrl .= '&_profileId=' . urlencode( $profileId );
 
-		$response = ThePlatform_API_HTTP::get( $publishUrl, array( "timeout" => 120 ) );
+		$response = ThePlatform_API_HTTP::get( esc_url_raw ( $publishUrl ), array( "timeout" => 120 ) );
 
 		ThePlatform_Proxy::check_theplatform_proxy_response( $response );
 	}
@@ -146,14 +152,14 @@ class ThePlatform_Proxy {
 	 * @return mixed JSON response or instance of WP_Error
 	 */
 	public static function cancelUpload() {
-		ThePlatform_Proxy::check_nonce_and_permissions();
+		ThePlatform_Proxy::check_nonce_and_permissions( $_POST['action'] );
 		
 		//Send a cancel request to the upload endpoint
 		$uploadUrl = $_POST['upload_base'] . '/web/Upload/cancelUpload?schema=1.1';
 		$uploadUrl .= '&token=' . $_POST['token'];
 		$uploadUrl .= '&account=' . urlencode( $_POST['account_id'] );
 		$uploadUrl .= '&_guid=' . $_POST['guid'];
-		$uploadResponse = ThePlatform_API_HTTP::put( $uploadUrl );
+		$uploadResponse = ThePlatform_API_HTTP::put( esc_url_raw( $uploadUrl ) );
 
 		theplatform_decode_json_from_server( $uploadResponse, TRUE );
 		
@@ -162,19 +168,8 @@ class ThePlatform_Proxy {
 		$deleteUrl .= '&byGuid=' . $_POST['guid'];
 		$deleteUrl .= '&token=' . $_POST['token'];
 		$deleteUrl .= '&account=' . urlencode( $_POST['account_id'] );
-		$deleteResponse = ThePlatform_API_HTTP::get( $deleteUrl );
+		$deleteResponse = ThePlatform_API_HTTP::get( esc_url_raw( $deleteUrl ) );
 
 		ThePlatform_Proxy::check_theplatform_proxy_response( $deleteResponse );
-	}
-
-	/**
-	 * Retrieve the current publishing status of a newly uploaded media asset
-	 * @return mixed JSON response or instance of WP_Error
-	 */
-	public static function establishSession() {
-		ThePlatform_Proxy::check_nonce_and_permissions();
-		$url = $_POST['url'];
-		ThePlatform_API_HTTP::get( $url );
-		wp_send_json_success(); //doesn't matter what we return here
 	}
 }

@@ -177,7 +177,7 @@ function theplatform_preferences_options_validate( $input ) {
  */
 function theplatform_verify_account_settings() {
 	//User capability check
-	check_admin_referer( 'theplatform-ajax-nonce' );
+	check_admin_referer( 'theplatform-ajax-nonce-verify_account' );
 	$hash = $_POST['auth_hash'];
 
 	$response = ThePlatform_API_HTTP::get( TP_API_SIGNIN_URL, array( 'headers' => array( 'Authorization' => 'Basic ' . $hash ) ) );

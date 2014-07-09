@@ -15,13 +15,13 @@
  with this program; if not, write to the Free Software Foundation, Inc.,
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-var ajaxurl = localscript.ajaxurl;
+var ajaxurl = mpxhelper_local.ajaxurl;
 
 var mpxHelper = {
 	getVideos: function( range, callback ) {
 
 		var data = {
-			_wpnonce: theplatform.tp_nonce,
+			_wpnonce: mpxhelper_local.tp_nonce['get_videos'],
 			action: 'get_videos',
 			range: range,
 			query: tpHelper.queryString,
@@ -61,7 +61,7 @@ var mpxHelper = {
 	},
 	getCategoryList: function( callback ) {
 		var data = {
-			_wpnonce: theplatform.tp_nonce,
+			_wpnonce: mpxhelper_local.tp_nonce['get_categories'],
 			action: 'get_categories',
 			sort: 'order',
 			fields: 'title'
