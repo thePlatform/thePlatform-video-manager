@@ -461,7 +461,8 @@ class ThePlatform_Options {
 		echo '<h2 class="nav-tab-wrapper">';
 		foreach ( $this->plugin_settings_tabs as $tab_key => $tab_caption ) {
 			$active = $current_tab == $tab_key ? 'nav-tab-active' : '';
-			echo '<a class="nav-tab ' . $active . '" href="?page=' . $this->plugin_options_key . '&tab=' . $tab_key . '">' . $tab_caption . '</a>';
+			$url = '?page=' . $this->plugin_options_key . '&tab=' . $tab_key;
+			echo '<a class="nav-tab ' . $active . '" href="' . esc_url( $url ) . '">' . $tab_caption . '</a>';
 		}
 		echo '</h2>';
 	}
