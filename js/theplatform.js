@@ -1,697 +1,423 @@
-(function(jQuery){
-	jQuery.extend({
-	
+/* thePlatform Video Manager Wordpress Plugin
+ Copyright (C) 2013-2014  thePlatform for Media Inc.
+ 
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License along
+ with this program; if not, write to the Free Software Foundation, Inc.,
+ 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
+
+( function( jQuery ) {
+	jQuery.extend( {
 		/**
 		 @function base64Encode Performs Base 64 Encoding on a string
 		 @param {String} data - string to encode
 		 @return {Number} encoded string
-		*/
-		base64Encode: function(data) {
+		 */
+		base64Encode: function( data ) {
 			var b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 			var o1, o2, o3, h1, h2, h3, h4, bits, i = 0,
-			  ac = 0,
-			  enc = "",
-			  tmp_arr = [];
+					ac = 0,
+					enc = "",
+					tmp_arr = [ ];
 
-			if (!data) {
-			  return data;
+			if ( !data ) {
+				return data;
 			}
 
-			do { 
-			  o1 = data.charCodeAt(i++);
-			  o2 = data.charCodeAt(i++);
-			  o3 = data.charCodeAt(i++);
+			do {
+				o1 = data.charCodeAt( i++ );
+				o2 = data.charCodeAt( i++ );
+				o3 = data.charCodeAt( i++ );
 
-			  bits = o1 << 16 | o2 << 8 | o3;
+				bits = o1 << 16 | o2 << 8 | o3;
 
-			  h1 = bits >> 18 & 0x3f;
-			  h2 = bits >> 12 & 0x3f;
-			  h3 = bits >> 6 & 0x3f;
-			  h4 = bits & 0x3f;
+				h1 = bits >> 18 & 0x3f;
+				h2 = bits >> 12 & 0x3f;
+				h3 = bits >> 6 & 0x3f;
+				h4 = bits & 0x3f;
 
-			  tmp_arr[ac++] = b64.charAt(h1) + b64.charAt(h2) + b64.charAt(h3) + b64.charAt(h4);
-			} while (i < data.length);
+				tmp_arr[ac++] = b64.charAt( h1 ) + b64.charAt( h2 ) + b64.charAt( h3 ) + b64.charAt( h4 );
+			} while ( i < data.length );
 
-			enc = tmp_arr.join('');
+			enc = tmp_arr.join( '' );
 
 			var r = data.length % 3;
 
-			return (r ? enc.slice(0, r - 3) : enc) + '==='.slice(r || 3);
+			return ( r ? enc.slice( 0, r - 3 ) : enc ) + '==='.slice( r || 3 );
 		}
-	});
-})(jQuery);
+	} );
+} )( jQuery );
 
-TheplatformUploader = (function() {
-
-	/**
-	 @function fragFile Slices a file into fragments
-	 @param {File} file - file to slice
-	 @return {Array} array of file fragments
-	*/
-	TheplatformUploader.prototype.fragFile = function(file) {
-		var fragSize = 1024 * 1024 * 5;
-      	var i, j, k; 
-      	var ret = [];
-      
-		if ( !(this.file.slice || this.file.mozSlice) ) {
-			return this.file;
-		}
-
-		for (i = j = 0, k = Math.ceil(this.file.size / fragSize); 0 <= k ? j < k : j > k; i = 0 <= k ? ++j : --j) {
-  			if (this.file.slice) {
-  				ret.push(this.file.slice(i * fragSize, (i + 1) * fragSize));
-			} else if (file.mozSlice) {
-				ret.push(this.file.mozSlice(i * fragSize, (i + 1) * fragSize));
-			}
-    	}
-      
-    	return ret;
-    };
-    
-    /**
-	 @function publishMedia Publishes the uploaded media via the API proxy
-	 @param {Object} params - URL parameters passed to the proxy
-	*/
-    TheplatformUploader.prototype.publishMedia = function(params) {
-    	var me = this;
-    	params.action = 'publishMedia';
-    	params._wpnonce = theplatform.tp_nonce;
-    	
-    	if (this.publishing) {
-    		return;
-    	}
-    	
-    	this.publishing = true;
-    	
-    	message_nag("Publishing media...");
-    	
-    	jQuery.ajax({
-			url: theplatform.ajaxurl,
-			data: params,
-       		type: "POST",
-			success: function(responseJSON) {
-				var response = me.parseJSON(responseJSON);
-				
-				if (response.success == 'true') {
-					message_nag("Media is being published. It may take several minutes until the media is available. This window will now close.", true);
-					window.setTimeout('window.close()', 10000);
-				} else {
-					message_nag("Publish for the uploaded Media was requested but timed out, this is normal but your Media may or may not have published.", true);
-					window.setTimeout('window.close()', 10000);
-				}
-			}
-		});
-    };
-    
-    /**
-	 @function waitForComplete Poll FMS via the API proxy until upload status is 'Complete'
-	 @param {Object} params - URL parameters passed to the proxy
-	*/
-    TheplatformUploader.prototype.waitForComplete = function(params) {
-    	var me = this;
-    	params.action = 'uploadStatus';
-    	params._wpnonce = theplatform.tp_nonce;
-    	
-    	jQuery.ajax({
-			url: theplatform.ajaxurl,
-			data: params,
-       		type: "POST",
-			success: function(responseJSON) {
-				var response = me.parseJSON(responseJSON);
-				var data = response.content;
-		
-				if (data.entries.length != 0) {
-					var state = data.entries[0].state;
-	
-					if (state == "Complete") { 
-						var fileID = data.entries[0].fileId;
-						
-						params.file_id = fileID;
-						
-						if (params.profile != "tp_wp_none") {
-	    					message_nag("Waiting for MPX to publish media.");
-	    					me.publishMedia(params);
-						}
-						else {
-							message_nag("Upload completed, you can now safely close this window.");
-							window.setTimeout('window.close()', 4000);
-						}						
-					} else if (state == "Error") {
-						error_nag(data.entries[0].exception);
-					} else {
-						message_nag(state);
-						me.waitForComplete( params );
-					}
-				} else {
-					me.waitForComplete( params );
-				}
-			},
-			error: function(response) {
-				error_nag("An error occurred while waiting for upload server COMPLETE status: " + response, true);
-			}
-		});
-    };
-        
-    /**
-	 @function finish Notify MPX that the upload has finished
-	 @param {Object} params - URL parameters
-	*/
-    TheplatformUploader.prototype.finish = function(params) {
-    	var me = this;
-    	
-    	if (this.finishedUploadingFragments) {
-    		return;
-    	}
-    	
-    	this.finishedUploadingFragments = true;
-    	
-    	var url = params.upload_base + '/web/Upload/finishUpload?';
-    		url += 'schema=1.1';
-    		url += '&token=' + params.token;
-    		url += '&account=' + encodeURIComponent(params.account_id);
-    		url += '&_guid=' + params.guid;
-    		
-    	var data = "finished";
-    	   
-    	jQuery.ajax({
-    		url: url,
-    		data: data,
-    		type: "POST",
-    		xhrFields: {
-			   withCredentials: true
-			},
-			success: function(response) {
-				me.waitForComplete(params);
-			},
-			error: function(response) {
-			
-    		}
-    	}); 
-    };
-    
-    /**
-	 @function cancel Notify the API proxy to cancel the upload process
-	 @param {Object} params - URL parameters passed to the proxy
-	*/
-    TheplatformUploader.prototype.cancel = function(params) {
-   		var me = this;
-    	params.action = 'cancelUpload';
-    	params._wpnonce = theplatform.tp_nonce;
-    	
-    	this.failed = true;
-    	
-    	jQuery.ajax({
-			url: theplatform.ajaxurl,
-			data: params,
-       		type: "POST"
-       	});
-    };
-    
-    /**
-	 @function uploadFragments Uploads file fragments to FMS
-	 @param {Object} params - URL parameters 
-	 @param {Array} fragments - Array of file fragments
-	 @param {Integer} index - Index of current fragment to upload
-	*/
-    TheplatformUploader.prototype.uploadFragments = function(params, fragments, index) {
-    	var me = this;
-    	var fragSize = 1024 * 1024 * 5;
-
-    	
-    	if (this.failed) {
-    		return;
-    	}    	
-
-    	var url = params.upload_base + '/web/Upload/uploadFragment?';
-			url += 'schema=1.1';
-			url += '&token=' + params.token;
-			url += '&account=' + encodeURIComponent(params.account_id);
-			url += '&_guid=' + params.guid;
-			url += '&_offset=' + (index * fragSize);
-			url += '&_size=' + fragments[index].size;
-			url += "&_mediaId=" + params.media_id;
-			url += "&_filePath=" + encodeURIComponent(params.file_name);
-			url += "&_mediaFileInfo.format=" + params.format;
-			url += "&_mediaFileInfo.contentType=" + params.contentType;
-			url += "&_serverId=" + params.server_id;
-    	
-    	jQuery.ajax({
-    		url: url,
-    		processData: false,
-    		data: fragments[index],
-    		type: "PUT",
-    		xhrFields: {
-			   withCredentials: true
-			},
-    		success: function(response) {    			
-    			me.frags_uploaded++;    			
-				if (params.num_fragments == me.frags_uploaded) {
-					message_nag("Uploaded last fragment. Please do not close this window.");
-					me.finish(params);
-				} else {
-					message_nag("Finished uploading fragment " + me.frags_uploaded + " of " + params.num_fragments + ". Please do not close this window.");
-					index++;
-					me.attempts = 0;
-					me.uploadFragments(params, fragments, index);
-				}
-    		},
-    		error: function(response, type, msg) {    			
-    			me.attempts++;    			
-    			if (index==0) {
-    				message_nag("Unable to start upload, server is not ready.");
-    				me.startUpload(params, me.file);    				
-    				return;
-    			}
-				var actualIndex = parseInt(index)+1;    			
-    			error_nag("Unable to upload fragment " + actualIndex + " of " + params.num_fragments + ". Retrying count is " + me.attempts + " of 5. Retrying in 5 seconds..", true);
-    			
-    			if (me.attempts < 5) {
-   					setTimeout(function() {
-						me.uploadFragments(params, fragments, index);
-					}, 100);
-    			} else {
-    				error_nag("Uploading fragment " + actualIndex + " of " + params.num_fragments + " failed on the client side. Cancelling... Retry upload later.", true);
-    				
-    				window.setTimeout(function() {
-						me.cancel(params);
-					}, 6000);
-    				
-    			}
-    		}	
-    	});
-    };
-    
-    /**
-	 @function waitForReady Wait for FMS to become ready for the upload
-	 @param {Object} params - URL parameters
-	 @param {File} file - The media file to upload
-	*/
-    TheplatformUploader.prototype.waitForReady = function(params, file) {
-    	var me = this;
-    	
-    	params.action = 'uploadStatus';
-    	params._wpnonce = theplatform.tp_nonce;
-    	
-    	jQuery.ajax({
-			url: theplatform.ajaxurl,
-			data: params,
-       		type: "POST",
-			success: function(responseJSON) {
-				var response = me.parseJSON(responseJSON);
-				var data = response.content;
-		
-				if (data.entries.length != 0) {
-					var state = data.entries[0].state;
-	
-					if (state == "Ready") { 
-
-						var frags = me.fragFile(file);
-						
-						me.frags_uploaded = 0;
-						params.num_fragments = frags.length;
-						
-						message_nag("Beginning upload of " + frags.length + " fragments. Please do not close this window.");
-						
-						me.uploadFragments(params, frags, 0);
-						
-					} else {
-						me.waitForReady( params );
-					}
-				} else {
-					me.waitForReady( params );
-				}
-			},
-			error: function(response) {
-				error_nag("An error occurred while waiting for upload server READY status: " + response, true);
-			}
-		});
-    };
-    
-    /**
-	 @function startUpload Inform FMS via the API proxy that we are starting an upload
-	 @param {Object} params - URL parameters passed to the proxy
-	 @param {File} file - The media file to upload
-	*/
-    TheplatformUploader.prototype.startUpload = function(params, file) {
-    	var me = this;
-
-		params.action = 'startUpload';
-		params._wpnonce = theplatform.tp_nonce;
-	
-		jQuery.ajax({
-			url: theplatform.ajaxurl,
-			data: params,
-       		type: "POST",
-			xhrFields: {
-			   withCredentials: true
-			},
-			success: function(responseJSON) {
-				var response = me.parseJSON(responseJSON);
-			
-				if (response.success == 'true') {
-					message_nag("Waiting for READY status from " + params.upload_base + ".");
-					me.waitForReady(params, file);
-				} else {
-					error_nag("Startup Upload failed with code: " + response.code, true);			
-				}
-			},
-			error: function(result) {
-				error_nag("Call to startUpload failed. Please try again later.", true);
-			}
-		});
-    };
-    
-    /**
-	 @function establishSession Establish a cross-domain upload session
-	 @param {Object} params - URL parameters
-	 @param {File} file - The media file to upload
-	*/
-    TheplatformUploader.prototype.establishSession = function(params, file) {
-		var me = this;
-
-		var url = params.upload_base + '/crossdomain.xml';
-
-		var sessionParams = {
-			url: url,
-			action: 'establishSession',
-			_wpnonce: theplatform.tp_nonce
-		};
-
-		jQuery.post(theplatform.ajaxurl, sessionParams, function(result) {
-				// Cross-domain XML parsing will get us here.. Ignore the error (SB)
-				message_nag("Session established.");
-				me.startUpload(params, file);
-			}	
-		);
-    };
-
-    /**
-	 @function Attempt to parse JSON, alert to user if it failed
-	 @param {string} params - JSON String	 
-	*/
-    TheplatformUploader.prototype.parseJSON = function(jsonString) {
-		try {
-			return jQuery.parseJSON(jsonString);
-		}
-		catch(ex) {
-			error_nag(jsonString);
-		}
-    };
-    
-    /**
-	 @function constructor Inform the API proxy to create placeholder media assets in MPX and begin uploading
-	 @param {File} file - The media file to upload
-	*/
-    function TheplatformUploader(file, fields, custom_fields, profile) {    
-    	var me = this;
-    	this.file = file;
-    	
-    	this.failed = false;
-    	this.finishedUploadingFragments = false;
-    	this.publishing = false;
-    	this.attempts = 0;
-    	
-		var data = {
-			_wpnonce: theplatform.tp_nonce,
-			action: 'initialize_media_upload',
-			filesize: file.size,
-			filetype: file.type,
-			filename: file.name,
-			fields: fields,
-			custom_fields: custom_fields,
-			profile: profile
-		};
-	
-		jQuery.post(theplatform.ajaxurl, data, function(responseJSON) {
-			var response = me.parseJSON(responseJSON);
-		
-			if (response.success == "true") {
-				var params = {
-					file_name: file.name,
-					file_size: file.size,
-					token: response.token,
-					guid: response.guid,
-					media_id: response.media_id,
-					account_id: response.account_id,
-				    server_id: response.server_id,
-				    upload_base: response.upload_base,
-				    format: response.format,
-				    contentType: response.contentType,
-				    profile: profile
-				};		
-			
-				message_nag("Server " + params.upload_base + " ready for upload of " + file.name + " [" + params.format + "].");
-				// parentLocation.reload();
-				me.establishSession(params, file);	
-			} else {
-				error_nag("Unable to upload media asset at this time. Please try again later.", true);
-			}
-		});	
-    };
-    
-	return TheplatformUploader;
-})();
 
 /**
  @function message_nag Display an informative message to the user
  @param {String} msg - The message to display
  @param {Boolean} fade - Whether or not to fade the message div after some delay
-*/
-var message_nag = function(msg, fade, isError) {
+ */
+var message_nag = function( msg, fade, isError ) {
 	fade = typeof fade !== 'undefined' ? fade : false;
-	var messageType="updated";
-	if (isError)
-		messageType="error";
+	var messageType = "updated";
+	if ( isError )
+		messageType = "error";
 
-	if (jQuery('#message_nag').length == 0) {
-		jQuery('.wrap > h2').parent().prev().after('<div id="message_nag" class="' + messageType + '"><p id="message_nag_text">' +  msg + '</p></div>').fadeIn(2000);
+	if ( jQuery( '#message_nag' ).length == 0 ) {
+		jQuery( '.wrap > h2' ).parent().prev().after( '<div id="message_nag" class="' + messageType + '"><p id="message_nag_text">' + msg + '</p></div>' ).fadeIn( 1000 );
 	} else {
-		jQuery('#message_nag').removeClass();
-		jQuery('#message_nag').addClass(messageType);
-		jQuery('#message_nag').fadeIn(1000);
-		jQuery('#message_nag_text').animate({'opacity': 0}, 1000, function () {
-			jQuery(this).text(msg);
-		}).animate({'opacity': 1}, 1000);
+		jQuery( '#message_nag' ).removeClass();
+		jQuery( '#message_nag' ).addClass( messageType );
+		jQuery( '#message_nag' ).fadeIn( 500 );
+		jQuery( '#message_nag_text' ).animate( { 'opacity': 0 }, 500, function() {
+			jQuery( this ).html( msg );
+		} ).animate( { 'opacity': 1 }, 500 );
 	}
-	
-	if (fade == true) {
-		jQuery('#message_nag').delay(4000).fadeOut(6000);
+
+	if ( fade == true ) {
+		jQuery( '#message_nag' ).delay( 6000 ).fadeOut( 10000 );
 	}
-}
+};
 
 /**
  @function error_nag Display an error message to the user
  @param {String} msg - The message to display
  @param {Boolean} fade - Whether or not to fade the message div after some delay
-*/
-var error_nag = function(msg, fade) {
-	message_nag(msg, fade, true);
+ */
+var error_nag = function( msg, fade ) {
+	message_nag( msg, fade, true );
+};
+
+/**
+ * Validate Media data is valid before submitting upload/edit
+ * @param  {Object} event click event
+ * @return {boolean}       Did validation pass or not
+ */
+var validate_media = function( event ) {
+
+	//TODO: Change CSS to Bootstrap classes
+	//TODO: Validate that file has been selected for upload but not edit
+	var validation_error = false;
+
+	jQuery( '.upload_field, .custom_field' ).each( function() {
+		var $field = jQuery( this );
+		var dataStructure = $field.data( 'structure' );
+		var dataType = $field.data( 'type' );
+		var value = jQuery( this ).val();
+		var fieldError = false;
+		// Detect HTML, this runs against all fields regardless of type/structure
+		if ( value.match( /<(\w+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/ ) ) {
+			validation_error = true;
+		}
+		// We're not requiring any fields at the moment,
+		// so only test fields which have a value
+		else if ( value.length > 0 ) {
+			switch ( dataStructure ) {
+				case 'Map':
+					var values = value.indexOf( ',' ) ? value.split( ',' ) : [ value ];
+					for ( var i = 0; i < values.length; i++ ) {
+						// Use substring to break apart to avoid issues with values that use colons
+						var index = values[i].indexOf( ':' );
+						var key = values[i].substr( 0, index ).trim();
+						var val = values[i].substr( index + 1 ).trim();
+						if ( index === -1 || key.length == 0 || val.length === 0 || validateFormat( val, dataType ) ) {
+							fieldError = true;
+							break;
+						}
+					}
+					break;
+				case 'List':
+					var values = value.indexOf( ',' ) ? value.split( ',' ) : [ value ];
+					for ( var i = 0; i < values.length; i++ ) {
+						if ( validateFormat( values[i].trim(), dataType ) ) {
+							fieldError = true;
+							break;
+						}
+					}
+					break;
+				case 'Single':
+				default:
+					if ( validateFormat( value, dataType ) ) {
+						fieldError = true;
+					}
+					break;
+			}
+		}
+		if ( fieldError ) {
+			$field.css( { border: 'solid 1px #FF0000' } );
+			validation_error = fieldError;
+		} else {
+			$field.css( { border: '1px solid #ccc' } );
+		}
+	} );
+
+	var $titleField = jQuery( '#theplatform_upload_title' );
+	if ( $titleField.val() === "" ) {
+		validation_error = true;
+		$titleField.css( { border: 'solid 1px #FF0000' } );
+	}
+
+	return validation_error;
+};
+
+var validateFormat = function( value, dataType ) {
+	var validation_error = false;
+
+	switch ( dataType ) {
+		case 'Integer':
+			var intRegex = /^-?\d+$/;
+			validation_error = !intRegex.test( value )
+			break;
+		case 'Decimal':
+			var decRegex = /^-?(\d+)?(\.[\d]+)?$/;
+			validation_error = !decRegex.test( value )
+			break;
+		case 'Boolean':
+			var validValues = [ 'true', 'false', '' ];
+			validation_error = validValues.indexOf( value ) < 0;
+			break;
+		case 'URI':
+			var uriRegex = /^([a-z][a-z0-9+.-]*):(?:\/\/((?:(?=((?:[a-z0-9-._~!$&'()*+,;=:]|%[0-9A-F]{2})*))(\3)@)?(?=(\[[0-9A-F:.]{2,}\]|(?:[a-z0-9-._~!$&'()*+,;=]|%[0-9A-F]{2})*))\5(?::(?=(\d*))\6)?)(\/(?=((?:[a-z0-9-._~!$&'()*+,;=:@\/]|%[0-9A-F]{2})*))\8)?|(\/?(?!\/)(?=((?:[a-z0-9-._~!$&'()*+,;=:@\/]|%[0-9A-F]{2})*))\10)?)(?:\?(?=((?:[a-z0-9-._~!$&'()*+,;=:@\/?]|%[0-9A-F]{2})*))\11)?(?:#(?=((?:[a-z0-9-._~!$&'()*+,;=:@\/?]|%[0-9A-F]{2})*))\12)?$/i;
+			validation_error = !uriRegex.test( value );
+			break;
+		case 'Time':
+			var timeRegex = /^\d{1,2}:\d{2}$/;
+			validation_error = !timeRegex.test( value );
+			break;
+		case 'Duration':
+			var durationRegex = /^(\d+:)?([0-5]?[0-9]:)?([0-5]?[0-9])?$/;
+			validation_error = !durationRegex.test( value );
+			break;
+		case 'DateTime':
+			validation_error = !isValidDate( new Date( value ) );
+			break;
+		case 'Date':
+			var dateRegex = /^(\d{4})-(([0][1-9])|([1][0-2]))-(([0][1-9])|([1][0-9])|([2][0-9])|([3][0-1]))$/;
+			validation_error = !dateRegex.test( value );
+			break;
+		case 'Link':
+			// @todo: this could do more, right now just checks that the structure is correct
+			var linkRegex = /^(((title:)(.*),(\s+)?(href:).*)|((href:)(.*),(\s+)?(title:).*))$/;
+			validation_error = !linkRegex.test( value );
+			break;
+		case 'String':
+		default:
+			// nothing to do
+			break;
+	}
+
+	return validation_error;
+};
+
+var isValidDate = function( d ) {
+	if ( Object.prototype.toString.call( d ) !== "[object Date]" )
+		return false;
+	return !isNaN( d.getTime() );
 }
 
-jQuery(document).ready(function() {
+var parseMediaParams = function() {
+	var params = { };
+	jQuery( '.upload_field' ).each( function( i ) {
+		if ( jQuery( this ).val().length != 0 )
+			params[jQuery( this ).attr( 'name' )] = jQuery( this ).val();
+	} );
 
-	if (document.title.indexOf('thePlatform Plugin Settings') != -1) {
-		// Hide PID option fields
-		jQuery('#mpx_account_pid').parent().parent().hide();
-		jQuery('#default_player_pid').parent().parent().hide();
-
-		if (jQuery('#mpx_account_id option:selected').length != 0) {
-			
-			jQuery('#mpx_account_pid').val(jQuery('#mpx_account_id option:selected').val().split('|')[1]);
+	var categories = [ ]
+	var categoryArray = jQuery( '.category_field' ).val();
+	for ( i in categoryArray ) {
+		var name = categoryArray[i];
+		if ( name != '(None)' ) {
+			var cat = { };
+			cat['name'] = name;
+			categories.push( cat );
 		}
-		else 
-			jQuery('#mpx_account_id').parent().parent().hide();
+	}
 
-		if (jQuery('#default_player_name option:selected').length != 0) {			
-			jQuery('#default_player_pid').val(jQuery('#default_player_name option:selected').val().split('|')[1]);	
+	params['categories'] = categories;
+
+	return params;
+};
+
+var parseCustomParams = function() {
+	var custom_params = { };
+
+	jQuery( '.custom_field' ).each( function( i ) {
+		if ( jQuery( this ).val().length != 0 ) {
+			var $field = jQuery( this );
+			var dataStructure = $field.data( 'structure' );
+			var dataType = $field.data( 'type' );
+			var value = $field.val();
+
+			// Convert maps to object
+			if ( dataStructure == 'Map' ) {
+				var values = value.indexOf( ',' ) ? value.split( ',' ) : [ value ];
+				value = { };
+				for ( var i = 0; i < values.length; i++ ) {
+					// Use substring to break apart to avoid issues with values that use colons
+					var index = values[i].indexOf( ':' );
+					var key = values[i].substr( 0, index ).trim();
+					var val = values[i].substr( index + 1 ).trim();
+					value[key] = parseDataType( val, dataType );
+				}
+			}
+			// Convert lists to array
+			else if ( dataStructure == 'List' ) {
+				var values = value.indexOf( ',' ) ? value.split( ',' ) : [ value ];
+				value = [ ];
+				for ( var i = 0; i < values.length; i++ ) {
+					value.push( parseDataType( values[i].trim(), dataType ) );
+				}
+			}
+			else {
+				value = parseDataType( value, dataType );
+			}
+
+			custom_params[jQuery( this ).attr( 'name' )] = value;
+		}
+
+	} );
+
+	return custom_params;
+};
+
+var parseDataType = function( value, dataType ) {
+	switch ( dataType ) {
+		case 'Link':
+			var titleRegex = /title[\s+]?:[\s+]?([^,]+)/;
+			var hrefRegex = /href[\s+]?:[\s+]?([^,]+)/;
+			var title = titleRegex.exec( value )[1];
+			var href = hrefRegex.exec( value )[1];
+			value = { href: href, title: title };
+			break;
+	}
+	return value;
+};
+
+var objSize = function( obj ) {
+	var size = 0, key;
+	for ( key in obj ) {
+		if ( obj.hasOwnProperty( key ) )
+			size++;
+	}
+	return size;
+};
+
+jQuery( document ).ready( function() {
+
+	// Hide PID option fields in the Settings page
+	if ( document.title.indexOf( 'thePlatform Plugin Settings' ) != -1 ) {
+		jQuery( '#mpx_account_pid' ).parent().parent().hide();
+		jQuery( '#default_player_pid' ).parent().parent().hide();
+
+		if ( jQuery( '#mpx_account_id option:selected' ).length != 0 ) {
+
+			jQuery( '#mpx_account_pid' ).val( jQuery( '#mpx_account_id option:selected' ).val().split( '|' )[1] );
 		}
 		else
-			jQuery('#default_player_name').parent().parent().hide();
+			jQuery( '#mpx_account_id' ).parent().parent().hide();
 
-		if (jQuery('#mpx_server_id option:selected').length == 0) {			
-			jQuery('#mpx_server_id').parent().parent().hide();
+		if ( jQuery( '#default_player_name option:selected' ).length != 0 ) {
+			jQuery( '#default_player_pid' ).val( jQuery( '#default_player_name option:selected' ).val().split( '|' )[1] );
 		}
+		else
+			jQuery( '#default_player_name' ).parent().parent().hide();
 
-
-		
-	}	
-	
-	jQuery('#upload_add_category').click(function(e) {
-		var categories = jQuery(this).prev().clone()
-		var name = categories.attr('name');
-		if (name.indexOf('-') != -1) {
-			name = name.split('-')[0] + '-' + (parseInt(name.split('-')[1])+1)
+		if ( jQuery( '#mpx_server_id option:selected' ).length == 0 ) {
+			jQuery( '#mpx_server_id' ).parent().parent().hide();
 		}
-			
-		jQuery(this).before(categories.attr('name',name));
-	});
+	}
 
-	// Fade in the upload form and fade out the media library view
-	jQuery('#media-mpx-upload-button').click(function($) {
-		jQuery('#theplatform-library-view').fadeOut(500, function() {
-			jQuery('#media-mpx-upload-form').fadeIn(500);
-		});
-	});
+	//Set up the PID for the MPX account on change in the Settings page	
+	jQuery( '#mpx_account_id' ).change( function( e ) {
+		jQuery( '#mpx_account_pid' ).val( jQuery( '#mpx_account_id option:selected' ).val().split( '|' )[1] );
+	} )
 
-	//Set up the PID for users	
-	jQuery('#mpx_account_id').change(function(e) {
-			jQuery('#mpx_account_pid').val(jQuery('#mpx_account_id option:selected').val().split('|')[1]);
-	})
+	//Set up the PID for the Player on change in the Settings page
+	jQuery( '#default_player_name' ).change( function( e ) {
+		jQuery( '#default_player_pid' ).val( jQuery( '#default_player_name option:selected' ).val().split( '|' )[1] );
+	} )
 
-	//and players
-	jQuery('#default_player_name').change(function(e) {
-			jQuery('#default_player_pid').val(jQuery('#default_player_name option:selected').val().split('|')[1]);
-	})
+	// Validate account information in plugin settings fields by logging in to MPX
+	jQuery( "#verify-account-button" ).click( function( $ ) {
+		var usr = jQuery( "#mpx_username" ).val();
+		var pwd = jQuery( "#mpx_password" ).val();
+		var images = theplatform_local.plugin_base_url;
 
-	// Validate account information in plugin settings fields
-	jQuery("#verify-account-button").click(function($) {
-		var usr = jQuery("#mpx_username").val();
-		var pwd = jQuery("#mpx_password").val();
-		var images = theplatform.plugin_base_url;
-	
-		var hash = jQuery.base64Encode(usr + ":" + pwd);
-	
+		var hash = jQuery.base64Encode( usr + ":" + pwd );
+
 		var data = {
 			action: 'verify_account',
-			_wpnonce: theplatform.tp_nonce,
+			_wpnonce: theplatform_local.tp_nonce['verify_account'],
 			auth_hash: hash
 		};
 
-		jQuery.post(theplatform.ajax_url, data, function(response) {
-			if (jQuery("#verification_image").length > 0) {
-				jQuery("#verification_image").remove();
+		jQuery.post( theplatform_local.ajaxurl, data, function( response ) {
+			if ( jQuery( "#verification_image" ).length > 0 ) {
+				jQuery( "#verification_image" ).remove();
 			}
-			
-			if (response.indexOf('success') != -1 ) {
-				jQuery('#verify-account').append('<img id="verification_image" src="' + images + 'checkmark.png" />');											
+
+			if ( response.success ) {
+				jQuery( '#verify-account-dashicon' ).removeClass( 'dashicons-no' ).addClass( 'dashicons-yes' );
 			} else {
-				jQuery('#verify-account').append('<img id="verification_image" src="' + images + 'xmark.png" />');				
+				jQuery( '#verify-account-dashicon' ).removeClass( 'dashicons-yes' ).addClass( 'dashicons-no' );
 			}
-		});	
-	});
+		} );
+	} );
 
-	jQuery("#theplatform-edit-media").submit(function(event) {
-		var validation_error = false;
-	
-		jQuery('.edit_field').each(function() {
-		   if (jQuery(this).val().match(/<(\w+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/)) {
-			  jQuery(this).css({border: 'solid 1px #FF0000'}); 
-			  validation_error = true;
-		   }
-		});
-
-		jQuery('.edit_custom_field').each(function() {
-		   if (jQuery(this).val().match(/<(\w+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/)) {
-			  jQuery(this).css({border: 'solid 1px #FF0000'}); 
-			  validation_error = true;
-		   }
-		});
-	
-		if (validation_error) {
-			event.preventDefault();
+	//Edit Media Validation	
+	jQuery( "#theplatform_edit_button" ).click( function( event ) {
+		var validation_error = validate_media( event );
+		if ( validation_error )
 			return false;
-		} else {
-			return true;
+		var params = parseMediaParams();
+		var custom_params = parseCustomParams();
+		params.id = tpHelper.mediaId;
+
+		var data = {
+			_wpnonce: theplatform_local.tp_nonce['theplatform_edit'],
+			action: 'theplatform_edit',
+			params: JSON.stringify( params ),
+			custom_params: JSON.stringify( custom_params )
 		}
-		
-	});
 
-	// Upload a file to MPX
-	jQuery("#theplatform_upload_button").click(function(event) {
-		var file = document.getElementById('theplatform_upload_file').files[0];
-		
-		var validation_error = false;
-		var params = {};
-		var custom_params = {}
-	
-		jQuery('.upload_field').each(function() {
-		   if (jQuery(this).val().match(/<(\w+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/)) {
-			  jQuery(this).css({border: 'solid 1px #FF0000'}); 
-			  validation_error = true;
-		   }
-		});
+		jQuery( '#tp-edit-dialog' ).dialog( 'close' );
+		jQuery.post( theplatform_local.ajaxurl, data, function( resp ) {
+			refreshView();
+		} );
+	} );
 
-		jQuery('.custom_field').each(function() {
-		   if (jQuery(this).val().match(/<(\w+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/)) {
-			  jQuery(this).css({border: 'solid 1px #FF0000'}); 
-			  validation_error = true;
-		   }
-		});
-	
-		if (validation_error) {
-			event.preventDefault();
+	// Upload media button handler
+	jQuery( "#theplatform_upload_button" ).click( function( event ) {
+		var file = document.getElementById( 'theplatform_upload_file' ).files[0];
+
+		var validation_error = validate_media( event );
+
+		if ( validation_error || file === undefined )
 			return false;
-		}
-	
-		jQuery('#media-mpx-upload-form').fadeOut(750, function() {
-			jQuery('#theplatform-library-view').fadeIn(750);
-			//message_nag("Preparing for upload..");
-		});
-		
-		jQuery('.upload_field').each(function(i){
-			if (jQuery(this).val().length != 0)
-				params[jQuery(this).attr('name')] = jQuery(this).val();
-		});
 
-		var categories = []
-		jQuery('.category_field').each(function(i){
-			if (jQuery(this).val() != '(None)') {
-				var cat = {};
-				cat['media$name'] = jQuery(this).val();
-				categories.push(cat);
-			}
-						
-		});
-		
-		params['media$categories'] = categories;
+		var params = parseMediaParams();
+		var custom_params = parseCustomParams();
 
-		jQuery('.custom_field').each(function(i){
-			if (jQuery(this).val().length != 0) 
-				custom_params[jQuery(this).attr('name')] = jQuery(this).val();
-		});
-		
-		var profile = jQuery('.upload_profile');
-		
-		var upload_window = window.open(theplatform.ajax_url + '?action=theplatform_upload', '_blank', 'menubar=no,location=no,resizable=yes,scrollbars=no,status=no,width=700,height=150')
+		var profile = jQuery( '.upload_profile' );
+		var server = jQuery( '.server_id' );
 
-		upload_window.uploaderData = { 
+		var upload_window = window.open( theplatform_local.ajaxurl + '?action=theplatform_upload&_wpnonce=' + theplatform_local.tp_nonce['theplatform_upload'], '_blank', 'menubar=no,location=no,resizable=yes,scrollbars=no,status=no,width=700,height=150' )
+
+		upload_window.uploaderData = {
 			file: file,
-			params: JSON.stringify(params), 
-			custom_params: JSON.stringify(custom_params),
-			profile: profile.val()
+			params: JSON.stringify( params ),
+			custom_params: JSON.stringify( custom_params ),
+			profile: profile.val(),
+			server: server.val()
 		}
 
 		upload_window.parentLocation = window.location;
 
-		// var theplatformUploader = new TheplatformUploader(file, JSON.stringify(params), JSON.stringify(custom_params), profile.val());
-	});
-
-	// Reload media viewer with no search queries
-	jQuery("#media-mpx-show-all-button, #theplatform_cancel_edit_button").click(function(event) {
-		var url = document.location;
-		
-		document.location = url.origin + url.pathname + "?page=theplatform-media";
-	});
-
-	// Cancel upload.. fade out upload form and fade in media library view
-	jQuery("#theplatform_cancel_upload_button").click(function(event) {
-	
-		jQuery('#media-mpx-upload-form').fadeOut(750, function() {
-			jQuery('#theplatform-library-view').fadeIn(750);
-			message_nag("Cancelling upload..", true);
-		});
-	});
-	
-	// Handle search dropdown text
-	jQuery('#search-dropdown').change(function() {
-		jQuery('#search-by-content').text(jQuery(this).find(":selected").text());
-	});
-	
-	// Handle sort dropdown text
-	jQuery('#sort-dropdown').change(function() {
-		jQuery('#sort-by-content').text(jQuery(this).find(":selected").text());
-	});	
-
-	jQuery('#search-by-content').text(jQuery('.search-select').find(":selected").text());
-	jQuery('#sort-by-content').text(jQuery('.sort-select').find(":selected").text());
-});
+	} );
+} );
