@@ -26,15 +26,23 @@ class ThePlatform_API_HTTP {
 	 * Make a HTTP GET request to the provided URL
 	 * @param string $url URL to make the request to
 	 * @param array $data optional Data to send with the request
+	 * @param boolean $cache Try and make a cache request first
 	 * @return wp_response Results of the GET request
 	 */
-	static function get( $url, $data = array() ) {
+	static function get( $url, $data = array(), $cache = false ) {
 		// esc_url_raw eats []'s , so I'm forced to skip it for urls containing
 		// those characters - at this time only the account list request
 		if ( !strpos( $url, '[0]' ) ) {
 			$url = esc_url_raw( $url );
 		}			
-		$response = wp_remote_get( $url, $data );
+		
+		if ($cache) {
+			return wpcom_vip_file_get_contents( $url );
+		}
+		else {
+			return wp_remote_get( $url, $data );
+		}
+		
 		return $response;
 	}
 
@@ -147,9 +155,9 @@ class ThePlatform_API {
 	 * @return string MPX-compliant format string
 	 */
 	function get_format( $mime ) {
-		$response = ThePlatform_API_HTTP::get( TP_API_FORMATS_XML_URL );
-
-		$xmlString = "<?xml version='1.0'?>" . wp_remote_retrieve_body( $response );
+		$response = ThePlatform_API_HTTP::get( TP_API_FORMATS_XML_URL, null, true );
+		
+		$xmlString = "<?xml version='1.0'?>" . $response;
 
 		$formats = simplexml_load_string( $xmlString );
 
