@@ -36,7 +36,7 @@ class ThePlatform_API_HTTP {
 			$url = esc_url_raw( $url );
 		}			
 		
-		if ($cache) {
+		if ($cache && TRUE === WPCOM_IS_VIP_ENV) {
 			return wpcom_vip_file_get_contents( $url );
 		}
 		else {
@@ -156,6 +156,10 @@ class ThePlatform_API {
 	 */
 	function get_format( $mime ) {
 		$response = ThePlatform_API_HTTP::get( TP_API_FORMATS_XML_URL, null, true );
+		
+		if ( FALSE == WPCOM_IS_VIP_ENV ) {
+			$response = wp_remote_retrieve_body( $response );
+		} 
 		
 		$xmlString = "<?xml version='1.0'?>" . $response;
 
