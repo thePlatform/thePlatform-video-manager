@@ -278,7 +278,7 @@ class ThePlatform_Options {
 				$html .= '</select>';
 
 				if ( $this->account['mpx_account_id'] === '' ) {
-					$html .= "<span> Please pick the MPX account you'd like to manage through Wordpress</span>";
+					$html .= '<span style="color:red; font-weight:bold"> Please pick the MPX account to manage with Wordpress</span>';
 				}
 				break;
 			case 'mpx_region':
@@ -290,7 +290,7 @@ class ThePlatform_Options {
 				$html .= '</select>';
 
 				if ( !$this->region_is_verified ) {
-					$html .= "<span> Please select the correct region the MPX account is located at</span>";
+					$html .= '<span style="color:red; font-weight:bold"> Please select the correct region the MPX account is located at</span>';
 				}
 				break;
 			case 'mpx_password':
