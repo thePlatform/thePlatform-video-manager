@@ -218,9 +218,10 @@ jQuery( document ).ready( function() {
 	/**
 	 * Set the page layout 
 	 */
-	var container = window.parent.document.getElementById( 'tp-container' )
-	if ( container )
+	var container = window.parent.document.getElementById( 'tp-container' );
+	if ( container ) {
 		container.style.height = window.parent.innerHeight;
+	}		
 
 	jQuery( '#info-affix' ).affix( {
 		offset: {
@@ -252,7 +253,7 @@ function refreshView() {
 		myContent: jQuery( '#my-content-cb' ).prop( 'checked' )
 	};
 
-	tpHelper.queryParams = queryObject
+	tpHelper.queryParams = queryObject;
 	var newFeed = mpxHelper.buildMediaQuery( queryObject );
 
 	delete queryObject.selectedGuids;
@@ -430,7 +431,7 @@ function updateContentPane( mediaItem ) {
 
 		jQuery( '#media-' + name ).html( value || '' );
 		jQuery( '#theplatform_upload_' + fullName.replace( '$', "\\$" ) ).val( value || '' );
-	} )
+	} );
 }
 
 function formatValue( value, dataType ) {
