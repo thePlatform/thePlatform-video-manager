@@ -27,6 +27,10 @@ Copy the folder "thePlatform-video-manager" with all included files into the "wp
 
 # == Changelog ==
 
+## = 1.2.1 =
+* Renamed tabs in the plugin settings
+* Disabled oLark in the plugin AJAX loaded pages
+
 ## = 1.2.0 =
 * Account settings are now separate from the rest of the plugin preferences - Note this will require reconfiguring the plugin
 * Added an About page
