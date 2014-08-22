@@ -49,8 +49,9 @@ class ThePlatform_Options {
 		$this->enqueue_scripts();
 		$this->register_account_options();
 		$this->register_preferences_options();
-		$this->register_metadata_options();
 		$this->register_upload_options();
+		$this->register_metadata_options();
+		
 
 
 		//Render the page
@@ -121,7 +122,7 @@ class ThePlatform_Options {
 	 * appends the setting to the tabs array of the object.
 	 */
 	function register_account_options() {
-		$this->plugin_settings_tabs[TP_ACCOUNT_OPTIONS_KEY] = 'Account';
+		$this->plugin_settings_tabs[TP_ACCOUNT_OPTIONS_KEY] = 'Account Settings';
 
 		add_settings_section( 'section_mpx_account_options', 'MPX Account Options', array( $this, 'section_mpx_account_desc' ), TP_ACCOUNT_OPTIONS_KEY );
 		add_settings_field( 'mpx_username_option',	'MPX Username',		array( $this, 'field_account_option' ), TP_ACCOUNT_OPTIONS_KEY, 'section_mpx_account_options', array( 'field' => 'mpx_username' ) );
@@ -145,7 +146,7 @@ class ThePlatform_Options {
 			return;
 		}
 		
-		$this->plugin_settings_tabs[TP_PREFERENCES_OPTIONS_KEY] = 'Preferences';
+		$this->plugin_settings_tabs[TP_PREFERENCES_OPTIONS_KEY] = 'Plugin Settings';
 
 		add_settings_section( 'section_embed_options', 'Embedding Preferences', array( $this, 'section_embed_desc' ), TP_PREFERENCES_OPTIONS_KEY );
 		add_settings_field( 'default_player_name',		'Default Player',			array( $this, 'field_preference_option' ), TP_PREFERENCES_OPTIONS_KEY, 'section_embed_options', array( 'field' => 'default_player_name' ) );
@@ -174,9 +175,9 @@ class ThePlatform_Options {
 			return;
 		}
 
-		$this->plugin_settings_tabs[TP_METADATA_OPTIONS_KEY] = 'Metadata';
+		$this->plugin_settings_tabs[TP_METADATA_OPTIONS_KEY] = 'Custom Metadata';
 		$this->metadata_fields = $this->tp_api->get_metadata_fields();
-		add_settings_section( 'section_metadata_options', 'Metadata Settings', array( $this, 'section_metadata_desc' ), TP_METADATA_OPTIONS_KEY );
+		add_settings_section( 'section_metadata_options', 'Custom Metadata Settings', array( $this, 'section_metadata_desc' ), TP_METADATA_OPTIONS_KEY );
 
 		foreach ( $this->metadata_fields as $field ) {
 			if ( !array_key_exists( $field['id'], $this->metadata_options ) ) {
@@ -204,11 +205,11 @@ class ThePlatform_Options {
 			return;
 		}
 
-		$this->plugin_settings_tabs[TP_UPLOAD_OPTIONS_KEY] = 'Upload Fields';
+		$this->plugin_settings_tabs[TP_UPLOAD_OPTIONS_KEY] = 'Basic Metadata';
 
 		$upload_fields = TP_UPLOAD_FIELDS();
 
-		add_settings_section( 'section_upload_options', 'Upload Field Settings', array( $this, 'section_upload_desc' ), TP_UPLOAD_OPTIONS_KEY );
+		add_settings_section( 'section_upload_options', 'Basic Metadata Settings', array( $this, 'section_upload_desc' ), TP_UPLOAD_OPTIONS_KEY );
 
 		foreach ( $upload_fields as $field ) {
 			if ( !array_key_exists( $field, $this->upload_options ) ) {
@@ -248,14 +249,14 @@ class ThePlatform_Options {
 	 * Provide a description to the MPX Metadata Section	 
 	 */
 	function section_metadata_desc() {
-		echo 'Drag and drop the custom metadata fields that you would like to be readable, writable, or omitted when uploading media to MPX.';
+		echo 'Drag and drop the custom metadata fields that you would like to be readable, writable, or omitted when uploading and editing media.';
 	}
 
 	/**
 	 * Provide a description to the MPX Upload Fields Section	 
 	 */
 	function section_upload_desc() {
-		echo 'Select the fields that you would like to be allowed or omitted when uploading media to MPX.';
+		echo 'Drag and drop the basic metadata fields that you would like to be readable, writable, or omitted when uploading and editing media.';
 	}
 
 	/**
