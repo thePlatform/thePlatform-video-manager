@@ -58,6 +58,11 @@ class ThePlatform_Plugin {
 		require_once(dirname( __FILE__ ) . '/thePlatform-proxy.php');
 				
 		$this->tp_api = new ThePlatform_API;
+		
+		//Disable oLark in if the plugin is loaded in AJAX
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+			add_filter( 'vip_live_chat_enabled', '__return_false' );
+		}
 
 		$this->plugin_base_dir = plugin_dir_path( __FILE__ );
 		$this->plugin_base_url = plugins_url( '/', __FILE__ );
