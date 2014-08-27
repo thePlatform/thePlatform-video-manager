@@ -179,7 +179,6 @@ class ThePlatform_Plugin {
 	 */
 	function about_page() {
 		require_once( dirname( __FILE__ ) . '/thePlatform-about.php' );
-		die();
 	}
 
 	/**
