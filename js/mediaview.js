@@ -76,7 +76,7 @@ jQuery( document ).ready( function() {
 			_wpnonce: mediaview_local.tp_nonce['set_thumbnail']
 		};
 
-		jQuery.post( ajaxurl, data, function( response ) {
+		jQuery.post( theplatform_local.ajaxurl, data, function( response ) {
 			if ( response.success )
 				window.parent.jQuery( '#postimagediv .inside' ).html( response.data );
 		} );

@@ -15,8 +15,6 @@
  with this program; if not, write to the Free Software Foundation, Inc.,
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-var ajaxurl = mpxhelper_local.ajaxurl;
-
 var mpxHelper = {
 	getVideos: function( range, callback ) {
 
@@ -29,7 +27,7 @@ var mpxHelper = {
 			myContent: jQuery( '#my-content-cb' ).prop( 'checked' )
 		};
 
-		jQuery.post( ajaxurl, data, function( resp ) {
+		jQuery.post( mpxhelper_local.ajaxurl, data, function( resp ) {
 			resp = JSON.parse( resp );
 			if ( resp.isException )
 				displayMessage( resp.description );
@@ -67,7 +65,7 @@ var mpxHelper = {
 			fields: 'title'
 		};
 
-		jQuery.post( ajaxurl, data,
+		jQuery.post( mpxhelper_local.ajaxurl, data,
 				function( resp ) {
 					callback( JSON.parse( resp ) );
 				} );
