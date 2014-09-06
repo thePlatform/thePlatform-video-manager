@@ -161,6 +161,7 @@ class ThePlatform_Options {
 		add_settings_section( 'section_preferences_options', 'General Preferences', array( $this, 'section_preferences_desc' ), TP_PREFERENCES_OPTIONS_KEY );
 		add_settings_field( 'filter_by_user_id',	'Filter Users Own Videos',		array( $this, 'field_preference_option' ), TP_PREFERENCES_OPTIONS_KEY, 'section_preferences_options', array( 'field' => 'filter_by_user_id' ) );
 		add_settings_field( 'user_id_customfield',	'User ID Custom Field',			array( $this, 'field_preference_option' ), TP_PREFERENCES_OPTIONS_KEY, 'section_preferences_options', array( 'field' => 'user_id_customfield' ) );
+		add_settings_field( 'transform_user_id_to',	'Show User ID as',				array( $this, 'field_preference_option' ), TP_PREFERENCES_OPTIONS_KEY, 'section_preferences_options', array( 'field' => 'transform_user_id_to' ) );
 		add_settings_field( 'mpx_server_id',		'MPX Upload Server',			array( $this, 'field_preference_option' ), TP_PREFERENCES_OPTIONS_KEY, 'section_preferences_options', array( 'field' => 'mpx_server_id' ) );
 		add_settings_field( 'default_publish_id',	'Default Publishing Profile',	array( $this, 'field_preference_option' ), TP_PREFERENCES_OPTIONS_KEY, 'section_preferences_options', array( 'field' => 'default_publish_id' ) );
 	}
@@ -188,7 +189,7 @@ class ThePlatform_Options {
 			update_option( TP_METADATA_OPTIONS_KEY, $this->metadata_options );
 
 			$types = TP_CUSTOM_FIELDS_TYPES();
-			add_settings_field( $field['id'], $field['title'], array( $this, 'field_custom_metadata_option' ), TP_METADATA_OPTIONS_KEY, 'section_metadata_options', array( 'id' => $field['id'], 'title' => $field['title'], 'fieldName' => $field['fieldName'] ) );
+			add_settings_field( $field['id'], $field['title'], array( $this, 'field_custom_metadata_option' ), TP_METADATA_OPTIONS_KEY, 'section_metadata_options', $field );
 		}
 	}
 
@@ -370,6 +371,14 @@ class ThePlatform_Options {
 			case 'default_player_pid':
 				$html = '<input disabled style="background-color: lightgray" id="default_player_pid" type="text" name="theplatform_preferences_options[' . esc_attr( $field ) . ']" value="' . esc_attr( $opts[$field] ) . '" />';
 				break;
+			case 'transform_user_id_to':
+				$html = '<select id="' . esc_attr( $field ) . '"" name="theplatform_preferences_options[' . esc_attr( $field ) . ']"/>';
+				$html .= '<option value="nickname" ' . selected( $opts[$field], 'nickname', false ) . '>Nickname</option>';
+				$html .= '<option value="full_name" ' . selected( $opts[$field], 'full_name', false ) . '>Full Name</option>';
+				$html .= '<option value="email" ' . selected( $opts[$field], 'email', false ) . '>Email</option>';
+				$html .= '<option value="username" ' . selected( $opts[$field], 'username', false ) . '>Username</option>';				
+				$html .= '</select>';
+				break;
 			case 'filter_by_user_id':
 			case 'autoplay':
 				$html = '<select id="' . esc_attr( $field ) . '"" name="theplatform_preferences_options[' . esc_attr( $field ) . ']"/>';
@@ -381,7 +390,8 @@ class ThePlatform_Options {
 				$html = '<select id="' . esc_attr( $field ) . '"" name="theplatform_preferences_options[' . esc_attr( $field ) . ']"/>';
 				$html .= '<option value="(None)" ' . selected( $opts[$field], '(None)', false ) . '>(None)</option>';
 				foreach ( $this->metadata_fields as $metadata ) {
-					$html .= '<option value="' . esc_attr( $metadata['fieldName'] ) . '" ' . selected( $opts[$field], $metadata['fieldName'], false ) . '>' . esc_html( $metadata['title'] ) . '</option>';
+					$fieldName = $metadata['namespacePrefix'] . '$' . $metadata['fieldName'];
+					$html .= '<option value="' . esc_attr( $fieldName ) . '" ' . selected( $opts[$field], $fieldName, false ) . '>' . esc_html( $metadata['title'] ) . '</option>';
 				}
 				$html .= '</select>';
 				break;
@@ -397,8 +407,9 @@ class ThePlatform_Options {
 	 */
 	function field_custom_metadata_option( $args ) {
 		$field_id = $args['id'];
+		$fieldName = $args['namespacePrefix'] . '$' . $args['fieldName'];
 		
-		$user_id_field = ( $args['fieldName'] === $this->preferences['user_id_customfield'] ) ? 'true' : 'false';
+		$user_id_field = ( $fieldName === $this->preferences['user_id_customfield'] ) ? 'true' : 'false';
 		if ( $user_id_field === 'true' && $this->metadata_options[$field_id] == 'write') {
 			$this->metadata_options[$field_id] = 'hide';
 		}

@@ -430,7 +430,11 @@ function updateContentPane( mediaItem ) {
 		}
 
 		jQuery( '#media-' + name ).html( value || '' );
-		jQuery( '#theplatform_upload_' + fullName.replace( '$', "\\$" ) ).val( value || '' );
+
+		var upload_field = jQuery( '#theplatform_upload_' + fullName.replace( '$', "\\$" ) )
+		if ( !upload_field.hasClass('userid')) {
+			jQuery( '#theplatform_upload_' + fullName.replace( '$', "\\$" ) ).val( value || '' );	
+		}		
 	} );
 }
 

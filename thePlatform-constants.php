@@ -51,6 +51,7 @@ function TP_PREFERENCES_OPTIONS_DEFAULTS() {
 					'mpx_server_id' => 'DEFAULT_SERVER',
 					'default_publish_id' => 'tp_wp_none',
 					'user_id_customfield' => '(None)',
+					'transform_user_id_to' => 'nickname',
 					'filter_by_user_id' => 'false',
 					'autoplay' => 'true',
 					'rss_embed_type' => 'article',

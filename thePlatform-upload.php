@@ -70,7 +70,16 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 	$html = '';
 
 	if ( strlen( $preferences['user_id_customfield'] ) && $preferences['user_id_customfield'] !== '(None)' ) {
-		echo '<input type="hidden" name="' . esc_attr( $preferences['user_id_customfield'] ) . '" class="custom_field" value="' . esc_attr( wp_get_current_user()->ID ) . '" />';
+		$userIdField = $tp_api->get_customfield_info( $preferences['user_id_customfield'] )['entries'];
+		if (array_key_exists(0, $userIdField)) {
+			$field_title = $userIdField[0]['fieldName'];
+			$field_prefix = $userIdField[0]['namespacePrefix'];
+			$field_namespace = $userIdField[0]['namespace'];
+			$userID = strval( wp_get_current_user()->ID );
+			echo '<input name="' . esc_attr( $field_title ) . '" id="theplatform_upload_' . esc_attr( $preferences['user_id_customfield'] ) . '" class="userid custom_field" type="hidden" value="' . esc_attr( $userID ) . '" data-type="String" data-name="' . esc_attr( strtolower( $field_title ) ) . '" data-prefix="' . esc_attr( strtolower( $field_prefix ) ) . '" data-namespace="' . esc_attr( strtolower( $field_namespace ) ) . '"/>';						
+		}
+		
+		
 	}
 
 	$catHtml = '';

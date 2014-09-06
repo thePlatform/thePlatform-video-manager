@@ -415,7 +415,7 @@ class ThePlatform_API {
 		$token = $this->mpx_signin();
 
 		$fields = theplatform_get_query_fields( $this->get_metadata_fields() );
-
+				
 		$url = TP_API_MEDIA_ENDPOINT . '&fields=guid,' . $fields . '&token=' . $token . '&range=' . $_POST['range'];
 
 		if ( $_POST['isEmbed'] === "1" ) {
@@ -435,11 +435,39 @@ class ThePlatform_API {
 		if ( !empty( $_POST['query'] ) ) {
 			$url .= '&' . $_POST['query'];
 		}
-
+				
 		$response = ThePlatform_API_HTTP::get( $url, array( "timeout" => 120 ) );
 		$this->mpx_signout( $token );
 		
-		wp_send_json( wp_remote_retrieve_body( $response ) );
+		$decodedResponse = theplatform_decode_json_from_server( $response, true );
+		
+		// Find the userID response and transform it to a human readable value.
+		foreach ( $decodedResponse['entries'] as $entryKey => $entry ) {		
+			$key = $this->preferences['user_id_customfield'];
+			if ( array_key_exists($this->preferences['user_id_customfield'], $entry) ) {
+				$user = get_userdata ( $entry[ $key ] );
+				if ( $user ) {
+					switch ( $this->preferences['transform_user_id_to']) {
+						case 'username':
+							$decodedResponse['entries'][ $entryKey ][ $key ] = $user->user_login;
+							break;
+						case 'nickname':
+							$decodedResponse['entries'][ $entryKey ][ $key ] = $user->nickname;
+							break;
+						case 'email':
+							$decodedResponse['entries'][ $entryKey ][ $key ] = $user->user_email;
+							break;
+						case 'full_name':
+							$decodedResponse['entries'][ $entryKey ][ $key ] = $user->user_firstname . ' ' . $user->user_lastname;
+							break;
+						default:
+							break;
+					}						
+				}	
+			}								
+		}
+		
+		wp_send_json( json_encode( $decodedResponse ) );
 	}
 
 	/**
@@ -513,10 +541,6 @@ class ThePlatform_API {
 		$token = $this->mpx_signin();
 
 		$url = TP_API_MEDIA_FIELD_ENDPOINT . '&fields=' . $fields . '&token=' . $token;
-
-		if ( !empty( $this->preferences['mpx_namespace'] ) ) {
-			$url .= '&byNamespace=' . $this->preferences['mpx_namespace'];
-		}
 
 		if ( $this->get_mpx_account_id() ) {
 			$url .= '&account=' . $this->get_mpx_account_id();

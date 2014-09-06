@@ -269,10 +269,6 @@ wp_enqueue_style( 'wp-jquery-ui-dialog' );
 										$field_type = $metadata_info['dataType'];
 										$field_structure = $metadata_info['dataStructure'];
 
-										if ( $field_title === $preferences['user_id_customfield'] ) {
-											continue;
-										}
-
 										$html = '<div class="row">';
 										$html .= '<strong>' . esc_html( mb_convert_case( $field_title, MB_CASE_TITLE ) ) . ': </strong>';
 										$html .= '<span id="media-' . esc_attr( $field_title ) . '" data-type="' . esc_attr( $field_type ) . '" data-structure="' . esc_attr( $field_structure ) . '" data-name="' . esc_attr( $field_title ) . '" data-prefix="' . esc_attr( $field_prefix ) . '" data-namespace="' . esc_attr( $field_namespace ) . '"></span></div>';
