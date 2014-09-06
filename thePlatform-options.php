@@ -185,10 +185,6 @@ class ThePlatform_Options {
 				$this->metadata_options[$field['id']] = 'hide';
 			}
 
-			if ( $field['fieldName'] === $this->preferences['user_id_customfield'] ) {
-				continue;
-			}
-
 			update_option( TP_METADATA_OPTIONS_KEY, $this->metadata_options );
 
 			$types = TP_CUSTOM_FIELDS_TYPES();
@@ -401,9 +397,13 @@ class ThePlatform_Options {
 	 */
 	function field_custom_metadata_option( $args ) {
 		$field_id = $args['id'];
-
-		$html = '<select id="' . esc_attr( $field_id ) . '" name="theplatform_metadata_options[' . esc_attr( $field_id ) . ']" class="sortableField">';
-		$html .= '<option value="read"' . selected( $this->metadata_options[$field_id], 'read', false ) . '>Read</option>';
+		
+		$user_id_field = ( $args['fieldName'] === $this->preferences['user_id_customfield'] ) ? 'true' : 'false';
+		if ( $user_id_field === 'true' && $this->metadata_options[$field_id] == 'write') {
+			$this->metadata_options[$field_id] = 'hide';
+		}
+		$html = '<select id="' . esc_attr( $field_id ) . '" name="theplatform_metadata_options[' . esc_attr( $field_id ) . ']" class="sortableField" data-userfield="' . esc_attr( $user_id_field ) . '">';
+		$html .= '<option value="read"' . selected( $this->metadata_options[$field_id], 'read', false ) . '>Read</option>';		
 		$html .= '<option value="write"' . selected( $this->metadata_options[$field_id], 'write', false ) . '>Write</option>';
 		$html .= '<option value="hide"' . selected( $this->metadata_options[$field_id], 'hide', false ) . '>Hide</option>';
 		$html .= '</select>';
