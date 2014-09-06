@@ -19,12 +19,20 @@
 /*
  * Load scripts and styles 
  */
-wp_enqueue_script( 'mediaview_js' );
-wp_enqueue_script( 'jquery-ui-dialog' );
-wp_enqueue_style( 'dashicons' );
-wp_enqueue_style( 'bootstrap_tp_css' );
-wp_enqueue_style( 'theplatform_css' );
-wp_enqueue_style( 'wp-jquery-ui-dialog' );
+add_action('wp_enqueue_scripts', 'clear_styles', 999);
+
+function clear_styles() {
+	global $wp_styles; 
+	foreach( $wp_styles->queue as $handle ) {	
+		wp_dequeue_style( $handle );
+	}    
+	wp_enqueue_script( 'mediaview_js' );
+	wp_enqueue_script( 'jquery-ui-dialog' );
+	wp_enqueue_style( 'dashicons' );
+	wp_enqueue_style( 'bootstrap_tp_css' );
+	wp_enqueue_style( 'theplatform_css' );
+	wp_enqueue_style( 'wp-jquery-ui-dialog' );
+}
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -105,6 +113,7 @@ wp_enqueue_style( 'wp-jquery-ui-dialog' );
 		</script>			
 		
 		<?php wp_head(); ?>
+
     </head>
     <body>
 		<div class="tp">
