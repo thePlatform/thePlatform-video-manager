@@ -133,7 +133,7 @@ wp_enqueue_style( 'wp-jquery-ui-dialog' );
 						<p class="navbar-text sort-bar-text">
 							<!-- Render My Content checkbox -->
 							<?php if ( $preferences['user_id_customfield'] !== '(None)' ) { ?>
-								<input type="checkbox" id="my-content-cb" <?php checked( $preferences['filter_by_user_id'] === 'TRUE' ); ?> />
+								<input type="checkbox" id="my-content-cb" <?php checked( $preferences['filter_by_user_id'] === 'true' ); ?> />
 								<label for="my-content-cb" style="font-weight: normal">My Content</label>													
 							<?php } ?>
 							<!-- End My Content Checkbox -->	

@@ -152,6 +152,7 @@ class ThePlatform_Options {
 		add_settings_field( 'default_player_name',		'Default Player',			array( $this, 'field_preference_option' ), TP_PREFERENCES_OPTIONS_KEY, 'section_embed_options', array( 'field' => 'default_player_name' ) );
 		add_settings_field( 'default_player_pid',		'Default Player PID',		array( $this, 'field_preference_option' ), TP_PREFERENCES_OPTIONS_KEY, 'section_embed_options', array( 'field' => 'default_player_pid' ) );
 		add_settings_field( 'embed_tag_type_option',	'Embed Tag Type',			array( $this, 'field_preference_option' ), TP_PREFERENCES_OPTIONS_KEY, 'section_embed_options', array( 'field' => 'embed_tag_type' ) );
+		add_settings_field( 'player_embed_type_option',	'Player Embed Type',		array( $this, 'field_preference_option' ), TP_PREFERENCES_OPTIONS_KEY, 'section_embed_options', array( 'field' => 'player_embed_type' ) );
 		add_settings_field( 'rss_embed_type_option',	'RSS Embed Type',			array( $this, 'field_preference_option' ), TP_PREFERENCES_OPTIONS_KEY, 'section_embed_options', array( 'field' => 'rss_embed_type' ) );
 		add_settings_field( 'autoplay',					'Force Autoplay',			array( $this, 'field_preference_option' ), TP_PREFERENCES_OPTIONS_KEY, 'section_embed_options', array( 'field' => 'autoplay' ) );
 		add_settings_field( 'default_width',			'Default Player Width',		array( $this, 'field_preference_option' ), TP_PREFERENCES_OPTIONS_KEY, 'section_embed_options', array( 'field' => 'default_width' ) );
@@ -352,6 +353,12 @@ class ThePlatform_Options {
 				}
 				$html .= '</select>';
 				break;
+			case 'player_embed_type':
+				$html = '<select id="' . esc_attr( $field ) . '" name="theplatform_preferences_options[' . esc_attr( $field ) . ']">';
+				$html .= '<option value="true"' . selected( $opts[$field], 'true', false ) . '>Video Only</option>';
+				$html .= '<option value="false"' . selected( $opts[$field], 'false', false ) . '>Full Player</option>';				
+				$html .= '</select>';				
+				break;
 			case 'default_publish_id':
 				$html = '<select id="' . esc_attr( $field ) . '" name="theplatform_preferences_options[' . esc_attr( $field ) . ']">';
 				$html .= '<option value="tp_wp_none">Do not publish</option>';
@@ -370,8 +377,8 @@ class ThePlatform_Options {
 			case 'filter_by_user_id':
 			case 'autoplay':
 				$html = '<select id="' . esc_attr( $field ) . '"" name="theplatform_preferences_options[' . esc_attr( $field ) . ']"/>';
-				$html .= '<option value="TRUE" ' . selected( $opts[$field], 'TRUE', false ) . '>True</option>';
-				$html .= '<option value="FALSE" ' . selected( $opts[$field], 'FALSE', false ) . '>False</option>';
+				$html .= '<option value="true" ' . selected( $opts[$field], 'true', false ) . '>True</option>';
+				$html .= '<option value="false" ' . selected( $opts[$field], 'false', false ) . '>False</option>';
 				$html .= '</select>';
 				break;
 			case 'user_id_customfield':

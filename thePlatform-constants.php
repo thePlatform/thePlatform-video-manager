@@ -45,17 +45,18 @@ function TP_ACCOUNT_OPTIONS_DEFAULTS() {
 function TP_PREFERENCES_OPTIONS_DEFAULTS() {
 	return array(
 					'plugin_version' => TP_PLUGIN_VERSION,
-					'embed_tag_type' => 'embed',
+					'embed_tag_type' => 'iframe',
 					'default_player_name' => '',
 					'default_player_pid' => '',
 					'mpx_server_id' => 'DEFAULT_SERVER',
 					'default_publish_id' => 'tp_wp_none',
 					'user_id_customfield' => '(None)',
-					'filter_by_user_id' => 'FALSE',
-					'autoplay' => 'TRUE',
+					'filter_by_user_id' => 'false',
+					'autoplay' => 'true',
 					'rss_embed_type' => 'article',
 					'default_width' => $GLOBALS['content_width'],
-					'default_height' => ($GLOBALS['content_width'] / 16) * 9
+					'default_height' => ($GLOBALS['content_width'] / 16) * 9,
+					'player_embed_type' => 'embed'
 				);
 }
 

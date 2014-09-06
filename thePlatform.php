@@ -311,7 +311,7 @@ class ThePlatform_Plugin {
 			$this->account = get_option( TP_ACCOUNT_OPTIONS_KEY );
 		}
 
-		list( $account, $width, $height, $media, $player, $mute, $autoplay, $loop, $tag, $params ) = array_values( shortcode_atts( array(
+		list( $account, $width, $height, $media, $player, $mute, $autoplay, $loop, $tag, $embedded, $params ) = array_values( shortcode_atts( array(
 			'account' => '',
 			'width' => '',
 			'height' => '',
@@ -321,10 +321,11 @@ class ThePlatform_Plugin {
 			'autoplay' => '',
 			'loop' => '',
 			'tag' => '',
+			'embedded' => '',
 			'params' => '' ), $atts
 				)
 		);
-
+				
 		if ( empty( $width ) ) {
 			$width = (int) $this->preferences['default_width'];
 		}
@@ -339,28 +340,11 @@ class ThePlatform_Plugin {
 			$height = floor( $width * 9 / 16 );
 		}
 
-		if ( empty( $mute ) ) {
-			$mute = "false";
-		}
-
-		if ( empty( $autoplay ) ) {
-			$autoplay = $this->preferences['autoplay'];
-		}
-		
-		if ( empty( $autoplay ) ) {
-			$autoplay = 'false';
-		}
-
-		if ( empty( $loop ) ) {
-			$loop = "false";
-		}
-
-		if ( empty( $tag ) ) {
-			$tag = $this->preferences['embed_tag_type'];
-		}
-		if ( empty( $tag ) ) {
-			$tag = "iframe";
-		}
+		$mute = $this->check_shortcode_parameter( $mute, 'false', array( 'true', 'false' ) );
+		$loop = $this->check_shortcode_parameter( $loop, 'false', array( 'true', 'false' ) );
+		$autoplay = $this->check_shortcode_parameter( $autoplay, $this->preferences['autoplay'], array( 'false', 'true' ) );
+		$embedded = $this->check_shortcode_parameter( $embedded, $this->preferences['player_embed_type'], array( 'true', 'false' ) );		
+		$tag = $this->check_shortcode_parameter( $tag, $this->preferences['embed_tag_type'], array( 'iframe', 'script' ) );
 
 		if ( empty( $media ) ) {
 			return '<!--Syntax Error: Required Media parameter missing. -->';
@@ -376,18 +360,18 @@ class ThePlatform_Plugin {
 		
 		
 		if ( !is_feed() ) {			
-			$output = $this->get_embed_shortcode( $account, $media, $player, $width, $height, $autoplay, $tag, $loop, $mute, $params );
+			$output = $this->get_embed_shortcode( $account, $media, $player, $width, $height, $autoplay, $tag, $embedded, $loop, $mute, $params );
 			$output = apply_filters( 'tp_embed_code', $output );
 		} else {
-			switch ( $this->preferences['rss_embed_type'] ) {
+			switch ( $this->preferences['rss_embed_type'] ) {			
 				case 'article':
 					$output = '[Sorry. This video cannot be displayed in this feed. <a href="' . get_permalink() . '">View your video here.]</a>';
 					break;
-				case 'iframe':
-					$output = $this->get_embed_shortcode( $account, $media, $player, $width, $height, $autoplay, 'iframe', $loop, $mute, $params );
+				case 'iframe':						
+					$output = $this->get_embed_shortcode( $account, $media, $player, $width, $height, $autoplay, 'iframe', $embedded, $loop, $mute, $params );
 					break;
 				case 'script':
-					$output = $this->get_embed_shortcode( $account, $media, $player, $width, $height, $autoplay, 'script', $loop, $mute, $params );
+					$output = $this->get_embed_shortcode( $account, $media, $player, $width, $height, $autoplay, 'script', $embedded, $loop, $mute, $params );
 					break;
 				default:
 					$output = '[Sorry. This video cannot be displayed in this feed. <a href="' . get_permalink() . '">View your video here.]</a>';
@@ -397,6 +381,30 @@ class ThePlatform_Plugin {
 		}
 
 		return $output;
+	}
+	
+	/**
+	 * Checks a shortcode value is valid and if not returns a default value
+	 * @param string $value The shortcode parameter value
+	 * @param string $defaultValue The default value to return if a user entered an invalid entry.
+	 * @param array $allowedValues An array of valid values for the shortcode parameter
+	 * @return string The final value
+	 */
+	function check_shortcode_parameter( $value, $defaultValue, $allowedValues ) {
+		
+		$value = strtolower( $value );
+		
+		if ( empty ( $value ) ) {
+			return $defaultValue;							
+		} else if ( array_search( $value, $allowedValues) === 0 ) {
+			return $value;
+		}
+				
+		if ( !empty ( $defaultValue ) ) {
+			return $defaultValue;
+		}
+		
+		return $allowedValues[0];
 	}
 
 	/**
@@ -414,10 +422,15 @@ class ThePlatform_Plugin {
 	 * @param string $params Any additional parameters to add to the embed code
 	 * @return string An iframe tag sourced from the selected media embed URL
 	 */
-	function get_embed_shortcode( $accountPID, $releasePID, $playerPID, $player_width, $player_height, $autoplay, $tag, $loop = false, $mute = false, $params = '' ) {
+	function get_embed_shortcode( $accountPID, $releasePID, $playerPID, $player_width, $player_height, $autoplay, $tag, $embedded, $loop = false, $mute = false, $params = '' ) {
 
 		$url = TP_API_PLAYER_EMBED_BASE_URL . urlencode( $accountPID ) . '/' . urlencode( $playerPID );
-		$url .= '/embed/select/' . urlencode( $releasePID );
+		
+		if ( $embedded === 'true') {
+			$url .= '/embed';
+		}
+		
+		$url .= '/select/' . urlencode( $releasePID );
 
 		$url = apply_filters( 'tp_base_embed_url', $url );
 
