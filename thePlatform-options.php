@@ -49,8 +49,8 @@ class ThePlatform_Options {
 		$this->enqueue_scripts();
 		$this->register_account_options();
 		$this->register_preferences_options();
-		$this->register_upload_options();
-		$this->register_metadata_options();
+		$this->register_basic_metadata_options();
+		$this->register_custom_metadata_options();
 		
 
 
@@ -166,10 +166,10 @@ class ThePlatform_Options {
 	}
 
 	/*
-	 * Registers the metadata options and appends the
+	 * Registers the custom metadata options and appends the
 	 * key to the plugin settings tabs array.
 	 */
-	function register_metadata_options() {
+	function register_custom_metadata_options() {
 
 		//Check for uninitialized options	
 		if ( !$this->account_is_verified || !$this->region_is_verified ) {
@@ -178,7 +178,7 @@ class ThePlatform_Options {
 
 		$this->plugin_settings_tabs[TP_METADATA_OPTIONS_KEY] = 'Custom Metadata';
 		$this->metadata_fields = $this->tp_api->get_metadata_fields();
-		add_settings_section( 'section_metadata_options', 'Custom Metadata Settings', array( $this, 'section_metadata_desc' ), TP_METADATA_OPTIONS_KEY );
+		add_settings_section( 'section_metadata_options', 'Custom Metadata Settings', array( $this, 'section_custom_metadata_desc' ), TP_METADATA_OPTIONS_KEY );
 
 		foreach ( $this->metadata_fields as $field ) {
 			if ( !array_key_exists( $field['id'], $this->metadata_options ) ) {
@@ -192,15 +192,15 @@ class ThePlatform_Options {
 			update_option( TP_METADATA_OPTIONS_KEY, $this->metadata_options );
 
 			$types = TP_CUSTOM_FIELDS_TYPES();
-			add_settings_field( $field['id'], $field['title'], array( $this, 'field_metadata_option' ), TP_METADATA_OPTIONS_KEY, 'section_metadata_options', array( 'id' => $field['id'], 'title' => $field['title'], 'fieldName' => $field['fieldName'] ) );
+			add_settings_field( $field['id'], $field['title'], array( $this, 'field_custom_metadata_option' ), TP_METADATA_OPTIONS_KEY, 'section_metadata_options', array( 'id' => $field['id'], 'title' => $field['title'], 'fieldName' => $field['fieldName'] ) );
 		}
 	}
 
 	/*
-	 * Registers the upload options and appends the
+	 * Registers the basic metadata options and appends the
 	 * key to the plugin settings tabs array.
 	 */
-	function register_upload_options() {
+	function register_basic_metadata_options() {
 
 		if ( !$this->account_is_verified || !$this->region_is_verified ) {
 			return;
@@ -210,7 +210,7 @@ class ThePlatform_Options {
 
 		$upload_fields = TP_UPLOAD_FIELDS();
 
-		add_settings_section( 'section_upload_options', 'Basic Metadata Settings', array( $this, 'section_upload_desc' ), TP_UPLOAD_OPTIONS_KEY );
+		add_settings_section( 'section_upload_options', 'Basic Metadata Settings', array( $this, 'section_basic_metadata_desc' ), TP_UPLOAD_OPTIONS_KEY );
 
 		foreach ( $upload_fields as $field ) {
 			if ( !array_key_exists( $field, $this->upload_options ) ) {
@@ -221,7 +221,7 @@ class ThePlatform_Options {
 
 			$field_title = (strstr( $field, '$' ) !== false) ? substr( strstr( $field, '$' ), 1 ) : $field;
 
-			add_settings_field( $field, ucfirst( $field_title ), array( $this, 'field_upload_option' ), TP_UPLOAD_OPTIONS_KEY, 'section_upload_options', array( 'field' => $field ) );
+			add_settings_field( $field, ucfirst( $field_title ), array( $this, 'field_basic_metadata_option' ), TP_UPLOAD_OPTIONS_KEY, 'section_upload_options', array( 'field' => $field ) );
 		}
 	}
 
@@ -249,14 +249,14 @@ class ThePlatform_Options {
 	/**
 	 * Provide a description to the MPX Metadata Section	 
 	 */
-	function section_metadata_desc() {
+	function section_custom_metadata_desc() {
 		echo 'Drag and drop the custom metadata fields that you would like to be readable, writable, or omitted when uploading and editing media.';
 	}
 
 	/**
 	 * Provide a description to the MPX Upload Fields Section	 
 	 */
-	function section_upload_desc() {
+	function section_basic_metadata_desc() {
 		echo 'Drag and drop the basic metadata fields that you would like to be readable, writable, or omitted when uploading and editing media.';
 	}
 
@@ -397,9 +397,9 @@ class ThePlatform_Options {
 	}
 
 	/**
-	 * Metadata Option field callback.
+	 * Custom Metadata Option field callback.
 	 */
-	function field_metadata_option( $args ) {
+	function field_custom_metadata_option( $args ) {
 		$field_id = $args['id'];
 
 		$html = '<select id="' . esc_attr( $field_id ) . '" name="theplatform_metadata_options[' . esc_attr( $field_id ) . ']" class="sortableField">';
@@ -412,9 +412,9 @@ class ThePlatform_Options {
 	}
 
 	/**
-	 * Upload Option field callback.
+	 * Basic Metadata Option field callback.
 	 */
-	function field_upload_option( $args ) {
+	function field_basic_metadata_option( $args ) {
 		$field = $args['field'];
 
 		$html = '<select id="' . esc_attr( $field ) . '" name="theplatform_upload_options[' . esc_attr( $field ) . ']" class="sortableField">';
