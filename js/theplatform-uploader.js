@@ -393,7 +393,7 @@ TheplatformUploader = ( function() {
 				// parentLocation.reload();
 				me.startUpload( params, file );
 			} else {
-				error_nag( "Unable to upload media asset at this time. Please try again later." + response.data, true );
+				error_nag( "Unable to upload media asset at this time. Please try again later." + response, true );
 			}
 		} );
 	}

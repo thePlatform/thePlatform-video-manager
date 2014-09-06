@@ -31,7 +31,6 @@ define( 'TP_VIEWER_DEFAULT_CAP', 'edit_posts' );
 define( 'TP_EMBEDDER_DEFAULT_CAP', 'edit_posts' );
 define( 'TP_UPLOADER_DEFAULT_CAP', 'upload_files' );
 
-
 function TP_ACCOUNT_OPTIONS_DEFAULTS() {
 	return array(
 					'mpx_account_id' => '',
