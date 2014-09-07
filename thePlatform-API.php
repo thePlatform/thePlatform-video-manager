@@ -420,7 +420,7 @@ class ThePlatform_API {
 		$url = TP_API_MEDIA_ENDPOINT . '&fields=guid,' . $fields . '&token=' . $token . '&range=' . $_POST['range'];
 
 		if ( $_POST['isEmbed'] === "1" ) {
-			$url .= '&byAvailabilityState=available&byApproved=true&byContent=byReleases=byDelivery%253Dstreaming';
+			$url .= '&byApproved=true&byContent=byReleases=byDelivery%253Dstreaming';
 		}
 
 		if ( !empty( $_POST['myContent'] ) && $_POST['myContent'] === 'true' ) {
