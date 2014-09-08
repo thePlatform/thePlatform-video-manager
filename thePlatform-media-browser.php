@@ -61,10 +61,10 @@ function clear_styles() {
 
 		define( 'TP_MEDIA_BROWSER', true );
 
-		$metadata_options = get_option( TP_METADATA_OPTIONS_KEY );
-		$upload_options = get_option( TP_UPLOAD_OPTIONS_KEY );
+		$metadata_options = get_option( TP_METADATA_OPTIONS_KEY, array() );
+		$upload_options = get_option( TP_UPLOAD_OPTIONS_KEY, TP_UPLOAD_FIELDS_DEFAULTS() );
 		$preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
-		$account = get_option( TP_ACCOUNT_OPTIONS_KEY );
+		$account = get_option( TP_ACCOUNT_OPTIONS_KEY );		
 
 		if ( strcmp( $account['mpx_account_id'], "" ) == 0 ) {
 			wp_die( 'MPX Account ID is not set, please configure the plugin before attempting to manage media' );

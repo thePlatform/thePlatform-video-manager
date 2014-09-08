@@ -33,8 +33,7 @@ class ThePlatform_Options {
 	 * An array of tabs representing the admin settings interface.
 	 */
 	private $plugin_settings_tabs = array();
-	private $tp_api;
-	private $preferences;
+	private $tp_api;	
 
 	function __construct() {
 		$tp_admin_cap = apply_filters( TP_ADMIN_CAP, TP_ADMIN_DEFAULT_CAP );
@@ -80,25 +79,18 @@ class ThePlatform_Options {
 		$this->preferences_options = get_option( TP_PREFERENCES_OPTIONS_KEY, array() );
 		$this->metadata_options = get_option( TP_METADATA_OPTIONS_KEY, array() );
 		$this->upload_options = get_option( TP_UPLOAD_OPTIONS_KEY, array() );
-
-		// // Initialize option defaults	
+	
+		// Initialize option defaults				
 		$this->account_options = array_merge( TP_ACCOUNT_OPTIONS_DEFAULTS(), $this->account_options );
+		$this->preferences_options = array_merge( TP_PREFERENCES_OPTIONS_DEFAULTS(), $this->preferences_options );			
 
-		$this->preferences_options = array_merge( TP_PREFERENCES_OPTIONS_DEFAULTS(), $this->preferences_options );
+		if ( !$this->upload_options ) {
+			update_option( TP_UPLOAD_OPTIONS_KEY, TP_UPLOAD_FIELDS_DEFAULTS() );
+		}
 
-		$this->metadata_options = array_merge( array(), $this->metadata_options );
-
-		$this->upload_options = array_merge( array(), $this->upload_options );
-
-		// Create options table entries in DB if none exist. Initialize with defaults
-		update_option( TP_ACCOUNT_OPTIONS_KEY, $this->account_options );
-		update_option( TP_PREFERENCES_OPTIONS_KEY, $this->preferences_options );
-		update_option( TP_METADATA_OPTIONS_KEY, $this->metadata_options );
-		update_option( TP_UPLOAD_OPTIONS_KEY, $this->upload_options );
-
-		//Get preferences from the database for sanity checks
-		$this->preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
-		$this->account = get_option ( TP_ACCOUNT_OPTIONS_KEY );
+		if ( !$this->metadata_options ) {
+			update_option( TP_METADATA_OPTIONS_KEY, array() );
+		}
 
 		$this->account_is_verified = $this->tp_api->internal_verify_account_settings();
 
@@ -133,7 +125,7 @@ class ThePlatform_Options {
 			return;
 		}
 
-		if ( empty ( $this->account['mpx_account_id'] ) ) {
+		if ( empty ( $this->account_options['mpx_account_id'] ) ) {
 			return;
 		}
 		
@@ -150,7 +142,7 @@ class ThePlatform_Options {
                 } else {
                 	$callback = 'field_' . $field['type'] . '_option';
                 }                                        
-                add_settings_field( $field['id'], $field['title'], array( $this, $callback ), $options_key, $section['id'], array( 'field' => $field, 'options' => $options ) );
+                add_settings_field( $field['id'], $field['title'], array( $this, $callback ), $options_key, $section['id'], array( 'field' => $field, 'options' => $options, 'key' => $options_key) );
             }
         }
 	}
@@ -191,11 +183,11 @@ class ThePlatform_Options {
 
 		$this->plugin_settings_tabs[TP_UPLOAD_OPTIONS_KEY] = 'Basic Metadata';
 
-		$upload_fields = TP_UPLOAD_FIELDS();
+		$upload_fields = TP_UPLOAD_FIELDS_DEFAULTS();
 
 		add_settings_section( 'section_upload_options', 'Basic Metadata Settings', array( $this, 'section_basic_metadata_desc' ), TP_UPLOAD_OPTIONS_KEY );
 
-		foreach ( $upload_fields as $field ) {
+		foreach ( $upload_fields as $field => $value) {
 			if ( !array_key_exists( $field, $this->upload_options ) ) {
 				$this->upload_options[$field] = 'write';
 			}		
@@ -247,7 +239,8 @@ class ThePlatform_Options {
 	function field_select_option( $args ) {        
 		$field = $args['field'];
 		$options = $args['options'];
-        $html = '<select id="' . esc_attr( $field['id'] ) . '" name="theplatform_preferences_options[' . esc_attr( $field['id'] ) . ']">';
+		$name = $args['key'] . '[' . $field['id'] . ']';
+        $html = '<select id="' . esc_attr( $field['id'] ) . '" name="' . esc_attr( $name ) . '">';
         foreach ($field['values'] as $key => $value) {
             $html .= '<option value="' . esc_attr( $value ) . '"' . selected( $options[ $field['id'] ], $value, false ) . '>' . esc_html( $key ) . '</option>';
         }           
@@ -258,7 +251,8 @@ class ThePlatform_Options {
     function field_boolean_option( $args ) {        
     	$field = $args['field'];
     	$options = $args['options'];
-        $html = '<select id="' . esc_attr( $field['id'] ) . '" name="theplatform_preferences_options[' . esc_attr( $field['id'] ) . ']">';
+    	$name = $args['key'] . '[' . $field['id'] . ']';
+        $html = '<select id="' . esc_attr( $field['id'] ) . '" name="' . esc_attr( $name ) . '">';
         $html .=    '<option value="true" ' . selected( $options[ $field['id'] ], 'true', false ) . '>True</option>';
         $html .=    '<option value="false" ' . selected( $options[ $field['id'] ], 'false', false ) . '>False</option>';       
         $html .= '</select>';
@@ -266,24 +260,26 @@ class ThePlatform_Options {
     }
 
     function field_string_option( $args ) {        
-    	$field = $args['field'];
+    	$field = $args['field'];    	
     	$options = $args['options'];
-        $html = '<input type="text" id="' . esc_attr( $field['id'] ) . '" name="theplatform_preferences_options[' . esc_attr( $field['id'] ) . ']" value="' . esc_attr( $options[ $field['id'] ] ) . '" />';
+    	$name = $args['key'] . '[' . $field['id'] . ']';
+        $html = '<input type="text" id="' . esc_attr( $field['id'] ) . '" name="' . esc_attr( $name ) . '" value="' . esc_attr( $options[ $field['id'] ] ) . '" />';
         echo $html;
     }
 
     function field_hidden_option( $args ) {        
     	$field = $args['field'];
     	$options = $args['options'];
-        $html = '<input disabled style="background-color: lightgray" id="' . esc_attr( $field['id'] ) . '" type="text" name="theplatform_preferences_options[' . esc_attr( $field['id'] ) . ']" value="' . esc_attr( $options[ $field['id'] ] ) . '" />';
+    	$name = $args['key'] . '[' . $field['id'] . ']';
+        $html = '<input disabled style="background-color: lightgray" id="' . esc_attr( $field['id'] ) . '" type="text" name="' . esc_attr( $name ) . '" value="' . esc_attr( $options[ $field['id'] ] ) . '" />';
         echo $html;
     }
 
     function field_password_option( $args ) {
     	$field = $args['field'];
     	$options = $args['options'];
-    	$html = '<input id="' . esc_attr( $field['id'] ) . '" type="password" name="theplatform_account_options[' . esc_attr( $field['id'] ) . ']" value="' . $options[ $field['id'] ] . '" autocomplete="off" />';
-
+    	$name = $args['key'] . '[' . $field['id'] . ']';
+    	$html = '<input id="' . esc_attr( $field['id'] ) . '" type="password" name="' . esc_attr( $name ) . '" value="' . $options[ $field['id'] ] . '" autocomplete="off" />';
     	if ( $field['id'] === 'mpx_password') {
     		$html .= '<span id="verify-account"><button id="verify-account-button" type="button" name="verify-account-button">Verify Account Settings</button><div id="verify-account-dashicon" class="dashicons"></div></span>';
     	}
@@ -293,10 +289,11 @@ class ThePlatform_Options {
     function field_default_publish_id_option( $args ) {        
     	$field = $args['field'];
     	$options = $args['options'];
-        $html = '<select id="' . esc_attr( $field['id'] ) . '" name="theplatform_preferences_options[' . esc_attr( $field['id'] ) . ']">';
+    	$name = $args['key'] . '[' . $field['id'] . ']';
+        $html = '<select id="' . esc_attr( $field['id'] ) . '" name="' . esc_attr( $name ) . '">';
         $html .= '<option value="tp_wp_none">Do not publish</option>';
 
-        if ( $this->account['mpx_account_id'] !== '' ) {
+        if ( $this->account_options['mpx_account_id'] !== '' ) {
             $profiles = $this->tp_api->get_publish_profiles();
             foreach ( $profiles as $profile ) {
                 $html .= '<option value="' . esc_attr( $profile['title'] ) . '"' . selected( $options[ $field['id'] ], $profile['title'], false ) . '>' . esc_html( $profile['title'] ) . '</option>';
@@ -309,7 +306,8 @@ class ThePlatform_Options {
     function field_user_id_customfield_option( $args ) {        
     	$field = $args['field'];
     	$options = $args['options'];
-        $html = '<select id="' . esc_attr( $field['id'] ) . '"" name="theplatform_preferences_options[' . esc_attr( $field['id'] ) . ']"/>';
+    	$name = $args['key'] . '[' . $field['id'] . ']';
+        $html = '<select id="' . esc_attr( $field['id'] ) . '"" name="' . esc_attr( $name ) . '"/>';
         $html .= '<option value="(None)" ' . selected( $options[ $field['id'] ], '(None)', false ) . '>(None)</option>';
         foreach ( $this->metadata_fields as $metadata ) {
             $fieldName = $metadata['namespacePrefix'] . '$' . $metadata['fieldName'];
@@ -322,8 +320,9 @@ class ThePlatform_Options {
     function field_mpx_server_id_option( $args ) {        
     	$field = $args['field'];
     	$options = $args['options'];
-        $html = '<select id="' . esc_attr( $field['id'] ) . '" name="theplatform_preferences_options[' . esc_attr( $field['id'] ) . ']">';
-        if ( $this->account['mpx_account_id'] !== '' ) {
+    	$name = $args['key'] . '[' . $field['id'] . ']';
+        $html = '<select id="' . esc_attr( $field['id'] ) . '" name="' . esc_attr( $name ) . '">';
+        if ( $this->account_options['mpx_account_id'] !== '' ) {
             $servers = $this->tp_api->get_servers();
             $html .= '<option value="DEFAULT_SERVER"' . selected( $options[ $field['id'] ], "DEFAULT_SERVER", false ) . '>Default Server</option>';
             foreach ( $servers as $server ) {
@@ -337,8 +336,9 @@ class ThePlatform_Options {
     function field_default_player_name_option( $args ) {        
     	$field = $args['field'];
     	$options = $args['options'];
-        $html = '<select id="' . esc_attr( $field['id'] ) . '" name="theplatform_preferences_options[' . esc_attr( $field['id'] ) . ']">';
-        if ( $this->account['mpx_account_id'] !== '' ) {
+    	$name = $args['key'] . '[' . $field['id'] . ']';
+        $html = '<select id="' . esc_attr( $field['id'] ) . '" name="' . esc_attr( $name ) . '">';
+        if ( $this->account_options['mpx_account_id'] !== '' ) {
             $players = $this->tp_api->get_players();
             foreach ( $players as $player ) {
                 $html .= '<option value="' . esc_attr( $player['id'] ) . '|' . esc_attr( $player['pid'] ) . '"' . selected( $options[ $field['id'] ], $player['id'], false ) . '>' . esc_html( $player['title'] ) . '</option>';
@@ -351,7 +351,8 @@ class ThePlatform_Options {
     function field_mpx_region_option( $args ) {
     	$field = $args['field'];
     	$options = $args['options'];
-    	$html = '<select id="' . esc_attr( $field['id'] ) . '" name="theplatform_account_options[' . esc_attr( $field['id'] ) . ']">';
+    	$name = $args['key'] . '[' . $field['id'] . ']';
+    	$html = '<select id="' . esc_attr( $field['id'] ) . '" name="' . esc_attr( $name ) . '">';
 		$regions = $this->regions;
 		foreach ( $regions as $region ) {
 			$html .= '<option value="' . esc_attr( $region ) . '|' . esc_attr( $region ) . '"' . selected( $options[ $field['id'] ], $region, false ) . '>' . esc_html( strtoupper( $region ) ) . '</option>';
@@ -367,7 +368,8 @@ class ThePlatform_Options {
     function field_mpx_account_id_option( $args ) {
     	$field = $args['field'];
     	$options = $args['options'];
-    	$html = '<select id="' . esc_attr( $field['id'] ) . '" name="theplatform_account_options[' . esc_attr( $field['id'] ) . ']">';
+    	$name = $args['key'] . '[' . $field['id'] . ']';
+    	$html = '<select id="' . esc_attr( $field['id'] ) . '" name="' . esc_attr( $name ) . '">';
 		if ( $this->account_is_verified ) {
 			$subaccounts = $this->tp_api->get_subaccounts();
 			foreach ( $subaccounts as $account ) {
@@ -376,7 +378,7 @@ class ThePlatform_Options {
 		}
 		$html .= '</select>';
 
-		if ( $this->account['mpx_account_id'] === '' ) {
+		if ( $this->account_options['mpx_account_id'] === '' ) {
 			$html .= '<span style="color:red; font-weight:bold"> Please pick the MPX account to manage with Wordpress</span>';
 		}
     	echo $html;
@@ -389,7 +391,7 @@ class ThePlatform_Options {
 		$field_id = $args['id'];
 		$fieldName = $args['namespacePrefix'] . '$' . $args['fieldName'];
 		
-		$user_id_field = ( $fieldName === $this->preferences['user_id_customfield'] ) ? 'true' : 'false';
+		$user_id_field = ( $fieldName === $this->preferences_options['user_id_customfield'] ) ? 'true' : 'false';
 		if ( $user_id_field === 'true' && $this->metadata_options[$field_id] == 'write') {
 			$this->metadata_options[$field_id] = 'hide';
 		}
@@ -439,9 +441,11 @@ class ThePlatform_Options {
 		<div class="wrap">
 		<?php $this->plugin_options_tabs(); ?>
 			<form method="POST" action="options.php" autocomplete="off">
-			<?php settings_fields( $tab ); ?>
-			<?php do_settings_sections( $tab ); ?>
-				<?php submit_button(); ?>
+			<?php 
+				settings_fields( $tab );
+				do_settings_sections( $tab ); 
+				submit_button(); 
+			?>
 			</form>
 		</div>
 		<?php

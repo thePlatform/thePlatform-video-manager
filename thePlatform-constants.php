@@ -54,21 +54,21 @@ function TP_PREFERENCES_OPTIONS_DEFAULTS() {
 					'filter_by_user_id' => 'false',
 					'autoplay' => 'true',
 					'rss_embed_type' => 'article',
-					'default_width' => $GLOBALS['content_width'],
-					'default_height' => ($GLOBALS['content_width'] / 16) * 9,
+					'default_width' => intval ( $GLOBALS['content_width'] ),
+					'default_height' => intval( ($GLOBALS['content_width'] / 16) * 9 ),
 					'player_embed_type' => 'embed'
 				);
 }
 
-function TP_UPLOAD_FIELDS() {
+function TP_UPLOAD_FIELDS_DEFAULTS() {
 	return array(
-					'title',
-					'description',
-					'categories',
-					'author',
-					'keywords',
-					'link',
-					'guid'
+					'title' => "write",
+					'description' => "write",
+					'categories' => "write",
+					'author' => "write",
+					'keywords' => "write",
+					'link' => "write",
+					'guid' => "read"
 				);
 }
 
