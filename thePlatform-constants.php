@@ -87,6 +87,43 @@ function TP_CUSTOM_FIELDS_TYPES() {
 				);
 }
 
+function TP_PREFERENCES_OPTIONS_FIELDS() {
+    return  array(               
+                array( 'id' => 'section_embed_options', 'title' => 'Embedding Preferences', 'callback' => 'section_embed_desc', 'fields' => array (             
+                        array( 'id' => 'default_player_name',   'title' => 'Default Player',        'type' => 'callback' ),
+                        array( 'id' => 'default_player_pid',    'title' => 'Default Player PID',    'type' => 'hidden' ),
+                        array( 'id' => 'embed_tag_type',        'title' => 'Embed Tag Type',        'type' => 'select', 'values' => array( 'IFrame' => 'iframe', 'Script' => 'script' ),  ),
+                        array( 'id' => 'player_embed_type',     'title' => 'Player Embed Type',     'type' => 'select', 'values' => array( 'Video Only' => 'true', 'Full Player' => 'false' ) ),
+                        array( 'id' => 'rss_embed_type',        'title' => 'RSS Embed Type',        'type' => 'select', 'values' => array( 'IFrame' => 'iframe', 'Script' => 'script', 'Article' => 'article' ) ),
+                        array( 'id' => 'autoplay',              'title' => 'Force Autoplay',        'type' => 'boolean' ),
+                        array( 'id' => 'default_width',         'title' => 'Default Player Width',  'type' => 'string' ),
+                        array( 'id' => 'default_height',        'title' => 'Default Player Height', 'type' => 'string' )
+                    )
+                ),
+                array( 'id' => 'section_preferences_options', 'title' => 'General Preferences', 'callback' => 'section_preferences_desc', 'fields' => array (
+                        array( 'id' => 'filter_by_user_id',     'title' => 'Filter Users Own Videos',       'type' => 'boolean' ),
+                        array( 'id' => 'user_id_customfield',   'title' => 'User ID Custom Field',          'type' => 'callback' ),
+                        array( 'id' => 'transform_user_id_to',  'title' => 'Show User ID as',               'type' => 'select',     'values' => array( 'Email' => 'email', 'Full Name' => 'full_name', 'Nickname' => 'nickname', 'Username' => 'username' ) ),
+                        array( 'id' => 'mpx_server_id',         'title' => 'MPX Upload Server',             'type' => 'callback' ),
+                        array( 'id' => 'default_publish_id',    'title' => 'Default Publishing Profile',    'type' => 'callback' ),
+                    )
+                )           
+            );  
+}
+
+function TP_ACCOUNT_OPTIONS_FIELDS() {
+    return  array(
+                array( 'id' => 'section_mpx_account_options', 'title' => 'MPX Account Options', 'callback' => 'section_mpx_account_desc', 'fields' => array (             
+                    array( 'id' => 'mpx_username',      'title' => 'MPX Username',      'type' => 'string' ),
+                    array( 'id' => 'mpx_password',      'title' => 'MPX Password',      'type' => 'password' ),
+                    array( 'id' => 'mpx_region',        'title' => 'MPX Region',        'type' => 'callback' ),
+                    array( 'id' => 'mpx_account_id',    'title' => 'MPX Account',       'type' => 'callback' ),
+                    array( 'id' => 'mpx_account_pid',   'title' => 'MPX Account PID',   'type' => 'hidden' )                    
+                    )
+                )    
+            );  
+}
+
 function TP_PLUGIN_VERSION() {
 	return array_combine( array( 'major', 'minor', 'patch' ), explode( '.', TP_PLUGIN_VERSION ) );	
 }
