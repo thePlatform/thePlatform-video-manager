@@ -320,7 +320,7 @@ class ThePlatform_API {
 			$args['filetype'] = "audio/mpeg";
 		}
 		
-
+		// Get the Format based on the file MIME type
 		$format = $this->get_format( $args['filetype'] );
 
 		if ( $format === "unknown" ) {
@@ -329,6 +329,9 @@ class ThePlatform_API {
 			$formatTitle = (string) $format->title;
 		}
 
+
+		// Get the upload url based on the server id
+		// If no server id is supplied, get the default server for the Format
 		$upload_server_id = $args['server_id'];
 
 		if ( $upload_server_id === 'DEFAULT_SERVER' ) {
@@ -345,14 +348,14 @@ class ThePlatform_API {
 			wp_send_json_error( $upload_server_base_url );
 		}
 		
+		// Create a placeholder media to store the new file in
 		$media = $this->create_media_placeholder( $args, $token );
 		$params = array(
 			'token' => $token,
-			'media_id' => $media['id'],
-			'guid' => $media['guid'],
-			'account_id' => $this->get_mpx_account_id(FALSE),
-			'server_id' => $upload_server_id,
-			'upload_base' => $upload_server_base_url,
+			'mediaId' => $media['id'],
+			'serverId' => $upload_server_id,			
+			'account' => $this->get_mpx_account_id(FALSE),		
+			'uploadUrl' => $upload_server_base_url,
 			'format' => $formatTitle,
 			'contentType' => (string) $format->defaultContentType			
 		);

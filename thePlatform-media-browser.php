@@ -19,9 +19,9 @@
 /*
  * Load scripts and styles 
  */
-add_action('wp_enqueue_scripts', 'clear_styles', 999);
-
-function clear_styles() {
+add_action('wp_enqueue_scripts', 'theplatform_media_clear_styles', 999);
+wp_enqueue_script( 'jquery-ui-dialog' );
+function theplatform_media_clear_styles() {
 	global $wp_styles; 
 	foreach( $wp_styles->queue as $handle ) {	
 		wp_dequeue_style( $handle );

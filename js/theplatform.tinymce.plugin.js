@@ -24,12 +24,10 @@ tinymce.PluginManager.add( 'theplatform', function( editor, url ) {
 			// Open window         
 
 			var iframeUrl = ajaxurl + "?action=theplatform_media&embed=true&_wpnonce=" + editor.settings.theplatform_media_nonce;
-			tinyMCE.activeEditor = editor;
+			tinyMCE.activeEditor = editor;			
 
-			var screenHeight = window.innerHeight
-
-			if ( screenHeight < 1200 )
-				height = screenHeight - 50;
+			if ( window.innerHeight < 1200 )
+				height = window.innerHeight - 50;
 			else
 				height = 1024;
 
