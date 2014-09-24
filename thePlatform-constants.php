@@ -56,7 +56,8 @@ function TP_PREFERENCES_OPTIONS_DEFAULTS() {
 					'rss_embed_type' => 'article',
 					'default_width' => intval ( $GLOBALS['content_width'] ),
 					'default_height' => intval( ($GLOBALS['content_width'] / 16) * 9 ),
-					'player_embed_type' => 'embed'
+					'player_embed_type' => 'embed',
+                    'embed_hook' => 'mediabutton'
 				);
 }
 
@@ -104,6 +105,7 @@ function TP_PREFERENCES_OPTIONS_FIELDS() {
                         array( 'id' => 'filter_by_user_id',     'title' => 'Filter Users Own Videos',       'type' => 'boolean' ),
                         array( 'id' => 'user_id_customfield',   'title' => 'User ID Custom Field',          'type' => 'callback' ),
                         array( 'id' => 'transform_user_id_to',  'title' => 'Show User ID as',               'type' => 'select',     'values' => array( 'Email' => 'email', 'Full Name' => 'full_name', 'Nickname' => 'nickname', 'Username' => 'username' ) ),
+                        array( 'id' => 'embed_hook',            'title' => 'Plugin Embed button type',      'type' => 'select',     'values' => array( 'Media Button' => 'mediabutton', 'Editor Button' => 'tinymce', 'Both' => 'both' ) ),
                         array( 'id' => 'mpx_server_id',         'title' => 'MPX Upload Server',             'type' => 'callback' ),
                         array( 'id' => 'default_publish_id',    'title' => 'Default Publishing Profile',    'type' => 'callback' ),
                     )

@@ -77,6 +77,8 @@ class ThePlatform_Plugin {
 			add_action( 'wp_ajax_get_categories', array( $this->tp_api, 'get_categories' ) );
 			add_action( 'wp_ajax_get_videos', array( $this->tp_api, 'get_videos' ) );
 			add_action( 'wp_ajax_set_thumbnail', array( $this, 'set_thumbnail_ajax' ) );
+			add_action( 'admin_init', array( $this, 'theplatform_buttonhooks' ) );
+			add_action( 'media_buttons', array( $this, 'theplatform_media_button' ), 999 );			
 		}
 		add_shortcode( 'theplatform', array( $this, 'shortcode' ) );
 	}
@@ -461,6 +463,68 @@ class ThePlatform_Plugin {
 		}
 	}
 
+	/**
+	 * TinyMCE filter hooks to add a new button
+	 */
+	function theplatform_buttonhooks() {
+		if ( !isset( $this->preferences ) ) {
+			$this->preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
+		}
+
+		$tp_embedder_cap = apply_filters( TP_EMBEDDER_CAP, TP_EMBEDDER_DEFAULT_CAP );
+		if ( current_user_can( $tp_embedder_cap ) && $this->preferences['embed_hook'] != 'mediabutton' ) {
+			add_filter( "mce_external_plugins", array( $this, "theplatform_register_tinymce_javascript" ) );
+			add_filter( 'mce_buttons', 			array( $this, 'theplatform_register_buttons' ) );
+			add_filter( 'tiny_mce_before_init', array( $this, 'theplatform_tinymce_settings' ) ) ;
+		}
+	}
+
+	/**
+	 * Register a new button in TinyMCE
+	 */
+	function theplatform_register_buttons( $buttons ) {
+		array_push( $buttons, "|", "theplatform" );
+		return $buttons;
+	}
+
+	/**
+	 * Load the TinyMCE plugin
+	 * @param  array $plugin_array Array of TinyMCE Plugins
+	 * @return array The array of TinyMCE plugins with our plugin added
+	 */
+	function theplatform_register_tinymce_javascript( $plugin_array ) {
+		$plugin_array['theplatform'] = plugins_url( '/js/theplatform.tinymce.plugin.js?matan', __file__ );
+		return $plugin_array;
+	}
+
+	/**
+	 * Add our nonce to tinymce so we can call our templates
+	 * @param  array $settings tinyMCE settings
+	 * @return array The array of tinyMCE settings with our value added
+	 */
+	function theplatform_tinymce_settings($settings)
+	{
+	    $settings['theplatform_media_nonce'] = wp_create_nonce( 'theplatform-ajax-nonce-theplatform_media' );
+
+	    return $settings;
+	}
+
+
+	function theplatform_media_button() {
+		if ( !isset( $this->preferences ) ) {
+			$this->preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
+		}
+
+		$tp_embedder_cap = apply_filters( TP_EMBEDDER_CAP, TP_EMBEDDER_DEFAULT_CAP );
+		if ( current_user_can( $tp_embedder_cap ) && $this->preferences['embed_hook'] != 'tinymce' ) {
+			$image_url = plugins_url('/images/embed_button.png', __FILE__);
+			wp_enqueue_script( 'jquery-ui-dialog' );
+			wp_enqueue_style( 'wp-jquery-ui-dialog' );
+			echo '<script type="text/javascript">function theplatform_dialog(){ var iframeUrl=ajaxurl+"?action=theplatform_media&embed=true&_wpnonce=' . esc_js( wp_create_nonce( 'theplatform-ajax-nonce-theplatform_media' ) ) . '";if(jQuery("#tp-embed-dialog").length==0){jQuery("body").append(\'<div id="tp-embed-dialog"></div>\')}if(window.innerHeight<1200){var height=window.innerHeight-50}else{var height=1024}jQuery("#tp-embed-dialog").html(\'<iframe src="\'+iframeUrl+\'" height="100%" width="100%">\').dialog({dialogClass:"wp-dialog",modal:true,resizable:true,minWidth:1024,width:1220,height:height}).css("overflow-y","hidden")};</script>';
+			echo '<a href="#" class="button" onclick="theplatform_dialog()"><img src="' . esc_url($image_url) . '" alt="thePlatform" style="vertical-align: text-top; height: 18px; width: 18px;">thePlatform</a>';
+		}
+	}
+
 }
 
 // Instantiate thePlatform plugin on WordPress init
@@ -468,37 +532,7 @@ add_action( 'init', array( 'ThePlatform_Plugin', 'init' ) );
 add_action( 'wp_ajax_verify_account', 'theplatform_verify_account_settings' );
 add_action( 'admin_init', 'theplatform_register_plugin_settings' );
 add_action( 'admin_init', 'theplatform_check_plugin_update');
-add_action( 'init', 'theplatform_buttonhooks' );
 
-/**
- * TinyMCE filter hooks to add a new button
- */
-function theplatform_buttonhooks() {
-	$tp_embedder_cap = apply_filters( TP_EMBEDDER_CAP, TP_EMBEDDER_DEFAULT_CAP );
-	if ( current_user_can( $tp_embedder_cap ) ) {
-		add_filter( "mce_external_plugins", "theplatform_register_tinymce_javascript" );
-		add_filter( 'mce_buttons', 'theplatform_register_buttons' );
-		add_filter('tiny_mce_before_init','theplatform_tinymce_settings');
-	}
-}
-
-/**
- * Register a new button in TinyMCE
- */
-function theplatform_register_buttons( $buttons ) {
-	array_push( $buttons, "|", "theplatform" );
-	return $buttons;
-}
-
-/**
- * Load the TinyMCE plugin
- * @param  array $plugin_array Array of TinyMCE Plugins
- * @return array The array of TinyMCE plugins with our plugin added
- */
-function theplatform_register_tinymce_javascript( $plugin_array ) {
-	$plugin_array['theplatform'] = plugins_url( '/js/theplatform.tinymce.plugin.js?matan', __file__ );
-	return $plugin_array;
-}
 
 /**
  * Registers initial plugin settings during initalization
@@ -508,18 +542,6 @@ function theplatform_register_plugin_settings() {
 	register_setting( TP_PREFERENCES_OPTIONS_KEY, TP_PREFERENCES_OPTIONS_KEY, 'theplatform_preferences_options_validate' );
 	register_setting( TP_METADATA_OPTIONS_KEY, TP_METADATA_OPTIONS_KEY, 'theplatform_dropdown_options_validate' );
 	register_setting( TP_UPLOAD_OPTIONS_KEY, TP_UPLOAD_OPTIONS_KEY, 'theplatform_dropdown_options_validate' );
-}
-
-/**
- * Add our nonce to tinymce so we can call our templates
- * @param  array $settings tinyMCE settings
- * @return array The array of tinyMCE settings with our value added
- */
-function theplatform_tinymce_settings($settings)
-{
-    $settings['theplatform_media_nonce'] = wp_create_nonce( 'theplatform-ajax-nonce-theplatform_media' );
-
-    return $settings;
 }
 
 /**

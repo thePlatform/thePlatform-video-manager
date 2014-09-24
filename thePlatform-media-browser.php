@@ -19,8 +19,7 @@
 /*
  * Load scripts and styles 
  */
-add_action('wp_enqueue_scripts', 'theplatform_media_clear_styles', 999);
-wp_enqueue_script( 'jquery-ui-dialog' );
+add_action('wp_enqueue_scripts', 'theplatform_media_clear_styles', 1000);
 function theplatform_media_clear_styles() {
 	global $wp_styles; 
 	foreach( $wp_styles->queue as $handle ) {	
@@ -306,9 +305,11 @@ function theplatform_media_clear_styles() {
 		if ( !$IS_EMBED && current_user_can( $tp_editor_cap ) ) {
 			?>
 			<div id="tp-edit-dialog" class="tp" style="display: none; padding-left:10px;">
-				<h1> Edit Media </h1><div id="media-mpx-upload-form" class="tp">
+				<div id="media-mpx-upload-form" class="tp">
 					<?php require_once( dirname( __FILE__ ) . '/thePlatform-upload.php' ); ?>
 				</div>
 			<?php } ?>
+
+		<?php wp_footer(); ?>
     </body>
 </html>

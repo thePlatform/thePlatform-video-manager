@@ -83,13 +83,16 @@ jQuery( document ).ready( function() {
 	} );
 	
 	jQuery( '#btn-edit' ).click( function() {
-		jQuery( "#tp-edit-dialog" ).dialog( {
-			dialogClass: "wp-dialog",
+		jQuery( "#tp-edit-dialog" ).dialog( {			
 			modal: true,
+			title: 'Edit Media',
 			resizable: true,
 			minWidth: 800,
 			width: 1024,
-			position: [ 'center', 20 ]
+			position: [ 'center', 20 ],
+			open: function() {
+				jQuery('.ui-dialog-titlebar-close').addClass('ui-button');
+			}
 		} ).css( "overflow", "hidden" );
 		return false;
 	} );

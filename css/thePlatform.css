@@ -226,3 +226,8 @@ header {
     padding-left: 10px;
     padding-bottom: 5px;
 }
+
+#theplatform_edit_button {
+    left: 15px;
+    position: relative;
+}
