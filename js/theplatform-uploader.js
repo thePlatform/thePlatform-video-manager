@@ -36,6 +36,8 @@ TheplatformUploader = ( function() {
 		requestUrl += '&_serverId=' + encodeURIComponent ( me._serverId );
 		requestUrl += "&callback=?"
 		
+		me.message( "Starting Upload of " + me._filePath + 'to ' + me.uploadUrl, true);
+			
 		jQuery.ajax( {
 			url: requestUrl,			
 			type: "PUT",			
@@ -43,11 +45,11 @@ TheplatformUploader = ( function() {
 				withCredentials: true
 			},
 			success: function( response ) {			
-				me.message_nag( "Waiting for READY status from " + me.uploadUrl + "." );
+				me.message( "Waiting for READY status from " + me.uploadUrl + "." );
 				me.waitForReady();				
 			},
 			error: function( result ) {
-				me.error_nag( "Call to startUpload failed. Please try again later.", true );
+				me.error( "Call to startUpload failed. Please try again later." );
 			}
 		} );
 	};
@@ -84,8 +86,9 @@ TheplatformUploader = ( function() {
 
 						me.frags_uploaded = 0;
 						me.num_fragments = frags.length;
+						me.progressIncrements = frags.length/100;
 
-						me.message_nag( "Beginning upload of " + frags.length + " fragments. Please do not close this window." );
+						me.message( "Beginning upload of " + frags.length + " fragments. Please do not close this window." );
 
 						me.uploadFragments( frags, 0 );
 
@@ -97,7 +100,7 @@ TheplatformUploader = ( function() {
 				}			
 			},
 			error: function( response ) {
-				me.error_nag( "An error occurred while waiting for upload server READY status: " + response, true );
+				me.error( "An error occurred while waiting for upload server READY status: " + response );
 			}
 		} );
 	};
@@ -111,7 +114,6 @@ TheplatformUploader = ( function() {
 	TheplatformUploader.prototype.uploadFragments = function( fragments, index ) {
 		var me = this;
 		var fragSize = 1024 * 1024 * 5;
-
 
 		if ( this.failed ) {
 			return;
@@ -137,11 +139,18 @@ TheplatformUploader = ( function() {
 			},
 			success: function( response ) {
 				me.frags_uploaded++;
+				if ( me.frags_uploaded == 1 ) {
+					NProgress.settings.trickle = true;
+					NProgress.set(me.progressIncrements);
+					NProgress.start();
+				} 
 				if ( me.num_fragments == me.frags_uploaded ) {
-					me.message_nag( "Uploaded last fragment. Please do not close this window." );
+					me.message( "Uploaded last fragment. Please do not close this window." );
 					me.finish();
 				} else {
-					me.message_nag( "Finished uploading fragment " + me.frags_uploaded + " of " + me.num_fragments + ". Please do not close this window." );
+					me.message( 'Uploading File...')
+					NProgress.inc(me.progressIncrements);
+					me.message( "Finished uploading fragment " + me.frags_uploaded + " of " + me.num_fragments + ". Please do not close this window." );
 					index++;
 					me.attempts = 0;
 					me.uploadFragments( fragments, index );
@@ -150,19 +159,19 @@ TheplatformUploader = ( function() {
 			error: function( response, type, msg ) {
 				me.attempts++;
 				if ( index == 0 ) {
-					me.message_nag( "Unable to start upload, server is not ready." );
+					me.message( "Unable to start upload, server is not ready." );
 					me.startUpload();
 					return;
 				}
 				var actualIndex = parseInt( index ) + 1;
-				me.error_nag( "Unable to upload fragment " + actualIndex + " of " + me.num_fragments + ". Retrying count is " + me.attempts + " of 5. Retrying in 5 seconds..", true );
+				me.error( "Unable to upload fragment " + actualIndex + " of " + me.num_fragments + ". Retrying count is " + me.attempts + " of 5. Retrying in 5 seconds.." );
 
 				if ( me.attempts < 5 ) {
 					setTimeout( function() {
 						me.uploadFragments( fragments, index );
 					}, 1000 );
 				} else {
-					me.error_nag( "Uploading fragment " + actualIndex + " of " + me.num_fragments + " failed on the client side. Cancelling... Retry upload later.", true );
+					me.error( "Uploading fragment " + actualIndex + " of " + me.num_fragments + " failed on the client side. Cancelling... Retry upload later." );
 
 					window.setTimeout( function() {
 						me.cancel();
@@ -241,17 +250,17 @@ TheplatformUploader = ( function() {
 						me.file_id = fileID;
 
 						if ( me.profile != "tp_wp_none" ) {
-							me.message_nag( "Waiting for MPX to publish media." );
+							me.message( "Waiting for MPX to publish media." );
 							me.publishMedia();
 						}
 						else {
-							me.message_nag( "Upload completed, you can now safely close this window." );
+							me.message( "Upload completed, you can now safely close this window." );
 							window.setTimeout( 'window.close()', 5000 );
 						}
 					} else if ( state === "Error" ) {
-						me.error_nag( data.entries[0].exception );
+						me.error( data.entries[0].exception );
 					} else {
-						me.message_nag( state );
+						me.message( state );
 						setTimeout(function() { me.waitForComplete(); }, 5000)
 					}
 				} else {
@@ -259,7 +268,7 @@ TheplatformUploader = ( function() {
 				}
 			},
 			error: function( response ) {
-				me.error_nag( "An error occurred while waiting for upload server COMPLETE status: " + response, true );
+				me.error( "An error occurred while waiting for upload server COMPLETE status: " + response );
 			}
 		} );
 	};
@@ -280,7 +289,7 @@ TheplatformUploader = ( function() {
 
 		this.publishing = true;
 
-		me.message_nag( "Publishing media..." );
+		me.message( "Publishing media..." );
 
 		jQuery.ajax( {
 			url: theplatform_uploader_local.ajaxurl,
@@ -288,10 +297,10 @@ TheplatformUploader = ( function() {
 			type: "POST",
 			success: function( response ) {
 				if ( response.success ) {
-					me.message_nag( "Media is being published. It may take several minutes until the media is available. This window will now close.", true );
+					me.message( "Media is being published. It may take several minutes until the media is available. This window will now close.", true );
 					window.setTimeout( 'window.close()', 10000 );
 				} else {
-					me.message_nag( "Publish for the uploaded Media was requested but timed out, this is normal but your Media may or may not have published.", true );
+					me.message( "Publish for the uploaded Media was requested but timed out, this is normal but your Media may or may not have published.", true );
 					window.setTimeout( 'window.close()', 10000 );
 				}
 			}
@@ -358,7 +367,7 @@ TheplatformUploader = ( function() {
 			return jQuery.parseJSON( jsonString );
 		}
 		catch ( ex ) {
-			me.error_nag( jsonString );
+			me.error( jsonString );
 		}
 	};
 
@@ -378,35 +387,32 @@ TheplatformUploader = ( function() {
 	};
 
 	/**
-	 @function message_nag Display an informative message to the user
+	 @function message Display an informative message to the user
 	 @param {String} msg - The message to display
 	 @param {Boolean} fade - Whether or not to fade the message div after some delay
 	 */
-	TheplatformUploader.prototype.message_nag = function( msg, fade, isError ) {
-		console.log(msg);
-		fade = typeof fade !== 'undefined' ? fade : false;
-		var messageType = "updated";
-		if ( isError )
-			messageType = "error";
-				
-		jQuery( '.lead' ).fadeIn( 500 );
+	TheplatformUploader.prototype.message = function( msg, userFacing, isError ) {
+		console.log(msg);	
+		
+		if ( !userFacing ) return;
+		jQuery( '.lead' ).removeClass('error');
+
+		if ( isError == true) {
+			jQuery( '.lead' ).addClass('error');
+		}
+
 		jQuery( '.lead' ).animate( { 'opacity': 0 }, 500, function() {
 			jQuery( this ).html( msg );
 		} ).animate( { 'opacity': 1 }, 500 );
-		
-
-		if ( fade == true ) {
-			jQuery( '.lead' ).delay( 6000 ).fadeOut( 10000 );
-		}
 	};
 
 	/**
-	 @function error_nag Display an error message to the user
+	 @function error Display an error message to the user
 	 @param {String} msg - The message to display
 	 @param {Boolean} fade - Whether or not to fade the message div after some delay
 	 */
-	TheplatformUploader.prototype.error_nag = function( msg, fade ) {
-		this.message_nag( msg, fade, true );
+	TheplatformUploader.prototype.error = function( msg ) {
+		this.message( msg, true, true );
 	};
 
 	/**
@@ -429,7 +435,7 @@ TheplatformUploader = ( function() {
 
 		NProgress.configure({
 		    template: splashHtml,
-		    trickle: false,
+		    trickle: false,		    
 		    minimum: 0
 		});
 
@@ -454,10 +460,10 @@ TheplatformUploader = ( function() {
 			custom_fields: custom_fields,
 			profile: profile
 		};
+		
+		me.message( "Creating Placeholder media" );				
 
-		console.log('making call')
-		jQuery.post( theplatform_uploader_local.ajaxurl, data, function( response ) {
-			console.log('ajax here')
+		jQuery.post( theplatform_uploader_local.ajaxurl, data, function( response ) {			
 			if ( response.success ) {
 				var data = response.data;
 				
@@ -470,10 +476,10 @@ TheplatformUploader = ( function() {
 				me.format = data.format;
 				me.contentType = data.contentType;
 				
-				me.message_nag( "Server " + me.uploadUrl + " ready for upload of " + file.name + " [" + me.format + "]." );				
+				me.message( "Placeholder media created with id: " + me._mediaId );								
 				me.startUpload();
 			} else {
-				me.error_nag( "Unable to upload media asset at this time. Please try again later." + response.data, true );
+				me.error( "Unable to upload media asset at this time. Please try again later." + response.data );
 			}
 		});
 	};
