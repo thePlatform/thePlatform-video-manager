@@ -87,16 +87,16 @@ class ThePlatform_Plugin {
 	 * Registers javascripts and css used throughout the plugin	 
 	 */
 	function register_scripts() {
-		wp_register_script( 'pdk', "//pdk.theplatform.com/pdk/tpPdk.js" );
-		wp_register_script( 'holder', plugins_url( '/js/holder.js', __FILE__ ) );
-		wp_register_script( 'handlebars', plugins_url( '/js/handlebars-v1.3.0.js', __FILE__ ) );
-		wp_register_script( 'bootstrap_js', plugins_url( '/js/bootstrap.min.js', __FILE__ ), array( 'jquery' ) );
-		wp_register_script( 'theplatform_js', plugins_url( '/js/theplatform.js', __FILE__ ), array( 'jquery' ) );
-		wp_register_script( 'infiniscroll_js', plugins_url( '/js/jquery.infinitescroll.min.js', __FILE__ ), array( 'jquery' ) );
-		wp_register_script( 'mpxhelper_js', plugins_url( '/js/mpxHelper.js', __FILE__ ), array( 'jquery' ) );
-		wp_register_script( 'theplatform_uploader_js', plugins_url( '/js/theplatform-uploader.js', __FILE__ ), array( 'jquery', 'theplatform_js' ) );
-		wp_register_script( 'mediaview_js', plugins_url( '/js/mediaview.js', __FILE__ ), array( 'jquery', 'jquery-ui-dialog', 'handlebars', 'holder', 'mpxhelper_js', 'theplatform_js', 'pdk', 'infiniscroll_js', 'bootstrap_js' ) );
-		wp_register_script( 'field_views', plugins_url( '/js/fieldViews.js', __FILE__ ), array( 'jquery' ) );
+		wp_register_script( 'tp_pdk_js', "//pdk.theplatform.com/pdk/tpPdk.js" );
+		wp_register_script( 'tp_holder_js', plugins_url( '/js/holder.js', __FILE__ ) );
+		wp_register_script( 'tp_handlebars_js', plugins_url( '/js/handlebars-v1.3.0.js', __FILE__ ) );
+		wp_register_script( 'tp_bootstrap_js', plugins_url( '/js/bootstrap.min.js', __FILE__ ), array( 'jquery' ) );
+		wp_register_script( 'tp_theplatform_js', plugins_url( '/js/theplatform.js', __FILE__ ), array( 'jquery' ) );
+		wp_register_script( 'tp_infiniscroll_js', plugins_url( '/js/jquery.infinitescroll.min.js', __FILE__ ), array( 'jquery' ) );
+		wp_register_script( 'tp_mpxhelper_js', plugins_url( '/js/mpxHelper.js', __FILE__ ), array( 'jquery' ) );
+		wp_register_script( 'tp_uploader_js', plugins_url( '/js/theplatform-uploader.js', __FILE__ ), array( 'jquery', 'tp_theplatform_js' ) );
+		wp_register_script( 'tp_mediaview_js', plugins_url( '/js/mediaview.js', __FILE__ ), array( 'jquery', 'jquery-ui-dialog', 'tp_handlebars_js', 'tp_holder_js', 'tp_mpxhelper_js', 'tp_theplatform_js', 'tp_pdk_js', 'tp_infiniscroll_js', 'tp_bootstrap_js' ) );
+		wp_register_script( 'tp_field_views_js', plugins_url( '/js/fieldViews.js', __FILE__ ), array( 'jquery' ) );
 		wp_register_script( 'tp_nprogress_js', plugins_url( '/js/nprogress.js', __FILE__ ) );
 
 		wp_localize_script( 'theplatform_js', 'theplatform_local', array(
@@ -110,7 +110,7 @@ class ThePlatform_Plugin {
 			)
 		) );		
 
-		wp_localize_script( 'theplatform_uploader_js', 'theplatform_uploader_local', array(
+		wp_localize_script( 'tp_uploader_js', 'theplatform_uploader_local', array(
 			'ajaxurl' => admin_url( 'admin-ajax.php' ),			
 			'tp_nonce' => array( 				
 				'initialize_media_upload' => wp_create_nonce( 'theplatform-ajax-nonce-initialize_media_upload' ),
@@ -121,7 +121,7 @@ class ThePlatform_Plugin {
 			)
 		) );	
 
-		wp_localize_script( 'mpxhelper_js', 'mpxhelper_local', array(
+		wp_localize_script( 'tp_mpxhelper_js', 'mpxhelper_local', array(
 			'ajaxurl' => admin_url( 'admin-ajax.php' ),			
 			'tp_nonce' => array( 				
 				'get_videos' => wp_create_nonce( 'theplatform-ajax-nonce-get_videos' ),
@@ -129,16 +129,16 @@ class ThePlatform_Plugin {
 			)
 		) );	
 
-		wp_localize_script( 'mediaview_js', 'mediaview_local', array(
+		wp_localize_script( 'tp_mediaview_js', 'mediaview_local', array(
 			'ajaxurl' => admin_url( 'admin-ajax.php' ),			
 			'tp_nonce' => array( 				
 				'set_thumbnail' => wp_create_nonce( 'theplatform-ajax-nonce-set_thumbnail' )
 			)
 		) );		
 
-		wp_register_style( 'theplatform_css', plugins_url( '/css/thePlatform.css', __FILE__ ) );
-		wp_register_style( 'bootstrap_tp_css', plugins_url( '/css/bootstrap_tp.min.css', __FILE__ ) );
-		wp_register_style( 'field_views', plugins_url( '/css/fieldViews.css', __FILE__ ) );
+		wp_register_style( 'tp_theplatform_css', plugins_url( '/css/thePlatform.css', __FILE__ ) );
+		wp_register_style( 'tp_bootstrap_css', plugins_url( '/css/bootstrap_tp.min.css', __FILE__ ) );
+		wp_register_style( 'tp_field_views_css', plugins_url( '/css/fieldViews.css', __FILE__ ) );
 		wp_register_style( 'tp_nprogress_css', plugins_url( '/css/nprogress.css', __FILE__ ) );
 	}
 

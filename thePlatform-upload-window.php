@@ -20,18 +20,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /*
  * Load scripts and styles 
  */
-add_action('wp_enqueue_scripts', 'theplatform_media_clear_styles', 1000);
-function theplatform_media_clear_styles() {
+add_action('wp_enqueue_scripts', 'theplatform_upload_clear_styles', 1000);
+function theplatform_upload_clear_styles() {
     global $wp_styles; 
     foreach( $wp_styles->queue as $handle ) {   
         wp_dequeue_style( $handle );
     }    
-    wp_enqueue_script( 'theplatform_uploader_js' );
+    wp_enqueue_script( 'tp_uploader_js' );
     wp_enqueue_script( 'tp_nprogress_js' );
     wp_enqueue_style( 'tp_nprogress_css' );
-    wp_enqueue_style( 'bootstrap_tp_css' );
-    wp_enqueue_style( 'theplatform_css' );
-    wp_enqueue_style( 'wp-admin' );
+    wp_enqueue_style( 'tp_bootstrap_css' );
+    wp_enqueue_style( 'tp_theplatform_css' );    
 }
 	
 ?>

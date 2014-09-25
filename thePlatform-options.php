@@ -58,14 +58,13 @@ class ThePlatform_Options {
 	/**
 	 * Enqueue our javascript file
 	 */
-	function enqueue_scripts() {
-		wp_enqueue_script( 'jquery' );
-		wp_enqueue_script( 'theplatform_js' );
-		wp_enqueue_script( 'field_views' );
+	function enqueue_scripts() {		
+		wp_enqueue_script( 'tp_theplatform_js' );
+		wp_enqueue_script( 'tp_field_views_js' );
 		wp_enqueue_script( 'jquery-ui-sortable' );
 		wp_enqueue_style( 'dashicons' );
-        wp_enqueue_style( 'theplatform_css' );
-		wp_enqueue_style( 'field_views' );
+        wp_enqueue_style( 'tp_theplatform_css' );
+		wp_enqueue_style( 'tp_field_views_css' );
 	}
 
 	/**

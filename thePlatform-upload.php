@@ -49,8 +49,8 @@ $structureDesc = array(
 );
 
 if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
-	wp_enqueue_style( 'bootstrap_tp_css' );
-	wp_enqueue_script( 'theplatform_js' );
+	wp_enqueue_style( 'tp_bootstrap_css' );
+	wp_enqueue_script( 'tp_theplatform_js' );
 
 	$tp_uploader_cap = apply_filters( TP_UPLOADER_CAP, TP_UPLOADER_DEFAULT_CAP );
 
