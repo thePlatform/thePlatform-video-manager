@@ -57,43 +57,6 @@
 	} );
 } )( jQuery );
 
-
-/**
- @function message_nag Display an informative message to the user
- @param {String} msg - The message to display
- @param {Boolean} fade - Whether or not to fade the message div after some delay
- */
-var message_nag = function( msg, fade, isError ) {
-	fade = typeof fade !== 'undefined' ? fade : false;
-	var messageType = "updated";
-	if ( isError )
-		messageType = "error";
-
-	if ( jQuery( '#message_nag' ).length == 0 ) {
-		jQuery( '.wrap > h2' ).parent().prev().after( '<div id="message_nag" class="' + messageType + '"><p id="message_nag_text">' + msg + '</p></div>' ).fadeIn( 1000 );
-	} else {
-		jQuery( '#message_nag' ).removeClass();
-		jQuery( '#message_nag' ).addClass( messageType );
-		jQuery( '#message_nag' ).fadeIn( 500 );
-		jQuery( '#message_nag_text' ).animate( { 'opacity': 0 }, 500, function() {
-			jQuery( this ).html( msg );
-		} ).animate( { 'opacity': 1 }, 500 );
-	}
-
-	if ( fade == true ) {
-		jQuery( '#message_nag' ).delay( 6000 ).fadeOut( 10000 );
-	}
-};
-
-/**
- @function error_nag Display an error message to the user
- @param {String} msg - The message to display
- @param {Boolean} fade - Whether or not to fade the message div after some delay
- */
-var error_nag = function( msg, fade ) {
-	message_nag( msg, fade, true );
-};
-
 /**
  * Validate Media data is valid before submitting upload/edit
  * @param  {Object} event click event
@@ -407,7 +370,7 @@ jQuery( document ).ready( function() {
 		var profile = jQuery( '.upload_profile' );
 		var server = jQuery( '.server_id' );
 
-		var upload_window = window.open( theplatform_local.ajaxurl + '?action=theplatform_upload&_wpnonce=' + theplatform_local.tp_nonce['theplatform_upload'], '_blank', 'menubar=no,location=no,resizable=yes,scrollbars=no,status=no,width=700,height=150' )
+		var upload_window = window.open( theplatform_local.ajaxurl + '?action=theplatform_upload&_wpnonce=' + theplatform_local.tp_nonce['theplatform_upload'], '_blank', 'menubar=no,location=no,resizable=no,scrollbars=no,status=no,width=700,height=180' )
 
 		upload_window.uploaderData = {
 			file: file,

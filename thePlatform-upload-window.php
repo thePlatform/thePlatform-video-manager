@@ -16,10 +16,24 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. -->
 
 <?php
-	wp_enqueue_script( 'theplatform_uploader_js' );
-	wp_enqueue_style( 'bootstrap_tp_css' );
-	wp_enqueue_style( 'theplatform_css' );
-	wp_enqueue_style( 'wp-admin' );
+
+/*
+ * Load scripts and styles 
+ */
+add_action('wp_enqueue_scripts', 'theplatform_media_clear_styles', 1000);
+function theplatform_media_clear_styles() {
+    global $wp_styles; 
+    foreach( $wp_styles->queue as $handle ) {   
+        wp_dequeue_style( $handle );
+    }    
+    wp_enqueue_script( 'theplatform_uploader_js' );
+    wp_enqueue_script( 'tp_nprogress_js' );
+    wp_enqueue_style( 'tp_nprogress_css' );
+    wp_enqueue_style( 'bootstrap_tp_css' );
+    wp_enqueue_style( 'theplatform_css' );
+    wp_enqueue_style( 'wp-admin' );
+}
+	
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -31,20 +45,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		<?php wp_head(); ?>		
     </head>
 
-    <body>
-		<div class="tp">			
-			<div id="message_nag" class="updated"><p id="message_nag_text">Initializing video upload</p></div>
-		</div>
-
-		<!-- <div class="progress progress-striped active">
-		  <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
-			<span class="sr-only"></span>
-		  </div>
-		</div> -->
-
+    <body class="tp">			    
+    <?php wp_footer(); ?> 
     </body>
-    <script type="text/javascript">
-		message_nag( "Preparing for upload.." );
+    <script type="text/javascript">		
 		var theplatformUploader = new TheplatformUploader( uploaderData.file, uploaderData.params, uploaderData.custom_params, uploaderData.profile, uploaderData.server );
     </script>
 </html>

@@ -152,9 +152,10 @@ class ThePlatform_API {
 	/**
 	 * Convert a MIME type to an MPX-compliant format identifier
 	 * @param string $mime A MIME-type string
+	 * @param string extension The file extension for fallback
 	 * @return string MPX-compliant format string
 	 */
-	function get_format( $mime ) {
+	function get_format( $mime, $extension ) {
 		$response = ThePlatform_API_HTTP::get( TP_API_FORMATS_XML_URL, null, true );
 		
 		if ( !defined( 'WPCOM_IS_VIP_ENV' )  ) {			
@@ -168,12 +169,29 @@ class ThePlatform_API {
 		foreach ( $formats->format as $format ) {
 			foreach ( $format->mimeTypes->mimeType as $mimetype ) {
 				if ( $mimetype == $mime ) {
-					return $format;
+					return array ( 
+						'title' => (string) $format->title,
+						'contentType' => (string) $format->defaultContentType
+					);
 				}
 			}
 		}
 
-		return 'Unknown';
+		foreach ( $formats->format as $format ) {
+			foreach ( $format->extensions->extension as $ext ) {
+				if ( $extension == $ext ) {
+					return array ( 
+						'title' => (string) $format->title,
+						'contentType' => (string) $format->defaultContentType
+					);
+				}
+			}
+		}
+
+		return array ( 
+			'title' => 'Unknown',
+			'contentType' => 'unknown'
+		);
 	}
 
 	/**
@@ -319,23 +337,25 @@ class ThePlatform_API {
 		if ( $args['filetype'] === "audio/mp3" ) {
 			$args['filetype'] = "audio/mpeg";
 		}
+
+		// Get the file extension as a fallback for format MIME
+		$extensionIndex = strrpos($args['filename'], '.');
+
+		if ( $extensionIndex !== false ) {
+			$extension = strtolower( substr( $args['filename'], $extensionIndex + 1 ) );			
+		} else {
+			$extension = 'unk';
+		}		
 		
 		// Get the Format based on the file MIME type
-		$format = $this->get_format( $args['filetype'] );
-
-		if ( $format === "unknown" ) {
-			$formatTitle = $format;
-		} else {
-			$formatTitle = (string) $format->title;
-		}
-
+		$format = $this->get_format( $args['filetype'], $extension );			
 
 		// Get the upload url based on the server id
 		// If no server id is supplied, get the default server for the Format
 		$upload_server_id = $args['server_id'];
 
 		if ( $upload_server_id === 'DEFAULT_SERVER' ) {
-			$upload_server_id = $this->get_default_upload_server( $formatTitle );
+			$upload_server_id = $this->get_default_upload_server( $format['title'] );
 		}				
 		
 		if ( FALSE === $upload_server_id ) {
@@ -348,6 +368,7 @@ class ThePlatform_API {
 			wp_send_json_error( $upload_server_base_url );
 		}
 		
+
 		// Create a placeholder media to store the new file in
 		$media = $this->create_media_placeholder( $args, $token );
 		$params = array(
@@ -356,8 +377,8 @@ class ThePlatform_API {
 			'serverId' => $upload_server_id,			
 			'account' => $this->get_mpx_account_id(FALSE),		
 			'uploadUrl' => $upload_server_base_url,
-			'format' => $formatTitle,
-			'contentType' => (string) $format->defaultContentType			
+			'format' => $format['title'],
+			'contentType' => $format['contentType']
 		);
 		
 		wp_send_json_success( $params );		
