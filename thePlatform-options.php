@@ -64,6 +64,7 @@ class ThePlatform_Options {
 		wp_enqueue_script( 'field_views' );
 		wp_enqueue_script( 'jquery-ui-sortable' );
 		wp_enqueue_style( 'dashicons' );
+        wp_enqueue_style( 'theplatform_css' );
 		wp_enqueue_style( 'field_views' );
 	}
 
@@ -240,7 +241,7 @@ class ThePlatform_Options {
 		$field = $args['field'];
 		$options = $args['options'];
 		$name = $args['key'] . '[' . $field['id'] . ']';
-        $html = '<select id="' . esc_attr( $field['id'] ) . '" name="' . esc_attr( $name ) . '">';
+        $html = '<select class="tpOption" id="' . esc_attr( $field['id'] ) . '" name="' . esc_attr( $name ) . '">';
         foreach ($field['values'] as $key => $value) {
             $html .= '<option value="' . esc_attr( $value ) . '"' . selected( $options[ $field['id'] ], $value, false ) . '>' . esc_html( $key ) . '</option>';
         }           
@@ -252,7 +253,7 @@ class ThePlatform_Options {
     	$field = $args['field'];
     	$options = $args['options'];
     	$name = $args['key'] . '[' . $field['id'] . ']';
-        $html = '<select id="' . esc_attr( $field['id'] ) . '" name="' . esc_attr( $name ) . '">';
+        $html = '<select class="tpOption" id="' . esc_attr( $field['id'] ) . '" name="' . esc_attr( $name ) . '">';
         $html .=    '<option value="true" ' . selected( $options[ $field['id'] ], 'true', false ) . '>True</option>';
         $html .=    '<option value="false" ' . selected( $options[ $field['id'] ], 'false', false ) . '>False</option>';       
         $html .= '</select>';
@@ -263,7 +264,7 @@ class ThePlatform_Options {
     	$field = $args['field'];    	
     	$options = $args['options'];
     	$name = $args['key'] . '[' . $field['id'] . ']';
-        $html = '<input type="text" id="' . esc_attr( $field['id'] ) . '" name="' . esc_attr( $name ) . '" value="' . esc_attr( $options[ $field['id'] ] ) . '" />';
+        $html = '<input class="tpOption" type="text" id="' . esc_attr( $field['id'] ) . '" name="' . esc_attr( $name ) . '" value="' . esc_attr( $options[ $field['id'] ] ) . '" />';
         echo $html;
     }
 
@@ -279,7 +280,7 @@ class ThePlatform_Options {
     	$field = $args['field'];
     	$options = $args['options'];
     	$name = $args['key'] . '[' . $field['id'] . ']';
-    	$html = '<input id="' . esc_attr( $field['id'] ) . '" type="password" name="' . esc_attr( $name ) . '" value="' . $options[ $field['id'] ] . '" autocomplete="off" />';
+    	$html = '<input class="tpOption" id="' . esc_attr( $field['id'] ) . '" type="password" name="' . esc_attr( $name ) . '" value="' . $options[ $field['id'] ] . '" autocomplete="off" />';
     	if ( $field['id'] === 'mpx_password') {
     		$html .= '<span id="verify-account"><button id="verify-account-button" type="button" name="verify-account-button">Verify Account Settings</button><div id="verify-account-dashicon" class="dashicons"></div></span>';
     	}
@@ -290,7 +291,7 @@ class ThePlatform_Options {
     	$field = $args['field'];
     	$options = $args['options'];
     	$name = $args['key'] . '[' . $field['id'] . ']';
-        $html = '<select id="' . esc_attr( $field['id'] ) . '" name="' . esc_attr( $name ) . '">';
+        $html = '<select class="tpOption" id="' . esc_attr( $field['id'] ) . '" name="' . esc_attr( $name ) . '">';
         $html .= '<option value="tp_wp_none">Do not publish</option>';
 
         if ( $this->account_options['mpx_account_id'] !== '' ) {
@@ -307,7 +308,7 @@ class ThePlatform_Options {
     	$field = $args['field'];
     	$options = $args['options'];
     	$name = $args['key'] . '[' . $field['id'] . ']';
-        $html = '<select id="' . esc_attr( $field['id'] ) . '"" name="' . esc_attr( $name ) . '"/>';
+        $html = '<select class="tpOption" id="' . esc_attr( $field['id'] ) . '"" name="' . esc_attr( $name ) . '"/>';
         $html .= '<option value="(None)" ' . selected( $options[ $field['id'] ], '(None)', false ) . '>(None)</option>';
         foreach ( $this->metadata_fields as $metadata ) {
             $fieldName = $metadata['namespacePrefix'] . '$' . $metadata['fieldName'];
@@ -321,7 +322,7 @@ class ThePlatform_Options {
     	$field = $args['field'];
     	$options = $args['options'];
     	$name = $args['key'] . '[' . $field['id'] . ']';
-        $html = '<select id="' . esc_attr( $field['id'] ) . '" name="' . esc_attr( $name ) . '">';
+        $html = '<select class="tpOption" id="' . esc_attr( $field['id'] ) . '" name="' . esc_attr( $name ) . '">';
         if ( $this->account_options['mpx_account_id'] !== '' ) {
             $servers = $this->tp_api->get_servers();
             $html .= '<option value="DEFAULT_SERVER"' . selected( $options[ $field['id'] ], "DEFAULT_SERVER", false ) . '>Default Server</option>';
@@ -337,7 +338,7 @@ class ThePlatform_Options {
     	$field = $args['field'];
     	$options = $args['options'];
     	$name = $args['key'] . '[' . $field['id'] . ']';
-        $html = '<select id="' . esc_attr( $field['id'] ) . '" name="' . esc_attr( $name ) . '">';
+        $html = '<select class="tpOption" id="' . esc_attr( $field['id'] ) . '" name="' . esc_attr( $name ) . '">';
         if ( $this->account_options['mpx_account_id'] !== '' ) {
             $players = $this->tp_api->get_players();
             foreach ( $players as $player ) {
@@ -352,7 +353,7 @@ class ThePlatform_Options {
     	$field = $args['field'];
     	$options = $args['options'];
     	$name = $args['key'] . '[' . $field['id'] . ']';
-    	$html = '<select id="' . esc_attr( $field['id'] ) . '" name="' . esc_attr( $name ) . '">';
+    	$html = '<select class="tpOption" id="' . esc_attr( $field['id'] ) . '" name="' . esc_attr( $name ) . '">';
 		$regions = $this->regions;
 		foreach ( $regions as $region ) {
 			$html .= '<option value="' . esc_attr( $region ) . '|' . esc_attr( $region ) . '"' . selected( $options[ $field['id'] ], $region, false ) . '>' . esc_html( strtoupper( $region ) ) . '</option>';
@@ -369,7 +370,7 @@ class ThePlatform_Options {
     	$field = $args['field'];
     	$options = $args['options'];
     	$name = $args['key'] . '[' . $field['id'] . ']';
-    	$html = '<select id="' . esc_attr( $field['id'] ) . '" name="' . esc_attr( $name ) . '">';
+    	$html = '<select class="tpOption" id="' . esc_attr( $field['id'] ) . '" name="' . esc_attr( $name ) . '">';
 		if ( $this->account_is_verified ) {
 			$subaccounts = $this->tp_api->get_subaccounts();
 			foreach ( $subaccounts as $account ) {

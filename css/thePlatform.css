@@ -219,3 +219,7 @@ header {
     position: absolute;
     right: 20px;
 }
+
+.tpOption {
+    width: 200px;
+}
