@@ -46,23 +46,26 @@ jQuery( document ).ready( function() {
 		var editor = win.tinyMCE.activeEditor;
 		var isVisual = ( typeof win.tinyMCE != "undefined" ) && editor && !editor.isHidden();
 		if ( isVisual ) {
-			editor.execCommand( 'mceInsertContent', false, shortcode );
+			editor.execCommand( 'mceInsertContent', false, shortcode.trim() );
 		}
 		else {
 			var currentContent = jQuery( '#content', window.parent.document ).val();
 			if ( typeof currentContent == 'undefined' )
 				currentContent = '';
-			jQuery( '#content', window.parent.document ).val( currentContent + shortcode );
+			jQuery( '#content', window.parent.document ).val( currentContent + shortcode.trim() );
 		}
 	} );
 
 	jQuery( '#btn-embed-close' ).click( function() {
 		jQuery( '#btn-embed' ).click();
 		var win = opener || parent
-		if ( win.tinyMCE.majorVersion > 3 )
-			win.tinyMCE.activeEditor.windowManager.close();
-		else
+		if ( win.jQuery( '#tp-embed-dialog' ).length != 0) {
 			win.jQuery( '#tp-embed-dialog' ).dialog( 'close' );
+		} 
+		if ( win.tinyMCE.activeEditor != null ) {
+			win.tinyMCE.activeEditor.windowManager.close();		
+		}
+			
 	} );
 
 	jQuery( '#btn-set-image' ).click( function() {

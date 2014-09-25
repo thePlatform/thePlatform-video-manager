@@ -99,7 +99,7 @@ class ThePlatform_Plugin {
 		wp_register_script( 'tp_field_views_js', plugins_url( '/js/fieldViews.js', __FILE__ ), array( 'jquery' ) );
 		wp_register_script( 'tp_nprogress_js', plugins_url( '/js/nprogress.js', __FILE__ ) );
 
-		wp_localize_script( 'theplatform_js', 'theplatform_local', array(
+		wp_localize_script( 'tp_theplatform_js', 'theplatform_local', array(
 			'ajaxurl' => admin_url( 'admin-ajax.php' ),
 			'plugin_base_url' => plugins_url( 'images/', __FILE__ ),
 			'tp_nonce' => array( 				
