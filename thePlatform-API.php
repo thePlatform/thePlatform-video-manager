@@ -366,8 +366,7 @@ class ThePlatform_API {
 
 		if ( is_wp_error( $upload_server_base_url ) ) {
 			wp_send_json_error( $upload_server_base_url );
-		}
-		
+		}		
 
 		// Create a placeholder media to store the new file in
 		$media = $this->create_media_placeholder( $args, $token );

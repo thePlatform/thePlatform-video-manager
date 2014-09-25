@@ -15,68 +15,55 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-
 .loadimg {
     z-index: 99999;
     height: 50px;
     width: 50px;
     margin-right: 20px;
 }
-
 .cb-even {
-    width:100%;
+    width: 100%;
     background-color: #dee0e8;
 }
-
 .media-cb {
     margin-top: 12px !important;
     margin-left: 5px !important;
 }
-
 .row {
     margin-right: 0;
     margin-left: 0;
 }
-
 .thumb-img {
     width: 128px;
     height: 72px;
 }
-
 .page-below-nav {
     top: 225px;
 }
-
 .bootstrap-select {
     max-width: 150px;
 }
-
 .scrollable {
     overflow-y: scroll;
     height: 100%;
-
 }
-
 .bm-delete {
     float: right;
 }
-
 header {
-    height:270px;
+    height: 270px;
 }
-
-@media(min-width: 0px){
+@media(min-width: 0px) {
     #info-affix.affix-top {
         position: fixed;
         top: 55px;
-        right:0;
+        right: 0;
         margin: 5px;
     }
-
     #info-affix.affix {
         position: fixed;
         top: 55px;
-        right:0;
+        right: 0;
         margin: 5px;
     }
     #filter-affix.affix-top {
@@ -86,7 +73,6 @@ header {
         margin: 5px;
         width: 180px;
     }
-
     #filter-affix.affix {
         position: fixed;
         top: 55px;
@@ -94,97 +80,75 @@ header {
         margin: 5px;
         width: 180px;
     }
-
     #load-overlay.affix, #load-overlay.affix-top {
         position: fixed;
         top: 0;
     }
-
     #feed-affix.affix, #feed-affix.affix-top {
         position: fixed;
         bottom: 0;
     }
-
     .fs-main {
         margin-top: 60px;
         min-width: 800px;
     }
 }
-
-.affix,.affix-top {
-    position:static;
+.affix, .affix-top {
+    position: static;
 }
-
 .col-md-4-fix {
     width: 33.33333333333333% !important;
 }
-
-.col-sm-4-fix {
-}
-
-.col-lg-4-fix {
+.col-sm-4-fix {} .col-lg-4-fix {
     width: 33.33333333333333% !important;
 }
-
 .sort-bar-text {
     margin-right: 0;
 }
-
 .sort-bar-nav {
     margin-left: 0;
     padding-left: 5px;
 }
-
 #content-container {
     top: 0;
     margin-left: 200px;
     margin-right: 345px;
 }
-
 #filter-container {
     width: 180px;
 }
-
 #info-player-container {
     width: 320px;
 }
-
 #player {
-    position: absolute;    
+    position: absolute;
     width: 320px;
-    height: 180px;    
+    height: 180px;
 }
-
 #modal-player-placeholder {
-    position: absolute;    
+    position: absolute;
     width: 320px;
     height: 180px;
 }
-
 #modal-player {
-    position: relative;    
+    position: relative;
     width: 320px;
     height: 180px;
 }
-
 #bm-panel {
-    margin-bottom:150px;
+    margin-bottom: 150px;
 }
-
 #panel-contentpane {
     margin-bottom: 150px;
 }
-
 #bmtable {
     width: 100%;
 }
-
 .popover {
     z-index: 2000;
     max-width: 100% !important;
     min-width: 235px;
 }
-
 .media > .popover {
     width: 250px;
     /*height: 210px;*/
@@ -196,59 +160,42 @@ header {
     max-height: 75px;
     resize: none;
 }
-
 .list-group-item.active {
     border-color: #dddddd !important;
     background-color: #f5f5f5 !important;
     color: #333333 !important;
     font-size: 16px;
-    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-weight: 500;
     line-height: 1.1;
 }
-
 .feedurl-nav {
     width: 100%;
 }
-
-.popover-embed-iframe{
-}
-
-.popover-embed-anchor{
+.popover-embed-iframe {} .popover-embed-anchor {
     margin-top: 20px;
 }
-
 .tp .panel-body {
     padding-left: 25px;
 }
-
 #btn-container {
     padding-left: 10px;
     padding-bottom: 5px;
 }
-
-#theplatform_edit_button {
-    left: 15px;
-    position: relative;
-}
-
-
 .splash {
-position:absolute;
-/*top:20px;*/
-left:0;
-right:0;
-margin: auto;
+    position: absolute;
+    /*top:20px;*/
+    left: 0;
+    right: 0;
+    margin: auto;
 }
-
 .splash img {
-display: block;
-margin-left: auto;
-margin-right: auto;
-height: 100px;
-width: 100px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    height: 100px;
+    width: 100px;
 }
-
 .card {
     background-color: #f7f7f7;
     padding: 20px 25px 15px;
@@ -261,17 +208,14 @@ width: 100px;
     -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
     box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
 }
-
 .mybar {
-  background: #29d;
-  height:2px;
+    background: #29d;
+    height: 2px;
 }
-
 .progress {
-  height: 2px;
+    height: 2px;
 }
-
 .spinner-icon {
-  position: absolute;
-  right: 20px;
+    position: absolute;
+    right: 20px;
 }
