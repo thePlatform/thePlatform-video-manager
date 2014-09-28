@@ -59,7 +59,7 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 	}
 	$media = array();
 
-	echo '<h1> Upload Media to MPX </h1><div id="media-mpx-upload-form" class="tp">';
+	echo '<div class="tp"><h1> Upload Media to MPX </h1><div id="media-mpx-upload-form">';
 }
 ?>
 
@@ -259,4 +259,5 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 		</div>
 	<?php } ?>
 </form>
+</div>
 </div>
