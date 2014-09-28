@@ -70,7 +70,8 @@ class ThePlatform_Plugin {
 		if ( is_admin() ) {
 			add_action( 'admin_menu', array( $this, 'add_admin_page' ) );
 			add_action( 'admin_init', array( $this, 'register_scripts' ) );
-			add_action( 'wp_ajax_initialize_media_upload', array( $this->tp_api, 'initialize_media_upload' ) );			
+			add_action( 'wp_ajax_initialize_media_upload', array( $this->tp_api, 'initialize_media_upload' ) );
+			add_action( 'wp_ajax_publish_media', array( $this->tp_api, 'publish_media' ) );
 			add_action( 'wp_ajax_theplatform_media', array( $this, 'embed' ) );
 			add_action( 'wp_ajax_theplatform_upload', array( $this, 'upload' ) );
 			add_action( 'wp_ajax_theplatform_edit', array( $this, 'edit' ) );
@@ -114,10 +115,7 @@ class ThePlatform_Plugin {
 			'ajaxurl' => admin_url( 'admin-ajax.php' ),			
 			'tp_nonce' => array( 				
 				'initialize_media_upload' => wp_create_nonce( 'theplatform-ajax-nonce-initialize_media_upload' ),
-				'publishMedia' => wp_create_nonce( 'theplatform-ajax-nonce-publishMedia' ),
-				'uploadStatus' => wp_create_nonce( 'theplatform-ajax-nonce-uploadStatus' ),
-				'cancelUpload' => wp_create_nonce( 'theplatform-ajax-nonce-cancelUpload' ),
-				'startUpload' => wp_create_nonce( 'theplatform-ajax-nonce-startUpload' ),
+				'publishMedia' => wp_create_nonce( 'theplatform-ajax-nonce-publishMedia' )
 			)
 		) );	
 

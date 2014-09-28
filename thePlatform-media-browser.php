@@ -114,8 +114,8 @@ function theplatform_media_clear_styles() {
 		<?php wp_head(); ?>
 
     </head>
-    <body>
-		<div class="tp">
+    <body class="tp">
+		<div>
 			<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
 				<div class="row">
 					<div class="navbar-header" style="margin-left: 15px">
@@ -286,12 +286,12 @@ function theplatform_media_clear_styles() {
 								</div>
 								<div id="btn-container">
 									<?php if ( $IS_EMBED ) { ?>
-										<button type="button" id="btn-embed" class="btn btn-primary btn-xs">Embed</button>
-										<button type="button" id="btn-embed-close" class="btn btn-primary btn-xs">Embed and close</button>
-										<button type="button" id="btn-set-image" class="btn btn-primary btn-xs">Set Featured Image</button>  
+										<button type="button" id="btn-embed" class="btn btn-default btn-xs">Embed</button>
+										<button type="button" id="btn-embed-close" class="btn btn-default btn-xs">Embed & Close</button>
+										<button type="button" id="btn-set-image" class="btn btn-default btn-xs">Set Featured Image</button>  
 									<?php } else {
 										?>
-										<button type="button" id="btn-edit" class="btn btn-primary btn-xs">Edit Media</button>
+										<button type="button" id="btn-edit" class="btn btn-default btn-xs">Edit Media</button>
 									<?php } ?>
 								</div>
 							</div>

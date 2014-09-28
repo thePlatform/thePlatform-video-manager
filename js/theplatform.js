@@ -63,8 +63,7 @@
  * @return {boolean}       Did validation pass or not
  */
 var validate_media = function( event ) {
-
-	//TODO: Change CSS to Bootstrap classes
+	
 	//TODO: Validate that file has been selected for upload but not edit
 	var validation_error = false;
 
@@ -113,17 +112,19 @@ var validate_media = function( event ) {
 			}
 		}
 		if ( fieldError ) {
-			$field.css( { border: 'solid 1px #FF0000' } );
+			$field.parent().addClass('has-error');
 			validation_error = fieldError;
 		} else {
-			$field.css( { border: '1px solid #ccc' } );
+			$field.parent().removeClass('has-error');
 		}
 	} );
 
 	var $titleField = jQuery( '#theplatform_upload_title' );
 	if ( $titleField.val() === "" ) {
 		validation_error = true;
-		$titleField.css( { border: 'solid 1px #FF0000' } );
+		$titleField.parent().addClass('has-error');
+	} else {
+		$titleField.parent().removeClass('has-error');
 	}
 
 	return validation_error;
@@ -273,6 +274,25 @@ var objSize = function( obj ) {
 
 jQuery( document ).ready( function() {
 
+	// Handle the custom file browser button
+	jQuery('.btn-file :file').on('fileselect', function(event, numFiles, label) {
+        
+        var input = jQuery(this).parents('.input-group').find(':text'),
+            log = numFiles > 1 ? numFiles + ' files selected' : label;
+        
+        if( input.length ) {
+            input.val(log);
+        } 
+        
+    });
+
+    jQuery(document).on('change', '.btn-file :file', function() {
+	  var input = jQuery(this),
+	      numFiles = input.get(0).files ? input.get(0).files.length : 1,
+	      label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+	  input.trigger('fileselect', [numFiles, label]);
+	});
+
 	// Hide PID option fields in the Settings page
 	if ( document.title.indexOf( 'thePlatform Plugin Settings' ) != -1 ) {
 		jQuery( '#mpx_account_pid' ).parent().parent().hide();
@@ -360,6 +380,12 @@ jQuery( document ).ready( function() {
 		var file = document.getElementById( 'theplatform_upload_file' ).files[0];
 
 		var validation_error = validate_media( event );
+
+		if (file === undefined) {
+			jQuery('#file-form-group').addClass('has-error');
+		} else {
+			jQuery('#file-form-group').removeClass('has-error');
+		}
 
 		if ( validation_error || file === undefined )
 			return false;

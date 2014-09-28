@@ -56,26 +56,26 @@ header {
 @media(min-width: 0px) {
     #info-affix.affix-top {
         position: fixed;
-        top: 55px;
+        top: 75px;
         right: 0;
         margin: 5px;
     }
     #info-affix.affix {
         position: fixed;
-        top: 55px;
+        top: 75px;
         right: 0;
         margin: 5px;
     }
     #filter-affix.affix-top {
         position: fixed;
         height: 100%;
-        top: 55px;
+        top: 75px;
         margin: 5px;
         width: 180px;
     }
     #filter-affix.affix {
         position: fixed;
-        top: 55px;
+        top: 75px;
         height: 100%;
         margin: 5px;
         width: 180px;
@@ -89,7 +89,7 @@ header {
         bottom: 0;
     }
     .fs-main {
-        margin-top: 60px;
+        margin-top: 80px;
         min-width: 800px;
     }
 }

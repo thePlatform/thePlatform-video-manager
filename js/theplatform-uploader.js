@@ -34,7 +34,7 @@ TheplatformUploader = ( function() {
 		requestUrl += '&_fileSize=' + me._fileSize;
 		requestUrl += '&_mediaFileInfo.format=' + me.fileFormat;
 		requestUrl += '&_serverId=' + encodeURIComponent ( me._serverId );
-		requestUrl += "&callback=?"
+		// requestUrl += "&callback=?"
 		
 		me.message( "Starting Upload of " + me._filePath + 'to ' + me.uploadUrl, true);
 			
@@ -42,7 +42,7 @@ TheplatformUploader = ( function() {
 			url: requestUrl,			
 			type: "PUT",			
 			xhrFields: {
-				withCredentials: true
+				// withCredentials: true
 			},
 			success: function( response ) {			
 				me.message( "Waiting for READY status from " + me.uploadUrl + "." );
@@ -69,12 +69,12 @@ TheplatformUploader = ( function() {
 		jQuery.ajax( {
 			url: requestUrl,		
 			type: "GET",
-			callback: "theplatform",
-			dataType: "jsonp",
+			// callback: "theplatform",
+			dataType: "json",
 			xhrFields: {
-				withCredentials: true
+				// withCredentials: true
 			},			
-			crossdomain: true,
+			// crossdomain: true,
 			success: function( data ) {
 
 				if ( data.entries.length !== 0 ) {
@@ -82,11 +82,11 @@ TheplatformUploader = ( function() {
 
 					if ( state === "Ready" ) {
 
-						var frags = me.fragFile( file );
+						var frags = me.fragFile( me.file );
 
 						me.frags_uploaded = 0;
 						me.num_fragments = frags.length;
-						me.progressIncrements = frags.length/100;
+						me.progressIncrements = 1/frags.length;
 
 						me.message( "Beginning upload of " + frags.length + " fragments. Please do not close this window." );
 
@@ -119,6 +119,11 @@ TheplatformUploader = ( function() {
 			return;
 		}
 
+		if ( me.frags_uploaded == 0 ) {					
+			me.message( 'Uploading File...', true )
+			NProgress.set(0.00001)
+		} 
+
 		var requestUrl = me.uploadUrl + '/web/Upload/uploadFragment';
 		requestUrl += '?schema=1.1';
 		requestUrl += '&token=' + me.token;
@@ -127,30 +132,27 @@ TheplatformUploader = ( function() {
 		requestUrl += '&_offset=' + ( index * fragSize );
 		requestUrl += '&_size=' + fragments[index].size;		
 
+
 		jQuery.ajax( {
 			url: requestUrl,
 			processData: false,
-			dataType: "jsonp",
+			// dataType: "json",
 			data: fragments[index],
 			type: "PUT",
-			crossdomain: true,
+			// crossdomain: true,
 			xhrFields: {
-				withCredentials: true
+				// withCredentials: true
 			},
 			success: function( response ) {
 				me.frags_uploaded++;
-				if ( me.frags_uploaded == 1 ) {
-					NProgress.settings.trickle = true;
-					NProgress.set(me.progressIncrements);
-					NProgress.start();
-				} 
+				
 				if ( me.num_fragments == me.frags_uploaded ) {
-					me.message( "Uploaded last fragment. Please do not close this window." );
-					me.finish();
-				} else {
-					me.message( 'Uploading File...')
+					me.message( "Uploaded last fragment. Finishing up" );
 					NProgress.inc(me.progressIncrements);
-					me.message( "Finished uploading fragment " + me.frags_uploaded + " of " + me.num_fragments + ". Please do not close this window." );
+					me.finish();
+				} else {					
+					NProgress.inc(me.progressIncrements);
+					me.message( "Finished uploading fragment " + me.frags_uploaded + " of " + me.num_fragments );
 					index++;
 					me.attempts = 0;
 					me.uploadFragments( fragments, index );
@@ -204,14 +206,13 @@ TheplatformUploader = ( function() {
 
 		jQuery.ajax( {
 			url: url,
-			data: data,
-			dataType: "jsonp",
+			data: data,			
 			type: "POST",
 			xhrFields: {
-				withCredentials: true
+				// withCredentials: true
 			},
 			success: function( response ) {
-				me.waitForComplete();
+				setTimeout( function() { me.waitForComplete(); }, 5000 )
 			},
 			error: function( response ) {
 
@@ -233,11 +234,11 @@ TheplatformUploader = ( function() {
 		requestUrl += '&byGuid=' + me._guid;
 
 		jQuery.ajax( {
-			url: trequestUrl,			
-			type: "POST",
-			dataType: "jsonp",
+			url: requestUrl,			
+			type: "GET",
+			dataType: "json",
 			xhrFields: {
-				withCredentials: true
+				// withCredentials: true
 			},
 			success: function( data ) {
 				
@@ -279,10 +280,15 @@ TheplatformUploader = ( function() {
 	 */
 	TheplatformUploader.prototype.publishMedia = function() {
 		var me = this;
-		var params =  { };
-		params.action = 'publishMedia';		
-		params._wpnonce = theplatform_uploader_local.tp_nonce[params.action];
-
+		var params =  { 
+			mediaId: me._mediaId,
+			account: me.account,
+			profile: me.publishProfile,
+			action: 'publishMedia',
+			_wpnonce: theplatform_uploader_local.tp_nonce['publishMedia'],
+			token: me.token
+		};
+		
 		if ( this.publishing ) {
 			return;
 		}
@@ -325,7 +331,7 @@ TheplatformUploader = ( function() {
 			url: requestUrl,		
 			type: "PUT",
 			xhrFields: {
-				withCredentials: true
+				// withCredentials: true
 			},
 			complete: function() {
 
@@ -448,6 +454,7 @@ TheplatformUploader = ( function() {
 		this._fileSize = file.size;
 		this.filetype = file.type;
 		this._filePath = file.name;	
+		this.publishProfile = profile;
 
 		var data = {
 			_wpnonce: theplatform_uploader_local.tp_nonce['initialize_media_upload'],
@@ -457,8 +464,7 @@ TheplatformUploader = ( function() {
 			filename: file.name,
 			server_id: server,
 			fields: fields,
-			custom_fields: custom_fields,
-			profile: profile
+			custom_fields: custom_fields			
 		};
 		
 		me.message( "Creating Placeholder media" );				
