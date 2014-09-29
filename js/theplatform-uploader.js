@@ -39,9 +39,9 @@ TheplatformUploader = ( function() {
 		
 		var data = {
 			url: requestUrl,
-			method: 'put',
-			returnsValue: false,
-			action: 'startUpload'			
+			method: 'put',			
+			_wpnonce: theplatform_uploader_local.tp_nonce['start_upload'],
+			action: 'start_upload'			
 		}
 		jQuery.ajax( {
 			url: theplatform_uploader_local.ajaxurl,			
@@ -51,6 +51,7 @@ TheplatformUploader = ( function() {
 				withCredentials: true
 			},
 			success: function( response ) {			
+				me.cookie = { name: response.data.cookie.name, value: response.data.cookie.value };
 				me.message( "Waiting for READY status from " + me.uploadUrl + "." );
 				me.waitForReady();				
 			},
@@ -74,9 +75,11 @@ TheplatformUploader = ( function() {
 
 		var data = {
 			url: requestUrl,
-			method: 'get',
-			returnsValue: true,
-			action: 'startUpload'			
+			method: 'get',			
+			action: 'upload_status',
+			_wpnonce: theplatform_uploader_local.tp_nonce['upload_status'],
+			cookie_name: me.cookie['name'],
+			cookie_value: me.cookie['value']
 		}
 
 		jQuery.ajax( {
@@ -124,8 +127,7 @@ TheplatformUploader = ( function() {
 	 */
 	TheplatformUploader.prototype.uploadFragments = function( fragments, index ) {
 		var me = this;
-		var fragSize = 1024 * 1024 * 5;
-
+		
 		if ( this.failed ) {
 			return;
 		}
@@ -140,23 +142,18 @@ TheplatformUploader = ( function() {
 		requestUrl += '&token=' + me.token;
 		requestUrl += '&account=' + encodeURIComponent( me.account );
 		requestUrl += '&_guid=' + me._guid;
-		requestUrl += '&_offset=' + ( index * fragSize );
-		requestUrl += '&_size=' + fragments[index].size;		
+		requestUrl += '&_offset=' + ( index * me.fragSize );
+		requestUrl += '&_size=' + fragments[index].size;	
+
 
 		var data = new FormData();
 		data.append('file', fragments[index]);
 		data.append('url', requestUrl);
-		data.append('action', 'startUpload');
-		data.append('returnsValue', false);
-		data.append('method', 'put');
-
-		// var data = {
-		// 	url: requestUrl,
-		// 	method: 'put',
-		// 	returnsValue: false,
-		// 	action: 'startUpload',
-		// 	file: fragments[index]		
-		// }
+		data.append('action', 'upload_fragment');		
+		data.append('method', 'put');	
+		data.append('_wpnonce', theplatform_uploader_local.tp_nonce['upload_fragment'])
+		data.append('cookie_name', me.cookie['name']);
+		data.append('cookie_value', me.cookie['value']);
 
 		jQuery.ajax( {
 			url: theplatform_uploader_local.ajaxurl,			
@@ -168,19 +165,28 @@ TheplatformUploader = ( function() {
 				withCredentials: true
 			},
 			success: function( response ) {
-				me.frags_uploaded++;
+				if (response.success) {
+					me.frags_uploaded++;
 				
-				if ( me.num_fragments == me.frags_uploaded ) {
-					me.message( "Uploaded last fragment. Finishing up" );
-					NProgress.inc(me.progressIncrements);
-					me.finish();
-				} else {					
-					NProgress.inc(me.progressIncrements);
-					me.message( "Finished uploading fragment " + me.frags_uploaded + " of " + me.num_fragments );
-					index++;
-					me.attempts = 0;
-					me.uploadFragments( fragments, index );
+					if ( me.num_fragments == me.frags_uploaded ) {
+						me.message( "Uploaded last fragment. Finishing up" );
+						NProgress.inc(me.progressIncrements);
+						me.finish();
+					} else {					
+						NProgress.inc(me.progressIncrements);
+						me.message( "Finished uploading fragment " + me.frags_uploaded + " of " + me.num_fragments );
+						index++;
+						me.attempts = 0;
+						me.uploadFragments( fragments, index );
+					}
+				} else {
+					var data = response.data;
+					me.message(data.description);
+					setTimeout( function() {
+						me.uploadFragments( fragments, index );
+					}, 1000 );
 				}
+				
 			},
 			error: function( response, type, msg ) {
 				me.attempts++;
@@ -231,9 +237,10 @@ TheplatformUploader = ( function() {
 		var data = {
 			url: requestUrl,
 			method: 'post',
-			returnsValue: false,
-			action: 'startUpload',
-			data: 'finished'	
+			_wpnonce: theplatform_uploader_local.tp_nonce['finish_upload'],
+			action: 'finish_upload',
+			cookie_name: me.cookie['name'],
+			cookie_value: me.cookie['value']		
 		}
 
 		jQuery.ajax( {
@@ -268,13 +275,15 @@ TheplatformUploader = ( function() {
 		var data = {
 			url: requestUrl,
 			method: 'get',
-			returnsValue: true,
-			action: 'startUpload',			
+			_wpnonce: theplatform_uploader_local.tp_nonce['upload_status'],
+			action: 'upload_status',
+			cookie_name: me.cookie['name'],
+			cookie_value: me.cookie['value']
 		}
 
 		jQuery.ajax( {
 			url: theplatform_uploader_local.ajaxurl,			
-			type: "GET",			
+			type: "POST",			
 			data: data,
 			xhrFields: {
 				withCredentials: true
@@ -324,7 +333,7 @@ TheplatformUploader = ( function() {
 			account: me.account,
 			profile: me.publishProfile,
 			action: 'publishMedia',
-			_wpnonce: theplatform_uploader_local.tp_nonce['publishMedia'],
+			_wpnonce: theplatform_uploader_local.tp_nonce['publish_media'],
 			token: me.token
 		};
 		
@@ -384,7 +393,7 @@ TheplatformUploader = ( function() {
 	 @return {Array} array of file fragments
 	 */
 	TheplatformUploader.prototype.fragFile = function( file ) {
-		var fragSize = 1024 * 1024 * 5;
+		
 		var i, j, k;
 		var ret = [ ];				
 
@@ -392,11 +401,11 @@ TheplatformUploader = ( function() {
 			return this.file;
 		}
 
-		for ( i = j = 0, k = Math.ceil( this.file.size / fragSize ); 0 <= k ? j < k : j > k; i = 0 <= k ? ++j : --j ) {
+		for ( i = j = 0, k = Math.ceil( this.file.size / this.fragSize ); 0 <= k ? j < k : j > k; i = 0 <= k ? ++j : --j ) {
 			if ( this.file.slice ) {
-				ret.push( this.file.slice( i * fragSize, ( i + 1 ) * fragSize ) );
+				ret.push( this.file.slice( i * this.fragSize, ( i + 1 ) * this.fragSize ) );
 			} else if ( file.mozSlice ) {
-				ret.push( this.file.mozSlice( i * fragSize, ( i + 1 ) * fragSize ) );
+				ret.push( this.file.mozSlice( i * this.fragSize, ( i + 1 ) * this.fragSize ) );
 			}
 		}
 
@@ -466,6 +475,7 @@ TheplatformUploader = ( function() {
 	function TheplatformUploader( file, fields, custom_fields, profile, server ) {
 		var me = this;
 		this.file = file;
+		this.fragSize = ( 1024 * 1024 ) * 3;
 			
 		var splashHtml = '<div class="splash card">' +
 		    '<div role="spinner">' +
@@ -513,6 +523,8 @@ TheplatformUploader = ( function() {
 				var data = response.data;
 				
 				me.uploadUrl = data.uploadUrl
+
+				me.uploadUrl = 'http://localhost:63760';
 				me.token = data.token;
 				me.account = data.account;
 				me._mediaId = data.mediaId;				

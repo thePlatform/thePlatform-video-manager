@@ -32,7 +32,7 @@ function theplatform_upload_clear_styles() {
     wp_enqueue_style( 'tp_bootstrap_css' );
     wp_enqueue_style( 'tp_theplatform_css' );    
 }
-	
+
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>

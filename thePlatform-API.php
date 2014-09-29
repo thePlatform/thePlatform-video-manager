@@ -67,17 +67,17 @@ class ThePlatform_API_HTTP {
 	 */
 	static function post( $url, $data, $isJSON = TRUE, $method = 'POST' ) {
 		$url = esc_url_raw( $url );
-		$args = array(
-			'method' => $method,
-			'cookies' => array(),
-			'body' => $data,
+		$default_data = array(
+			'method' => $method,						
 			'timeout' => 10,
 		);
 
 		if ( $isJSON ) {
-			$args['headers'] = array( 'Content-Type' => 'application/json; charset=UTF-8' );
-		}
+			$default_data['headers'] = array( 'content-type' => 'application/json; charset=UTF-8' );
+		} 
 
+		$args = array_merge( $default_data, $data );				
+		
 		$response = wp_remote_post( $url, $args );
 
 		return $response;
@@ -267,8 +267,11 @@ class ThePlatform_API {
 		$url = TP_API_MEDIA_ENDPOINT;
 		$url .= '&account=' . $this->get_mpx_account_id();
 		$url .= '&token=' . $token;
-			
-		$response = ThePlatform_API_HTTP::post( $url, json_encode( $payload, JSON_UNESCAPED_SLASHES ), true );
+		
+
+		$data = array( 'body' => json_encode( $payload, JSON_UNESCAPED_SLASHES ) );
+
+		$response = ThePlatform_API_HTTP::post( $url, $data, true );
 		$data = theplatform_decode_json_from_server( $response, TRUE );
 		return $data;
 	}

@@ -51,11 +51,11 @@ class ThePlatform_Plugin {
 	}
 
 	function __construct() {
-		require_once(dirname( __FILE__ ) . '/thePlatform-constants.php');
-		require_once(dirname( __FILE__ ) . '/thePlatform-URLs.php');
-		require_once(dirname( __FILE__ ) . '/thePlatform-API.php');
-		require_once(dirname( __FILE__ ) . '/thePlatform-helper.php');
-		require_once(dirname( __FILE__ ) . '/thePlatform-proxy.php');
+		require_once( dirname( __FILE__ ) . '/thePlatform-constants.php' );
+		require_once( dirname( __FILE__ ) . '/thePlatform-URLs.php' );
+		require_once( dirname( __FILE__ ) . '/thePlatform-API.php' );
+		require_once( dirname( __FILE__ ) . '/thePlatform-helper.php' );	
+		require_once( dirname( __FILE__ ) . '/thePlatform-proxy.php' );	
 				
 		$this->tp_api = new ThePlatform_API;
 		
@@ -115,7 +115,12 @@ class ThePlatform_Plugin {
 			'ajaxurl' => admin_url( 'admin-ajax.php' ),			
 			'tp_nonce' => array( 				
 				'initialize_media_upload' => wp_create_nonce( 'theplatform-ajax-nonce-initialize_media_upload' ),
-				'publishMedia' => wp_create_nonce( 'theplatform-ajax-nonce-publishMedia' )
+				'start_upload' => wp_create_nonce( 'theplatform-ajax-nonce-start_upload' ),
+				'upload_status' => wp_create_nonce( 'theplatform-ajax-nonce-upload_status' ),
+				'upload_fragment' => wp_create_nonce( 'theplatform-ajax-nonce-upload_fragment' ),
+				'finish_upload' => wp_create_nonce( 'theplatform-ajax-nonce-finish_upload' ),
+				'cancel_upload' => wp_create_nonce( 'theplatform-ajax-nonce-cancel_upload' ),
+				'publish_media' => wp_create_nonce( 'theplatform-ajax-nonce-publish_media' )
 			)
 		) );	
 
