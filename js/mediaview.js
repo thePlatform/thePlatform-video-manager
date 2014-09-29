@@ -248,7 +248,12 @@ jQuery( document ).ready( function() {
  * @return {void} 
  */
 function refreshView() {
+	if (viewLoading) {
+		return;
+	}
+	viewLoading = true;
 	notifyUser( 'clear' ); //clear alert box.
+	updateContentPane( { title: '' });
 	var $mediaList = jQuery( '#media-list' );
 	//TODO: If sorting clear search?
 	var queryObject = {
@@ -313,7 +318,7 @@ function buildCategoryAccordion( resp ) {
 		jQuery( 'body' )[0].style.overflowY = 'auto';
 	} );
 
-	jQuery( '.cat-list-selector', '#list-categories' ).click( function() {
+	jQuery( '.cat-list-selector', '#list-categories' ).click( function() {		
 		tpHelper.selectedCategory = jQuery( this ).text();
 		if ( tpHelper.selectedCategory == "All Videos" )
 			tpHelper.selectedCategory = '';
@@ -385,6 +390,13 @@ function addMediaObject( media ) {
 }
 
 function updateContentPane( mediaItem ) {
+	if (mediaItem.title == '') {
+		jQuery('#info-container').css('visibility','hidden');
+		jQuery( '.tpPlayer' ).css( 'visibility', 'hidden' );
+	} else {
+		jQuery('#info-container').css('visibility','visible');
+	}
+
 	var i, catArray, catList;
 
 	var $fields = jQuery( '.panel-body span' )

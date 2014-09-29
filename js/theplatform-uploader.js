@@ -281,8 +281,7 @@ TheplatformUploader = ( function() {
 
 							me.file_id = fileID;
 
-							if ( me.publishProfile != "tp_wp_none" ) {
-								me.message( "Waiting for MPX to publish media." );
+							if ( me.publishProfile != "tp_wp_none" ) {								
 								me.publishMedia();
 							}
 							else {
@@ -335,7 +334,7 @@ TheplatformUploader = ( function() {
 			type: "POST",
 			success: function( response ) {
 				if ( response.success ) {
-					me.message( "Media is being published. It may take several minutes until the media is available. This window will close in 5 seconds.", true );
+					me.message( "Media Published Successfully", true );
 					window.setTimeout( 'window.close()', 5000 );
 				} else {
 					me.message( response.data.description, true);					
@@ -375,7 +374,7 @@ TheplatformUploader = ( function() {
 				withCredentials: true
 			},
 			complete: function() {
-
+				me.message('Upload canceled')
 			}
 		} );
 	};
@@ -403,20 +402,7 @@ TheplatformUploader = ( function() {
 		}
 
 		return ret;
-	};
-
-	/**
-	 @function Attempt to parse JSON, alert to user if it failed
-	 @param {string} jsonString - JSON String	 
-	 */
-	TheplatformUploader.prototype.parseJSON = function( jsonString ) {
-		try {
-			return jQuery.parseJSON( jsonString );
-		}
-		catch ( ex ) {
-			me.error( jsonString );
-		}
-	};
+	};	
 
 	TheplatformUploader.prototype.createUUID = function() {
     // http://www.ietf.org/rfc/rfc4122.txt

@@ -34,6 +34,7 @@ class ThePlatform_Proxy {
             add_action( 'wp_ajax_upload_fragment',  array( $this, 'upload_fragment' ) );
             add_action( 'wp_ajax_finish_upload',    array( $this, 'finish_upload' ) );
             add_action( 'wp_ajax_cancel_upload',    array( $this, 'cancel_upload' ) );
+            add_action( 'wp_ajax_publish_media',    array( $this, 'publish_media' ) );
         }        
     }
 
@@ -169,6 +170,44 @@ class ThePlatform_Proxy {
      
         wp_send_json_error("Shouldn't be here.");
      
+    }
+
+        /**
+     * Publish an uploaded media asset using the 'Wordpress' profile
+     * @return mixed JSON response or instance of WP_Error
+     */
+    public function publish_media() {
+        $this->check_nonce_and_permissions( $_POST['action'] );
+
+        if ( $_POST['profile'] == 'wp_tp_none' ) {
+            wp_send_json_success();
+        } 
+        
+        $profileUrl = TP_API_PUBLISH_PROFILE_ENDPOINT;
+        $profileUrl .= '&byTitle=' . urlencode( $_POST['profile'] );        
+        $profileUrl .= '&token=' . $_POST['token'];
+        $profileUrl .= '&account=' . urlencode( $_POST['account'] );
+
+        $profileResponse = ThePlatform_API_HTTP::get( esc_url_raw( $profileUrl ) );
+
+        $content = theplatform_decode_json_from_server( $profileResponse, TRUE );
+
+        if ( $content['entryCount'] == 0 ) {
+            wp_send_json_error( "No Publishing Profile Found" );
+        }
+        
+        $profileId = $content['entries'][0]['id'];
+        $mediaId = $_POST['mediaId'];
+
+        $publishUrl = TP_API_PUBLISH_BASE_URL;
+        $publishUrl .= '&token=' . $_POST['token'];
+        $publishUrl .= '&account=' . urlencode( $_POST['account'] );
+        $publishUrl .= '&_mediaId=' . urlencode( $mediaId );
+        $publishUrl .= '&_profileId=' . urlencode( $profileId );
+
+        $response = ThePlatform_API_HTTP::get( esc_url_raw ( $publishUrl ), array( "timeout" => 120 ) );
+
+        $this->check_theplatform_proxy_response( $response, true );
     }
 }
 

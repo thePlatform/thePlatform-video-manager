@@ -96,6 +96,10 @@ header {
 .affix, .affix-top {
     position: static;
 }
+
+#info-container {
+    visibility: hidden;
+}
 .col-md-4-fix {
     width: 33.33333333333333% !important;
 }
