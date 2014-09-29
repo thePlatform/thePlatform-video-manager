@@ -43,3 +43,8 @@
 	jQuery infiniteScroll<br>
 	Copyright (c) 2010 <a href="https://github.com/denniscalazans/jquery-infinitescroll">DIY Co</a>
 </p>
+
+<p>
+  NProgress<br>
+  Copyright (c) 2013-2014 <a href="http://ricostacruz.com/nprogress/">Rico Sta. Cruz</a>
+</p>
