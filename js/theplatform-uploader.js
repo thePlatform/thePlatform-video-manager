@@ -35,7 +35,7 @@ TheplatformUploader = ( function() {
 		requestUrl += '&_mediaFileInfo.format=' + me.fileFormat;
 		requestUrl += '&_serverId=' + encodeURIComponent ( me._serverId );		
 		
-		me.message( "Starting Upload of " + me._filePath + 'to ' + me.uploadUrl, true);
+		me.message( "Starting Upload of " + me._filePath + ' to ' + me.uploadUrl);
 		
 		var data = {
 			url: requestUrl,
@@ -43,6 +43,7 @@ TheplatformUploader = ( function() {
 			_wpnonce: theplatform_uploader_local.tp_nonce['start_upload'],
 			action: 'start_upload'			
 		}
+		
 		jQuery.ajax( {
 			url: theplatform_uploader_local.ajaxurl,			
 			type: "POST",	
@@ -51,12 +52,8 @@ TheplatformUploader = ( function() {
 				withCredentials: true
 			},
 			success: function( response ) {			
-				me.cookie = { name: response.data.cookie.name, value: response.data.cookie.value };
-				me.message( "Waiting for READY status from " + me.uploadUrl + "." );
+				me.cookie = { name: response.data.cookie.name, value: response.data.cookie.value };				
 				me.waitForReady();				
-			},
-			error: function( result ) {
-				me.error( "Call to startUpload failed. Please try again later." );
 			}
 		} );
 	};
@@ -82,6 +79,7 @@ TheplatformUploader = ( function() {
 			cookie_value: me.cookie['value']
 		}
 
+		me.message('Waiting for Upload server to be ready.');
 		jQuery.ajax( {
 			url: theplatform_uploader_local.ajaxurl,		
 			type: "POST",	
@@ -89,32 +87,34 @@ TheplatformUploader = ( function() {
 			xhrFields: {
 				withCredentials: true
 			},						
-			success: function( response ) {
-				var data = response.data;
-				if ( data.entries.length !== 0 ) {
-					var state = data.entries[0].state;
+			success: function( response ) {				
+				if (response.success) {		
+					var data = response.data;
+					if ( data.entries.length !== 0 ) {
+						var state = data.entries[0].state;
 
-					if ( state === "Ready" ) {
+						if ( state === "Ready" ) {
 
-						var frags = me.fragFile( me.file );
+							var frags = me.fragFile( me.file );
 
-						me.frags_uploaded = 0;
-						me.num_fragments = frags.length;
-						me.progressIncrements = 1/frags.length;
+							me.frags_uploaded = 0;
+							me.num_fragments = frags.length;
+							me.progressIncrements = 1/frags.length;
 
-						me.message( "Beginning upload of " + frags.length + " fragments. Please do not close this window." );
+							me.message( "Beginning upload of " + frags.length + " fragments. Please do not close this window." );
 
-						me.uploadFragments( frags, 0 );
+							me.uploadFragments( frags, 0 );
 
+						} else {
+							setTimeout(function() { me.waitForReady() }, 1000 );
+						}
 					} else {
 						setTimeout(function() { me.waitForReady() }, 1000 );
-					}
-				} else {
-					setTimeout(function() { me.waitForReady() }, 1000 );
-				}			
-			},
-			error: function( response ) {
-				me.error( "An error occurred while waiting for upload server READY status: " + response );
+					}		
+				}
+				else {					
+					me.message( response.data.description, true);					
+				}	
 			}
 		} );
 	};
@@ -133,8 +133,11 @@ TheplatformUploader = ( function() {
 		}
 
 		if ( me.frags_uploaded == 0 ) {					
-			me.message( 'Uploading File...', true )
+			me.message( 'Uploading File...', true )			
 			NProgress.set(0.00001)
+			NProgress.settings.trickle = true;
+			NProgress.settings.trickleRate = me.progressIncrements / 20;
+			NProgress.start();		
 		} 
 
 		var requestUrl = me.uploadUrl + '/web/Upload/uploadFragment';
@@ -172,44 +175,22 @@ TheplatformUploader = ( function() {
 						me.message( "Uploaded last fragment. Finishing up" );
 						NProgress.inc(me.progressIncrements);
 						me.finish();
-					} else {					
-						NProgress.inc(me.progressIncrements);
+					} else {	
+						if ( NProgress.status < me.progressIncrements * me.frags_uploaded ) {							
+							NProgress.set(me.progressIncrements * me.frags_uploaded);
+						}
 						me.message( "Finished uploading fragment " + me.frags_uploaded + " of " + me.num_fragments );
 						index++;
 						me.attempts = 0;
 						me.uploadFragments( fragments, index );
 					}
-				} else {
-					var data = response.data;
-					me.message(data.description);
+				} else {					
+					me.message( response.data.description, true);
 					setTimeout( function() {
 						me.uploadFragments( fragments, index );
 					}, 1000 );
 				}
 				
-			},
-			error: function( response, type, msg ) {
-				me.attempts++;
-				if ( index == 0 ) {
-					me.message( "Unable to start upload, server is not ready." );
-					me.startUpload();
-					return;
-				}
-				var actualIndex = parseInt( index ) + 1;
-				me.error( "Unable to upload fragment " + actualIndex + " of " + me.num_fragments + ". Retrying count is " + me.attempts + " of 5. Retrying in 5 seconds.." );
-
-				if ( me.attempts < 5 ) {
-					setTimeout( function() {
-						me.uploadFragments( fragments, index );
-					}, 1000 );
-				} else {
-					me.error( "Uploading fragment " + actualIndex + " of " + me.num_fragments + " failed on the client side. Cancelling... Retry upload later." );
-
-					window.setTimeout( function() {
-						me.cancel();
-					}, 6000 );
-
-				}
 			}
 		} );
 	};
@@ -243,6 +224,7 @@ TheplatformUploader = ( function() {
 			cookie_value: me.cookie['value']		
 		}
 
+		me.message('Finishing Up...', true)
 		jQuery.ajax( {
 			url: theplatform_uploader_local.ajaxurl,
 			data: data,			
@@ -289,35 +271,37 @@ TheplatformUploader = ( function() {
 				withCredentials: true
 			},
 			success: function( response ) {
-				var data = response.data;
-				if ( data.entries.length != 0 ) {
-					var state = data.entries[0].state;
+				if (response.success) {
+					var data = response.data;
+					if ( data.entries.length != 0 ) {
+						var state = data.entries[0].state;
 
-					if ( state === "Complete" ) {
-						var fileID = data.entries[0].fileId;
+						if ( state === "Complete" ) {
+							var fileID = data.entries[0].fileId;
 
-						me.file_id = fileID;
+							me.file_id = fileID;
 
-						if ( me.profile != "tp_wp_none" ) {
-							me.message( "Waiting for MPX to publish media." );
-							me.publishMedia();
+							if ( me.publishProfile != "tp_wp_none" ) {
+								me.message( "Waiting for MPX to publish media." );
+								me.publishMedia();
+							}
+							else {
+								me.message( "Upload completed. This window will close in 5 seconds.", true);
+								window.setTimeout( 'window.close()', 5000 );
+							}
+						} else if ( state === "Error" ) {
+							me.error( data.entries[0].exception, true );
+						} else {
+							me.message( state );
+							setTimeout(function() { me.waitForComplete(); }, 5000)
 						}
-						else {
-							me.message( "Upload completed, you can now safely close this window." );
-							window.setTimeout( 'window.close()', 5000 );
-						}
-					} else if ( state === "Error" ) {
-						me.error( data.entries[0].exception );
 					} else {
-						me.message( state );
 						setTimeout(function() { me.waitForComplete(); }, 5000)
 					}
-				} else {
-					setTimeout(function() { me.waitForComplete(); }, 5000)
 				}
-			},
-			error: function( response ) {
-				me.error( "An error occurred while waiting for upload server COMPLETE status: " + response );
+				else {					
+					me.message( response.data.description, true);					
+				}	
 			}
 		} );
 	};
@@ -332,7 +316,7 @@ TheplatformUploader = ( function() {
 			mediaId: me._mediaId,
 			account: me.account,
 			profile: me.publishProfile,
-			action: 'publishMedia',
+			action: 'publish_media',
 			_wpnonce: theplatform_uploader_local.tp_nonce['publish_media'],
 			token: me.token
 		};
@@ -351,11 +335,10 @@ TheplatformUploader = ( function() {
 			type: "POST",
 			success: function( response ) {
 				if ( response.success ) {
-					me.message( "Media is being published. It may take several minutes until the media is available. This window will now close.", true );
-					window.setTimeout( 'window.close()', 10000 );
+					me.message( "Media is being published. It may take several minutes until the media is available. This window will close in 5 seconds.", true );
+					window.setTimeout( 'window.close()', 5000 );
 				} else {
-					me.message( "Publish for the uploaded Media was requested but timed out, this is normal but your Media may or may not have published.", true );
-					window.setTimeout( 'window.close()', 10000 );
+					me.message( response.data.description, true);					
 				}
 			}
 		} );
@@ -373,13 +356,23 @@ TheplatformUploader = ( function() {
 		requestUrl += '&token=' + me.token;
 		requestUrl += '&account=' + encodeURIComponent( me.account );
 		requestUrl += '&_guid=' + me._guid;
-		this.failed = true;
+		
+		me.failed = true;
+
+		var data = {
+			url: requestUrl,
+			method: 'put',
+			_wpnonce: theplatform_uploader_local.tp_nonce['cancel_upload'],
+			action: 'cancel_upload',
+			cookie_name: me.cookie['name'],
+			cookie_value: me.cookie['value']
+		}
 
 		jQuery.ajax( {
 			url: requestUrl,		
-			type: "PUT",
+			type: "POST",
 			xhrFields: {
-				// withCredentials: true
+				withCredentials: true
 			},
 			complete: function() {
 
@@ -475,17 +468,16 @@ TheplatformUploader = ( function() {
 	function TheplatformUploader( file, fields, custom_fields, profile, server ) {
 		var me = this;
 		this.file = file;
-		this.fragSize = ( 1024 * 1024 ) * 3;
+		this.fragSize = ( 1024 * 1024 ) * 10;
 			
 		var splashHtml = '<div class="splash card">' +
 		    '<div role="spinner">' +
 		        '<div class="spinner-icon"></div>' +
 		    '</div>' +		    
-		    '<p class="lead" style="text-align:center">Preparing for upload...</p>' +
-		    '<div class="progress">' +
-		        '<div class="mybar" role="bar">' +
-		    '</div>' +
-		    '</div>' +
+		    '<p class="lead" style="text-align:center">Initalizing Upload...</p>' +
+	    	'<div class="progress">' +
+	        	'<div class="mybar" role="bar"></div>' +
+	    	'</div>' +	    	
 		'</div>';
 
 		NProgress.configure({
@@ -522,9 +514,7 @@ TheplatformUploader = ( function() {
 			if ( response.success ) {
 				var data = response.data;
 				
-				me.uploadUrl = data.uploadUrl
-
-				me.uploadUrl = 'http://localhost:63760';
+				me.uploadUrl = data.uploadUrl				
 				me.token = data.token;
 				me.account = data.account;
 				me._mediaId = data.mediaId;				

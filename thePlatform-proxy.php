@@ -136,7 +136,7 @@ class ThePlatform_Proxy {
         $file = file_get_contents( $_FILES['file']['tmp_name'] );            
         $data = array(
             'body' => $file,
-            'timeout' => 60,
+            'timeout' => 120,
             'headers' => array( 'content-type' => 'application/x-www-form-urlencode; charset=UTF-8' )
         );
 
@@ -162,7 +162,12 @@ class ThePlatform_Proxy {
     }
 
     public function cancel_upload() {               
-        
+        $this->check_nonce_and_permissions( $_POST['action'] );
+
+        $response = $this->proxy_http_request();
+        ThePlatform_Proxy::check_theplatform_proxy_response ( $response );
+     
+        wp_send_json_error("Shouldn't be here.");
      
     }
 }
