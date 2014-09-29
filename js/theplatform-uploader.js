@@ -24,25 +24,31 @@ TheplatformUploader = ( function() {
 	TheplatformUploader.prototype.startUpload = function() {
 		var me = this;
 		
-		requestUrl = me.uploadUrl + '/web/Upload/startUpload';		
+		var requestUrl = me.uploadUrl + '/web/Upload/startUpload';		
 		requestUrl += '?schema=1.1';
 		requestUrl += '&token=' + me.token;
 		requestUrl += '&account=' + encodeURIComponent( me.account );
 		requestUrl += '&_guid=' + me._guid;
-		requestUrl += '&_mediaId=' + me._mediaId;
+		requestUrl += '&_mediaId=' + encodeURIComponent( me._mediaId );
 		requestUrl += '&_filePath=' + me._filePath;
 		requestUrl += '&_fileSize=' + me._fileSize;
 		requestUrl += '&_mediaFileInfo.format=' + me.fileFormat;
-		requestUrl += '&_serverId=' + encodeURIComponent ( me._serverId );
-		// requestUrl += "&callback=?"
+		requestUrl += '&_serverId=' + encodeURIComponent ( me._serverId );		
 		
 		me.message( "Starting Upload of " + me._filePath + 'to ' + me.uploadUrl, true);
-			
+		
+		var data = {
+			url: requestUrl,
+			method: 'put',
+			returnsValue: false,
+			action: 'startUpload'			
+		}
 		jQuery.ajax( {
-			url: requestUrl,			
-			type: "PUT",			
+			url: theplatform_uploader_local.ajaxurl,			
+			type: "POST",	
+			data: data,		
 			xhrFields: {
-				// withCredentials: true
+				withCredentials: true
 			},
 			success: function( response ) {			
 				me.message( "Waiting for READY status from " + me.uploadUrl + "." );
@@ -66,17 +72,22 @@ TheplatformUploader = ( function() {
 		requestUrl += '&account=' + encodeURIComponent( me.account );
 		requestUrl += '&byGuid=' + me._guid;
 
-		jQuery.ajax( {
-			url: requestUrl,		
-			type: "GET",
-			// callback: "theplatform",
-			dataType: "json",
-			xhrFields: {
-				// withCredentials: true
-			},			
-			// crossdomain: true,
-			success: function( data ) {
+		var data = {
+			url: requestUrl,
+			method: 'get',
+			returnsValue: true,
+			action: 'startUpload'			
+		}
 
+		jQuery.ajax( {
+			url: theplatform_uploader_local.ajaxurl,		
+			type: "POST",	
+			data: data,					
+			xhrFields: {
+				withCredentials: true
+			},						
+			success: function( response ) {
+				var data = response.data;
 				if ( data.entries.length !== 0 ) {
 					var state = data.entries[0].state;
 
@@ -132,16 +143,29 @@ TheplatformUploader = ( function() {
 		requestUrl += '&_offset=' + ( index * fragSize );
 		requestUrl += '&_size=' + fragments[index].size;		
 
+		var data = new FormData();
+		data.append('file', fragments[index]);
+		data.append('url', requestUrl);
+		data.append('action', 'startUpload');
+		data.append('returnsValue', false);
+		data.append('method', 'put');
+
+		// var data = {
+		// 	url: requestUrl,
+		// 	method: 'put',
+		// 	returnsValue: false,
+		// 	action: 'startUpload',
+		// 	file: fragments[index]		
+		// }
 
 		jQuery.ajax( {
-			url: requestUrl,
+			url: theplatform_uploader_local.ajaxurl,			
+			data: data,			
+			type: "POST",
 			processData: false,
-			// dataType: "json",
-			data: fragments[index],
-			type: "PUT",
-			// crossdomain: true,
+  			contentType: false,
 			xhrFields: {
-				// withCredentials: true
+				withCredentials: true
 			},
 			success: function( response ) {
 				me.frags_uploaded++;
@@ -196,20 +220,28 @@ TheplatformUploader = ( function() {
 
 		this.finishedUploadingFragments = true;
 
-		var url = me.uploadUrl + '/web/Upload/finishUpload';
-		url += '?schema=1.1';
-		url += '&token=' + me.token;
-		url += '&account=' + encodeURIComponent( me.account );
-		url += '&_guid=' + me._guid;
+		var requestUrl = me.uploadUrl + '/web/Upload/finishUpload';
+		requestUrl += '?schema=1.1';
+		requestUrl += '&token=' + me.token;
+		requestUrl += '&account=' + encodeURIComponent( me.account );
+		requestUrl += '&_guid=' + me._guid;
 
 		var data = "finished";
 
+		var data = {
+			url: requestUrl,
+			method: 'post',
+			returnsValue: false,
+			action: 'startUpload',
+			data: 'finished'	
+		}
+
 		jQuery.ajax( {
-			url: url,
+			url: theplatform_uploader_local.ajaxurl,
 			data: data,			
 			type: "POST",
 			xhrFields: {
-				// withCredentials: true
+				withCredentials: true
 			},
 			success: function( response ) {
 				setTimeout( function() { me.waitForComplete(); }, 5000 )
@@ -233,15 +265,22 @@ TheplatformUploader = ( function() {
 		requestUrl += '&account=' + encodeURIComponent( me.account );
 		requestUrl += '&byGuid=' + me._guid;
 
+		var data = {
+			url: requestUrl,
+			method: 'get',
+			returnsValue: true,
+			action: 'startUpload',			
+		}
+
 		jQuery.ajax( {
-			url: requestUrl,			
-			type: "GET",
-			dataType: "json",
+			url: theplatform_uploader_local.ajaxurl,			
+			type: "GET",			
+			data: data,
 			xhrFields: {
-				// withCredentials: true
+				withCredentials: true
 			},
-			success: function( data ) {
-				
+			success: function( response ) {
+				var data = response.data;
 				if ( data.entries.length != 0 ) {
 					var state = data.entries[0].state;
 
@@ -473,7 +512,7 @@ TheplatformUploader = ( function() {
 			if ( response.success ) {
 				var data = response.data;
 				
-				me.uploadUrl = data.uploadUrl.substring(data.uploadUrl.indexOf(':') + 1 );
+				me.uploadUrl = data.uploadUrl
 				me.token = data.token;
 				me.account = data.account;
 				me._mediaId = data.mediaId;				

@@ -30,6 +30,7 @@ if ( !isset( $account ) ) {
 }
 
 add_action( 'wp_ajax_publishMedia', 'ThePlatform_Proxy::publishMedia' );
+add_action( 'wp_ajax_startUpload', 'ThePlatform_Proxy::upload' );
 
 /**
  * This class is responsible for uploading and publishing Media to MPX
@@ -62,6 +63,42 @@ class ThePlatform_Proxy {
 		
 		wp_send_json_success( theplatform_decode_json_from_server( $response, TRUE, FALSE ) );				
 	}
+
+    public static function upload() {               
+        $action = $_POST['action'];
+        // ThePlatform_Proxy::check_nonce_and_permissions( $action );
+
+        $data = array();
+        $method = strtolower( $_POST['method'] );
+        $url = $_POST['url'];        
+        $returnsValue = $_POST['returnsValue'];
+        if ( FALSE === empty ( $_FILES ) ) {
+            $file = $_FILES['file'];            
+            $data = $file;         
+        }
+        
+
+        switch ( $method ) {
+            case 'put':
+                $response = ThePlatform_API_HTTP::put( $url, $data );
+                break;
+            case 'get':
+                $response = ThePlatform_API_HTTP::get( $url );
+                break;
+            case 'post':
+                $response = ThePlatform_API_HTTP::post( $url );
+                break;
+            default:
+                # code...
+                break;
+        }
+        
+        if ( $returnsValue ) {
+            ThePlatform_Proxy::check_theplatform_proxy_response ( $response );
+        }
+        
+        wp_send_json_success();
+    }
 
 	
 

@@ -69,6 +69,7 @@ class ThePlatform_API_HTTP {
 		$url = esc_url_raw( $url );
 		$args = array(
 			'method' => $method,
+			'cookies' => array(),
 			'body' => $data,
 			'timeout' => 10,
 		);
