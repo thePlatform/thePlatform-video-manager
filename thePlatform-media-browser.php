@@ -286,12 +286,14 @@ function theplatform_media_clear_styles() {
 								</div>
 								<div id="btn-container">
 									<?php if ( $IS_EMBED ) { ?>
-										<button type="button" id="btn-embed" class="btn btn-default btn-xs">Embed</button>
-										<button type="button" id="btn-embed-close" class="btn btn-default btn-xs">Embed & Close</button>
-										<button type="button" id="btn-set-image" class="btn btn-default btn-xs">Set Featured Image</button>  
+									<div class="btn-group">	                            
+										<input type="button" id="btn-embed" class="btn btn-default btn-xs" value="Embed">
+										<input type="button" id="btn-embed-close" class="btn btn-default btn-xs" value="Embed & Close">
+										<input type="button" id="btn-set-image" class="btn btn-default btn-xs" value="Set Featured Image">
+									</div>
 									<?php } else {
 										?>
-										<button type="button" id="btn-edit" class="btn btn-default btn-xs">Edit Media</button>
+										<input type="button" id="btn-edit" class="btn btn-default btn-xs" value="Edit Media">
 									<?php } ?>
 								</div>
 							</div>
