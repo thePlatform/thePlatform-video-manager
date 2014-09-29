@@ -117,6 +117,7 @@ mute	 - (optional) - Force the player to be muted
 autoplay - (optional) - Force autoplay on /embed/ players, if omitted the default value will be taken from the embedding preferences
 loop	 - (optional) - Loop the release
 tag		 - (optional) - iframe/script, if omitted the value will be taken from the embedding preferences
+embedded - (optional) - true/false, if true the player will have /embed in the URI
 params	 - (optional) - Custom string that will be appended to the embed URL
 
 == Configuration ==
