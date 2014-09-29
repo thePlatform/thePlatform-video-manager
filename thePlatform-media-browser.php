@@ -163,7 +163,7 @@ function theplatform_media_clear_styles() {
 							<a class="list-group-item active">
 								Categories
 							</a>
-							<a href="#" class="list-group-item cat-list-selector">All Videos</a>
+							<a href="#" class="list-group-item cat-list-selector" style="background-color: #D8E8FF;">All Videos</a>
 						</div>                    
 					</div>
 				</div>

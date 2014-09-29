@@ -305,7 +305,7 @@ function buildCategoryAccordion( resp ) {
 	var categoryTemplate = Handlebars.compile(categorySource);
 	for ( var idx in entries ) {
 		var entryTitle = entries[idx]['title'];
-		jQuery( '#list-categories' ).append( categoryTemplate({ entryTitle: entryTitle }) );
+		jQuery( '#list-categories' ).append( categoryTemplate({ entryTitle: entryTitle }) );		
 	}
 
 	//Add an empty row for scrolling
