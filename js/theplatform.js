@@ -398,7 +398,7 @@ jQuery( document ).ready( function() {
 
 		var upload_window = window.open( theplatform_local.ajaxurl + '?action=theplatform_upload&_wpnonce=' + theplatform_local.tp_nonce['theplatform_upload'], '_blank', 'menubar=no,location=no,resizable=no,scrollbars=no,status=no,width=700,height=180' )
 
-		upload_window.uploaderData = {
+		 var uploaderData = {
 			file: file,
 			params: JSON.stringify( params ),
 			custom_params: JSON.stringify( custom_params ),
@@ -406,7 +406,9 @@ jQuery( document ).ready( function() {
 			server: server.val()
 		}
 
-		upload_window.parentLocation = window.location;
+		window.onmessage = function() {
+			upload_window.postMessage(uploaderData, '*');
+		}		
 
 	} );
 } );

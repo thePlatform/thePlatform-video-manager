@@ -39,15 +39,22 @@ function theplatform_upload_clear_styles() {
     <head>
 		<meta charset="<?php bloginfo( 'charset' ); ?>" />
 
-		<title>thePlatform Video Library</title>
-		
+		<title>thePlatform Video Library</title>        
+
 		<?php wp_head(); ?>		
     </head>
 
     <body class="tp">			    
     <?php wp_footer(); ?> 
-    </body>
-    <script type="text/javascript">		
-		var theplatformUploader = new TheplatformUploader( uploaderData.file, uploaderData.params, uploaderData.custom_params, uploaderData.profile, uploaderData.server );
-    </script>
+
+    <script type="text/javascript">     
+
+            window.opener.postMessage('ready', '*');
+              
+            window.onmessage = function(e) {
+                var uploaderData = e.data;
+                var theplatformUploader = new TheplatformUploader( uploaderData.file, uploaderData.params, uploaderData.custom_params, uploaderData.profile, uploaderData.server );    
+            }            
+        </script>
+    </body>    
 </html>
