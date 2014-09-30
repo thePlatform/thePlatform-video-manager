@@ -20,6 +20,18 @@ if ( !defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+//TODO: Would just be better to not include the upload media link in the sidebar?
+preg_match('/MSIE (.*?);/', $_SERVER['HTTP_USER_AGENT'], $matches);
+
+if ( count( $matches ) > 1 ) {
+	//Then we're using IE
+	$version = $matches[1];
+	if ( $version <= 9 ) {
+		echo "<h2>Internet Explorer " . $version . ' is not supported</h2>';
+		exit;
+	}      
+}
+
 if ( !isset( $tp_api ) ) {
 	$tp_api = new ThePlatform_API;
 }
