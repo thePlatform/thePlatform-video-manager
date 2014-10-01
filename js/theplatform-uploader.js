@@ -132,11 +132,14 @@ TheplatformUploader = ( function() {
 			return;
 		}
 
+		NProgress.settings.incLimit = me.progressIncrements * (index+1);
+		
 		if ( me.frags_uploaded == 0 ) {					
-			me.message( 'Uploading File...', true )			
+			me.message( 'Uploading File...', true )							
 			NProgress.set(0.00001)
-			NProgress.settings.trickle = true;
-			NProgress.settings.trickleRate = me.progressIncrements / 20;
+			NProgress.settings.trickle = true;						
+			NProgress.settings.trickleRate = me.progressIncrements / 35 ;		
+			NProgress.settings.trickleSpeed = 650;			
 			NProgress.start();		
 		} 
 
@@ -158,6 +161,7 @@ TheplatformUploader = ( function() {
 		data.append('cookie_name', me.cookie['name']);
 		data.append('cookie_value', me.cookie['value']);
 
+		var lastSegmentStart = Date.now();
 		jQuery.ajax( {
 			url: theplatform_uploader_local.ajaxurl,			
 			data: data,			
@@ -168,7 +172,7 @@ TheplatformUploader = ( function() {
 				withCredentials: true
 			},
 			success: function( response ) {
-				if (response.success) {
+				if (response.success) {													
 					me.frags_uploaded++;
 				
 					if ( me.num_fragments == me.frags_uploaded ) {
@@ -176,8 +180,12 @@ TheplatformUploader = ( function() {
 						NProgress.inc(me.progressIncrements);
 						me.finish();
 					} else {	
+						var lastSegmentEnd = Date.now();
 						if ( NProgress.status < me.progressIncrements * me.frags_uploaded ) {							
 							NProgress.set(me.progressIncrements * me.frags_uploaded);
+							NProgress.configure({
+								trickleRate: me.progressIncrements / ( (lastSegmentEnd - lastSegmentStart) / 1000 )
+							})
 						}
 						me.message( "Finished uploading fragment " + me.frags_uploaded + " of " + me.num_fragments );
 						index++;

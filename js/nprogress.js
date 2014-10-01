@@ -28,7 +28,8 @@
     barSelector: '[role="bar"]',
     spinnerSelector: '[role="spinner"]',
     parent: 'body',
-    template: '<div class="bar" role="bar"><div class="peg"></div></div><div class="spinner" role="spinner"><div class="spinner-icon"></div></div>'
+    template: '<div class="bar" role="bar"><div class="peg"></div></div><div class="spinner" role="spinner"><div class="spinner-icon"></div></div>',
+    incLimit: 1
   };
 
   /**
@@ -172,7 +173,11 @@
   };
 
   NProgress.trickle = function() {
-    return NProgress.inc(Math.random() * Settings.trickleRate);
+    var incAmount = Math.random() * Settings.trickleRate;
+    if (Settings.incLimit > incAmount + NProgress.status) {
+      return NProgress.inc(incAmount);  
+    }
+    
   };
 
   /**
