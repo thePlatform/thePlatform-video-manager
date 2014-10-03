@@ -71,12 +71,12 @@ class ThePlatform_URLs {
 		define( 'TP_API_SIGNOUT_URL', TP_API_ADMIN_IDENTITY_BASE_URL . 'signOut?schema=1.0&form=json&_token=' );
 
 		// Media Data Service URLs
-		define( 'TP_API_MEDIA_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Media?schema=1.5&form=cjson' );
-		define( 'TP_API_MEDIA_FIELD_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Media/Field?schema=1.3&form=cjson' );
-		define( 'TP_API_MEDIA_SERVER_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Server?schema=1.0&form=cjson' );
-		define( 'TP_API_MEDIA_RELEASE_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Release?schema=1.5.0&form=cjson' );
-		define( 'TP_API_MEDIA_CATEGORY_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Category?schema=1.6.0&form=cjson' );
-		define( 'TP_API_MEDIA_ACCOUNTSETTINGS_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'AccountSettings?schema=1.6.0&form=cjson' );
+		define( 'TP_API_MEDIA_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Media?schema=1.7.0&form=cjson' );
+		define( 'TP_API_MEDIA_FIELD_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Media/Field?schema=1.7.0&form=cjson' );
+		define( 'TP_API_MEDIA_SERVER_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Server?schema=1.7.0&form=cjson' );
+		define( 'TP_API_MEDIA_RELEASE_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Release?schema=1.7.0&form=cjson' );
+		define( 'TP_API_MEDIA_CATEGORY_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Category?schema=1.7.0&form=cjson' );
+		define( 'TP_API_MEDIA_ACCOUNTSETTINGS_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'AccountSettings?schema=1.7.0&form=cjson' );
 
 		// Player Data Service URLs
 		define( 'TP_API_PLAYER_PLAYER_ENDPOINT', TP_API_PLAYER_BASE_URL . 'Player?schema=1.3.0&form=cjson' );

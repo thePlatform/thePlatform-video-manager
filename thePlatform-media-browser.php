@@ -89,6 +89,7 @@ function theplatform_media_clear_styles() {
 			tpHelper.account = "<?php echo esc_js( $account['mpx_account_id'] ); ?>";
 			tpHelper.accountPid = "<?php echo esc_js( $account['mpx_account_pid'] ); ?>";
 			tpHelper.isEmbed = "<?php echo esc_js( $IS_EMBED ); ?>";
+			tpHelper.mediaEmbedType = "<?php echo esc_js( $preferences['media_embed_type'] ); ?>";
 		</script>
 		
 		<script id="category-template" type="text/x-handlebars-template">

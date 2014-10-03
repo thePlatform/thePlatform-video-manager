@@ -289,21 +289,21 @@ function theplatform_plugin_version_changed() {
 	}
 	
 	if ( !isset( $preferences['plugin_version'] ) ) {
-		return TRUE; //Old versions didn't have plugin_version stored
+		return TP_PLUGIN_VERSION('1.0.0'); //Old versions didn't have plugin_version stored
 	}
 	
-	$version = explode( '.', $preferences['plugin_version'] );
+	$version = TP_PLUGIN_VERSION( $preferences['plugin_version'] );
 	$currentVersion = TP_PLUGIN_VERSION();
-	if ( $version[0] != $currentVersion['major']) {
-		return TRUE;
+	if ( $version['major'] != $currentVersion['major']) {
+		return $version;
 	}
 	
-	if ( $version[1] != $currentVersion['minor']) {
-		return TRUE;
+	if ( $version['minor'] != $currentVersion['minor']) {
+		return $version;
 	}
 	
-	if ( $version[2] != $currentVersion['patch']) {
-		return TRUE;
+	if ( $version['patch'] != $currentVersion['patch']) {
+		return $version;
 	}	
 	
 	return FALSE;

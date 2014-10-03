@@ -187,7 +187,17 @@ jQuery( document ).ready( function() {
 		jQuery( '.media' ).css( 'background-color', '' );
 		jQuery( this ).css( 'background-color', '#D8E8FF' );
 		jQuery( this ).data( 'bgc', '#D8E8FF' );
-		tpHelper.currentRelease = jQuery( this ).data( 'release' );
+
+		if (tpHelper.mediaEmbedType == 'pid') {
+			tpHelper.currentRelease = 'media/' + jQuery( this ).data( 'pid' );
+		} else if (tpHelper.mediaEmbedType == 'guid') {
+			var accountId = tpHelper.account.substring(tpHelper.account.lastIndexOf('/') + 1);
+			tpHelper.currentRelease = 'media/guid/' + accountId + '/' + encodeURIComponent( jQuery( this ).data( 'guid' ) );
+		}
+		else {
+			tpHelper.currentRelease = jQuery( this ).data( 'release' );
+		}
+	
 		tpHelper.mediaId = jQuery( this ).data( 'id' );
 		tpHelper.selectedThumb = jQuery( this ).data( 'media' )['defaultThumbnailUrl'];
 		$pdk.controller.resetPlayer();
@@ -365,6 +375,7 @@ function addMediaObject( media ) {
 	
 	var newMedia = mediaTemplate({ 
 		guid: media.guid, 
+		pid: media.pid,
 		placeHolder: placeHolder, 
 		defaultThumbnailUrl: media.defaultThumbnailUrl,
 		title: media.title,
@@ -374,6 +385,7 @@ function addMediaObject( media ) {
 	newMedia = jQuery( newMedia );	
 
 	newMedia.data( 'guid', media.guid );
+	newMedia.data( 'pid', media.pid );
 	newMedia.data( 'media', media );
 	newMedia.data( 'id', media.id );
 	var previewUrl = mpxHelper.extractVideoUrlfromMedia( media );
