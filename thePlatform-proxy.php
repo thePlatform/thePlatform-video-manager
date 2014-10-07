@@ -56,6 +56,7 @@ class ThePlatform_Proxy {
 	
 	private function check_theplatform_proxy_response( $response, $returnsValue = false ) {
 		
+        // Check if we got an error back and return it
 		if ( is_wp_error( $response ) ) {
 			wp_send_json_error( $response->get_error_message() );
 		}
@@ -66,6 +67,7 @@ class ThePlatform_Proxy {
 		
         $responseBody = wp_remote_retrieve_body( $response );
 
+        // This AJAX call should not return a value, in this case we send a json error with the body to the UI
         if ( !$returnsValue && !empty( $responseBody ) ) {
             wp_send_json_error( theplatform_decode_json_from_server( $response, TRUE, FALSE ) );
         } 
@@ -125,7 +127,7 @@ class ThePlatform_Proxy {
         $this->check_nonce_and_permissions( $_POST['action'] );
 
         $response = $this->proxy_http_request();
-        ThePlatform_Proxy::check_theplatform_proxy_response ( $response, true );
+        $this->check_theplatform_proxy_response ( $response, true );
      
         wp_send_json_error("Shouldn't be here.");
     }
@@ -152,7 +154,8 @@ class ThePlatform_Proxy {
         $this->check_nonce_and_permissions( $_POST['action'] );
         
         $data = array (
-            'body' => 'finished'
+            'body' => 'finished',
+            'timeout' => 30
         );
 
         $response = $this->proxy_http_request( $data );
@@ -166,7 +169,7 @@ class ThePlatform_Proxy {
         $this->check_nonce_and_permissions( $_POST['action'] );
 
         $response = $this->proxy_http_request();
-        ThePlatform_Proxy::check_theplatform_proxy_response ( $response );
+        $this->check_theplatform_proxy_response ( $response );
      
         wp_send_json_error("Shouldn't be here.");
      

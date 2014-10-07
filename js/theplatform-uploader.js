@@ -128,7 +128,8 @@ TheplatformUploader = ( function() {
 			action: 'upload_status',
 			_wpnonce: theplatform_uploader_local.tp_nonce['upload_status'],
 			cookie_name: me.cookie['name'],
-			cookie_value: me.cookie['value']
+			cookie_value: me.cookie['value'],
+			contentType: "application/json; charset=utf-8"
 		}
 
 		me.message('Waiting for Upload server to be ready.');
@@ -287,7 +288,7 @@ TheplatformUploader = ( function() {
 				withCredentials: true
 			},
 			success: function( response ) {
-				setTimeout( function() { me.waitForComplete(); }, 5000 )
+				me.waitForComplete();
 			},
 			error: function( response ) {
 
@@ -314,8 +315,11 @@ TheplatformUploader = ( function() {
 			_wpnonce: theplatform_uploader_local.tp_nonce['upload_status'],
 			action: 'upload_status',
 			cookie_name: me.cookie['name'],
-			cookie_value: me.cookie['value']
+			cookie_value: me.cookie['value'],
+			contentType: "application/json; charset=utf-8"
 		}
+
+		me.message('Waiting for complete status');
 
 		jQuery.ajax( {
 			url: theplatform_uploader_local.ajaxurl,			
@@ -323,6 +327,9 @@ TheplatformUploader = ( function() {
 			data: data,
 			xhrFields: {
 				withCredentials: true
+			},
+			error: function( response ) {
+				setTimeout(function() { me.waitForComplete(); }, 5000)
 			},
 			success: function( response ) {
 				if (response.success) {
@@ -533,6 +540,8 @@ TheplatformUploader = ( function() {
 		});
 
 		NProgress.start();
+
+		jQuery.ajaxSetup({dataType: 'json'})
 		
 		this.files = files;
 		this.lastFileIndex = files.length - 1;
