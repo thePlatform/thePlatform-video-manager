@@ -552,13 +552,13 @@ function theplatform_register_plugin_settings() {
  * Checks if the plugin has been updated and performs any necessary updates.
  */
 function theplatform_check_plugin_update() {	
-	$oldVersion = theplatform_plugin_version_changed();
+	$oldVersion = theplatform_plugin_version_changed();	
 	if ( FALSE === $oldVersion ) {
 		return;
 	}	
 
 	$newVersion = TP_PLUGIN_VERSION();
-
+	
 	// On any version, update defaults that didn't previously exist
 	update_option( TP_PREFERENCES_OPTIONS_KEY, 	array_merge( TP_PREFERENCES_OPTIONS_DEFAULTS(), get_option( TP_PREFERENCES_OPTIONS_KEY, array() ) ) );
 	update_option( TP_ACCOUNT_OPTIONS_KEY, 		array_merge( TP_ACCOUNT_OPTIONS_DEFAULTS(), 	get_option( TP_ACCOUNT_OPTIONS_KEY, 	array() ) ) );

@@ -247,7 +247,7 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 					<div class="input-group">					
 		                <span class="input-group-btn">
 		                    <span class="btn btn-default btn-file">
-		                        Browse&hellip; <input type="file" id="theplatform_upload_file">
+		                        Browse&hellip; <input type="file" id="theplatform_upload_file" multiple>
 		                    </span>
 		                </span>
 	                	<input type="text" class="form-control" style="cursor: text; text-indent: 10px;" id="theplatform_upload_label" readonly value="No file chosen">

@@ -24,6 +24,7 @@ Upload media to your MPX account
 == Changelog ==
 
 = 1.3.0 =
+Allow multiple files to be uploaded
 Complete update to the plugin UX. Fixed numerous layouting issues across all the different pages
 The video upload dialog has been completely redesigned
 Video uploads should no longer fail randomly

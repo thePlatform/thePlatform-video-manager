@@ -17,6 +17,58 @@
 
 TheplatformUploader = ( function() {		
 
+	TheplatformUploader.prototype.prepareForUpload = function() {
+		var me = this;
+
+		var file = this.files[this.currentFileIndex];
+		this.file = file;		
+		this._fileSize = file.size;
+		this.filetype = file.type;
+		this._filePath = file.name;	
+
+		var jsonFields = JSON.parse(this.fields);	
+		if ( this._mediaId != undefined && jsonFields.id == undefined) {
+			jsonFields.id = me._mediaId;
+			this.fields = JSON.stringify(jsonFields);
+		}
+
+		var data = {
+			_wpnonce: theplatform_uploader_local.tp_nonce['initialize_media_upload'],
+			action: 'initialize_media_upload',
+			filesize: file.size,
+			filetype: file.type,
+			filename: file.name,
+			server_id: this.server,
+			fields: this.fields,
+			custom_fields: this.custom_fields			
+		};
+
+
+		me.message( "Initializing Upload of file " + (me.currentFileIndex + 1) + ' out of ' + (me.lastFileIndex + 1));				
+
+		jQuery.post( theplatform_uploader_local.ajaxurl, data, function( response ) {			
+			if ( response.success ) {
+				var data = response.data;
+				
+				if ( me._mediaId == undefined) {
+					me.message( "Media created with id: " + data.mediaId );
+				} 
+				me.uploadUrl = data.uploadUrl				
+				me.token = data.token;
+				me.account = data.account;
+				me._mediaId = data.mediaId;				
+				me._guid = me.createUUID();
+				me._serverId = data.serverId;
+				me.format = data.format;
+				me.contentType = data.contentType;				
+				
+				me.startUpload();
+			} else {
+				me.error( "Unable to upload media asset at this time. Please try again later." + response.data );
+			}
+		});		
+	};
+
 	/**
 	 @function startUpload Inform FMS via the API proxy that we are starting an upload
 	 passed to the proxy	 
@@ -101,7 +153,7 @@ TheplatformUploader = ( function() {
 							me.num_fragments = frags.length;
 							me.progressIncrements = 1/frags.length;
 
-							me.message( "Beginning upload of " + frags.length + " fragments. Please do not close this window." );
+							me.message( "Beginning upload of " + frags.length + " fragments" );
 
 							me.uploadFragments( frags, 0 );
 
@@ -135,7 +187,7 @@ TheplatformUploader = ( function() {
 		NProgress.settings.incLimit = me.progressIncrements * (index+1);
 		
 		if ( me.frags_uploaded == 0 ) {					
-			me.message( 'Uploading File...', true )							
+			me.message( 'Uploading file ' + (me.currentFileIndex + 1) + ' out of ' + (me.lastFileIndex + 1), true )							
 			NProgress.set(0.00001)
 			NProgress.settings.trickle = true;						
 			NProgress.settings.trickleRate = me.progressIncrements / 35 ;		
@@ -207,13 +259,7 @@ TheplatformUploader = ( function() {
 	 @function finish Notify MPX that the upload has finished	 
 	 */
 	TheplatformUploader.prototype.finish = function() {
-		var me = this;
-
-		if ( this.finishedUploadingFragments ) {
-			return;
-		}
-
-		this.finishedUploadingFragments = true;
+		var me = this;		
 
 		var requestUrl = me.uploadUrl + '/web/Upload/finishUpload';
 		requestUrl += '?schema=1.1';
@@ -232,7 +278,7 @@ TheplatformUploader = ( function() {
 			cookie_value: me.cookie['value']		
 		}
 
-		me.message('Finishing Up...', true)
+		me.message('Finishing upload of file ' + (me.currentFileIndex + 1) + ' out of ' + (me.lastFileIndex + 1), true)
 		jQuery.ajax( {
 			url: theplatform_uploader_local.ajaxurl,
 			data: data,			
@@ -289,13 +335,19 @@ TheplatformUploader = ( function() {
 
 							me.file_id = fileID;
 
-							if ( me.publishProfile != "tp_wp_none" ) {								
+							// On the last file, finish up.							
+							if ( me.currentFileIndex == me.lastFileIndex ) {
+								if ( me.publishProfile != "tp_wp_none" ) {								
 								me.publishMedia();
-							}
-							else {
-								me.message( "Upload completed. This window will close in 5 seconds.", true);
-								window.setTimeout( 'window.close()', 5000 );
-							}
+								}
+								else {
+									me.message( "Upload completed. This window will close in 5 seconds.", true);
+									window.setTimeout( 'window.close()', 5000 );
+								}	
+							} else { // We have more files, upload the next file
+								me.currentFileIndex++;
+								me.prepareForUpload();
+							}							
 						} else if ( state === "Error" ) {
 							me.error( data.entries[0].exception, true );
 						} else {
@@ -334,7 +386,7 @@ TheplatformUploader = ( function() {
 
 		this.publishing = true;
 
-		me.message( "Publishing media..." );
+		me.message( "Publishing media" );
 
 		jQuery.ajax( {
 			url: theplatform_uploader_local.ajaxurl,
@@ -342,7 +394,7 @@ TheplatformUploader = ( function() {
 			type: "POST",
 			success: function( response ) {
 				if ( response.success ) {
-					me.message( "Media Published Successfully", true );
+					me.message( "Media published successfully", true );
 					window.setTimeout( 'window.close()', 5000 );
 				} else {
 					me.message( response.data.description, true);					
@@ -459,16 +511,16 @@ TheplatformUploader = ( function() {
 	/**
 	 @function constructor Inform the API proxy to create placeholder media assets in MPX and begin uploading	 
 	 */
-	function TheplatformUploader( file, fields, custom_fields, profile, server ) {
+	function TheplatformUploader( files, fields, custom_fields, profile, server ) {
 		var me = this;
-		this.file = file;
+		
 		this.fragSize = ( 1024 * 1024 ) * 10;
 			
 		var splashHtml = '<div class="splash card">' +
 		    '<div role="spinner">' +
 		        '<div class="spinner-icon"></div>' +
 		    '</div>' +		    
-		    '<p class="lead" style="text-align:center">Initalizing Upload...</p>' +
+		    '<p class="lead" style="text-align:center">Initalizing upload</p>' +
 	    	'<div class="progress">' +
 	        	'<div class="mybar" role="bar"></div>' +
 	    	'</div>' +	    	
@@ -481,48 +533,19 @@ TheplatformUploader = ( function() {
 		});
 
 		NProgress.start();
-
-		this.failed = false;
-		this.finishedUploadingFragments = false;
-		this.publishing = false;
-		this.attempts = 0;
-		this._fileSize = file.size;
-		this.filetype = file.type;
-		this._filePath = file.name;	
-		this.publishProfile = profile;
-
-		var data = {
-			_wpnonce: theplatform_uploader_local.tp_nonce['initialize_media_upload'],
-			action: 'initialize_media_upload',
-			filesize: file.size,
-			filetype: file.type,
-			filename: file.name,
-			server_id: server,
-			fields: fields,
-			custom_fields: custom_fields			
-		};
 		
-		me.message( "Creating Placeholder media" );				
-
-		jQuery.post( theplatform_uploader_local.ajaxurl, data, function( response ) {			
-			if ( response.success ) {
-				var data = response.data;
-				
-				me.uploadUrl = data.uploadUrl				
-				me.token = data.token;
-				me.account = data.account;
-				me._mediaId = data.mediaId;				
-				me._guid = me.createUUID();
-				me._serverId = data.serverId;
-				me.format = data.format;
-				me.contentType = data.contentType;
-				
-				me.message( "Placeholder media created with id: " + me._mediaId );								
-				me.startUpload();
-			} else {
-				me.error( "Unable to upload media asset at this time. Please try again later." + response.data );
-			}
-		});
+		this.files = files;
+		this.lastFileIndex = files.length - 1;
+		this.currentFileIndex = 0;
+		this.failed = false;		
+		this.publishing = false;
+		this.attempts = 0;		
+		this.publishProfile = profile;
+		this.fields = fields;
+		this.custom_fields = custom_fields;
+		this.server = server
+		
+		this.prepareForUpload();
 	};
 
 	return TheplatformUploader;

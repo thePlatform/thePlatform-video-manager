@@ -53,7 +53,7 @@ function theplatform_upload_clear_styles() {
               
             window.onmessage = function(e) {
                 var uploaderData = e.data;
-                var theplatformUploader = new TheplatformUploader( uploaderData.file, uploaderData.params, uploaderData.custom_params, uploaderData.profile, uploaderData.server );    
+                var theplatformUploader = new TheplatformUploader( uploaderData.files, uploaderData.params, uploaderData.custom_params, uploaderData.profile, uploaderData.server );    
             }            
         </script>
     </body>    

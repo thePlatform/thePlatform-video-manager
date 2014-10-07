@@ -377,17 +377,17 @@ jQuery( document ).ready( function() {
 
 	// Upload media button handler
 	jQuery( "#theplatform_upload_button" ).click( function( event ) {
-		var file = document.getElementById( 'theplatform_upload_file' ).files[0];
+		var files = document.getElementById( 'theplatform_upload_file' ).files;
 
 		var validation_error = validate_media( event );
 
-		if (file === undefined) {
+		if (files[0] === undefined) {
 			jQuery('#file-form-group').addClass('has-error');
 		} else {
 			jQuery('#file-form-group').removeClass('has-error');
 		}
 
-		if ( validation_error || file === undefined )
+		if ( validation_error || files[0] === undefined )
 			return false;
 
 		var params = parseMediaParams();
@@ -399,7 +399,7 @@ jQuery( document ).ready( function() {
 		var upload_window = window.open( theplatform_local.ajaxurl + '?action=theplatform_upload&_wpnonce=' + theplatform_local.tp_nonce['theplatform_upload'], '_blank', 'menubar=no,location=no,resizable=no,scrollbars=no,status=no,width=700,height=180' )
 
 		 var uploaderData = {
-			file: file,
+			files: files,
 			params: JSON.stringify( params ),
 			custom_params: JSON.stringify( custom_params ),
 			profile: profile.val(),

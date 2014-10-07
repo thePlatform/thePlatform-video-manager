@@ -58,7 +58,7 @@ function TP_PREFERENCES_OPTIONS_DEFAULTS() {
 					'default_height' => intval( ($GLOBALS['content_width'] / 16) * 9 ),
 					'player_embed_type' => 'embed',
                     'embed_hook' => 'mediabutton',
-                    'media_embed_type' => 'release'
+                    'media_embed_type' => 'pid'
 				);
 }
 
