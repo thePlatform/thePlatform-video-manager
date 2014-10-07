@@ -17,6 +17,10 @@
 
 TheplatformUploader = ( function() {		
 
+	/**
+	@function prepareForUpload Creates a placeholder media and gets all the required information
+	to upload a new media file	
+	 */
 	TheplatformUploader.prototype.prepareForUpload = function() {
 		var me = this;
 

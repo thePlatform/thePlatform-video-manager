@@ -258,9 +258,7 @@ class ThePlatform_Plugin {
 
 		$url = isset( $_POST['img'] ) ? $_POST['img'] : '';
 
-		$url = esc_url_raw( $url );
-
-		$thumbnail_id = $this->set_thumbnail( $url, $post_ID );
+		$thumbnail_id = $this->set_thumbnail( esc_url_raw( $url ), $post_ID );
 
 		if ( $thumbnail_id !== FALSE ) {
 			set_post_thumbnail( $post_ID, $thumbnail_id );

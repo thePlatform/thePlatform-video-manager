@@ -46,8 +46,7 @@ function theplatform_account_options_validate ( $input ) {
 	}
 			
 	$account_is_verified = $tp_api->internal_verify_account_settings();
-	if ( $account_is_verified ) {
-		$region_is_verified = $tp_api->internal_verify_account_region();
+	if ( $account_is_verified ) {		
 		
 		if ( strpos( $input['mpx_account_id'], '|' ) !== FALSE ) {
 			$ids = explode( '|', $input['mpx_account_id'] );			
@@ -59,7 +58,6 @@ function theplatform_account_options_validate ( $input ) {
 			$ids = explode( '|', $input['mpx_region'] );
 			$input['mpx_region'] = $ids[0];
 		}
-
 	}
 	
 	foreach ($input as $key => $value) {
@@ -127,8 +125,7 @@ function theplatform_setting_changed( $key, $oldArray, $newArray ) {
  * @return array A cleaned up copy of the array, invalid values will be cleared.
  */
 function theplatform_preferences_options_validate( $input ) {	
-	$tp_api = new ThePlatform_API;
-	$defaults = TP_PREFERENCES_OPTIONS_DEFAULTS();
+	$tp_api = new ThePlatform_API;	
 
 	$account_is_verified = $tp_api->internal_verify_account_settings();	
 	if ( $account_is_verified ) {

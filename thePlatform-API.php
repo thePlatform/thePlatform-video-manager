@@ -42,8 +42,6 @@ class ThePlatform_API_HTTP {
 		else {
 			return wp_remote_get( $url, $data );
 		}
-		
-		return $response;
 	}
 
 	/**
@@ -66,7 +64,7 @@ class ThePlatform_API_HTTP {
 	 * @return wp_response Results of the POST request
 	 */
 	static function post( $url, $data, $isJSON = TRUE, $method = 'POST' ) {
-		$url = esc_url_raw( $url );
+		$escapedUrl = esc_url_raw( $url );
 		$default_data = array(
 			'method' => $method,						
 			'timeout' => 10,
@@ -78,7 +76,7 @@ class ThePlatform_API_HTTP {
 
 		$args = array_merge( $default_data, $data );				
 		
-		$response = wp_remote_post( $url, $args );
+		$response = wp_remote_post( $escapedUrl, $args );
 
 		return $response;
 	}
@@ -245,7 +243,8 @@ class ThePlatform_API {
 		if ( empty( $fields ) ) {
 			wp_die( 'No fields are set, unable to upload Media' );
 		}
-
+		
+		// Create the Custom Fields namespace and values arrays
 		$custom_field_ns = array();
 		$custom_field_values = array();
 		if ( !empty( $custom_fields ) ) {
@@ -266,14 +265,13 @@ class ThePlatform_API {
 
 		$url = TP_API_MEDIA_ENDPOINT;
 		$url .= '&account=' . $this->get_mpx_account_id();
-		$url .= '&token=' . $token;
-		
+		$url .= '&token=' . $token;		
 
 		$data = array( 'body' => json_encode( $payload, JSON_UNESCAPED_SLASHES ) );
 
 		$response = ThePlatform_API_HTTP::post( $url, $data, true );
-		$data = theplatform_decode_json_from_server( $response, TRUE );
-		return $data;
+		
+		return theplatform_decode_json_from_server( $response, TRUE );		
 	}
 
 	/**
@@ -527,13 +525,11 @@ class ThePlatform_API {
 	function get_players( $fields = array() ) {
 		$default_fields = array( 'id', 'title', 'plplayer$pid' );
 
-		$fields = implode( ',', 
-				array_merge( $default_fields, $fields )
-		);
+		$fieldsString = implode( ',' , array_merge( $default_fields, $fields ) );
 
 		$token = $this->mpx_signin();
 
-		$url = TP_API_PLAYER_PLAYER_ENDPOINT . '&sort=title&fields=' . $fields . '&token=' . $token;
+		$url = TP_API_PLAYER_PLAYER_ENDPOINT . '&sort=title&fields=' . $fieldsString . '&token=' . $token;
 
 		if ( $this->get_mpx_account_id() ) {
 			$url .= '&account=' . $this->get_mpx_account_id();
@@ -559,15 +555,13 @@ class ThePlatform_API {
 	function get_metadata_fields( $fields = array() ) {
 		$default_fields = array( 'id', 'title', 'description', 'added', 'allowedValues', 'dataStructure', 'dataType', 'fieldName', 'defaultValue', 'namespace', 'namespacePrefix' );
 		
-		$fields = implode( ',', 
-				array_merge( $default_fields, $fields )
-		);
+		$fieldsString = implode( ',', array_merge( $default_fields, $fields ) );
 
 		$this->get_preferences();
 
 		$token = $this->mpx_signin();
 
-		$url = TP_API_MEDIA_FIELD_ENDPOINT . '&fields=' . $fields . '&token=' . $token;
+		$url = TP_API_MEDIA_FIELD_ENDPOINT . '&fields=' . $fieldsString . '&token=' . $token;
 
 		if ( $this->get_mpx_account_id() ) {
 			$url .= '&account=' . $this->get_mpx_account_id();
@@ -592,13 +586,11 @@ class ThePlatform_API {
 	function get_servers( $fields = array(), $query = "" ) {
 		$default_fields = array( 'id', 'title', 'description', 'added' );
 
-		$fields = implode( ',', 
-				array_merge( $default_fields, $fields )
-		);
+		$fieldsString = implode( ',', array_merge( $default_fields, $fields ) );
 
 		$token = $this->mpx_signin();
 
-		$url = TP_API_MEDIA_SERVER_ENDPOINT . '&fields=' . $fields . '&token=' . $token;
+		$url = TP_API_MEDIA_SERVER_ENDPOINT . '&fields=' . $fieldsString . '&token=' . $token;
 
 		if ( $this->get_mpx_account_id() ) {
 			$url .= '&account=' . $this->get_mpx_account_id();
@@ -673,15 +665,9 @@ class ThePlatform_API {
 	/**
 	 * Query MPX for subaccounts associated with the configured account
 	 *
-	 * @param array $fields Optional set of fields to request from the data service
 	 * @return array The Media data service response
 	 */
-	function get_subaccounts( $fields = array() ) {
-		$default_fields = array( 'id', 'title', 'description', 'placcount$pid' );
-
-		$fields = implode( ',', 
-				array_merge( $default_fields, $fields )
-		);
+	function get_subaccounts( ) {
 
 		$token = $this->mpx_signin();
 
@@ -705,13 +691,11 @@ class ThePlatform_API {
 	function get_publish_profiles( $fields = array() ) {
 		$default_fields = array( 'id', 'title' );
 
-		$fields = implode( ',', 
-				array_merge( $default_fields, $fields )
-		);
+		$fieldsString = implode( ',', array_merge( $default_fields, $fields ) );
 
 		$token = $this->mpx_signin();
 
-		$url = TP_API_PUBLISH_PROFILE_ENDPOINT . '&fields=' . $fields . '&token=' . $token . '&sort=title';
+		$url = TP_API_PUBLISH_PROFILE_ENDPOINT . '&fields=' . $fieldsString . '&token=' . $token . '&sort=title';
 
 		if ( $this->get_mpx_account_id() ) {
 			$url .= '&account=' . $this->get_mpx_account_id();
@@ -759,7 +743,7 @@ class ThePlatform_API {
 
 	/**
 	 * Verify that the account you've selected is within the region you've selected
-	 * @return bool account is within the same region
+	 * @return bool True if the account is within the same region
 	 */
 	function internal_verify_account_region() {
 		if ( !$this->get_mpx_account_id() ) {
