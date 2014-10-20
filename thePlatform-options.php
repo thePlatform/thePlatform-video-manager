@@ -279,7 +279,7 @@ class ThePlatform_Options {
     	$field = $args['field'];
     	$options = $args['options'];
     	$name = $args['key'] . '[' . $field['id'] . ']';
-    	$html = '<input class="tpOption" id="' . esc_attr( $field['id'] ) . '" type="password" name="' . esc_attr( $name ) . '" value="' . $options[ $field['id'] ] . '" autocomplete="off" />';
+    	$html = '<input class="tpOption" id="' . esc_attr( $field['id'] ) . '" type="password" name="' . esc_attr( $name ) . '" value="' . esc_attr( $options[ $field['id'] ] ) . '" autocomplete="off" />';
     	if ( $field['id'] === 'mpx_password') {
     		$html .= '<span id="verify-account"><button id="verify-account-button" type="button" name="verify-account-button">Verify Account Settings</button><div id="verify-account-dashicon" class="dashicons"></div></span>';
     	}
@@ -465,7 +465,7 @@ class ThePlatform_Options {
 		foreach ( $this->plugin_settings_tabs as $tab_key => $tab_caption ) {
 			$active = $current_tab == $tab_key ? 'nav-tab-active' : '';
 			$url = '?page=' . $this->plugin_options_key . '&tab=' . $tab_key;
-			echo '<a class="nav-tab ' . $active . '" href="' . esc_url( $url ) . '">' . $tab_caption . '</a>';
+			echo '<a class="nav-tab ' . esc_attr( $active ) . '" href="' . esc_url( $url ) . '">' . $tab_caption . '</a>';
 		}
 		echo '</h2>';
 	}
