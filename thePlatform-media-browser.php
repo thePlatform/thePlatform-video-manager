@@ -19,12 +19,18 @@
 /*
  * Load scripts and styles 
  */
-add_action('wp_enqueue_scripts', 'theplatform_media_clear_styles', 1000);
-function theplatform_media_clear_styles() {
+add_action('wp_enqueue_scripts', 'theplatform_media_clear_styles_and_scripts', 100912);
+function theplatform_media_clear_styles_and_scripts() {
 	global $wp_styles; 
 	foreach( $wp_styles->queue as $handle ) {	
 		wp_dequeue_style( $handle );
 	}    
+
+	global $wp_scripts; 
+    foreach( $wp_scripts->queue as $handle ) {       	
+        wp_dequeue_script( $handle );
+    }   
+
 	wp_enqueue_script( 'tp_mediaview_js' );
 	wp_enqueue_script( 'jquery-ui-dialog' );
 	wp_enqueue_style( 'tp_bootstrap_css' );
