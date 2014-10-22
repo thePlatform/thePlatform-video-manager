@@ -36,6 +36,7 @@ Media outside the availability window will now show in the media browser
 Admins can choose to display either the username, full name or email address instead of the numerical user id.
 Fixed the autoPlay shortcode attribute
 Admins can choose the Player embed type - either full player or a single embedded player
+Disabled players no longer show up in the Players dropdown
 
 = 1.2.3 = 
 Fix uploads sporadically not working in HTTPS 

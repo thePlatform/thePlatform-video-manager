@@ -523,7 +523,7 @@ class ThePlatform_API {
 	 * @return array The Player data service response
 	 */
 	function get_players( $fields = array() ) {
-		$default_fields = array( 'id', 'title', 'plplayer$pid' );
+		$default_fields = array( 'id', 'title', 'pid', 'disabled' );
 
 		$fieldsString = implode( ',' , array_merge( $default_fields, $fields ) );
 
@@ -539,11 +539,20 @@ class ThePlatform_API {
 
 		$data = theplatform_decode_json_from_server( $response, TRUE );
 
-		$ret = $data['entries'];
+		$ret = array_filter( $data['entries'], array( $this, "filter_disabled_players" ) );
 
 		$this->mpx_signout( $token );
 
 		return $ret;
+	}
+
+	/**
+	 * Filtering function to remove all disabled players from MPX results
+	 * @param  Object $var Player entry
+	 * @return boolean
+	 */
+	function filter_disabled_players( $var ) {
+		return $var['disabled'] == false;
 	}
 
 	/**
