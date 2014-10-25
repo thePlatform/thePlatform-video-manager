@@ -85,8 +85,7 @@ class ThePlatform_API_HTTP {
 /**
  * Handle all calls to MPX API
  */
-class ThePlatform_API {
-		
+class ThePlatform_API {		
 	/**
 	 * Class constructor
 	 */
@@ -95,6 +94,8 @@ class ThePlatform_API {
 		$this->get_preferences();
 	}
 	
+	private $token;
+
 	/**
 	 * Gets the MPX account options from the database
 	 */
@@ -198,23 +199,15 @@ class ThePlatform_API {
 	 * @return string API Authentication Token
 	 */
 	function mpx_signin() {
-		$response = ThePlatform_API_HTTP::get( TP_API_SIGNIN_URL, $this->basicAuthHeader() );
+		if ( empty( $this->token) ) {		
+			$response = ThePlatform_API_HTTP::get( TP_API_SIGNIN_URL, $this->basicAuthHeader() );
 
-		$payload = theplatform_decode_json_from_server( $response, TRUE );
+			$payload = theplatform_decode_json_from_server( $response, TRUE );
 
-		$token = $payload['signInResponse']['token'];
+			$this->token = $payload['signInResponse']['token'];			
+		}
 
-		return $token;
-	}
-
-	/**
-	 * Deactivates an MPX access token.
-	 * @param string $token The token to deactivate
-	 * @return WP_Error|array The response or WP_Error on failure.
-	 */
-	function mpx_signout( $token ) {
-		$response = ThePlatform_API_HTTP::get( TP_API_SIGNOUT_URL . $token );
-		return $response;
+		return $this->token;
 	}
 
 	/**
@@ -226,7 +219,6 @@ class ThePlatform_API {
 	function update_media( $args ) {
 		$token = $this->mpx_signin();
 		$this->create_media_placeholder( $args, $token );
-		$this->mpx_signout( $token );
 	}
 
 	/**
@@ -290,7 +282,6 @@ class ThePlatform_API {
 
 		$response = ThePlatform_API_HTTP::get( $url );
 
-		$this->mpx_signout( $token );
 
 		return theplatform_decode_json_from_server( $response, TRUE );
 	}
@@ -425,7 +416,6 @@ class ThePlatform_API {
 		$payload = theplatform_decode_json_from_server( $response, TRUE );
 		$releasePID = $payload['entries'][0]['plrelease$pid'];
 
-		$this->mpx_signout( $token );
 
 		return $releasePID;
 	}
@@ -441,7 +431,7 @@ class ThePlatform_API {
 
 		$fields = theplatform_get_query_fields( $this->get_metadata_fields() );
 				
-		$url = TP_API_MEDIA_ENDPOINT . '&fields=guid,pid,title' . $fields . '&token=' . $token . '&range=' . $_POST['range'];
+		$url = TP_API_MEDIA_ENDPOINT . '&fields=id,guid,pid,title' . $fields . '&token=' . $token . '&range=' . $_POST['range'];
 
 		if ( $_POST['isEmbed'] === "1" ) {
 			$url .= '&byApproved=true&byContent=byReleases=byDelivery%253Dstreaming';
@@ -462,7 +452,6 @@ class ThePlatform_API {
 		}
 				
 		$response = ThePlatform_API_HTTP::get( $url, array( "timeout" => 120 ) );
-		$this->mpx_signout( $token );
 		
 		$decodedResponse = theplatform_decode_json_from_server( $response, true );
 		
@@ -511,7 +500,6 @@ class ThePlatform_API {
 
 		$data = theplatform_decode_json_from_server( $response, TRUE );
 
-		$this->mpx_signout( $token );
 
 		return $data['entries'][0];
 	}
@@ -541,7 +529,6 @@ class ThePlatform_API {
 
 		$ret = array_filter( $data['entries'], array( $this, "filter_disabled_players" ) );
 
-		$this->mpx_signout( $token );
 
 		return $ret;
 	}
@@ -580,7 +567,6 @@ class ThePlatform_API {
 
 		$data = theplatform_decode_json_from_server( $response, TRUE );
 
-		$this->mpx_signout( $token );
 
 		return $data['entries'];
 	}
@@ -612,7 +598,6 @@ class ThePlatform_API {
 		$response = ThePlatform_API_HTTP::get( $url );
 		$data = theplatform_decode_json_from_server( $response, TRUE );
 
-		$this->mpx_signout( $token );
 
 		return $data['entries'];
 	}
@@ -633,7 +618,6 @@ class ThePlatform_API {
 		$response = ThePlatform_API_HTTP::get( $url );
 		$data = theplatform_decode_json_from_server( $response, TRUE, FALSE );
 
-		$this->mpx_signout( $token );
 
 		return $data;
 	}
@@ -661,7 +645,6 @@ class ThePlatform_API {
 
 		$response = ThePlatform_API_HTTP::get( $url );
 
-		$this->mpx_signout( $token );
 
 		if ( !$returnResponse ) {
 			wp_send_json( wp_remote_retrieve_body( $response ) );
@@ -686,7 +669,6 @@ class ThePlatform_API {
 
 		$data = theplatform_decode_json_from_server( $response, TRUE );
 
-		$this->mpx_signout( $token );
 
 		return $data['authorizeResponse']['accounts'];
 	}
@@ -714,7 +696,6 @@ class ThePlatform_API {
 
 		$data = theplatform_decode_json_from_server( $response, TRUE );
 
-		$this->mpx_signout( $token );
 
 		return $data['entries'];
 	}
