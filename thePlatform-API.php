@@ -22,6 +22,21 @@
  */
 class ThePlatform_API_HTTP {
 
+	private static function check_for_auth_error( $response, $url ) {		
+        // Sign in if the token is invalid/expired
+        $responseBody = wp_remote_retrieve_body( $response ); 
+
+        //If the response is longer than 500 characters, then it's definitely not an auth exception, don't process very long strings.
+        if ( strlen( $responseBody ) < 500 && strpos($responseBody, 'Invalid security token.') !== false ) {
+        	$tp_api = new ThePlatform_API();
+        	$oldToken = get_option( TP_TOKEN_OPTIONS_KEY );        	
+        	$token = $tp_api->mpx_signin( true );
+        	$newUrl = str_replace( $oldToken, $token, $url );
+        	return $newUrl;
+        } else {
+        	return false;
+        }
+	}
 	/**
 	 * Make a HTTP GET request to the provided URL
 	 * @param string $url URL to make the request to
@@ -40,7 +55,15 @@ class ThePlatform_API_HTTP {
 			return wpcom_vip_file_get_contents( $url );
 		}
 		else {
-			return wp_remote_get( $url, $data );
+			$response = wp_remote_get( $url, $data );
+
+			$newUrl = ThePlatform_API_HTTP::check_for_auth_error( $response, $url );
+
+			if ( $newUrl === false ) {
+				return $response;
+			} else {
+				return ThePlatform_API_HTTP::get( $newUrl, $data, $cache );
+			}
 		}
 	}
 
@@ -78,7 +101,13 @@ class ThePlatform_API_HTTP {
 		
 		$response = wp_remote_post( $escapedUrl, $args );
 
-		return $response;
+		$newUrl = ThePlatform_API_HTTP::check_for_auth_error( $response, $url );
+
+		if ( $newUrl === false ) {
+			return $response;
+		} else {
+			return ThePlatform_API_HTTP::post( $newUrl, $data, $isJSON, $method );
+		}
 	}
 }
 
@@ -198,13 +227,15 @@ class ThePlatform_API {
 	 * Authenticate using MPX Identity service
 	 * @return string API Authentication Token
 	 */
-	function mpx_signin() {
-		if ( empty( $this->token) ) {		
+	function mpx_signin($refresh = false) {		
+		$this->token = get_option( TP_TOKEN_OPTIONS_KEY );
+		if ( $refresh == true || empty( $this->token) ) {					
 			$response = ThePlatform_API_HTTP::get( TP_API_SIGNIN_URL, $this->basicAuthHeader() );
 
 			$payload = theplatform_decode_json_from_server( $response, TRUE );
 
 			$this->token = $payload['signInResponse']['token'];			
+			update_option( TP_TOKEN_OPTIONS_KEY, $this->token );
 		}
 
 		return $this->token;
@@ -725,6 +756,7 @@ class ThePlatform_API {
 		}
 
 		if ( !array_key_exists( 'isException', $payload ) ) {
+			update_option( TP_TOKEN_OPTIONS_KEY, $payload['signInResponse']['token'] );			
 			return TRUE;
 		} else {
 			return FALSE;

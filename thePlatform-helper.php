@@ -90,6 +90,7 @@ function theplatform_account_options_validate ( $input ) {
 			delete_option( TP_PREFERENCES_OPTIONS_KEY );
 			delete_option( TP_METADATA_OPTIONS_KEY );
 			delete_option( TP_UPLOAD_OPTIONS_KEY );
+			delete_option( TP_TOKEN_OPTIONS_KEY );
 		}
 	}
 		
