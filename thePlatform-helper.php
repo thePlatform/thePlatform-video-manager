@@ -213,7 +213,7 @@ function theplatform_decode_json_from_server( $input, $assoc, $die_on_error = TR
 		wp_die( '<p>There was an error getting data from MPX, if the error persists please contact thePlatform. ' . esc_html( $response->get_error_message() ) . '</p>' );
 	}
 
-	if ( array_key_exists( 'isException', $response ) ) {
+	if ( is_array( $response ) && array_key_exists( 'isException', $response ) ) {
 		wp_die( '<p>There was an error getting data from MPX, if the error persists please contact thePlatform. ' . esc_html( $response['description'] ) . '</p>' );
 	}
 
