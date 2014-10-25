@@ -163,6 +163,7 @@ class ThePlatform_Plugin {
 	 * Calls the plugin's options page template	 
 	 */
 	function admin_page() {
+		theplatform_check_plugin_update();
 		require_once(dirname( __FILE__ ) . '/thePlatform-options.php' );
 	}
 
@@ -170,6 +171,7 @@ class ThePlatform_Plugin {
 	 * Calls the Media Manager template
 	 */
 	function media_page() {
+		theplatform_check_plugin_update();
 		require_once( dirname( __FILE__ ) . '/thePlatform-media.php' );
 	}
 
@@ -177,6 +179,7 @@ class ThePlatform_Plugin {
 	 * Calls the Upload form template
 	 */
 	function upload_page() {
+		theplatform_check_plugin_update();
 		require_once( dirname( __FILE__ ) . '/thePlatform-upload.php' );
 	}
 	
@@ -184,6 +187,7 @@ class ThePlatform_Plugin {
 	 * Calls the About page template
 	 */
 	function about_page() {
+		theplatform_check_plugin_update();
 		require_once( dirname( __FILE__ ) . '/thePlatform-about.php' );
 	}
 
@@ -533,7 +537,6 @@ class ThePlatform_Plugin {
 add_action( 'init', array( 'ThePlatform_Plugin', 'init' ) );
 add_action( 'wp_ajax_verify_account', 'theplatform_verify_account_settings' );
 add_action( 'admin_init', 'theplatform_register_plugin_settings' );
-add_action( 'admin_init', 'theplatform_check_plugin_update');
 
 
 /**
@@ -544,42 +547,4 @@ function theplatform_register_plugin_settings() {
 	register_setting( TP_PREFERENCES_OPTIONS_KEY, TP_PREFERENCES_OPTIONS_KEY, 'theplatform_preferences_options_validate' );
 	register_setting( TP_METADATA_OPTIONS_KEY, TP_METADATA_OPTIONS_KEY, 'theplatform_dropdown_options_validate' );
 	register_setting( TP_UPLOAD_OPTIONS_KEY, TP_UPLOAD_OPTIONS_KEY, 'theplatform_dropdown_options_validate' );
-}
-
-/**
- * Checks if the plugin has been updated and performs any necessary updates.
- */
-function theplatform_check_plugin_update() {	
-	$oldVersion = theplatform_plugin_version_changed();	
-	if ( FALSE === $oldVersion ) {
-		return;
-	}	
-
-	$newVersion = TP_PLUGIN_VERSION();
-	
-	// On any version, update defaults that didn't previously exist
-	$newPreferences = array_merge( TP_PREFERENCES_OPTIONS_DEFAULTS(), get_option( TP_PREFERENCES_OPTIONS_KEY, array() ) );
-	$newPreferences['plugin_version'] = TP_PLUGIN_VERSION;
-
-	update_option( TP_PREFERENCES_OPTIONS_KEY,  $newPreferences );
-	update_option( TP_ACCOUNT_OPTIONS_KEY,      array_merge( TP_ACCOUNT_OPTIONS_DEFAULTS(),     get_option( TP_ACCOUNT_OPTIONS_KEY,     array() ) ) );
-	update_option( TP_UPLOAD_OPTIONS_KEY,       array_merge( TP_UPLOAD_FIELDS_DEFAULTS(),       get_option( TP_METADATA_OPTIONS_KEY,    array() ) ) );  
-
-	// Move account settings from preferences (1.2.0)	
-	if ( ( $oldVersion['major'] == '1' && $oldVersion['minor'] <  '2' ) && 
-		 ( $newVersion['major'] > '1' || ( $newVersion['major'] >= '1' && $newVersion['minor'] >= '2' ) )
-		) {
-		$preferences = get_option( TP_PREFERENCES_OPTIONS_KEY, array() );
-		if ( array_key_exists( 'mpx_account_id', $preferences ) ) {
-			$accountSettings = TP_ACCOUNT_OPTIONS_DEFAULTS();
-			foreach ( $preferences as $key => $value ) {
-				if ( array_key_exists( $key, $accountSettings ) ) {
-					$accountSettings[$key] = $preferences[$key];				
-				}
-			}
-			update_option( TP_ACCOUNT_OPTIONS_KEY, $accountSettings );
-		}	
-	}
-
-
 }

@@ -306,3 +306,38 @@ function theplatform_plugin_version_changed() {
 	return FALSE;
 }
 
+/**
+ * Checks if the plugin has been updated and performs any necessary updates.
+ */
+function theplatform_check_plugin_update() {		
+	$oldVersion = theplatform_plugin_version_changed();	
+	if ( FALSE === $oldVersion ) {
+		return;
+	}	
+
+	$newVersion = TP_PLUGIN_VERSION();
+	
+	// On any version, update defaults that didn't previously exist
+	$newPreferences = array_merge( TP_PREFERENCES_OPTIONS_DEFAULTS(), get_option( TP_PREFERENCES_OPTIONS_KEY, array() ) );
+	$newPreferences['plugin_version'] = TP_PLUGIN_VERSION;
+
+	update_option( TP_PREFERENCES_OPTIONS_KEY,  $newPreferences );
+	update_option( TP_ACCOUNT_OPTIONS_KEY,      array_merge( TP_ACCOUNT_OPTIONS_DEFAULTS(),     get_option( TP_ACCOUNT_OPTIONS_KEY,     array() ) ) );
+	update_option( TP_UPLOAD_OPTIONS_KEY,       array_merge( TP_UPLOAD_FIELDS_DEFAULTS(),       get_option( TP_METADATA_OPTIONS_KEY,    array() ) ) );  
+
+	// Move account settings from preferences (1.2.0)	
+	if ( ( $oldVersion['major'] == '1' && $oldVersion['minor'] <  '2' ) && 
+		 ( $newVersion['major'] > '1' || ( $newVersion['major'] >= '1' && $newVersion['minor'] >= '2' ) )
+		) {
+		$preferences = get_option( TP_PREFERENCES_OPTIONS_KEY, array() );
+		if ( array_key_exists( 'mpx_account_id', $preferences ) ) {
+			$accountSettings = TP_ACCOUNT_OPTIONS_DEFAULTS();
+			foreach ( $preferences as $key => $value ) {
+				if ( array_key_exists( $key, $accountSettings ) ) {
+					$accountSettings[$key] = $preferences[$key];				
+				}
+			}
+			update_option( TP_ACCOUNT_OPTIONS_KEY, $accountSettings );
+		}	
+	}
+}
