@@ -122,8 +122,6 @@ class ThePlatform_API {
 		$this->get_account();
 		$this->get_preferences();
 	}
-	
-	private $token;
 
 	/**
 	 * Gets the MPX account options from the database
@@ -224,21 +222,27 @@ class ThePlatform_API {
 	}
 
 	/**
-	 * Authenticate using MPX Identity service
-	 * @return string API Authentication Token
+	 * Get the mpx token from the database or API
+	 * @param  boolean $forceRefresh  Always grab a new token, even if the old one is still valid
+	 * @param  boolean $updateOptions Update the existing token in the database. Use false for Uploads
+	 * @return string                 Active MPX token
 	 */
-	function mpx_signin($refresh = false) {		
-		$this->token = get_option( TP_TOKEN_OPTIONS_KEY );
-		if ( $refresh == true || empty( $this->token) ) {					
+	function mpx_signin($forceRefresh = false, $updateOptions = true) {		
+		$token = get_option( TP_TOKEN_OPTIONS_KEY );
+		if ( $forceRefresh == true || empty( $token) ) {					
 			$response = ThePlatform_API_HTTP::get( TP_API_SIGNIN_URL, $this->basicAuthHeader() );
 
 			$payload = theplatform_decode_json_from_server( $response, TRUE );
+			$token = $payload['signInResponse']['token'];	
 
-			$this->token = $payload['signInResponse']['token'];			
-			update_option( TP_TOKEN_OPTIONS_KEY, $this->token );
+			if ( $updateOptions == false) {
+				return $token;
+			} else {
+				update_option( TP_TOKEN_OPTIONS_KEY, $token );	
+			}								
 		}
 
-		return $this->token;
+		return $token;
 	}
 
 	/**
@@ -355,7 +359,8 @@ class ThePlatform_API {
 			'server_id' => $_POST['server_id']
 		);
 
-		$token = $this->mpx_signin();
+		// Always create a new token when uploading
+		$token = $this->mpx_signin( true, false );
 			
 		if ( $args['filetype'] === "audio/mp3" ) {
 			$args['filetype'] = "audio/mpeg";
