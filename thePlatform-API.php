@@ -229,7 +229,7 @@ class ThePlatform_API {
 	 */
 	function mpx_signin($forceRefresh = false, $updateOptions = true) {		
 		$token = get_option( TP_TOKEN_OPTIONS_KEY );
-		if ( $forceRefresh == true || empty( $token) ) {					
+		if ( $forceRefresh == true || $token == false ) {					
 			$response = ThePlatform_API_HTTP::get( TP_API_SIGNIN_URL, $this->basicAuthHeader() );
 
 			$payload = theplatform_decode_json_from_server( $response, TRUE );
