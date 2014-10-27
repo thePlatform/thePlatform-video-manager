@@ -229,3 +229,7 @@ header {
 .splash .error {
     color: red;
 }
+
+.tp #selectpick-player {
+    width: 270px;
+}
