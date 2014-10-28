@@ -91,8 +91,7 @@ jQuery( document ).ready( function() {
 			title: 'Edit Media',
 			resizable: true,
 			minWidth: 800,
-			width: 1024,
-			position: [ 'center', 20 ],
+			width: 1024,			
 			open: function() {
 				jQuery('.ui-dialog-titlebar-close').addClass('ui-button');
 			}
