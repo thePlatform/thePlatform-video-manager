@@ -324,7 +324,7 @@ function theplatform_check_plugin_update() {
 
 	update_option( TP_PREFERENCES_OPTIONS_KEY,  $newPreferences );
 	update_option( TP_ACCOUNT_OPTIONS_KEY,      array_merge( TP_ACCOUNT_OPTIONS_DEFAULTS(),     get_option( TP_ACCOUNT_OPTIONS_KEY,     array() ) ) );
-	update_option( TP_UPLOAD_OPTIONS_KEY,       array_merge( TP_UPLOAD_FIELDS_DEFAULTS(),       get_option( TP_METADATA_OPTIONS_KEY,    array() ) ) );  
+	update_option( TP_UPLOAD_OPTIONS_KEY,       array_merge( TP_UPLOAD_FIELDS_DEFAULTS(),       get_option( TP_UPLOAD_OPTIONS_KEY,	    array() ) ) );  
 
 	// Move account settings from preferences (1.2.0)	
 	if ( ( $oldVersion['major'] == '1' && $oldVersion['minor'] <  '2' ) && 
