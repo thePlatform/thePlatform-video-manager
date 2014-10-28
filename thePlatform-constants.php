@@ -58,8 +58,8 @@ function TP_PREFERENCES_OPTIONS_DEFAULTS() {
 					'default_width' => intval ( $GLOBALS['content_width'] ),
 					'default_height' => intval( ($GLOBALS['content_width'] / 16) * 9 ),
 					'player_embed_type' => 'embed',
-                    'embed_hook' => 'mediabutton',
-                    'media_embed_type' => 'pid'
+          'embed_hook' => 'tinymce',
+          'media_embed_type' => 'pid'
 				);
 }
 
@@ -72,7 +72,7 @@ function TP_UPLOAD_FIELDS_DEFAULTS() {
 					'keywords' => "write",
 					'link' => "write",
 					'guid' => "read",
-                    'pid' => "hide"
+          'pid' => "hide"
 				);
 }
 
