@@ -27,6 +27,7 @@ Copy the folder "thePlatform-video-manager" with all included files into the "wp
 
 ## = 1.4.0 = 
 * Added support to revoke/add files/publish existing media
+* Added a button to reset plugin settings in the About page
 
 ## = 1.3.1 =
 * Fixed an issue with the update method copying Basic Metadata settings incorrectly.

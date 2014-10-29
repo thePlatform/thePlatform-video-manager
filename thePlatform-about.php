@@ -48,3 +48,26 @@
   NProgress<br>
   Copyright (c) 2013-2014 <a href="http://ricostacruz.com/nprogress/">Rico Sta. Cruz</a>
 </p>
+
+<?php
+
+// Administrators only should be able to delete all of the plugin settings
+$tp_admin_cap = apply_filters( TP_ADMIN_CAP, TP_ADMIN_DEFAULT_CAP ); 
+if ( current_user_can( $tp_admin_cap ) ) {
+  
+  if ( isset( $_POST['delete'] ) ) {
+    check_admin_referer( 'theplatform_delete_settings_nonce' );
+
+    delete_option( TP_ACCOUNT_OPTIONS_KEY );
+    delete_option( TP_PREFERENCES_OPTIONS_KEY );
+    delete_option( TP_METADATA_OPTIONS_KEY );
+    delete_option( TP_UPLOAD_OPTIONS_KEY );
+
+    echo 'All plugin settings have been reset';
+  }
+  echo '<form name="delete_settings" action="admin.php?page=theplatform-about" method="post"><input type="hidden" name="delete" value="delete">';
+  wp_nonce_field('theplatform_delete_settings_nonce');
+  submit_button('Reset Plugin Settings'); 
+  echo '</form>';  
+}
+?>
