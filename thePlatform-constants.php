@@ -18,19 +18,24 @@
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 define( 'TP_PLUGIN_VERSION', '1.4.0' );
-define( 'TP_PREFERENCES_OPTIONS_KEY', 'theplatform_preferences_options' );
-define( 'TP_ACCOUNT_OPTIONS_KEY', 'theplatform_account_options' );
-define( 'TP_METADATA_OPTIONS_KEY', 'theplatform_metadata_options' );
-define( 'TP_UPLOAD_OPTIONS_KEY', 'theplatform_upload_options' );
-define( 'TP_TOKEN_OPTIONS_KEY', 'theplatform_token_options' );
-define( 'TP_ADMIN_CAP', 'tp_admin_cap' );
-define( 'TP_VIEWER_CAP', 'tp_viewer_cap' );
-define( 'TP_EMBEDDER_CAP', 'tp_embedder_cap' );
-define( 'TP_UPLOADER_CAP', 'tp_uploader_cap' );
-define( 'TP_ADMIN_DEFAULT_CAP', 'manage_options' );
-define( 'TP_VIEWER_DEFAULT_CAP', 'edit_posts' );
-define( 'TP_EMBEDDER_DEFAULT_CAP', 'edit_posts' );
-define( 'TP_UPLOADER_DEFAULT_CAP', 'upload_files' );
+define( 'TP_PREFERENCES_OPTIONS_KEY',   'theplatform_preferences_options' );
+define( 'TP_ACCOUNT_OPTIONS_KEY',       'theplatform_account_options' );
+define( 'TP_METADATA_OPTIONS_KEY',      'theplatform_metadata_options' );
+define( 'TP_UPLOAD_OPTIONS_KEY',        'theplatform_upload_options' );
+define( 'TP_TOKEN_OPTIONS_KEY',         'theplatform_token_options' );
+define( 'TP_ADMIN_CAP',     'tp_admin_cap' );
+define( 'TP_VIEWER_CAP',    'tp_viewer_cap' );
+define( 'TP_EMBEDDER_CAP',  'tp_embedder_cap' );
+define( 'TP_EDITOR_CAP',    'tp_editor_cap' );
+define( 'TP_REVOKE_CAP',    'tp_revoke_cap' );
+define( 'TP_UPLOADER_CAP',  'tp_uploader_cap' );
+define( 'TP_ADMIN_DEFAULT_CAP',     'manage_options' );
+define( 'TP_VIEWER_DEFAULT_CAP',    'edit_posts' );
+define( 'TP_EMBEDDER_DEFAULT_CAP',  'edit_posts' );
+define( 'TP_EDITOR_DEFAULT_CAP',    'edit_posts' );
+define( 'TP_UPLOADER_DEFAULT_CAP',  'upload_files' );
+define( 'TP_REVOKE_DEFAULT_CAP',    'upload_files' );
+
 
 function TP_ACCOUNT_OPTIONS_DEFAULTS() {
 	return array(

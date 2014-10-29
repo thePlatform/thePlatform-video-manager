@@ -42,6 +42,9 @@ $account = get_option( TP_ACCOUNT_OPTIONS_KEY );
 $upload_options = get_option( TP_UPLOAD_OPTIONS_KEY );
 $metadata_options = get_option( TP_METADATA_OPTIONS_KEY );
 
+$tp_uploader_cap = apply_filters( TP_UPLOADER_CAP, TP_UPLOADER_DEFAULT_CAP );
+$tp_revoke_cap = apply_filters( TP_REVOKE_CAP, TP_REVOKE_DEFAULT_CAP );
+
 $dataTypeDesc = array(
 	'Integer' => 'Integer',
 	'Decimal' => 'Decimal',
@@ -62,9 +65,7 @@ $structureDesc = array(
 
 if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 	wp_enqueue_style( 'tp_bootstrap_css' );
-	wp_enqueue_script( 'tp_theplatform_js' );
-
-	$tp_uploader_cap = apply_filters( TP_UPLOADER_CAP, TP_UPLOADER_DEFAULT_CAP );
+	wp_enqueue_script( 'tp_theplatform_js' );	
 
 	if ( !current_user_can( $tp_uploader_cap ) ) {
 		wp_die( '<p>You do not have sufficient permissions to upload MPX Media</p>' );
@@ -81,9 +82,14 @@ if ( defined( 'TP_MEDIA_BROWSER' ) ) {
 
 	<ul class="nav nav-tabs" role="tablist">
 	    <li class="active"><a href="#edit" role="tab" data-toggle="tab">Edit Metadata</a></li>
-		<li><a href="#upload" role="tab" data-toggle="tab">Add New Files</a></li>
-		<li><a href="#publish" role="tab" data-toggle="tab">Publish</a></li>
-		<li><a href="#revoke" role="tab" data-toggle="tab">Revoke</a></li>
+	    <?php 
+	    if ( current_user_can( $tp_uploader_cap ) ) { 
+			echo '<li><a href="#upload" role="tab" data-toggle="tab">Add New Files</a></li>';
+			echo '<li><a href="#publish" role="tab" data-toggle="tab">Publish</a></li>';
+		} 
+		if ( current_user_can( $tp_revoke_cap ) ) { 
+			echo '<li><a href="#revoke" role="tab" data-toggle="tab">Revoke</a></li>';
+		} ?>
 	</ul>
 
 	<div class="tab-content">

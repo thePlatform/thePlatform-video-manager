@@ -52,6 +52,8 @@ function theplatform_media_clear_styles_and_scripts() {
 			exit;
 		}
 		$tp_viewer_cap = apply_filters( TP_VIEWER_CAP, TP_VIEWER_DEFAULT_CAP );
+		$tp_editor_cap = apply_filters( TP_EDITOR_CAP, TP_EDITOR_DEFAULT_CAP );		
+
 		if ( !current_user_can( $tp_viewer_cap ) ) {
 			wp_die( '<p>You do not have sufficient permissions to browse MPX Media</p>' );
 		}
@@ -308,8 +310,7 @@ function theplatform_media_clear_styles_and_scripts() {
 				</div>
 			</div>
 		</div>
-		<?php
-		$tp_editor_cap = apply_filters( 'tp_editor_cap', 'upload_files' );
+		<?php				
 		if ( !$IS_EMBED && current_user_can( $tp_editor_cap ) ) {
 			?>
 			<div id="tp-edit-dialog" class="tp" style="display: none; padding-left:10px;">
