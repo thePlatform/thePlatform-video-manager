@@ -737,6 +737,21 @@ class ThePlatform_API {
 	}
 
 	/**
+	 * Return publish profile results for the provided media
+	 * @param  string $mediaId mpx Media ID
+	 * @return array          ProfileResults response
+	 */
+	function get_profile_results( $mediaId ) {
+		$url = TP_API_WORKFLOW_PROFILE_RESULT_ENDPOINT . '&fields=profileId,status&byMediaId=' . urlencode( $mediaId );
+
+		$response = ThePlatform_API_HTTP::get( $url );
+
+		$data = theplatform_decode_json_from_server( $response, TRUE );
+
+		return $data['entries'];
+	}
+
+	/**
 	 * Used to verify the account server settings on the server side
 	 * @return type
 	 */
