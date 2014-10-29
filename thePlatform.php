@@ -106,7 +106,8 @@ class ThePlatform_Plugin {
 				'verify_account' => wp_create_nonce( 'theplatform-ajax-nonce-verify_account' ),
 				'theplatform_edit' => wp_create_nonce( 'theplatform-ajax-nonce-theplatform_edit' ),
 				'theplatform_media' => wp_create_nonce( 'theplatform-ajax-nonce-theplatform_media' ),
-				'theplatform_upload' => wp_create_nonce( 'theplatform-ajax-nonce-theplatform_upload' )
+				'theplatform_upload' => wp_create_nonce( 'theplatform-ajax-nonce-theplatform_upload' ),
+				'theplatform_publish' => wp_create_nonce( 'theplatform-ajax-nonce-publish_media' )
 			)
 		) );		
 

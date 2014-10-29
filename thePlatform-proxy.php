@@ -186,9 +186,16 @@ class ThePlatform_Proxy {
             wp_send_json_success();
         } 
         
+        if ( !isset( $_POST['token]'] ) ) {
+            $tp_api = new ThePlatform_API();
+            $token = $tp_api->mpx_signin();
+        } else {
+            $token = $_POST['token]'];
+        }
+
         $profileUrl = TP_API_PUBLISH_PROFILE_ENDPOINT;
         $profileUrl .= '&byTitle=' . urlencode( $_POST['profile'] );        
-        $profileUrl .= '&token=' . $_POST['token'];
+        $profileUrl .= '&token=' . $token;
         $profileUrl .= '&account=' . urlencode( $_POST['account'] );
 
         $profileResponse = ThePlatform_API_HTTP::get( esc_url_raw( $profileUrl ) );
@@ -203,7 +210,7 @@ class ThePlatform_Proxy {
         $mediaId = $_POST['mediaId'];
 
         $publishUrl = TP_API_PUBLISH_BASE_URL;
-        $publishUrl .= '&token=' . $_POST['token'];
+        $publishUrl .= '&token=' . $token;
         $publishUrl .= '&account=' . urlencode( $_POST['account'] );
         $publishUrl .= '&_mediaId=' . urlencode( $mediaId );
         $publishUrl .= '&_profileId=' . urlencode( $profileId );

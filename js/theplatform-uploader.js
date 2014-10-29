@@ -88,7 +88,7 @@ TheplatformUploader = ( function() {
 		requestUrl += '&_mediaId=' + encodeURIComponent( me._mediaId );
 		requestUrl += '&_filePath=' + me._filePath;
 		requestUrl += '&_fileSize=' + me._fileSize;
-		requestUrl += '&_mediaFileInfo.format=' + me.fileFormat;
+		requestUrl += '&_mediaFileInfo.format=' + me.format;
 		requestUrl += '&_serverId=' + encodeURIComponent ( me._serverId );		
 		
 		me.message( "Starting Upload of " + me._filePath + ' to ' + me.uploadUrl);

@@ -411,4 +411,68 @@ jQuery( document ).ready( function() {
 		}		
 
 	} );
+
+	// Upload media button handler
+	jQuery( "#theplatform_add_file_button" ).click( function( event ) {
+		var files = document.getElementById( 'theplatform_upload_file' ).files;
+
+		if (files[0] === undefined) {
+			jQuery('#file-form-group').addClass('has-error');
+		} else {
+			jQuery('#file-form-group').removeClass('has-error');
+		}
+
+		if ( files[0] === undefined )
+			return false;
+
+		var profile = jQuery( '.upload_profile' );
+		var server = jQuery( '.server_id' );
+
+		var params = {id: tpHelper.mediaId };
+
+		var upload_window = window.open( theplatform_local.ajaxurl + '?action=theplatform_upload&_wpnonce=' + theplatform_local.tp_nonce['theplatform_upload'], '_blank', 'menubar=no,location=no,resizable=no,scrollbars=no,status=no,width=700,height=180' )
+
+		 var uploaderData = {
+			files: files,
+			params: JSON.stringify( params ),
+			custom_params: JSON.stringify( '' ),
+			profile: profile.val(),
+			server: server.val()
+		}
+
+		window.onmessage = function() {
+			upload_window.postMessage(uploaderData, '*');
+		}		
+
+	} );
+
+	// Upload media button handler
+	jQuery( "#theplatform_publish_button" ).click( function( event ) {		
+		// if ( files[0] === undefined )
+		// 	return false;
+
+		var profile = jQuery( '.edit_profile' ).val();
+
+		var params =  { 
+			mediaId: tpHelper.mediaId,
+			account: tpHelper.account,
+			profile: profile,
+			action: 'publish_media',
+			_wpnonce: theplatform_local.tp_nonce['theplatform_publish'],			
+		};
+		
+		jQuery.ajax( {
+			url: theplatform_local.ajaxurl,
+			data: params,
+			type: "POST",
+			success: function( response ) {
+				if ( response.success ) {
+					console.log('Published!')
+				} else {
+					console.log('Error!')			
+				}
+			}
+		} );
+
+	} );
 } );
