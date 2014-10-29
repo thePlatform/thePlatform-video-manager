@@ -233,7 +233,7 @@ if ( defined( 'TP_MEDIA_BROWSER' ) ) {
 				$html .= '<select id="publishing_profile" name="publishing_profile" class="form-control upload_profile">';
 				$html .= '<option value="tp_wp_none"' . selected( $preferences['default_publish_id'], 'wp_tp_none', false ) . '>Do not publish</option>';
 				foreach ( $profiles as $entry ) {
-					$html .= '<option value="' . esc_attr( $entry['title'] ) . '"' . selected( $entry['title'], $preferences['default_publish_id'], false ) . '>' . esc_html( $entry['title'] ) . '</option>';
+					$html .= '<option value="' . esc_attr( $entry['id'] ) . '"' . selected( $entry['title'], $preferences['default_publish_id'], false ) . '>' . esc_html( $entry['title'] ) . '</option>';
 				}
 				$html .= '</select></div>';
 				echo $html;
@@ -297,7 +297,7 @@ if ( defined( 'TP_MEDIA_BROWSER' ) ) { ?>
 				$html .= '<select id="publishing_profile" name="publishing_profile" class="form-control upload_profile">';
 				$html .= '<option value="tp_wp_none"' . selected( $preferences['default_publish_id'], 'wp_tp_none', false ) . '>Do not publish</option>';
 				foreach ( $profiles as $entry ) {
-					$html .= '<option value="' . esc_attr( $entry['title'] ) . '"' . selected( $entry['title'], $preferences['default_publish_id'], false ) . '>' . esc_html( $entry['title'] ) . '</option>';
+					$html .= '<option value="' . esc_attr( $entry['id'] ) . '"' . selected( $entry['title'], $preferences['default_publish_id'], false ) . '>' . esc_html( $entry['title'] ) . '</option>';
 				}
 				$html .= '</select></div>';
 				echo $html;
@@ -352,7 +352,7 @@ if ( defined( 'TP_MEDIA_BROWSER' ) ) { ?>
 				$html .= '<select id="edit_publishing_profile" name="edit_publishing_profile" class="form-control edit_profile">';
 				$html .= '<option value="tp_wp_none"' . selected( $preferences['default_publish_id'], 'wp_tp_none', false ) . '>Do not publish</option>';
 				foreach ( $profiles as $entry ) {
-					$html .= '<option value="' . esc_attr( $entry['title'] ) . '"' . selected( $entry['title'], $preferences['default_publish_id'], false ) . '>' . esc_html( $entry['title'] ) . '</option>';
+					$html .= '<option value="' . esc_attr( $entry['id'] ) . '"' . selected( $entry['title'], $preferences['default_publish_id'], false ) . '>' . esc_html( $entry['title'] ) . '</option>';
 				}
 				$html .= '</select></div>';
 				echo $html;

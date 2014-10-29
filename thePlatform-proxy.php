@@ -193,20 +193,7 @@ class ThePlatform_Proxy {
             $token = $_POST['token]'];
         }
 
-        $profileUrl = TP_API_PUBLISH_PROFILE_ENDPOINT;
-        $profileUrl .= '&byTitle=' . urlencode( $_POST['profile'] );        
-        $profileUrl .= '&token=' . $token;
-        $profileUrl .= '&account=' . urlencode( $_POST['account'] );
-
-        $profileResponse = ThePlatform_API_HTTP::get( esc_url_raw( $profileUrl ) );
-
-        $content = theplatform_decode_json_from_server( $profileResponse, TRUE );
-
-        if ( $content['entryCount'] == 0 ) {
-            wp_send_json_error( "No Publishing Profile Found" );
-        }
-        
-        $profileId = $content['entries'][0]['id'];
+        $profileId = $_POST['profile'];
         $mediaId = $_POST['mediaId'];
 
         $publishUrl = TP_API_PUBLISH_BASE_URL;
