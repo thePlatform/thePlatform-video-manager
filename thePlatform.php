@@ -76,6 +76,7 @@ class ThePlatform_Plugin {
 			add_action( 'wp_ajax_theplatform_edit', array( $this, 'edit' ) );
 			add_action( 'wp_ajax_get_categories', array( $this->tp_api, 'get_categories' ) );
 			add_action( 'wp_ajax_get_videos', array( $this->tp_api, 'get_videos' ) );
+			add_action( 'wp_ajax_get_profile_results', array( $this->tp_api, 'get_profile_results' ) );
 			add_action( 'wp_ajax_set_thumbnail', array( $this, 'set_thumbnail_ajax' ) );
 			add_action( 'admin_init', array( $this, 'theplatform_buttonhooks' ) );
 			add_action( 'media_buttons', array( $this, 'theplatform_media_button' ), 999 );			
@@ -107,7 +108,8 @@ class ThePlatform_Plugin {
 				'theplatform_edit' => wp_create_nonce( 'theplatform-ajax-nonce-theplatform_edit' ),
 				'theplatform_media' => wp_create_nonce( 'theplatform-ajax-nonce-theplatform_media' ),
 				'theplatform_upload' => wp_create_nonce( 'theplatform-ajax-nonce-theplatform_upload' ),
-				'theplatform_publish' => wp_create_nonce( 'theplatform-ajax-nonce-publish_media' )
+				'theplatform_publish' => wp_create_nonce( 'theplatform-ajax-nonce-publish_media' ),
+				'theplatform_revoke' => wp_create_nonce( 'theplatform-ajax-nonce-revoke_media' )						
 			)
 		) );		
 
@@ -128,7 +130,8 @@ class ThePlatform_Plugin {
 			'ajaxurl' => admin_url( 'admin-ajax.php' ),			
 			'tp_nonce' => array( 				
 				'get_videos' => wp_create_nonce( 'theplatform-ajax-nonce-get_videos' ),
-				'get_categories' => wp_create_nonce( 'theplatform-ajax-nonce-get_categories' )
+				'get_categories' => wp_create_nonce( 'theplatform-ajax-nonce-get_categories' ),
+				'get_profile_results' => wp_create_nonce( 'theplatform-ajax-nonce-profile_result' )
 			)
 		) );	
 

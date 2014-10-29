@@ -412,7 +412,7 @@ jQuery( document ).ready( function() {
 
 	} );
 
-	// Upload media button handler
+	// Add file media button handler
 	jQuery( "#theplatform_add_file_button" ).click( function( event ) {
 		var files = document.getElementById( 'theplatform_upload_file' ).files;
 
@@ -444,7 +444,7 @@ jQuery( document ).ready( function() {
 
 	} );
 
-	// Upload media button handler
+	// Publish media button handler
 	jQuery( "#theplatform_publish_button" ).click( function( event ) {		
 		var profile = jQuery( '.edit_profile' ).val();
 		if ( profile === 'tp_wp_none' )
@@ -479,6 +479,44 @@ jQuery( document ).ready( function() {
 					}, 1500)
 			}
 		} );
+	} );
 
+	// Revoke media button handler
+	jQuery( "#theplatform_revoke_button" ).click( function( event ) {	
+
+		var profile = jQuery( '.revoke_profile option:selected' );
+		
+		if (profile.length == 0) 
+			return false;
+		
+		var me = this;
+		jQuery(this).text('Revoking').removeClass('btn-primary btn-success btn-danger btn-info').addClass('btn-info');
+
+		var params =  { 
+			mediaId: tpHelper.mediaId,
+			account: tpHelper.account,
+			profile: profile.val(),
+			action: 'revoke_media',
+			_wpnonce: theplatform_local.tp_nonce['theplatform_revoke'],			
+		};
+		
+		jQuery.ajax( {
+			url: theplatform_local.ajaxurl,
+			data: params,
+			type: "POST",
+			success: function( response ) {
+				if ( response.success ) {
+					jQuery(me).text('Success').removeClass('btn-primary btn-success btn-danger btn-info').addClass('btn-success');		
+					profile.remove();			
+				} else {
+					jQuery(me).text('Failed').removeClass('btn-primary btn-success btn-danger btn-info').addClass('btn-danger');
+				}				
+			},
+			complete: function() {
+				setTimeout(function() {
+						jQuery(me).text('Revoke').removeClass('btn-primary btn-success btn-danger btn-info').addClass('btn-primary');
+					}, 1500)
+			}
+		} );
 	} );
 } );

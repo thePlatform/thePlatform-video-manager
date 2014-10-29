@@ -83,6 +83,7 @@ if ( defined( 'TP_MEDIA_BROWSER' ) ) {
 	    <li class="active"><a href="#edit" role="tab" data-toggle="tab">Edit Metadata</a></li>
 		<li><a href="#upload" role="tab" data-toggle="tab">Add New Files</a></li>
 		<li><a href="#publish" role="tab" data-toggle="tab">Publish</a></li>
+		<li><a href="#revoke" role="tab" data-toggle="tab">Revoke</a></li>
 	</ul>
 
 	<div class="tab-content">
@@ -357,11 +358,27 @@ if ( defined( 'TP_MEDIA_BROWSER' ) ) { ?>
 				$html .= '</select></div>';
 				echo $html;
 				?>
-			</div>
+			</div>			
 		</div>
 		<div class="row" style="margin-top: 10px;">
 			<div class="col-xs-3">
 				<button id="theplatform_publish_button" class="form-control btn btn-primary" type="button" name="theplatform-publish-button">Publish</button>
+			</div>						
+		</div>
+    </div>
+     <div class="tab-pane" id="revoke">
+	    <div class="row">			
+			<div class="col-xs-3">
+				<div class="form-group">
+					<label class="control-label" for="publish_status">Currently Published Profiles</label>
+					<select id="publish_status" name="publish_status" class="form-control revoke_profile">
+					</select>
+				</div>
+			</div>
+		</div>
+		<div class="row" style="margin-top: 10px;">			
+			<div class="col-xs-3">
+				<button id="theplatform_revoke_button" class="form-control btn btn-primary" type="button" name="theplatform-revoke-button">Revoke</button>
 			</div>			
 		</div>
     </div>

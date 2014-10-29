@@ -741,14 +741,18 @@ class ThePlatform_API {
 	 * @param  string $mediaId mpx Media ID
 	 * @return array          ProfileResults response
 	 */
-	function get_profile_results( $mediaId ) {
-		$url = TP_API_WORKFLOW_PROFILE_RESULT_ENDPOINT . '&fields=profileId,status&byMediaId=' . urlencode( $mediaId );
+	function get_profile_results() {
+		check_admin_referer( 'theplatform-ajax-nonce-profile_result' );
+		$mediaId = $_POST['mediaId'];
+		$token = $this->mpx_signin();
 
+		$url = TP_API_WORKFLOW_PROFILE_RESULT_ENDPOINT . '&token=' . $token . '&fields=profileId,status&byMediaId=' . urlencode( $mediaId );
+		
 		$response = ThePlatform_API_HTTP::get( $url );
 
 		$data = theplatform_decode_json_from_server( $response, TRUE );
 
-		return $data['entries'];
+		wp_send_json_success( $data['entries'] );
 	}
 
 	/**

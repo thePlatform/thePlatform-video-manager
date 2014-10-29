@@ -35,6 +35,7 @@ class ThePlatform_Proxy {
             add_action( 'wp_ajax_finish_upload',    array( $this, 'finish_upload' ) );
             add_action( 'wp_ajax_cancel_upload',    array( $this, 'cancel_upload' ) );
             add_action( 'wp_ajax_publish_media',    array( $this, 'publish_media' ) );
+            add_action( 'wp_ajax_revoke_media',     array( $this, 'revoke_media' ) );
         }        
     }
 
@@ -175,7 +176,7 @@ class ThePlatform_Proxy {
      
     }
 
-        /**
+    /**
      * Publish an uploaded media asset using the 'Wordpress' profile
      * @return mixed JSON response or instance of WP_Error
      */
@@ -197,6 +198,34 @@ class ThePlatform_Proxy {
         $mediaId = $_POST['mediaId'];
 
         $publishUrl = TP_API_PUBLISH_BASE_URL;
+        $publishUrl .= '&token=' . $token;
+        $publishUrl .= '&account=' . urlencode( $_POST['account'] );
+        $publishUrl .= '&_mediaId=' . urlencode( $mediaId );
+        $publishUrl .= '&_profileId=' . urlencode( $profileId );
+
+        $response = ThePlatform_API_HTTP::get( esc_url_raw ( $publishUrl ), array( "timeout" => 120 ) );
+
+        $this->check_theplatform_proxy_response( $response, true );
+    }
+
+    /**
+     * Publish an uploaded media asset using the 'Wordpress' profile
+     * @return mixed JSON response or instance of WP_Error
+     */
+    public function revoke_media() {
+        $this->check_nonce_and_permissions( $_POST['action'] );      
+        
+        if ( !isset( $_POST['token]'] ) ) {
+            $tp_api = new ThePlatform_API();
+            $token = $tp_api->mpx_signin();
+        } else {
+            $token = $_POST['token]'];
+        }
+
+        $profileId = $_POST['profile'];
+        $mediaId = $_POST['mediaId'];
+
+        $publishUrl = TP_API_REVOKE_BASE_URL;
         $publishUrl .= '&token=' . $token;
         $publishUrl .= '&account=' . urlencode( $_POST['account'] );
         $publishUrl .= '&_mediaId=' . urlencode( $mediaId );

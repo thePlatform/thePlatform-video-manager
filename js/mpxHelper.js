@@ -118,6 +118,23 @@ var mpxHelper = {
 		}
 
 		return res;
+	},
+
+	getProfileResults: function( mediaId, callback ) {
+		var data = {
+			_wpnonce: mpxhelper_local.tp_nonce['get_profile_results'],
+			action: 'get_profile_results',
+			mediaId: mediaId
+		};
+
+		jQuery.post( mpxhelper_local.ajaxurl, data, function( resp ) {
+			if ( resp.success ) {
+				callback( resp.data );	
+			} else {
+				console.log(resp);
+			}
+			
+		} );
 	}
 };
 

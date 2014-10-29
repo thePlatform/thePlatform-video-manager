@@ -198,6 +198,9 @@ jQuery( document ).ready( function() {
 		}
 	
 		tpHelper.mediaId = jQuery( this ).data( 'id' );
+
+		updatePublishProfiles(tpHelper.mediaId);
+
 		tpHelper.selectedThumb = jQuery( this ).data( 'media' )['defaultThumbnailUrl'];
 		$pdk.controller.resetPlayer();
 		if ( tpHelper.currentRelease !== undefined ) {
@@ -399,6 +402,29 @@ function addMediaObject( media ) {
 	if ( jQuery( '#media-list' ).children().length < 2 )
 		jQuery( '.media', '#media-list' ).click();
 }
+
+function updatePublishProfiles( mediaId ) {
+	mpxHelper.getProfileResults(mediaId, function(data) {
+		var revokeDropdown = jQuery('#publish_status');
+		revokeDropdown.empty();
+		var publishDropdown = jQuery('#edit_publishing_profile');
+		
+		for (var i = 0; i < data.length; i++) {
+			if (data[i].status == 'Processed') {
+				var option = document.createElement('option');
+				option.value = data[i].profileId;
+				option.text = publishDropdown.find('option[value="' + data[i].profileId + '"]').text();
+				revokeDropdown.append(option);	
+			}			
+		};
+
+		if (revokeDropdown.children().length == 0) {
+			revokeDropdown.attr('disabled', 'true');
+		} else {
+			revokeDropdown.attr('disabled', 'false');
+		}
+	})
+} 
 
 function updateContentPane( mediaItem ) {
 	if (mediaItem.title == '') {
