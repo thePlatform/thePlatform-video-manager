@@ -73,9 +73,22 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 
 	echo '<div class="tp"><h1> Upload Media to MPX </h1><div id="media-mpx-upload-form">';
 }
+
+if ( defined( 'TP_MEDIA_BROWSER' ) ) {
+
 ?>
 
-<form role="form">
+
+	<ul class="nav nav-tabs" role="tablist">
+	    <li class="active"><a href="#edit" role="tab" data-toggle="tab">Edit Metadata</a></li>
+		<li><a href="#upload" role="tab" data-toggle="tab">Add New Files</a></li>
+		<li><a href="#publish" role="tab" data-toggle="tab">Publish</a></li>
+	</ul>
+
+	<div class="tab-content">
+	    <div class="tab-pane active" id="edit">
+	    <?php } ?>
+		<form role="form">
 	<?php
 	wp_nonce_field( 'theplatform_upload_nonce' );
 	
@@ -267,9 +280,94 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 		<div class="row" style="margin-top: 10px;">
 			<div class="col-xs-3">
 				<button id="theplatform_edit_button" class="form-control btn btn-primary" type="button" name="theplatform-edit-button">Submit</button>
-			</div>
+			</div>			
 		</div>
 	<?php } ?>
 </form>
+<?php
+if ( defined( 'TP_MEDIA_BROWSER' ) ) { ?>
+    </div>
+
+    <div class="tab-pane" id="upload">
+		<div class="row">
+			<div class="col-xs-3">
+				<?php
+				$profiles = $tp_api->get_publish_profiles();
+				$html = '<div class="form-group"><label class="control-label" for="publishing_profile">Publishing Profile</label>';
+				$html .= '<select id="publishing_profile" name="publishing_profile" class="form-control upload_profile">';
+				$html .= '<option value="tp_wp_none"' . selected( $preferences['default_publish_id'], 'wp_tp_none', false ) . '>Do not publish</option>';
+				foreach ( $profiles as $entry ) {
+					$html .= '<option value="' . esc_attr( $entry['title'] ) . '"' . selected( $entry['title'], $preferences['default_publish_id'], false ) . '>' . esc_html( $entry['title'] ) . '</option>';
+				}
+				$html .= '</select></div>';
+				echo $html;
+				?>
+			</div>
+			<div class="col-xs-3">
+				<?php
+				$servers = $tp_api->get_servers();
+				$html = '<div class="form-group"><label class="control-label" for="theplatform_server">Server</label>';
+				$html .= '<select id="theplatform_server" name="theplatform_server" class="form-control server_id">';
+				$html .= '<option value="DEFAULT_SERVER"' . selected( $preferences['mpx_server_id'], "DEFAULT_SERVER", false ) . '>Default Server</option>';
+				foreach ( $servers as $entry ) {
+					$html .= '<option value="' . esc_attr( $entry['id'] ) . '"' . selected( $entry['id'], $preferences['mpx_server_id'], false ) . '>' . esc_html( $entry['title'] ) . '</option>';
+				}
+				$html .= '</select></div>';
+				echo $html;
+				?>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-8">		
+				<div class="form-group" id="file-form-group">
+					<label class="control-label" for="theplatform_upload_label">File</label>	
+					<div class="input-group">					
+		                <span class="input-group-btn">
+		                    <span class="btn btn-default btn-file">
+		                        Browse&hellip; <input type="file" id="theplatform_upload_file" multiple>
+		                    </span>
+		                </span>
+	                	<input type="text" class="form-control" style="cursor: text; text-indent: 10px;" id="theplatform_upload_label" readonly value="No file chosen">
+	           		</div>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-3">
+				<div class="form-group">
+					<button id="theplatform_add_file_button" class="form-control btn btn-primary" type="button" name="theplatform-add-file-button">Upload Files</button>
+				</div>
+			</div>
+		</div>
+    </div>
+
+    <div class="tab-pane" id="publish">
+	    <div class="row">
+			<div class="col-xs-3">
+				<?php
+				if ( !isset($profiles) ) {
+					$profiles = $tp_api->get_publish_profiles();	
+				}			
+				$html = '<div class="form-group"><label class="control-label" for="publishing_profile">Publishing Profile</label>';
+				$html .= '<select id="publishing_profile" name="publishing_profile" class="form-control upload_profile">';
+				$html .= '<option value="tp_wp_none"' . selected( $preferences['default_publish_id'], 'wp_tp_none', false ) . '>Do not publish</option>';
+				foreach ( $profiles as $entry ) {
+					$html .= '<option value="' . esc_attr( $entry['title'] ) . '"' . selected( $entry['title'], $preferences['default_publish_id'], false ) . '>' . esc_html( $entry['title'] ) . '</option>';
+				}
+				$html .= '</select></div>';
+				echo $html;
+				?>
+			</div>
+		</div>
+		<div class="row" style="margin-top: 10px;">
+			<div class="col-xs-3">
+				<button id="theplatform_publish_button" class="form-control btn btn-primary" type="button" name="theplatform-publish-button">Publish</button>
+			</div>			
+		</div>
+    </div>
+    <?php } ?>
+</div>
+
+
 </div>
 </div>
