@@ -4,7 +4,7 @@
   Plugin Name: thePlatform Video Manager
   Plugin URI: http://theplatform.com/
   Description: Manage video assets hosted in thePlatform MPX from within WordPress.
-  Version: 1.3.0
+  Version: 1.3.1
   Author: thePlatform for Media, Inc.
   Author URI: http://theplatform.com/
   License: GPL2
