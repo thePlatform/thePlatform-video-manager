@@ -418,17 +418,15 @@ jQuery( document ).ready( function() {
 
 		if (files[0] === undefined) {
 			jQuery('#file-form-group').addClass('has-error');
+			return false;
 		} else {
 			jQuery('#file-form-group').removeClass('has-error');
 		}
 
-		if ( files[0] === undefined )
-			return false;
-
 		var profile = jQuery( '.upload_profile' );
 		var server = jQuery( '.server_id' );
 
-		var params = {id: tpHelper.mediaId };
+		var params = { id: tpHelper.mediaId };
 
 		var upload_window = window.open( theplatform_local.ajaxurl + '?action=theplatform_upload&_wpnonce=' + theplatform_local.tp_nonce['theplatform_upload'], '_blank', 'menubar=no,location=no,resizable=no,scrollbars=no,status=no,width=700,height=180' )
 
@@ -448,10 +446,13 @@ jQuery( document ).ready( function() {
 
 	// Upload media button handler
 	jQuery( "#theplatform_publish_button" ).click( function( event ) {		
-		// if ( files[0] === undefined )
-		// 	return false;
-
 		var profile = jQuery( '.edit_profile' ).val();
+		if ( profile === 'tp_wp_none' )
+			return false;
+
+		
+		var me = this;
+		jQuery(this).text('Publishing').removeClass('btn-primary btn-success btn-danger btn-info').addClass('btn-info');
 
 		var params =  { 
 			mediaId: tpHelper.mediaId,
@@ -467,10 +468,15 @@ jQuery( document ).ready( function() {
 			type: "POST",
 			success: function( response ) {
 				if ( response.success ) {
-					console.log('Published!')
+					jQuery(me).text('Success').removeClass('btn-primary btn-success btn-danger btn-info').addClass('btn-success');					
 				} else {
-					console.log('Error!')			
-				}
+					jQuery(me).text('Failed').removeClass('btn-primary btn-success btn-danger btn-info').addClass('btn-danger');
+				}				
+			},
+			complete: function() {
+				setTimeout(function() {
+						jQuery(me).text('Publish').removeClass('btn-primary btn-success btn-danger btn-info').addClass('btn-primary');
+					}, 1500)
 			}
 		} );
 
