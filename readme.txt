@@ -23,6 +23,9 @@ Upload media to your MPX account
 
 == Changelog ==
 
+= 1.4.0 = 
+Added support to revoke/add files/publish existing media
+
 = 1.3.1 =
 Fixed an issue with the update method copying Basic Metadata settings incorrectly.
 
