@@ -348,8 +348,8 @@ if ( defined( 'TP_MEDIA_BROWSER' ) ) { ?>
 				if ( !isset($profiles) ) {
 					$profiles = $tp_api->get_publish_profiles();	
 				}			
-				$html = '<div class="form-group"><label class="control-label" for="publishing_profile">Publishing Profile</label>';
-				$html .= '<select id="publishing_profile" name="publishing_profile" class="form-control edit_profile">';
+				$html = '<div class="form-group"><label class="control-label" for="edit_publishing_profile">Publishing Profile</label>';
+				$html .= '<select id="edit_publishing_profile" name="edit_publishing_profile" class="form-control edit_profile">';
 				$html .= '<option value="tp_wp_none"' . selected( $preferences['default_publish_id'], 'wp_tp_none', false ) . '>Do not publish</option>';
 				foreach ( $profiles as $entry ) {
 					$html .= '<option value="' . esc_attr( $entry['title'] ) . '"' . selected( $entry['title'], $preferences['default_publish_id'], false ) . '>' . esc_html( $entry['title'] ) . '</option>';
@@ -369,5 +369,5 @@ if ( defined( 'TP_MEDIA_BROWSER' ) ) { ?>
 </div>
 
 
-</div>
+
 </div>

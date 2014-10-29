@@ -41,13 +41,12 @@ function theplatform_media_clear_styles_and_scripts() {
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
-    <head>
-		 
-		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <head>		 
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="tp:PreferredRuntimes" content="Flash, HTML5" />
 		<meta name="tp:initialize" content="false" />
-
+		<title>thePlatform Media Browser</title>
 		<?php
 		if ( !defined( 'ABSPATH' ) ) {
 			exit;
@@ -126,7 +125,7 @@ function theplatform_media_clear_styles_and_scripts() {
 			<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
 				<div class="row">
 					<div class="navbar-header" style="margin-left: 15px">
-						<a class="navbar-brand" href="#"><img height="25px" width="25px" src="<?php echo esc_url( plugins_url( '/images/embed_button.png', __FILE__ ) ); ?>"> thePlatform</a>
+						<a class="navbar-brand" href="#"><img alt="thePlatform" height="25" width="25" src="<?php echo esc_url( plugins_url( '/images/embed_button.png', __FILE__ ) ); ?>"> thePlatform</a>
 					</div>            
 					<form class="navbar-form navbar-left" role="search" onsubmit="return false;"><!--TODO: Add seach functionality on Enter -->
 						<div class="form-group">
@@ -159,7 +158,7 @@ function theplatform_media_clear_styles_and_scripts() {
 						writePlayers( $players, $preferences );
 					}
 					?>    
-					<img id="load-overlay" src="<?php echo esc_url( plugins_url( '/images/loading.gif', __FILE__ ) ) ?>" class="loadimg navbar-right">
+					<img id="load-overlay" alt="Loading..." src="<?php echo esc_url( plugins_url( '/images/loading.gif', __FILE__ ) ) ?>" class="loadimg navbar-right">
 				</div>           
 			</nav>
 
@@ -183,7 +182,7 @@ function theplatform_media_clear_styles_and_scripts() {
 					<div id="info-affix" class="scrollable affix-top">
 						<div id="info-player-container">
 							<div id="modal-player" class="marketplacePlayer">
-								<img id="modal-player-placeholder" data-src="holder.js/320x180/text:No Preview Available" src=""><!-- holder.js/128x72/text:No Thumbnail" -->
+								<img id="modal-player-placeholder" alt="Preview" data-src="holder.js/320x180/text:No Preview Available" src=""><!-- holder.js/128x72/text:No Thumbnail" -->
 								<div class="tpPlayer" id="player"
 									 tp:allowFullScreen="true"
 									 tp:skinUrl="//pdk.theplatform.com/current/pdk/skins/glass/glass.json"
@@ -257,7 +256,7 @@ function theplatform_media_clear_styles_and_scripts() {
 										}
 										$html = '<div class="row">';
 										$html .= '<strong>' . esc_html( $display_title ) . ': </strong>';
-										$html .= '<span id="media-' . esc_attr( strtolower( $field_title ) ) . '"' . '" data-name="' . esc_attr( strtolower( $field_title ) ) . '"></span></div>';
+										$html .= '<span id="media-' . esc_attr( strtolower( $field_title ) ) . '" data-name="' . esc_attr( strtolower( $field_title ) ) . '"></span></div>';
 										echo $html;
 									}
 
