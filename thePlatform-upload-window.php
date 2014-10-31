@@ -31,11 +31,8 @@ function theplatform_upload_clear_styles_and_scripts() {
         wp_dequeue_script( $handle );
     }   
 
-    wp_enqueue_script( 'tp_file_uploader_js' );
-    wp_enqueue_script( 'tp_nprogress_js' );
+    wp_enqueue_script( 'tp_file_uploader_js' );    
     wp_enqueue_style( 'tp_nprogress_css' );
-    wp_enqueue_style( 'tp_bootstrap_css' );
-    wp_enqueue_style( 'tp_browser_css' );    
 }
 
 ?>

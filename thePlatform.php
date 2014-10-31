@@ -94,8 +94,8 @@ class ThePlatform_Plugin {
 		wp_register_script( 'tp_infiniscroll_js', plugins_url( '/js/jquery.infinitescroll.min.js', __FILE__ ), array( 'jquery' ) );
 		wp_register_script( 'tp_nprogress_js', plugins_url( '/js/nprogress.js', __FILE__ ) );
 		wp_register_script( 'tp_edit_upload_js', plugins_url( '/js/thePlatform-edit-upload.js', __FILE__ ), array( 'jquery' ) );	
-		wp_register_script( 'tp_file_uploader_js', plugins_url( '/js/theplatform-uploader.js', __FILE__ ), array( 'jquery' ) );
-		wp_register_script( 'tp_browser_js', plugins_url( '/js/thePlatform-browser.js', __FILE__ ), array( 'jquery', 'backbone', 'underscore', 'tp_edit_upload_js', 'jquery-ui-dialog', 'tp_holder_js', 'tp_pdk_js', 'tp_infiniscroll_js', 'tp_bootstrap_js' ) );
+		wp_register_script( 'tp_file_uploader_js', plugins_url( '/js/theplatform-uploader.js', __FILE__ ), array( 'jquery', 'tp_nprogress_js' ) );
+		wp_register_script( 'tp_browser_js', plugins_url( '/js/thePlatform-browser.js', __FILE__ ), array( 'jquery', 'underscore', 'jquery-ui-dialog', 'tp_holder_js', 'tp_pdk_js', 'tp_infiniscroll_js', 'tp_bootstrap_js' ) );
 		wp_register_script( 'tp_options_js', plugins_url( '/js/thePlatform-options.js', __FILE__ ), array( 'jquery', 'jquery-ui-sortable' ) );
 		
 
@@ -138,7 +138,7 @@ class ThePlatform_Plugin {
 		wp_register_style( 'tp_browser_css', plugins_url( '/css/thePlatform-browser.css', __FILE__ ) );
 		wp_register_style( 'tp_bootstrap_css', plugins_url( '/css/bootstrap_tp.min.css', __FILE__ ) );
 		wp_register_style( 'tp_options_css', plugins_url( '/css/thePlatform-options.css', __FILE__ ) );
-		wp_register_style( 'tp_nprogress_css', plugins_url( '/css/nprogress.css', __FILE__ ) );
+		wp_register_style( 'tp_nprogress_css', plugins_url( '/css/nprogress.css', __FILE__ ), array( 'tp_bootstrap_css') );
 	}
 
 	/**
