@@ -31,10 +31,9 @@ function theplatform_media_clear_styles_and_scripts() {
         wp_dequeue_script( $handle );
     }   
 
-	wp_enqueue_script( 'tp_mediaview_js' );
-	wp_enqueue_script( 'jquery-ui-dialog' );
+	wp_enqueue_script( 'tp_browser_js' );	
 	wp_enqueue_style( 'tp_bootstrap_css' );
-	wp_enqueue_style( 'tp_theplatform_css' );
+	wp_enqueue_style( 'tp_browser_css' );
 	wp_enqueue_style( 'wp-jquery-ui-dialog' );
 	wp_enqueue_style( 'dashicons' );
 }
@@ -91,32 +90,34 @@ function theplatform_media_clear_styles_and_scripts() {
 		?>
 
 		<script type="text/javascript">
-			tpHelper = { };
-			tpHelper.token = "<?php echo esc_js( $tp_api->mpx_signin() ); ?>";
+			tpHelper = { };			
 			tpHelper.account = "<?php echo esc_js( $account['mpx_account_id'] ); ?>";
 			tpHelper.accountPid = "<?php echo esc_js( $account['mpx_account_pid'] ); ?>";
 			tpHelper.isEmbed = "<?php echo esc_js( $IS_EMBED ); ?>";
 			tpHelper.mediaEmbedType = "<?php echo esc_js( $preferences['media_embed_type'] ); ?>";
+			tpHelper.selectedCategory = '';
+        	tpHelper.feedEndRange = 0;
+        	tpHelper.queryString = '';
 		</script>
 		
-		<script id="category-template" type="text/x-handlebars-template">
-			<a href="#" class="list-group-item cat-list-selector">{{entryTitle}}</a>
+		<script id="category-template" type="text/template">
+			<a href="#" class="list-group-item category"><%=entryTitle%></a>
 		</script>
 		
-		<script id="media-template" type="text/x-handlebars-template">
-			<div class="media" id="{{guid}}"><img class="media-object pull-left thumb-img" data-src="{{placeHolder}}" alt="128x72" src="{{defaultThumbnailUrl}}">
+		<script id="media-template" type="text/template">
+			<div class="media" id="<%=guid%>"><img class="media-object pull-left thumb-img" data-src="<%=placeHolder%>" alt="128x72" src="<%=defaultThumbnailUrl%>">
 				<div class="media-body">
 					<div id="head">
-							<strong class="media-heading">{{title}}</strong>
+							<strong class="media-heading"><%=title%></strong>
 					</div>
 					<div id="source"></div>
-					<div id="desc">{{formatDescription description}}</div>
+					<div id="desc"><%=_.template.formatDescription(description)%></div>
 				</div>
 			</div>
 		</script>
 		
-		<script id="shortcode-template" type="text/x-handlebars-template">
-			[theplatform account="{{account}}" media="{{release}}" player="{{player}}"]
+		<script id="shortcode-template" type="text/template">
+			[theplatform account="<%=account%>" media="<%=release%>" player="<%=player%>"]
 		</script>			
 		
 		<?php wp_head(); ?>
@@ -171,7 +172,7 @@ function theplatform_media_clear_styles_and_scripts() {
 							<a class="list-group-item active">
 								Categories
 							</a>
-							<a href="#" class="list-group-item cat-list-selector" style="background-color: #D8E8FF;">All Videos</a>
+							<a href="#" class="list-group-item category selected">All Videos</a>
 						</div>                    
 					</div>
 				</div>
@@ -258,7 +259,7 @@ function theplatform_media_clear_styles_and_scripts() {
 										}
 										$html = '<div class="row">';
 										$html .= '<strong>' . esc_html( $display_title ) . ': </strong>';
-										$html .= '<span id="media-' . esc_attr( strtolower( $field_title ) ) . '" data-name="' . esc_attr( strtolower( $field_title ) ) . '"></span></div>';
+										$html .= '<span class="field" id="media-' . esc_attr( strtolower( $field_title ) ) . '" data-name="' . esc_attr( strtolower( $field_title ) ) . '"></span></div>';
 										echo $html;
 									}
 
@@ -287,7 +288,7 @@ function theplatform_media_clear_styles_and_scripts() {
 
 										$html = '<div class="row">';
 										$html .= '<strong>' . esc_html( mb_convert_case( $field_title, MB_CASE_TITLE ) ) . ': </strong>';
-										$html .= '<span id="media-' . esc_attr( $field_title ) . '" data-type="' . esc_attr( $field_type ) . '" data-structure="' . esc_attr( $field_structure ) . '" data-name="' . esc_attr( $field_title ) . '" data-prefix="' . esc_attr( $field_prefix ) . '" data-namespace="' . esc_attr( $field_namespace ) . '"></span></div>';
+										$html .= '<span class="field" id="media-' . esc_attr( $field_title ) . '" data-type="' . esc_attr( $field_type ) . '" data-structure="' . esc_attr( $field_structure ) . '" data-name="' . esc_attr( $field_title ) . '" data-prefix="' . esc_attr( $field_prefix ) . '" data-namespace="' . esc_attr( $field_namespace ) . '"></span></div>';
 										echo $html;
 									}
 									?>                      

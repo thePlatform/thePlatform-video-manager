@@ -254,6 +254,7 @@ class ThePlatform_API {
 	function update_media( $args ) {
 		$token = $this->mpx_signin();
 		$this->create_media_placeholder( $args, $token );
+		wp_send_json_success();
 	}
 
 	/**

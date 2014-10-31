@@ -59,12 +59,8 @@ class ThePlatform_Options {
 	 * Enqueue our javascript file
 	 */
 	function enqueue_scripts() {		
-		wp_enqueue_script( 'tp_theplatform_js' );
-		wp_enqueue_script( 'tp_field_views_js' );
-		wp_enqueue_script( 'jquery-ui-sortable' );
-		wp_enqueue_style( 'dashicons' );
-        wp_enqueue_style( 'tp_theplatform_css' );
-		wp_enqueue_style( 'tp_field_views_css' );
+		wp_enqueue_script( 'tp_options_js' );		        
+		wp_enqueue_style( 'tp_options_css' );
 	}
 
 	/**
@@ -203,6 +199,7 @@ class ThePlatform_Options {
 	 */
 	function section_mpx_account_desc() {
 		echo 'Set your MPX credentials and Account. If you do not have an account, please reach out to thePlatform.';
+        echo '<div id="TP_PAGE_KEY" style="display: none;">TP_PREFERENCES</div>';
 	}
 
 	/**
@@ -210,6 +207,7 @@ class ThePlatform_Options {
 	 */
 	function section_preferences_desc() {
 		echo 'Configure general preferences below.';
+        echo '<div id="TP_PAGE_KEY" style="display: none;">TP_PREFERENCES</div>';
 	}
 
 	/**
@@ -224,6 +222,7 @@ class ThePlatform_Options {
 	 */
 	function section_custom_metadata_desc() {
 		echo 'Drag and drop the custom metadata fields that you would like to be readable, writable, or omitted when uploading and editing media.';
+        echo '<div id="TP_PAGE_KEY" style="display: none;">TP_FIELDS</div>';
 	}
 
 	/**
@@ -231,6 +230,7 @@ class ThePlatform_Options {
 	 */
 	function section_basic_metadata_desc() {
 		echo 'Drag and drop the basic metadata fields that you would like to be readable, writable, or omitted when uploading and editing media.';
+        echo '<div id="TP_PAGE_KEY" style="display: none;">TP_FIELDS</div>';
 	}
 
 	/**

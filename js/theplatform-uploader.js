@@ -37,7 +37,7 @@ TheplatformUploader = ( function() {
 		}
 
 		var data = {
-			_wpnonce: theplatform_uploader_local.tp_nonce['initialize_media_upload'],
+			_wpnonce: tp_file_uploader_local.tp_nonce['initialize_media_upload'],
 			action: 'initialize_media_upload',
 			filesize: file.size,
 			filetype: file.type,
@@ -50,7 +50,7 @@ TheplatformUploader = ( function() {
 
 		me.message( "Initializing Upload of file " + (me.currentFileIndex + 1) + ' out of ' + (me.lastFileIndex + 1));				
 
-		jQuery.post( theplatform_uploader_local.ajaxurl, data, function( response ) {			
+		jQuery.post( tp_file_uploader_local.ajaxurl, data, function( response ) {			
 			if ( response.success ) {
 				var data = response.data;
 				
@@ -96,12 +96,12 @@ TheplatformUploader = ( function() {
 		var data = {
 			url: requestUrl,
 			method: 'put',			
-			_wpnonce: theplatform_uploader_local.tp_nonce['start_upload'],
+			_wpnonce: tp_file_uploader_local.tp_nonce['start_upload'],
 			action: 'start_upload'			
 		}
 		
 		jQuery.ajax( {
-			url: theplatform_uploader_local.ajaxurl,			
+			url: tp_file_uploader_local.ajaxurl,			
 			type: "POST",	
 			data: data,		
 			xhrFields: {
@@ -130,7 +130,7 @@ TheplatformUploader = ( function() {
 			url: requestUrl,
 			method: 'get',			
 			action: 'upload_status',
-			_wpnonce: theplatform_uploader_local.tp_nonce['upload_status'],
+			_wpnonce: tp_file_uploader_local.tp_nonce['upload_status'],
 			cookie_name: me.cookie['name'],
 			cookie_value: me.cookie['value'],
 			contentType: "application/json; charset=utf-8"
@@ -138,7 +138,7 @@ TheplatformUploader = ( function() {
 
 		me.message('Waiting for Upload server to be ready.');
 		jQuery.ajax( {
-			url: theplatform_uploader_local.ajaxurl,		
+			url: tp_file_uploader_local.ajaxurl,		
 			type: "POST",	
 			data: data,					
 			xhrFields: {
@@ -214,13 +214,13 @@ TheplatformUploader = ( function() {
 		data.append('url', requestUrl);
 		data.append('action', 'upload_fragment');		
 		data.append('method', 'put');	
-		data.append('_wpnonce', theplatform_uploader_local.tp_nonce['upload_fragment'])
+		data.append('_wpnonce', tp_file_uploader_local.tp_nonce['upload_fragment'])
 		data.append('cookie_name', me.cookie['name']);
 		data.append('cookie_value', me.cookie['value']);
 
 		var lastSegmentStart = Date.now();
 		jQuery.ajax( {
-			url: theplatform_uploader_local.ajaxurl,			
+			url: tp_file_uploader_local.ajaxurl,			
 			data: data,			
 			type: "POST",
 			processData: false,
@@ -277,7 +277,7 @@ TheplatformUploader = ( function() {
 		var data = {
 			url: requestUrl,
 			method: 'post',
-			_wpnonce: theplatform_uploader_local.tp_nonce['finish_upload'],
+			_wpnonce: tp_file_uploader_local.tp_nonce['finish_upload'],
 			action: 'finish_upload',
 			cookie_name: me.cookie['name'],
 			cookie_value: me.cookie['value']		
@@ -285,7 +285,7 @@ TheplatformUploader = ( function() {
 
 		me.message('Finishing upload of file ' + (me.currentFileIndex + 1) + ' out of ' + (me.lastFileIndex + 1), true)
 		jQuery.ajax( {
-			url: theplatform_uploader_local.ajaxurl,
+			url: tp_file_uploader_local.ajaxurl,
 			data: data,			
 			type: "POST",
 			xhrFields: {
@@ -316,7 +316,7 @@ TheplatformUploader = ( function() {
 		var data = {
 			url: requestUrl,
 			method: 'get',
-			_wpnonce: theplatform_uploader_local.tp_nonce['upload_status'],
+			_wpnonce: tp_file_uploader_local.tp_nonce['upload_status'],
 			action: 'upload_status',
 			cookie_name: me.cookie['name'],
 			cookie_value: me.cookie['value'],
@@ -326,7 +326,7 @@ TheplatformUploader = ( function() {
 		me.message('Waiting for complete status');
 
 		jQuery.ajax( {
-			url: theplatform_uploader_local.ajaxurl,			
+			url: tp_file_uploader_local.ajaxurl,			
 			type: "POST",			
 			data: data,
 			xhrFields: {
@@ -387,7 +387,7 @@ TheplatformUploader = ( function() {
 			account: me.account,
 			profile: me.publishProfile,
 			action: 'publish_media',
-			_wpnonce: theplatform_uploader_local.tp_nonce['publish_media'],
+			_wpnonce: tp_file_uploader_local.tp_nonce['publish_media'],
 			token: me.token
 		};
 		
@@ -400,7 +400,7 @@ TheplatformUploader = ( function() {
 		me.message( "Publishing media" );
 
 		jQuery.ajax( {
-			url: theplatform_uploader_local.ajaxurl,
+			url: tp_file_uploader_local.ajaxurl,
 			data: params,
 			type: "POST",
 			success: function( response ) {
@@ -432,7 +432,7 @@ TheplatformUploader = ( function() {
 		var data = {
 			url: requestUrl,
 			method: 'put',
-			_wpnonce: theplatform_uploader_local.tp_nonce['cancel_upload'],
+			_wpnonce: tp_file_uploader_local.tp_nonce['cancel_upload'],
 			action: 'cancel_upload',
 			cookie_name: me.cookie['name'],
 			cookie_value: me.cookie['value']
@@ -476,7 +476,7 @@ TheplatformUploader = ( function() {
 	};	
 
 	TheplatformUploader.prototype.createUUID = function() {
-    // http://www.ietf.org/rfc/rfc4122.txt
+    	// http://www.ietf.org/rfc/rfc4122.txt
 	    var s = [];
 	    var hexDigits = "0123456789abcdef";
 	    for (var i = 0; i < 36; i++) {

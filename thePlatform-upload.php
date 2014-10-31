@@ -65,7 +65,7 @@ $structureDesc = array(
 
 if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 	wp_enqueue_style( 'tp_bootstrap_css' );
-	wp_enqueue_script( 'tp_theplatform_js' );	
+	wp_enqueue_script( 'tp_edit_upload_js' );	
 
 	if ( !current_user_can( $tp_uploader_cap ) ) {
 		wp_die( '<p>You do not have sufficient permissions to upload MPX Media</p>' );

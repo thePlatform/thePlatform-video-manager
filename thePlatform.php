@@ -89,20 +89,18 @@ class ThePlatform_Plugin {
 	 */
 	function register_scripts() {
 		wp_register_script( 'tp_pdk_js', "//pdk.theplatform.com/pdk/tpPdk.js" );
-		wp_register_script( 'tp_holder_js', plugins_url( '/js/holder.js', __FILE__ ) );
-		wp_register_script( 'tp_handlebars_js', plugins_url( '/js/handlebars-v1.3.0.js', __FILE__ ) );
-		wp_register_script( 'tp_bootstrap_js', plugins_url( '/js/bootstrap.min.js', __FILE__ ), array( 'jquery' ) );
-		wp_register_script( 'tp_theplatform_js', plugins_url( '/js/theplatform.js', __FILE__ ), array( 'jquery' ) );
+		wp_register_script( 'tp_holder_js', plugins_url( '/js/holder.js', __FILE__ ) );		
+		wp_register_script( 'tp_bootstrap_js', plugins_url( '/js/bootstrap.min.js', __FILE__ ), array( 'jquery' ) );		
 		wp_register_script( 'tp_infiniscroll_js', plugins_url( '/js/jquery.infinitescroll.min.js', __FILE__ ), array( 'jquery' ) );
-		wp_register_script( 'tp_mpxhelper_js', plugins_url( '/js/mpxHelper.js', __FILE__ ), array( 'jquery' ) );
-		wp_register_script( 'tp_uploader_js', plugins_url( '/js/theplatform-uploader.js', __FILE__ ), array( 'jquery', 'tp_theplatform_js' ) );
-		wp_register_script( 'tp_mediaview_js', plugins_url( '/js/mediaview.js', __FILE__ ), array( 'jquery', 'jquery-ui-dialog', 'tp_handlebars_js', 'tp_holder_js', 'tp_mpxhelper_js', 'tp_theplatform_js', 'tp_pdk_js', 'tp_infiniscroll_js', 'tp_bootstrap_js' ) );
-		wp_register_script( 'tp_field_views_js', plugins_url( '/js/fieldViews.js', __FILE__ ), array( 'jquery' ) );
 		wp_register_script( 'tp_nprogress_js', plugins_url( '/js/nprogress.js', __FILE__ ) );
+		wp_register_script( 'tp_edit_upload_js', plugins_url( '/js/thePlatform-edit-upload.js', __FILE__ ), array( 'jquery' ) );	
+		wp_register_script( 'tp_file_uploader_js', plugins_url( '/js/theplatform-uploader.js', __FILE__ ), array( 'jquery' ) );
+		wp_register_script( 'tp_browser_js', plugins_url( '/js/thePlatform-browser.js', __FILE__ ), array( 'jquery', 'backbone', 'underscore', 'tp_edit_upload_js', 'jquery-ui-dialog', 'tp_holder_js', 'tp_pdk_js', 'tp_infiniscroll_js', 'tp_bootstrap_js' ) );
+		wp_register_script( 'tp_options_js', plugins_url( '/js/thePlatform-options.js', __FILE__ ), array( 'jquery', 'jquery-ui-sortable' ) );
+		
 
-		wp_localize_script( 'tp_theplatform_js', 'theplatform_local', array(
-			'ajaxurl' => admin_url( 'admin-ajax.php' ),
-			'plugin_base_url' => plugins_url( 'images/', __FILE__ ),
+		wp_localize_script( 'tp_edit_upload_js', 'tp_edit_upload_local', array(
+			'ajaxurl' => admin_url( 'admin-ajax.php' ),			
 			'tp_nonce' => array( 				
 				'verify_account' => wp_create_nonce( 'theplatform-ajax-nonce-verify_account' ),
 				'theplatform_edit' => wp_create_nonce( 'theplatform-ajax-nonce-theplatform_edit' ),
@@ -113,7 +111,7 @@ class ThePlatform_Plugin {
 			)
 		) );		
 
-		wp_localize_script( 'tp_uploader_js', 'theplatform_uploader_local', array(
+		wp_localize_script( 'tp_file_uploader_js', 'tp_file_uploader_local', array(
 			'ajaxurl' => admin_url( 'admin-ajax.php' ),			
 			'tp_nonce' => array( 				
 				'initialize_media_upload' => wp_create_nonce( 'theplatform-ajax-nonce-initialize_media_upload' ),
@@ -126,25 +124,20 @@ class ThePlatform_Plugin {
 			)
 		) );	
 
-		wp_localize_script( 'tp_mpxhelper_js', 'mpxhelper_local', array(
+		wp_localize_script( 'tp_browser_js', 'tp_browser_local', array(
 			'ajaxurl' => admin_url( 'admin-ajax.php' ),			
 			'tp_nonce' => array( 				
 				'get_videos' => wp_create_nonce( 'theplatform-ajax-nonce-get_videos' ),
 				'get_categories' => wp_create_nonce( 'theplatform-ajax-nonce-get_categories' ),
-				'get_profile_results' => wp_create_nonce( 'theplatform-ajax-nonce-profile_result' )
-			)
-		) );	
-
-		wp_localize_script( 'tp_mediaview_js', 'mediaview_local', array(
-			'ajaxurl' => admin_url( 'admin-ajax.php' ),			
-			'tp_nonce' => array( 				
+				'get_profile_results' => wp_create_nonce( 'theplatform-ajax-nonce-profile_result' ),
 				'set_thumbnail' => wp_create_nonce( 'theplatform-ajax-nonce-set_thumbnail' )
 			)
-		) );		
+		) );	
+		
 
-		wp_register_style( 'tp_theplatform_css', plugins_url( '/css/thePlatform.css', __FILE__ ) );
+		wp_register_style( 'tp_browser_css', plugins_url( '/css/thePlatform-browser.css', __FILE__ ) );
 		wp_register_style( 'tp_bootstrap_css', plugins_url( '/css/bootstrap_tp.min.css', __FILE__ ) );
-		wp_register_style( 'tp_field_views_css', plugins_url( '/css/fieldViews.css', __FILE__ ) );
+		wp_register_style( 'tp_options_css', plugins_url( '/css/thePlatform-options.css', __FILE__ ) );
 		wp_register_style( 'tp_nprogress_css', plugins_url( '/css/nprogress.css', __FILE__ ) );
 	}
 
@@ -527,7 +520,7 @@ class ThePlatform_Plugin {
 		}
 
 		$tp_embedder_cap = apply_filters( TP_EMBEDDER_CAP, TP_EMBEDDER_DEFAULT_CAP );
-		if ( current_user_can( $tp_embedder_cap ) && $this->preferences['embed_hook'] != 'tinymce' ) {
+		if ( current_user_can( $tp_embedder_cap ) && ( array_key_exists( 'embed_hook', $this->preferences ) == false || $this->preferences['embed_hook'] != 'tinymce' ) ) {
 			$image_url = plugins_url('/images/embed_button.png', __FILE__);
 			wp_enqueue_script( 'jquery-ui-dialog' );
 			wp_enqueue_style( 'wp-jquery-ui-dialog' );

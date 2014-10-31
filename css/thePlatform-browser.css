@@ -230,6 +230,15 @@ header {
     color: red;
 }
 
+.category:hover,.media:hover {
+    background-color: #f5f5f5;
+}
+
+.category.selected,.media.selected {
+    background-color: #D8E8FF !important;
+}
 .tp #selectpick-player {
     width: 270px;
 }
+
+
