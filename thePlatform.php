@@ -183,8 +183,7 @@ class ThePlatform_Plugin {
 	/**
 	 * Calls the About page template
 	 */
-	function about_page() {
-		theplatform_check_plugin_update();
+	function about_page() {		
 		require_once( dirname( __FILE__ ) . '/thePlatform-about.php' );
 	}
 
