@@ -16,7 +16,7 @@
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 
-(function($) {
+var theplatform_browser = (function($) {
     /**
      * UI Methods
      * @type {Object}
@@ -174,6 +174,7 @@
             var mediaTemplate = _.template(mediaSource);
 
             var newMedia = mediaTemplate({
+                id: media.id,
                 guid: media.guid,
                 pid: media.pid,
                 placeHolder: placeHolder,
@@ -194,14 +195,13 @@
             newMedia.data('release', previewUrl.pop());
 
             // Update or add new media to the UI
-            var existingMedia = document.getElementById(media.guid)
+            var existingMedia = document.getElementById(media.id)
             if (existingMedia != null) {
                 $(existingMedia).replaceWith(newMedia);
+            } else {
+                $('#media-list').append(newMedia);
             }
-            else {
-                $('#media-list').append(newMedia);    
-            }
-            
+
 
             newMedia.on('click', Events.onClickMedia);
 
@@ -209,9 +209,11 @@
             if ($('#media-list').children().length < 2)
                 $('.media', '#media-list').click();
         },
-        updateMediaObject: function(media) {
-            if ( _.has(media, 'guid') )
-                UI.addMediaObject(media);
+        updateMediaObject: function(mediaId) {
+            API.getVideoById(mediaId, function(media) {
+                if (_.has(media, 'id'))
+                    UI.addMediaObject(media);
+            });
         }
     }
 
@@ -347,8 +349,8 @@
                     $('.ui-dialog-titlebar-close').addClass('ui-button');
                 },
                 close: function() {
-                    if ($('#tp-edit-dialog').data('refresh') == 'true')
-                        API.getVideoById(tpHelper.mediaId);    
+                    // if ($('#tp-edit-dialog').data('refresh') == 'true')
+
                 }
             }).css("overflow", "hidden");
             return false;
@@ -506,7 +508,7 @@
                     callback(JSON.parse(resp));
                 });
         },
-        getVideoById: function(mediaId) {
+        getVideoById: function(mediaId, callback) {
             var data = {
                 _wpnonce: tp_browser_local.tp_nonce['get_video_by_id'],
                 action: 'get_video_by_id',
@@ -514,7 +516,7 @@
             };
 
             $.post(tp_browser_local.ajaxurl, data, function(resp) {
-                UI.updateMediaObject(resp.data)
+                callback(resp.data)
             });
         },
         //Get a list of release URls
@@ -604,5 +606,10 @@
             onBottom: Events.onMediaListBottom
         });
     });
+    
+    // Expose the updateMediaObject method outside this module
+    return {
+        updateMediaObject: UI.updateMediaObject
+    }
 
 })(jQuery);

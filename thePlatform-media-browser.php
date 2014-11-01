@@ -108,7 +108,7 @@ function theplatform_media_clear_styles_and_scripts() {
 		</script>
 		
 		<script id="media-template" type="text/template">
-			<div class="media" id="<%=guid%>"><img class="media-object pull-left thumb-img" data-src="<%=placeHolder%>" alt="128x72" src="<%=defaultThumbnailUrl%>">
+			<div class="media" id="<%=id%>"><img class="media-object pull-left thumb-img" data-src="<%=placeHolder%>" alt="128x72" src="<%=defaultThumbnailUrl%>">
 				<div class="media-body">
 					<div id="head">
 							<strong class="media-heading"><%=title%></strong>
