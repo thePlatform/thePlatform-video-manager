@@ -32,7 +32,7 @@ function theplatform_upload_clear_styles_and_scripts() {
     }   
 
     wp_enqueue_script( 'tp_file_uploader_js' );    
-    wp_enqueue_style( 'tp_nprogress_css' );
+    wp_enqueue_style( 'tp_file_uploader_css' );
 }
 
 ?>

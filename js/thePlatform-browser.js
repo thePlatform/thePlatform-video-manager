@@ -47,7 +47,7 @@
 
             tpHelper.queryParams = queryObject;
             var newFeed = API.buildMediaQuery(queryObject);
-            
+
             tpHelper.queryString = API.buildMediaQuery(queryObject);
             tpHelper.feedEndRange = 0;
             $mediaList.empty();
@@ -60,7 +60,7 @@
             var categoryTemplate = _.template(categorySource);
 
             // Set an event handler for All Videos
-            jQuery('.category').first().click(Events.onClickCategory);
+            $('.category').first().click(Events.onClickCategory);
 
             // Add each category
             for (var idx in entries) {
@@ -88,29 +88,6 @@
                 $msgPanel.alert();
             }
             $msgPanel.text(msg);
-        },
-
-        updatePublishProfiles: function(mediaId) {
-            API.getProfileResults(mediaId, function(data) {
-                var revokeDropdown = jQuery('#publish_status');
-                revokeDropdown.empty();
-                var publishDropdown = jQuery('#edit_publishing_profile');
-
-                for (var i = 0; i < data.length; i++) {
-                    if (data[i].status == 'Processed') {
-                        var option = document.createElement('option');
-                        option.value = data[i].profileId;
-                        option.text = publishDropdown.find('option[value="' + data[i].profileId + '"]').text();
-                        revokeDropdown.append(option);
-                    }
-                };
-
-                if (revokeDropdown.children().length == 0) {
-                    revokeDropdown.attr('disabled', 'true');
-                } else {
-                    revokeDropdown.removeAttr('disabled');
-                }
-            })
         },
 
         updateContentPane: function(mediaItem) {
@@ -189,12 +166,6 @@
         },
 
         addMediaObject: function(media) {
-            //Prevent adding the same media twice.
-            // This cannot be filtered out earlier because it only really occurs when
-            // Something just gets added.
-            if (document.getElementById(media.guid) != null) //Can't use $ because of poor guid format convention.
-                return;
-
             var placeHolder = "";
             if (media.defaultThumbnailUrl === "")
                 placeHolder = "holder.js/128x72/text:No Thumbnail";
@@ -222,13 +193,25 @@
 
             newMedia.data('release', previewUrl.pop());
 
-            $('#media-list').append(newMedia);
+            // Update or add new media to the UI
+            var existingMedia = document.getElementById(media.guid)
+            if (existingMedia != null) {
+                $(existingMedia).replaceWith(newMedia);
+            }
+            else {
+                $('#media-list').append(newMedia);    
+            }
+            
 
             newMedia.on('click', Events.onClickMedia);
 
             //Select the first one on the page.
             if ($('#media-list').children().length < 2)
                 $('.media', '#media-list').click();
+        },
+        updateMediaObject: function(media) {
+            if ( _.has(media, 'guid') )
+                UI.addMediaObject(media);
         }
     }
 
@@ -280,7 +263,6 @@
             }
 
             tpHelper.mediaId = $(this).data('id');
-            UI.updatePublishProfiles(tpHelper.mediaId);
             tpHelper.selectedThumb = $(this).data('media')['defaultThumbnailUrl'];
             $pdk.controller.resetPlayer();
             if (tpHelper.currentRelease !== undefined) {
@@ -313,7 +295,7 @@
                 account: tpHelper.accountPid,
                 release: tpHelper.currentRelease,
                 player: player
-            }); 
+            });
 
             var win = window.dialogArguments || opener || parent || top;
             var editor = win.tinyMCE.activeEditor;
@@ -361,10 +343,12 @@
                 minWidth: 800,
                 width: 1024,
                 open: function() {
+                    $('#tp-edit-dialog').data('refresh', 'false');
                     $('.ui-dialog-titlebar-close').addClass('ui-button');
                 },
                 close: function() {
-                    UI.refreshView();
+                    if ($('#tp-edit-dialog').data('refresh') == 'true')
+                        API.getVideoById(tpHelper.mediaId);    
                 }
             }).css("overflow", "hidden");
             return false;
@@ -451,7 +435,12 @@
             if (secs > 86399)
                 s = Math.floor((t - Date.parse("1/1/70")) / 3600000) + s.substr(2);
             return s;
+        },
+
+        jQuerySelectorEscape: function(expression) {
+            return expression.replace(/[!"#$%&'()*+,.\/:;<=>?@\[\\\]^`{|}~]/g, '\\$&');
         }
+
     }
 
     /**
@@ -467,10 +456,10 @@
                 range: range,
                 query: tpHelper.queryString,
                 isEmbed: tpHelper.isEmbed,
-                myContent: jQuery('#my-content-cb').prop('checked')
+                myContent: $('#my-content-cb').prop('checked')
             };
 
-            jQuery.post(tp_browser_local.ajaxurl, data, function(resp) {
+            $.post(tp_browser_local.ajaxurl, data, function(resp) {
                 viewLoading = false;
                 resp = JSON.parse(resp);
                 if (resp.isException) {
@@ -500,7 +489,7 @@
                 queryParams = queryParams.appendParams({
                     sort: sortValue
                 });
-            }            
+            }
 
             return queryParams;
         },
@@ -512,12 +501,22 @@
                 fields: 'title'
             };
 
-            jQuery.post(tp_browser_local.ajaxurl, data,
+            $.post(tp_browser_local.ajaxurl, data,
                 function(resp) {
                     callback(JSON.parse(resp));
                 });
         },
-       
+        getVideoById: function(mediaId) {
+            var data = {
+                _wpnonce: tp_browser_local.tp_nonce['get_video_by_id'],
+                action: 'get_video_by_id',
+                mediaId: mediaId
+            };
+
+            $.post(tp_browser_local.ajaxurl, data, function(resp) {
+                UI.updateMediaObject(resp.data)
+            });
+        },
         //Get a list of release URls
         extractVideoUrlfromMedia: function(media) {
             var res = [];
@@ -542,22 +541,6 @@
             }
 
             return res;
-        },
-        getProfileResults: function(mediaId, callback) {
-            var data = {
-                _wpnonce: tp_browser_local.tp_nonce['get_profile_results'],
-                action: 'get_profile_results',
-                mediaId: mediaId
-            };
-
-            jQuery.post(tp_browser_local.ajaxurl, data, function(resp) {
-                if (resp.success) {
-                    callback(resp.data);
-                } else {
-                    console.log(resp);
-                }
-
-            });
         }
     };
 
@@ -616,8 +599,7 @@
         $('#media-list').infiniteScroll({
             threshold: 100,
             onEnd: function() {
-                //No more results
-                UI.notifyUser('info', 'No more videos available');
+                //No more results                
             },
             onBottom: Events.onMediaListBottom
         });

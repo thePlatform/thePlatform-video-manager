@@ -81,19 +81,19 @@ if ( defined( 'TP_MEDIA_BROWSER' ) ) {
 
 
 	<ul class="nav nav-tabs" role="tablist">
-	    <li class="active"><a href="#edit" role="tab" data-toggle="tab">Edit Metadata</a></li>
+	    <li class="active" id="edit"><a href="#edit_content" role="tab" data-toggle="tab">Edit Metadata</a></li>
 	    <?php 
 	    if ( current_user_can( $tp_uploader_cap ) ) { 
-			echo '<li><a href="#upload" role="tab" data-toggle="tab">Add New Files</a></li>';
-			echo '<li><a href="#publish" role="tab" data-toggle="tab">Publish</a></li>';
+			echo '<li id="add_files"><a href="#add_files_content" role="tab" data-toggle="tab">Add New Files</a></li>';
+			echo '<li id="publish"><a href="#publish_content" role="tab" data-toggle="tab">Publish</a></li>';
 		} 
 		if ( current_user_can( $tp_revoke_cap ) ) { 
-			echo '<li><a href="#revoke" role="tab" data-toggle="tab">Revoke</a></li>';
+			echo '<li id="revoke"><a href="#revoke_content" role="tab" data-toggle="tab">Revoke</a></li>';
 		} ?>
 	</ul>
 
 	<div class="tab-content">
-	    <div class="tab-pane active" id="edit">
+	    <div class="tab-pane active" id="edit_content">
 	    <?php } ?>
 		<form role="form">
 	<?php
@@ -295,7 +295,7 @@ if ( defined( 'TP_MEDIA_BROWSER' ) ) {
 if ( defined( 'TP_MEDIA_BROWSER' ) ) { ?>
     </div>
 
-    <div class="tab-pane" id="upload">
+    <div class="tab-pane" id="add_files_content">
 		<div class="row">
 			<div class="col-xs-3">
 				<?php
@@ -348,7 +348,7 @@ if ( defined( 'TP_MEDIA_BROWSER' ) ) { ?>
 		</div>
     </div>
 
-    <div class="tab-pane" id="publish">
+    <div class="tab-pane" id="publish_content">
 	    <div class="row">
 			<div class="col-xs-3">
 				<?php
@@ -372,7 +372,7 @@ if ( defined( 'TP_MEDIA_BROWSER' ) ) { ?>
 			</div>						
 		</div>
     </div>
-     <div class="tab-pane" id="revoke">
+     <div class="tab-pane" id="revoke_content">
 	    <div class="row">			
 			<div class="col-xs-3">
 				<div class="form-group">

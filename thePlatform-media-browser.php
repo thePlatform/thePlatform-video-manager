@@ -30,7 +30,10 @@ function theplatform_media_clear_styles_and_scripts() {
     foreach( $wp_scripts->queue as $handle ) {       	
         wp_dequeue_script( $handle );
     }   
-
+    
+    if ( ! isset( $_GET['embed'] ) ) {
+    	wp_enqueue_script( 'tp_edit_upload_js' );		
+    }
 	wp_enqueue_script( 'tp_browser_js' );	
 	wp_enqueue_style( 'tp_bootstrap_css' );
 	wp_enqueue_style( 'tp_browser_css' );
@@ -77,7 +80,7 @@ function theplatform_media_clear_styles_and_scripts() {
 
 		//Embed only stuff
 		$players = $tp_api->get_players();		
-		$IS_EMBED = isset( $_GET['embed'] ) ? true : false;
+		$IS_EMBED = isset( $_GET['embed'] );
 
 		function writePlayers( $players, $preferences ) {
 			$html = '<p class="navbar-text sort-bar-text">Player:</p><form class="navbar-form navbar-left sort-bar-nav" role="sort"><select id="selectpick-player" class="form-control">';

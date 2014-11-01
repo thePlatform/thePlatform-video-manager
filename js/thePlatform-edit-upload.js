@@ -14,7 +14,7 @@
  You should have received a copy of the GNU General Public License along
  with this program; if not, write to the Free Software Foundation, Inc.,
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
- 
+
 (function($) {
 
     var Validation = {
@@ -225,10 +225,11 @@
 	
     var UI = {
         onSuccess: function(response, button) {
-            if (response.success) {
+            if (response.success && !_.has(response.data, 'isException')) {                
                 jQuery(button).text('Success').removeClass('btn-primary btn-success btn-danger btn-info').addClass('btn-success');
             } else {
-                jQuery(button).text('Falied').removeClass('btn-primary btn-success btn-danger btn-info').addClass('btn-danger');
+                jQuery(button).text('Failed').removeClass('btn-primary btn-success btn-danger btn-info').addClass('btn-danger');
+                console.log(response.data.description);
             }
         },
 
@@ -236,6 +237,29 @@
             setTimeout(function() {
                 jQuery(button).text(value).removeClass('btn-primary btn-success btn-danger btn-info').addClass('btn-primary');
             }, 1500);
+        },
+
+        updatePublishProfiles: function(mediaId) {
+            API.getProfileResults(mediaId, function(data) {
+                var revokeDropdown = jQuery('#publish_status');
+                revokeDropdown.empty();
+                var publishDropdown = jQuery('#edit_publishing_profile');
+
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i].status == 'Processed') {
+                        var option = document.createElement('option');
+                        option.value = data[i].profileId;
+                        option.text = publishDropdown.find('option[value="' + data[i].profileId + '"]').text();
+                        revokeDropdown.append(option);
+                    }
+                };
+
+                if (revokeDropdown.children().length == 0) {
+                    revokeDropdown.attr('disabled', 'true');
+                } else {
+                    revokeDropdown.removeAttr('disabled');
+                }
+            })
         }
     };
 
@@ -264,6 +288,7 @@
                 method: 'post',
                 success: function(response) {
                     UI.onSuccess(response, me)
+                    $('#tp-edit-dialog').data('refresh', 'true');
                 },
                 complete: function(response) {
                     UI.onComplete(me, "Submit")
@@ -391,6 +416,9 @@
                 },
                 complete: function(response) {
                     UI.onComplete(me, "Revoke");
+                    setTimeout(function() { 
+                        UI.updatePublishProfiles(tpHelper.mediaId)
+                         }, 1500);
                 }
             });
         },
@@ -407,8 +435,30 @@
             if (input.length) {
                 input.val(log);
             }
+        },
+        onRevokeTabOpened: function() {
+            UI.updatePublishProfiles(tpHelper.mediaId);
         }
     };
+
+    var API = {        
+        getProfileResults: function(mediaId, callback) {
+            var data = {
+                _wpnonce: tp_browser_local.tp_nonce['get_profile_results'],
+                action: 'get_profile_results',
+                mediaId: mediaId
+            };
+
+            jQuery.post(tp_browser_local.ajaxurl, data, function(resp) {
+                if (resp.success) {
+                    callback(resp.data);
+                } else {
+                    console.log(resp);
+                }
+
+            });
+        }
+    }
 
     $(document).ready(function() {
         // Handle the custom file browser button
@@ -419,5 +469,6 @@
         $("#theplatform_add_file_button").click(Events.onAddFiles);
         $("#theplatform_publish_button").click(Events.onPublishMedia);
         $("#theplatform_revoke_button").click(Events.onRevokeMedia);
+        $(".nav-tabs #revoke").click(Events.onRevokeTabOpened);
     });
 })(jQuery);

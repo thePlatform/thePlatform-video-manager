@@ -76,6 +76,7 @@ class ThePlatform_Plugin {
 			add_action( 'wp_ajax_theplatform_edit', array( $this, 'edit' ) );
 			add_action( 'wp_ajax_get_categories', array( $this->tp_api, 'get_categories' ) );
 			add_action( 'wp_ajax_get_videos', array( $this->tp_api, 'get_videos' ) );
+			add_action( 'wp_ajax_get_video_by_id', array( $this->tp_api, 'get_video_by_id' ) );
 			add_action( 'wp_ajax_get_profile_results', array( $this->tp_api, 'get_profile_results' ) );
 			add_action( 'wp_ajax_set_thumbnail', array( $this, 'set_thumbnail_ajax' ) );
 			add_action( 'admin_init', array( $this, 'theplatform_buttonhooks' ) );
@@ -128,6 +129,7 @@ class ThePlatform_Plugin {
 			'ajaxurl' => admin_url( 'admin-ajax.php' ),			
 			'tp_nonce' => array( 				
 				'get_videos' => wp_create_nonce( 'theplatform-ajax-nonce-get_videos' ),
+				'get_video_by_id' => wp_create_nonce( 'theplatform-ajax-nonce-get_video_by_id' ),
 				'get_categories' => wp_create_nonce( 'theplatform-ajax-nonce-get_categories' ),
 				'get_profile_results' => wp_create_nonce( 'theplatform-ajax-nonce-profile_result' ),
 				'set_thumbnail' => wp_create_nonce( 'theplatform-ajax-nonce-set_thumbnail' )
@@ -138,7 +140,8 @@ class ThePlatform_Plugin {
 		wp_register_style( 'tp_browser_css', plugins_url( '/css/thePlatform-browser.css', __FILE__ ) );
 		wp_register_style( 'tp_bootstrap_css', plugins_url( '/css/bootstrap_tp.min.css', __FILE__ ) );
 		wp_register_style( 'tp_options_css', plugins_url( '/css/thePlatform-options.css', __FILE__ ) );
-		wp_register_style( 'tp_nprogress_css', plugins_url( '/css/nprogress.css', __FILE__ ), array( 'tp_bootstrap_css') );
+		wp_register_style( 'tp_nprogress_css', plugins_url( '/css/nprogress.css', __FILE__ ) );
+		wp_register_style( 'tp_file_uploader_css', plugins_url( '/css/thePlatform-file-uploader.css', __FILE__ ), array( 'tp_nprogress_css', 'tp_bootstrap_css' ) );
 	}
 
 	/**

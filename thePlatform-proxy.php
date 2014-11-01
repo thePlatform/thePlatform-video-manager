@@ -184,7 +184,7 @@ class ThePlatform_Proxy {
         $this->check_nonce_and_permissions( $_POST['action'] );
 
         if ( $_POST['profile'] == 'wp_tp_none' ) {
-            wp_send_json_success();
+            wp_send_json_success("No Publishing Profile Selected");
         } 
         
         if ( !isset( $_POST['token]'] ) ) {

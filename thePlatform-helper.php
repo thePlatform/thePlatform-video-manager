@@ -184,11 +184,11 @@ function theplatform_verify_account_settings() {
 
 	if ( !array_key_exists( 'isException', $payload ) ) {
 		$account_is_verified = TRUE;
-		wp_send_json_success();
+		wp_send_json_success("Account Verified");
 	} 
 	
 	$account_is_verified = FALSE;
-	wp_send_json_error();	
+	wp_send_json_error("Unable to verify account");	
 }
 
 /**

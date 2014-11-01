@@ -254,7 +254,7 @@ class ThePlatform_API {
 	function update_media( $args ) {
 		$token = $this->mpx_signin();
 		$this->create_media_placeholder( $args, $token );
-		wp_send_json_success();
+		wp_send_json_success("Media Updated");
 	}
 
 	/**
@@ -527,18 +527,27 @@ class ThePlatform_API {
 	 * @param string $id The Media ID associated with the asset we are requesting 
 	 * @return array The Media data service response
 	 */
-	function get_video_by_id( $id ) {
+	function get_video_by_id() {	
+		check_admin_referer( 'theplatform-ajax-nonce-get_video_by_id' );
+		
+		if ( !isset( $_POST['mediaId'] ) ) {
+			wp_send_json_error("No Media ID specificed in the request");
+		}
+
+		$fullId = $_POST['mediaId'];
+
+		$id = substr($fullId, strrpos( $fullId, '/' ) + 1 );		
+		
 		$token = $this->mpx_signin();
 		$fields = theplatform_get_query_fields( $this->get_metadata_fields() );
 
-		$url = TP_API_MEDIA_ENDPOINT . '&fields=' . $fields . ' &token=' . $token . '&byId=' . $id;
-
+		$url = TP_API_MEDIA_ENDPOINT . '&fields=id,guid,pid,title' . $fields . ' &token=' . $token . '&byId=' . $id;
+		
 		$response = ThePlatform_API_HTTP::get( $url );
 
 		$data = theplatform_decode_json_from_server( $response, TRUE );
-
-
-		return $data['entries'][0];
+		
+		wp_send_json_success( $data['entries'][0] );
 	}
 
 	/**
