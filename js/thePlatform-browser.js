@@ -114,10 +114,6 @@ var theplatform_browser = (function($) {
                     fullName = prefix + '$' + name;
                 var value = mediaItem[fullName];
 
-                if (_.isEmpty(value)) {
-                    return true; // Empty value, continue the loop                
-                }
-
                 if (name == 'id') {
                     value = value.substring(value.lastIndexOf('/') + 1);
                 }
@@ -132,7 +128,7 @@ var theplatform_browser = (function($) {
                         catList += catArray[i].name;
                     }
                     value = catList
-                } else {
+                } else if ( !_.isEmpty(value) ) {
                     if (dataStructure == 'List' || dataStructure == 'Map') {
                         var valString = '';
                         // Lists

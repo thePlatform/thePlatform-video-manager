@@ -143,7 +143,7 @@ function theplatform_media_clear_styles_and_scripts() {
 			</div> <?php	
 		}
 
-		function theplatform_content_pane_html( $IS_EMBED ) { 
+		function theplatform_content_pane_html( $IS_EMBED, $metadata ) { 
 			$custom_metadata_options = get_option( TP_CUSTOM_METADATA_OPTIONS_KEY, array() );
 			$basic_metadata_options = get_option( TP_BASIC_METADATA_OPTIONS_KEY, TP_BASIC_METADATA_OPTIONS_DEFAULTS() );
 			?>
@@ -333,7 +333,7 @@ function theplatform_media_clear_styles_and_scripts() {
 				<div id="info-affix" class="scrollable affix-top">
 					<div id="info-player-container">
 						<?php theplatform_preview_player_html() ?>
-						<?php theplatform_content_pane_html( $IS_EMBED ) ?>						
+						<?php theplatform_content_pane_html( $IS_EMBED, $metadata ) ?>						
 					</div>
 				</div>
 			</div>

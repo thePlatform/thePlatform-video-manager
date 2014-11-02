@@ -192,7 +192,7 @@ var theplatform_edit = (function($) {
                         var values = value.indexOf(',') ? value.split(',') : [value];
                         value = [];
                         for (var i = 0; i < values.length; i++) {
-                            value.push(parseDataType(values[i].trim(), dataType));
+                            value.push(Data.parseDataType(values[i].trim(), dataType));
                         }
                     } else {
                         value = Data.parseDataType(value, dataType);
