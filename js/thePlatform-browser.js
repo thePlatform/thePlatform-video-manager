@@ -188,7 +188,10 @@ var theplatform_browser = (function($) {
             newMedia.data('pid', media.pid);
             newMedia.data('media', media);
             newMedia.data('id', media.id);
-            var previewUrl = API.extractVideoUrlfromMedia(media);
+            var previewUrl = Formatting.extractVideoUrlfromMedia(media);
+            
+            // For the Embed dialog, we don't media without a release in the list
+            // TODO: Consider changing this because of OneURL
             if (previewUrl.length == 0 && tpHelper.isEmbed == "1")
                 return;
 
@@ -267,7 +270,7 @@ var theplatform_browser = (function($) {
             tpHelper.mediaId = $(this).data('id');
             tpHelper.selectedThumb = $(this).data('media')['defaultThumbnailUrl'];
             $pdk.controller.resetPlayer();
-            if (tpHelper.currentRelease !== undefined) {
+            if ($(this).data('release') !== undefined) {
                 $('#modal-player-placeholder').hide();
                 $('.tpPlayer').css('visibility', 'visible');
                 $pdk.controller.loadReleaseURL("//link.theplatform.com/s/" + tpHelper.accountPid + "/" + tpHelper.currentRelease, true);
@@ -439,8 +442,22 @@ var theplatform_browser = (function($) {
             return s;
         },
 
-        jQuerySelectorEscape: function(expression) {
-            return expression.replace(/[!"#$%&'()*+,.\/:;<=>?@\[\\\]^`{|}~]/g, '\\$&');
+        extractVideoUrlfromMedia: function(media) {
+            var urls = [];    
+            if (!_.has(media, 'content'))
+                return urls;
+
+            for (var i = 0; i < media.content.length; i++) {
+                var content = media.content[i]
+                if ((content.contentType == "video" || content.contentType == "audio") && content.releases) {
+                    for (var releaseIndex in content.releases) {
+                        if (content.releases[releaseIndex].delivery == "streaming")
+                            urls.push(content.releases[releaseIndex].pid);
+                    }
+                }
+            };
+            
+            return urls;
         }
 
     }
@@ -518,32 +535,7 @@ var theplatform_browser = (function($) {
             $.post(tp_browser_local.ajaxurl, data, function(resp) {
                 callback(resp.data)
             });
-        },
-        //Get a list of release URls
-        extractVideoUrlfromMedia: function(media) {
-            var res = [];
-
-            if (media.entries)
-                media = media['entries'].shift(); //We always only grab the first media in the list THIS SHOULD BE THE ONLY MEDIA.
-
-            if (media && media.content)
-                media = media.content;
-            else
-                return res;
-
-            for (var contentIdx in media) {
-                var content = media[contentIdx];
-                if ((content.contentType == "video" || content.contentType == "audio") && content.releases) {
-                    for (var releaseIndex in content.releases) {
-                        if (content.releases[releaseIndex].delivery == "streaming")
-                            res.push(content.releases[releaseIndex].pid);
-                    }
-                }
-
-            }
-
-            return res;
-        }
+        }                
     };
 
     //Make my life easier by prototyping this into the string.
