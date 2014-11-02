@@ -153,12 +153,12 @@ function theplatform_media_clear_styles_and_scripts() {
 				</div>
 				<div class="panel-body">
 					<?php
-					foreach ( $basic_metadata_options as $upload_field => $val ) {
+					foreach ( $basic_metadata_options as $basic_field => $val ) {
 						if ( $val == 'hide' ) {
 							continue;
 						}
 
-						$field_title = (strstr( $upload_field, '$' ) !== false) ? substr( strstr( $upload_field, '$' ), 1 ) : $upload_field;
+						$field_title = (strstr( $basic_field, '$' ) !== false) ? substr( strstr( $basic_field, '$' ), 1 ) : $basic_field;
 						$display_title = mb_convert_case( $field_title, MB_CASE_TITLE );
 
 						//Custom names

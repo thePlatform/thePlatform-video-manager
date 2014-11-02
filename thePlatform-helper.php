@@ -232,12 +232,12 @@ function theplatform_get_query_fields( $metadata ) {
 
 	$fields = 'id,defaultThumbnailUrl,content';
 
-	foreach ( $basic_metadata_options as $upload_field => $val ) {
+	foreach ( $basic_metadata_options as $basic_field => $val ) {
 		if ( $val == 'hide' ) {
 			continue;
 		}
 
-		$field_title = (strstr( $upload_field, '$' ) !== false) ? substr( strstr( $upload_field, '$' ), 1 ) : $upload_field;
+		$field_title = (strstr( $basic_field, '$' ) !== false) ? substr( strstr( $basic_field, '$' ), 1 ) : $basic_field;
 		if ( !empty( $fields ) ) {
 			$fields .= ',';
 		}

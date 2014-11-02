@@ -182,11 +182,11 @@ class ThePlatform_Options {
 
 		$this->plugin_settings_tabs[TP_BASIC_METADATA_OPTIONS_KEY] = 'Basic Metadata';
 
-		$upload_fields = TP_BASIC_METADATA_OPTIONS_DEFAULTS();
+		$basic_fields = TP_BASIC_METADATA_OPTIONS_DEFAULTS();
 
 		add_settings_section( 'section_upload_options', 'Basic Metadata Settings', array( $this, 'section_basic_metadata_desc' ), TP_BASIC_METADATA_OPTIONS_KEY );
 
-		foreach ( $upload_fields as $field => $value) {
+		foreach ( $basic_fields as $field => $value) {
 			if ( !array_key_exists( $field, $this->upload_options ) ) {
 				$this->upload_options[$field] = 'write';
 			}		

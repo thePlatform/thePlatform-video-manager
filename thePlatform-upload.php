@@ -122,24 +122,24 @@ if ( defined( 'TP_MEDIA_BROWSER' ) ) {
 	$catHtml = '';
 	$write_fields = array();
 	// We need a count of the write enabled fields in order to display rows appropriately.
-	foreach ( $basic_metadata_options as $upload_field => $val ) {
+	foreach ( $basic_metadata_options as $basic_field => $val ) {
 		if ( $val == 'write' ) {
-			$write_fields[] = $upload_field;
+			$write_fields[] = $basic_field;
 		}
 	}
 
 	$len = count( $write_fields ) - 1;
 	$i = 0;
-	foreach ( $write_fields as $upload_field ) {
-		$field_title = (strstr( $upload_field, '$' ) !== FALSE) ? substr( strstr( $upload_field, '$' ), 1 ) : $upload_field;
-		if ( $upload_field == 'categories' ) {
+	foreach ( $write_fields as $basic_field ) {
+		$field_title = (strstr( $basic_field, '$' ) !== FALSE) ? substr( strstr( $basic_field, '$' ), 1 ) : $basic_field;
+		if ( $basic_field == 'categories' ) {
 			$categories = $tp_api->get_categories( TRUE );
 			// Always Put categories on it's own row
 			$catHtml .= '<div class="row">';
 			$catHtml .= 	'<div class="col-xs-5">';
 			$catHtml .=			'<div class="form-group">';
-			$catHtml .= 			'<label class="control-label" for="theplatform_upload_' . esc_attr( $upload_field ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
-			$catHtml .= 			'<select class="category_field form-control" multiple id="theplatform_upload_' . esc_attr( $upload_field ) . '" name="' . esc_attr( $upload_field ) . '">';
+			$catHtml .= 			'<label class="control-label" for="theplatform_upload_' . esc_attr( $basic_field ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
+			$catHtml .= 			'<select class="category_field form-control" multiple id="theplatform_upload_' . esc_attr( $basic_field ) . '" name="' . esc_attr( $basic_field ) . '">';
 			foreach ( $categories as $category ) {
 				$catHtml .= 			'<option value="' . esc_attr( $category['fullTitle'] ) . '">' . esc_html( $category['fullTitle'] ) . '</option>';
 			}
@@ -148,15 +148,15 @@ if ( defined( 'TP_MEDIA_BROWSER' ) ) {
 			$catHtml .= 	'</div>';
 			$catHtml .= '</div>';
 		} else {
-			$default_value = isset( $media[$upload_field] ) ? esc_attr( $media[$upload_field] ) : '';
+			$default_value = isset( $media[$basic_field] ) ? esc_attr( $media[$basic_field] ) : '';
 			$html = '';
 			if ( $i % 2 == 0 ) {
 				$html .= '<div class="row">';
 			}
 			$html .= 		'<div class="col-xs-5">';
 			$html .=			'<div class="form-group">';
-			$html .= 				'<label class="control-label" for="theplatform_upload_' . esc_attr( $upload_field ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
-			$html .= 				'<input name="' . esc_attr( $upload_field ) . '" id="theplatform_upload_' . esc_attr( $upload_field ) . '" class="form-control upload_field" type="text" value="' . esc_attr( $default_value ) . '"/>'; //upload_field
+			$html .= 				'<label class="control-label" for="theplatform_upload_' . esc_attr( $basic_field ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
+			$html .= 				'<input name="' . esc_attr( $basic_field ) . '" id="theplatform_upload_' . esc_attr( $basic_field ) . '" class="form-control upload_field" type="text" value="' . esc_attr( $default_value ) . '"/>'; //upload_field
 			$html .= 			'</div>';
 			$html .= 		'</div>';
 			$i++;
