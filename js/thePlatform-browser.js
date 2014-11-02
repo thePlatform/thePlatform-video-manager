@@ -315,7 +315,7 @@ var theplatform_browser = (function($) {
             }
         },
         onEmbedAndClose: function() {
-            this.onEmbed();
+            Events.onEmbed();
             var win = opener || parent
             if (win.jQuery('#tp-embed-dialog').length != 0) {
                 win.jQuery('#tp-embed-dialog').dialog('close');
