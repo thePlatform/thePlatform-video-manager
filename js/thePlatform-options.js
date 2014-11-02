@@ -86,11 +86,11 @@
 
         var data = {
             action: 'verify_account',
-            _wpnonce: tp_edit_upload_local.tp_nonce['verify_account'],
+            _wpnonce: tp_options_local.tp_nonce['verify_account'],
             auth_hash: hash
         };
 
-        $.post(tp_edit_upload_local.ajaxurl, data, function(response) {
+        $.post(tp_options_local.ajaxurl, data, function(response) {
             if ($("#verification_image").length > 0) {
                 $("#verification_image").remove();
             }

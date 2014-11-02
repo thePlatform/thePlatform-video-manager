@@ -78,15 +78,18 @@ class ThePlatform_Options {
 	
 		// Initialize option defaults				
 		$this->account_options = array_merge( TP_ACCOUNT_OPTIONS_DEFAULTS(), $this->account_options );
-		$this->preferences_options = array_merge( TP_PREFERENCES_OPTIONS_DEFAULTS(), $this->preferences_options );			
-
-		if ( !$this->upload_options ) {
+		
+		if ( empty( $this->upload_options ) ) {
 			update_option( TP_UPLOAD_OPTIONS_KEY, TP_UPLOAD_FIELDS_DEFAULTS() );
 		}
 
-		if ( !$this->metadata_options ) {
+		if ( empty( $this->metadata_options ) ) {
 			update_option( TP_METADATA_OPTIONS_KEY, array() );
 		}
+
+        if ( empty( $this->preferences_options ) ) {
+            update_option( TP_PREFERENCES_OPTIONS_KEY, TP_PREFERENCES_OPTIONS_DEFAULTS() );            
+        }
 
 		$this->account_is_verified = $this->tp_api->internal_verify_account_settings();
 

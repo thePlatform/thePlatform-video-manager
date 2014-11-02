@@ -74,7 +74,7 @@ function theplatform_media_clear_styles_and_scripts() {
 		$preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
 		$account = get_option( TP_ACCOUNT_OPTIONS_KEY );		
 
-		if ( strcmp( $account['mpx_account_id'], "" ) == 0 ) {
+		if ( $account == false || empty( $account['mpx_account_id'] ) ) {
 			wp_die( 'MPX Account ID is not set, please configure the plugin before attempting to manage media' );
 		}
 

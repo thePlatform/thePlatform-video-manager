@@ -20,6 +20,11 @@ if ( !defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+$account = get_option( TP_ACCOUNT_OPTIONS_KEY );
+if ( $account == false || empty( $account['mpx_account_id'] ) ) {
+	wp_die( 'MPX Account ID is not set, please configure the plugin before attempting to manage media' );
+}
+
 //TODO: Would just be better to not include the upload media link in the sidebar?
 preg_match('/MSIE (.*?);/', $_SERVER['HTTP_USER_AGENT'], $matches);
 

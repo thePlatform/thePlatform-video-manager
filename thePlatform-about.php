@@ -33,6 +33,7 @@
       delete_option( TP_PREFERENCES_OPTIONS_KEY );
       delete_option( TP_METADATA_OPTIONS_KEY );
       delete_option( TP_UPLOAD_OPTIONS_KEY );
+      delete_option( TP_TOKEN_OPTIONS_KEY );
 
       echo '<div id="message" class="updated"><p>All plugin settings have been reset</p></div>';
     }

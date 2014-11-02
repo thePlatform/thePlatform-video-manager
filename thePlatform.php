@@ -102,8 +102,7 @@ class ThePlatform_Plugin {
 
 		wp_localize_script( 'tp_edit_upload_js', 'tp_edit_upload_local', array(
 			'ajaxurl' => admin_url( 'admin-ajax.php' ),			
-			'tp_nonce' => array( 				
-				'verify_account' => wp_create_nonce( 'theplatform-ajax-nonce-verify_account' ),
+			'tp_nonce' => array( 								
 				'theplatform_edit' => wp_create_nonce( 'theplatform-ajax-nonce-theplatform_edit' ),
 				'theplatform_media' => wp_create_nonce( 'theplatform-ajax-nonce-theplatform_media' ),
 				'theplatform_upload' => wp_create_nonce( 'theplatform-ajax-nonce-theplatform_upload' ),
@@ -133,6 +132,13 @@ class ThePlatform_Plugin {
 				'get_categories' => wp_create_nonce( 'theplatform-ajax-nonce-get_categories' ),
 				'get_profile_results' => wp_create_nonce( 'theplatform-ajax-nonce-profile_result' ),
 				'set_thumbnail' => wp_create_nonce( 'theplatform-ajax-nonce-set_thumbnail' )
+			)
+		) );	
+
+		wp_localize_script( 'tp_options_js', 'tp_options_local', array(
+			'ajaxurl' => admin_url( 'admin-ajax.php' ),			
+			'tp_nonce' => array( 				
+				'verify_account' => wp_create_nonce( 'theplatform-ajax-nonce-verify_account' )
 			)
 		) );	
 		
