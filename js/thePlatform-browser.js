@@ -350,6 +350,7 @@ var theplatform_browser = (function($) {
                 open: function() {
                     $('#tp-edit-dialog').data('refresh', 'false');
                     $('.ui-dialog-titlebar-close').addClass('ui-button');
+                    theplatform_edit.updatePublishProfiles(tpHelper.mediaId);
                 },
                 close: function() {
                     // if ($('#tp-edit-dialog').data('refresh') == 'true')

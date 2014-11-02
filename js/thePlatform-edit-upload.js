@@ -15,7 +15,7 @@
  with this program; if not, write to the Free Software Foundation, Inc.,
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-(function($) {
+var theplatform_edit = (function($) {
 
     var Validation = {
         /**
@@ -436,9 +436,6 @@
             if (input.length) {
                 input.val(log);
             }
-        },
-        onRevokeTabOpened: function() {
-            UI.updatePublishProfiles(tpHelper.mediaId);
         }
     };
 
@@ -469,7 +466,10 @@
         $("#theplatform_upload_button").click(Events.onUploadMedia);
         $("#theplatform_add_file_button").click(Events.onAddFiles);
         $("#theplatform_publish_button").click(Events.onPublishMedia);
-        $("#theplatform_revoke_button").click(Events.onRevokeMedia);
-        $(".nav-tabs #revoke").click(Events.onRevokeTabOpened);
+        $("#theplatform_revoke_button").click(Events.onRevokeMedia);        
     });
+
+    return {
+        updatePublishProfiles: UI.updatePublishProfiles
+    }
 })(jQuery);
