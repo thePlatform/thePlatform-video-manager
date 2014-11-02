@@ -158,7 +158,7 @@ class ThePlatform_Options {
 		}
 
 		$this->plugin_settings_tabs[TP_CUSTOM_METADATA_OPTIONS_KEY] = 'Custom Metadata';
-		$this->metadata_fields = $this->tp_api->get_metadata_fields();
+		$this->metadata_fields = $this->tp_api->get_custom_metadata_fields();
 		add_settings_section( 'section_metadata_options', 'Custom Metadata Settings', array( $this, 'section_custom_metadata_desc' ), TP_CUSTOM_METADATA_OPTIONS_KEY );
 
 		foreach ( $this->metadata_fields as $field ) {

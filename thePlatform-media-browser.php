@@ -65,7 +65,7 @@ function theplatform_media_clear_styles_and_scripts() {
 		}
 
 		$tp_api = new ThePlatform_API;
-		$metadata = $tp_api->get_metadata_fields();
+		$metadata = $tp_api->get_custom_metadata_fields();
 
 		define( 'TP_MEDIA_BROWSER', true );
 		

@@ -41,7 +41,7 @@ if ( !isset( $tp_api ) ) {
 	$tp_api = new ThePlatform_API;
 }
 
-$metadata = $tp_api->get_metadata_fields();
+$metadata = $tp_api->get_custom_metadata_fields();
 $preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
 $account = get_option( TP_ACCOUNT_OPTIONS_KEY );
 $upload_options = get_option( TP_BASIC_METADATA_OPTIONS_KEY );

@@ -466,7 +466,7 @@ class ThePlatform_API {
 		
 		$token = $this->mpx_signin();
 
-		$fields = theplatform_get_query_fields( $this->get_metadata_fields() );
+		$fields = theplatform_get_query_fields( $this->get_custom_metadata_fields() );
 				
 		$url = TP_API_MEDIA_ENDPOINT . '&fields=id,guid,pid,title' . $fields . '&token=' . $token . '&range=' . $_POST['range'];
 
@@ -539,7 +539,7 @@ class ThePlatform_API {
 		$id = substr($fullId, strrpos( $fullId, '/' ) + 1 );		
 		
 		$token = $this->mpx_signin();
-		$fields = theplatform_get_query_fields( $this->get_metadata_fields() );
+		$fields = theplatform_get_query_fields( $this->get_custom_metadata_fields() );
 
 		$url = TP_API_MEDIA_ENDPOINT . '&fields=id,guid,pid,title' . $fields . ' &token=' . $token . '&byId=' . $id;
 		
@@ -594,7 +594,7 @@ class ThePlatform_API {
 	 * @param array $fields Optional set of fields to request from the data service
 	 * @return array The Media Field data service response
 	 */
-	function get_metadata_fields( $fields = array() ) {
+	function get_custom_metadata_fields( $fields = array() ) {
 		$default_fields = array( 'id', 'title', 'description', 'added', 'allowedValues', 'dataStructure', 'dataType', 'fieldName', 'defaultValue', 'namespace', 'namespacePrefix' );
 		
 		$fieldsString = implode( ',', array_merge( $default_fields, $fields ) );
