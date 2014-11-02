@@ -144,6 +144,7 @@ header {
 }
 #panel-contentpane {
     margin-bottom: 150px;
+    overflow-wrap: break-word;
 }
 #bmtable {
     width: 100%;

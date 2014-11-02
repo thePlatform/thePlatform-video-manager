@@ -77,7 +77,8 @@ function TP_BASIC_METADATA_OPTIONS_DEFAULTS() {
 					'keywords' => "write",
 					'link' => "write",
 					'guid' => "read",
-          'pid' => "hide"
+          'pid' => "hide",
+          'id' => "hide"
 				);
 }
 

@@ -63,7 +63,7 @@
                 var receiver = $(e.target).data('col');
                 var itemId = $(ui.item).data('id');
 
-                if (receiver == "write" && $(ui.item).data('userfield') == true) {
+                if (receiver == "write" && ( $(ui.item).data('userfield') == true || $(ui.item).data('id') == 'id' ) ) {
                     $(ui.sender).sortable('cancel');
                 } else {
                     var $selectField = $('select[name="' + $optionsPageName.val() + '[' + itemId + ']"]');

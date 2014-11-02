@@ -118,6 +118,10 @@ var theplatform_browser = (function($) {
                     return true; // Empty value, continue the loop                
                 }
 
+                if (name == 'id') {
+                    value = value.substring(value.lastIndexOf('/') + 1);
+                }
+
                 // Update the right content pane
                 if (name === 'categories') {
                     var catArray = mediaItem.categories || [];
@@ -216,6 +220,8 @@ var theplatform_browser = (function($) {
             API.getVideoById(mediaId, function(media) {
                 if (_.has(media, 'id'))
                     UI.addMediaObject(media);
+                    UI.updateContentPane(media);
+                    Holder.run();
             });
         }
     }
