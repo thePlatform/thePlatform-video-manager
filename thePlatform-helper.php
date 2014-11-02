@@ -227,12 +227,12 @@ function theplatform_decode_json_from_server( $input, $assoc, $die_on_error = TR
  * @return string MPX fields in query form
  */
 function theplatform_get_query_fields( $metadata ) {
-	$metadata_options = get_option( TP_CUSTOM_METADATA_OPTIONS_KEY );
-	$upload_options = get_option( TP_BASIC_METADATA_OPTIONS_KEY );
+	$custom_metadata_options = get_option( TP_CUSTOM_METADATA_OPTIONS_KEY );
+	$basic_metadata_options = get_option( TP_BASIC_METADATA_OPTIONS_KEY );
 
 	$fields = 'id,defaultThumbnailUrl,content';
 
-	foreach ( $upload_options as $upload_field => $val ) {
+	foreach ( $basic_metadata_options as $upload_field => $val ) {
 		if ( $val == 'hide' ) {
 			continue;
 		}
@@ -244,7 +244,7 @@ function theplatform_get_query_fields( $metadata ) {
 		$fields .= $field_title;
 	}
 
-	foreach ( $metadata_options as $custom_field => $val ) {
+	foreach ( $custom_metadata_options as $custom_field => $val ) {
 		if ( $val == 'hide' ) {
 			continue;
 		}

@@ -144,8 +144,8 @@ function theplatform_media_clear_styles_and_scripts() {
 		}
 
 		function theplatform_content_pane_html( $IS_EMBED ) { 
-			$metadata_options = get_option( TP_CUSTOM_METADATA_OPTIONS_KEY, array() );
-			$upload_options = get_option( TP_BASIC_METADATA_OPTIONS_KEY, TP_BASIC_METADATA_OPTIONS_DEFAULTS() );
+			$custom_metadata_options = get_option( TP_CUSTOM_METADATA_OPTIONS_KEY, array() );
+			$basic_metadata_options = get_option( TP_BASIC_METADATA_OPTIONS_KEY, TP_BASIC_METADATA_OPTIONS_DEFAULTS() );
 			?>
 			<div id="panel-contentpane" class="panel panel-default">
 				<div class="panel-heading">
@@ -153,7 +153,7 @@ function theplatform_media_clear_styles_and_scripts() {
 				</div>
 				<div class="panel-body">
 					<?php
-					foreach ( $upload_options as $upload_field => $val ) {
+					foreach ( $basic_metadata_options as $upload_field => $val ) {
 						if ( $val == 'hide' ) {
 							continue;
 						}
@@ -174,7 +174,7 @@ function theplatform_media_clear_styles_and_scripts() {
 						echo $html;
 					}
 
-					foreach ( $metadata_options as $custom_field => $val ) {
+					foreach ( $custom_metadata_options as $custom_field => $val ) {
 						if ( $val == 'hide' ) {
 							continue;
 						}

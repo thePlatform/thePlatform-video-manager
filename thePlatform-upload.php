@@ -44,8 +44,8 @@ if ( !isset( $tp_api ) ) {
 $metadata = $tp_api->get_custom_metadata_fields();
 $preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
 $account = get_option( TP_ACCOUNT_OPTIONS_KEY );
-$upload_options = get_option( TP_BASIC_METADATA_OPTIONS_KEY );
-$metadata_options = get_option( TP_CUSTOM_METADATA_OPTIONS_KEY );
+$basic_metadata_options = get_option( TP_BASIC_METADATA_OPTIONS_KEY );
+$custom_metadata_options = get_option( TP_CUSTOM_METADATA_OPTIONS_KEY );
 
 $tp_uploader_cap = apply_filters( TP_UPLOADER_CAP, TP_UPLOADER_DEFAULT_CAP );
 $tp_revoke_cap = apply_filters( TP_REVOKE_CAP, TP_REVOKE_DEFAULT_CAP );
@@ -122,7 +122,7 @@ if ( defined( 'TP_MEDIA_BROWSER' ) ) {
 	$catHtml = '';
 	$write_fields = array();
 	// We need a count of the write enabled fields in order to display rows appropriately.
-	foreach ( $upload_options as $upload_field => $val ) {
+	foreach ( $basic_metadata_options as $upload_field => $val ) {
 		if ( $val == 'write' ) {
 			$write_fields[] = $upload_field;
 		}
@@ -173,7 +173,7 @@ if ( defined( 'TP_MEDIA_BROWSER' ) ) {
 	$html = '';
 	$write_fields = array();
 
-	foreach ( $metadata_options as $custom_field => $val ) {
+	foreach ( $custom_metadata_options as $custom_field => $val ) {
 		if ( $val == 'write' ) {
 			$write_fields[] = $custom_field;
 		}
