@@ -88,8 +88,8 @@ function theplatform_account_options_validate ( $input ) {
 		// Clear old options
 		if ( $updates ) {			
 			delete_option( TP_PREFERENCES_OPTIONS_KEY );
-			delete_option( TP_METADATA_OPTIONS_KEY );
-			delete_option( TP_UPLOAD_OPTIONS_KEY );
+			delete_option( TP_CUSTOM_METADATA_OPTIONS_KEY );
+			delete_option( TP_BASIC_METADATA_OPTIONS_KEY );
 			delete_option( TP_TOKEN_OPTIONS_KEY );
 		}
 	}
@@ -227,8 +227,8 @@ function theplatform_decode_json_from_server( $input, $assoc, $die_on_error = TR
  * @return string MPX fields in query form
  */
 function theplatform_get_query_fields( $metadata ) {
-	$metadata_options = get_option( TP_METADATA_OPTIONS_KEY );
-	$upload_options = get_option( TP_UPLOAD_OPTIONS_KEY );
+	$metadata_options = get_option( TP_CUSTOM_METADATA_OPTIONS_KEY );
+	$upload_options = get_option( TP_BASIC_METADATA_OPTIONS_KEY );
 
 	$fields = 'id,defaultThumbnailUrl,content';
 
@@ -324,14 +324,14 @@ function theplatform_check_plugin_update() {
 
 	update_option( TP_PREFERENCES_OPTIONS_KEY,  $newPreferences );
 	update_option( TP_ACCOUNT_OPTIONS_KEY,      array_merge( TP_ACCOUNT_OPTIONS_DEFAULTS(),     get_option( TP_ACCOUNT_OPTIONS_KEY,     array() ) ) );
-	update_option( TP_UPLOAD_OPTIONS_KEY,       array_merge( TP_UPLOAD_FIELDS_DEFAULTS(),       get_option( TP_UPLOAD_OPTIONS_KEY,	    array() ) ) );  
+	update_option( TP_BASIC_METADATA_OPTIONS_KEY,       array_merge( TP_BASIC_METADATA_OPTIONS_DEFAULTS(),       get_option( TP_BASIC_METADATA_OPTIONS_KEY,	    array() ) ) );  
 	
 	// We had a messy update with 1.2.2/1.3.0, let's clean up	
 	if ( ( $oldVersion['major'] == '1' && $oldVersion['minor'] == '2' && $oldVersion['patch'] == '2' ) ||
 		 ( $oldVersion['major'] == '1' && $oldVersion['minor'] == '3' && $oldVersion['patch'] == '0' ) ) {
-		$basicMetadataFields = get_option( TP_UPLOAD_OPTIONS_KEY, array() );
-		$customMetadataFields = get_option( TP_METADATA_OPTIONS_KEY, array() );
-		update_option ( TP_UPLOAD_OPTIONS_KEY, array_diff_assoc( $basicMetadataFields, $customMetadataFields ) );
+		$basicMetadataFields = get_option( TP_BASIC_METADATA_OPTIONS_KEY, array() );
+		$customMetadataFields = get_option( TP_CUSTOM_METADATA_OPTIONS_KEY, array() );
+		update_option ( TP_BASIC_METADATA_OPTIONS_KEY, array_diff_assoc( $basicMetadataFields, $customMetadataFields ) );
 	}
 
 	// Move account settings from preferences (1.2.0)	

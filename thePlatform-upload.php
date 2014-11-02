@@ -44,8 +44,8 @@ if ( !isset( $tp_api ) ) {
 $metadata = $tp_api->get_metadata_fields();
 $preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
 $account = get_option( TP_ACCOUNT_OPTIONS_KEY );
-$upload_options = get_option( TP_UPLOAD_OPTIONS_KEY );
-$metadata_options = get_option( TP_METADATA_OPTIONS_KEY );
+$upload_options = get_option( TP_BASIC_METADATA_OPTIONS_KEY );
+$metadata_options = get_option( TP_CUSTOM_METADATA_OPTIONS_KEY );
 
 $tp_uploader_cap = apply_filters( TP_UPLOADER_CAP, TP_UPLOADER_DEFAULT_CAP );
 $tp_revoke_cap = apply_filters( TP_REVOKE_CAP, TP_REVOKE_DEFAULT_CAP );

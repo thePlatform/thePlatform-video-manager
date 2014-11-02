@@ -69,8 +69,8 @@ function theplatform_media_clear_styles_and_scripts() {
 
 		define( 'TP_MEDIA_BROWSER', true );
 
-		$metadata_options = get_option( TP_METADATA_OPTIONS_KEY, array() );
-		$upload_options = get_option( TP_UPLOAD_OPTIONS_KEY, TP_UPLOAD_FIELDS_DEFAULTS() );
+		$metadata_options = get_option( TP_CUSTOM_METADATA_OPTIONS_KEY, array() );
+		$upload_options = get_option( TP_BASIC_METADATA_OPTIONS_KEY, TP_BASIC_METADATA_OPTIONS_DEFAULTS() );
 		$preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
 		$account = get_option( TP_ACCOUNT_OPTIONS_KEY );		
 

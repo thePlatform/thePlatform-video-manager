@@ -73,18 +73,18 @@ class ThePlatform_Options {
 		// Get existing options, or empty arrays if no options exist
 		$this->account_options = get_option( TP_ACCOUNT_OPTIONS_KEY, array() );		
 		$this->preferences_options = get_option( TP_PREFERENCES_OPTIONS_KEY, array() );
-		$this->metadata_options = get_option( TP_METADATA_OPTIONS_KEY, array() );
-		$this->upload_options = get_option( TP_UPLOAD_OPTIONS_KEY, array() );
+		$this->metadata_options = get_option( TP_CUSTOM_METADATA_OPTIONS_KEY, array() );
+		$this->upload_options = get_option( TP_BASIC_METADATA_OPTIONS_KEY, array() );
 	
 		// Initialize option defaults				
 		$this->account_options = array_merge( TP_ACCOUNT_OPTIONS_DEFAULTS(), $this->account_options );
 		
 		if ( empty( $this->upload_options ) ) {
-			update_option( TP_UPLOAD_OPTIONS_KEY, TP_UPLOAD_FIELDS_DEFAULTS() );
+			update_option( TP_BASIC_METADATA_OPTIONS_KEY, TP_BASIC_METADATA_OPTIONS_DEFAULTS() );
 		}
 
 		if ( empty( $this->metadata_options ) ) {
-			update_option( TP_METADATA_OPTIONS_KEY, array() );
+			update_option( TP_CUSTOM_METADATA_OPTIONS_KEY, array() );
 		}
 
         if ( empty( $this->preferences_options ) ) {
@@ -157,16 +157,16 @@ class ThePlatform_Options {
 			return;
 		}
 
-		$this->plugin_settings_tabs[TP_METADATA_OPTIONS_KEY] = 'Custom Metadata';
+		$this->plugin_settings_tabs[TP_CUSTOM_METADATA_OPTIONS_KEY] = 'Custom Metadata';
 		$this->metadata_fields = $this->tp_api->get_metadata_fields();
-		add_settings_section( 'section_metadata_options', 'Custom Metadata Settings', array( $this, 'section_custom_metadata_desc' ), TP_METADATA_OPTIONS_KEY );
+		add_settings_section( 'section_metadata_options', 'Custom Metadata Settings', array( $this, 'section_custom_metadata_desc' ), TP_CUSTOM_METADATA_OPTIONS_KEY );
 
 		foreach ( $this->metadata_fields as $field ) {
 			if ( !array_key_exists( $field['id'], $this->metadata_options ) ) {
 				$this->metadata_options[$field['id']] = 'hide';
 			}			
 			
-			add_settings_field( $field['id'], $field['title'], array( $this, 'field_custom_metadata_option' ), TP_METADATA_OPTIONS_KEY, 'section_metadata_options', $field );
+			add_settings_field( $field['id'], $field['title'], array( $this, 'field_custom_metadata_option' ), TP_CUSTOM_METADATA_OPTIONS_KEY, 'section_metadata_options', $field );
 		}
 	}
 
@@ -180,11 +180,11 @@ class ThePlatform_Options {
 			return;
 		}
 
-		$this->plugin_settings_tabs[TP_UPLOAD_OPTIONS_KEY] = 'Basic Metadata';
+		$this->plugin_settings_tabs[TP_BASIC_METADATA_OPTIONS_KEY] = 'Basic Metadata';
 
-		$upload_fields = TP_UPLOAD_FIELDS_DEFAULTS();
+		$upload_fields = TP_BASIC_METADATA_OPTIONS_DEFAULTS();
 
-		add_settings_section( 'section_upload_options', 'Basic Metadata Settings', array( $this, 'section_basic_metadata_desc' ), TP_UPLOAD_OPTIONS_KEY );
+		add_settings_section( 'section_upload_options', 'Basic Metadata Settings', array( $this, 'section_basic_metadata_desc' ), TP_BASIC_METADATA_OPTIONS_KEY );
 
 		foreach ( $upload_fields as $field => $value) {
 			if ( !array_key_exists( $field, $this->upload_options ) ) {
@@ -193,7 +193,7 @@ class ThePlatform_Options {
 
 			$field_title = (strstr( $field, '$' ) !== false) ? substr( strstr( $field, '$' ), 1 ) : $field;
 
-			add_settings_field( $field, ucfirst( $field_title ), array( $this, 'field_basic_metadata_option' ), TP_UPLOAD_OPTIONS_KEY, 'section_upload_options', array( 'field' => $field ) );
+			add_settings_field( $field, ucfirst( $field_title ), array( $this, 'field_basic_metadata_option' ), TP_BASIC_METADATA_OPTIONS_KEY, 'section_upload_options', array( 'field' => $field ) );
 		}
 	}
 
@@ -398,7 +398,7 @@ class ThePlatform_Options {
 		if ( $user_id_field === 'true' && $this->metadata_options[$field_id] == 'write') {
 			$this->metadata_options[$field_id] = 'hide';
 		}
-		$html = '<select id="' . esc_attr( $field_id ) . '" name="theplatform_metadata_options[' . esc_attr( $field_id ) . ']" class="sortableField" data-userfield="' . esc_attr( $user_id_field ) . '">';
+		$html = '<select id="' . esc_attr( $field_id ) . '" name="' . esc_attr( TP_CUSTOM_METADATA_OPTIONS_KEY ) . '[' . esc_attr( $field_id ) . ']" class="sortableField" data-userfield="' . esc_attr( $user_id_field ) . '">';
 		$html .= '<option value="read"' . selected( $this->metadata_options[$field_id], 'read', false ) . '>Read</option>';		
 		$html .= '<option value="write"' . selected( $this->metadata_options[$field_id], 'write', false ) . '>Write</option>';
 		$html .= '<option value="hide"' . selected( $this->metadata_options[$field_id], 'hide', false ) . '>Hide</option>';
@@ -413,7 +413,7 @@ class ThePlatform_Options {
 	function field_basic_metadata_option( $args ) {
 		$field = $args['field'];
 
-		$html = '<select id="' . esc_attr( $field ) . '" name="theplatform_upload_options[' . esc_attr( $field ) . ']" class="sortableField">';
+		$html = '<select id="' . esc_attr( $field ) . '" name="' . esc_attr( TP_BASIC_METADATA_OPTIONS_KEY ) . '[' . esc_attr( $field ) . ']" class="sortableField">';
 		$html .= '<option value="read"' . selected( $this->upload_options[$field], 'read', false ) . '>Read</option>';
 		$html .= '<option value="write"' . selected( $this->upload_options[$field], 'write', false ) . '>Write</option>';
 		$html .= '<option value="hide"' . selected( $this->upload_options[$field], 'hide', false ) . '>Hide</option>';

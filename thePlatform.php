@@ -551,7 +551,7 @@ add_action( 'admin_init', 'theplatform_register_plugin_settings' );
 function theplatform_register_plugin_settings() {
 	register_setting( TP_ACCOUNT_OPTIONS_KEY, TP_ACCOUNT_OPTIONS_KEY, 'theplatform_account_options_validate' );	
 	register_setting( TP_PREFERENCES_OPTIONS_KEY, TP_PREFERENCES_OPTIONS_KEY, 'theplatform_preferences_options_validate' );
-	register_setting( TP_METADATA_OPTIONS_KEY, TP_METADATA_OPTIONS_KEY, 'theplatform_dropdown_options_validate' );
-	register_setting( TP_UPLOAD_OPTIONS_KEY, TP_UPLOAD_OPTIONS_KEY, 'theplatform_dropdown_options_validate' );
+	register_setting( TP_CUSTOM_METADATA_OPTIONS_KEY, TP_CUSTOM_METADATA_OPTIONS_KEY, 'theplatform_dropdown_options_validate' );
+	register_setting( TP_BASIC_METADATA_OPTIONS_KEY, TP_BASIC_METADATA_OPTIONS_KEY, 'theplatform_dropdown_options_validate' );
 	register_setting( TP_TOKEN_OPTIONS_KEY, TP_TOKEN_OPTIONS_KEY, 'strval' );
 }

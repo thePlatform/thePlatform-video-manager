@@ -20,8 +20,8 @@
 define( 'TP_PLUGIN_VERSION', '1.4.0' );
 define( 'TP_PREFERENCES_OPTIONS_KEY',   'theplatform_preferences_options' );
 define( 'TP_ACCOUNT_OPTIONS_KEY',       'theplatform_account_options' );
-define( 'TP_METADATA_OPTIONS_KEY',      'theplatform_metadata_options' );
-define( 'TP_UPLOAD_OPTIONS_KEY',        'theplatform_upload_options' );
+define( 'TP_CUSTOM_METADATA_OPTIONS_KEY',      'theplatform_metadata_options' );
+define( 'TP_BASIC_METADATA_OPTIONS_KEY',        'theplatform_upload_options' );
 define( 'TP_TOKEN_OPTIONS_KEY',         'theplatform_token_options' );
 define( 'TP_ADMIN_CAP',     'tp_admin_cap' );
 define( 'TP_VIEWER_CAP',    'tp_viewer_cap' );
@@ -68,7 +68,7 @@ function TP_PREFERENCES_OPTIONS_DEFAULTS() {
 				);
 }
 
-function TP_UPLOAD_FIELDS_DEFAULTS() {
+function TP_BASIC_METADATA_OPTIONS_DEFAULTS() {
 	return array(
 					'title' => "write",
 					'description' => "write",
