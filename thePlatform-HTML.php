@@ -234,4 +234,122 @@ function player_dropdown() {
         </div>
     </div> <?php
   }
+
+  function metadata_fields() {
+    $categoryHtml = '';
+    $write_fields = array();
+    // We need a count of the write enabled fields in order to display rows appropriately.
+    foreach ( $this->basic_metadata_options as $basic_field => $val ) {
+        if ( $val == 'write' ) {
+            $write_fields[] = $basic_field;
+        }
+    }
+
+    $len = count( $write_fields ) - 1;
+    $i = 0;
+    foreach ( $write_fields as $basic_field ) {
+        $field_title = (strstr( $basic_field, '$' ) !== FALSE) ? substr( strstr( $basic_field, '$' ), 1 ) : $basic_field;
+        if ( $basic_field == 'categories' ) {
+            $categories = $this->tp_api->get_categories( TRUE );
+            // Always Put categories on it's own row
+            $categoryHtml .= '<div class="row">';
+            $categoryHtml .=     '<div class="col-xs-5">';
+            $categoryHtml .=         '<div class="form-group">';
+            $categoryHtml .=             '<label class="control-label" for="theplatform_upload_' . esc_attr( $basic_field ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
+            $categoryHtml .=             '<select class="category_field form-control" multiple id="theplatform_upload_' . esc_attr( $basic_field ) . '" name="' . esc_attr( $basic_field ) . '">';
+            foreach ( $categories as $category ) {
+                $categoryHtml .=             '<option value="' . esc_attr( $category['fullTitle'] ) . '">' . esc_html( $category['fullTitle'] ) . '</option>';
+            }
+            $categoryHtml .=             '</select>';
+            $categoryHtml .=         '</div>';
+            $categoryHtml .=     '</div>';
+            $categoryHtml .= '</div>';
+        } else {
+            $default_value = isset( $media[$basic_field] ) ? esc_attr( $media[$basic_field] ) : '';
+            $html = '';
+            if ( $i % 2 == 0 ) {
+                $html .= '<div class="row">';
+            }
+            $html .=        '<div class="col-xs-5">';
+            $html .=            '<div class="form-group">';
+            $html .=                '<label class="control-label" for="theplatform_upload_' . esc_attr( $basic_field ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
+            $html .=                '<input name="' . esc_attr( $basic_field ) . '" id="theplatform_upload_' . esc_attr( $basic_field ) . '" class="form-control upload_field" type="text" value="' . esc_attr( $default_value ) . '"/>'; //upload_field
+            $html .=            '</div>';
+            $html .=        '</div>';
+            $i++;
+            if ( $i % 2 == 0 ) {
+                $html .= '</div>';
+            } 
+            echo $html;         
+        }       
+    }
+    if ( $i % 2 != 0 ) {
+        echo '</div>';
+    }
+    
+    $html = '';
+    $write_fields = array();
+
+    foreach ( $this->custom_metadata_options as $custom_field => $val ) {
+        if ( $val == 'write' ) {
+            $write_fields[] = $custom_field;
+        }
+    }
+
+    $i = 0;
+    $len = count( $write_fields ) - 1;
+    foreach ( $write_fields as $custom_field ) {
+        $metadata_info = NULL;
+        foreach ( $this->metadata as $entry ) {
+            if ( array_search( $custom_field, $entry ) ) {
+                $metadata_info = $entry;
+                break;
+            }
+        }
+
+        if ( is_null( $metadata_info ) ) {
+            continue;
+        }
+
+        $field_title = $metadata_info['fieldName'];
+        $field_prefix = $metadata_info['namespacePrefix'];
+        $field_namespace = $metadata_info['namespace'];
+        $field_type = $metadata_info['dataType'];
+        $field_structure = $metadata_info['dataStructure'];
+        $allowed_values = $metadata_info['allowedValues'];
+
+        if ( $field_title === $this->preferences['user_id_customfield'] ) {
+            continue;
+        }
+
+        $field_name = $field_prefix . '$' . $field_title;
+        $field_value = isset( $media[$field_prefix . '$' . $field_title] ) ? $media[$field_prefix . '$' . $field_title] : '';
+
+        $html = '';
+        if ( $i % 2 == 0 ) {
+            $html .= '<div class="row">';
+        }
+        $html .= '<div class="col-xs-5">';
+        $html .= '<label class="control-label" for="theplatform_upload_' . esc_attr( $field_name ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
+
+        $html .= '<input name="' . esc_attr( $field_title ) . '" id="theplatform_upload_' . esc_attr( $field_name ) . '" class="form-control custom_field" type="text" value="' . esc_attr( $field_value ) . '" data-type="' . esc_attr( $field_type ) . '" data-structure="' . esc_attr( $field_structure ) . '" data-name="' . esc_attr( strtolower( $field_title ) ) . '" data-prefix="' . esc_attr( strtolower( $field_prefix ) ) . '" data-namespace="' . esc_attr( strtolower( $field_namespace ) ) . '"/>';
+        if ( isset( $structureDesc[$field_structure] ) ) {
+            $html .= '<div class="structureDesc"><strong>Structure</strong> ' . esc_html( $structureDesc[$field_structure] ) . '</div>';
+        }
+        if ( isset( $dataTypeDesc[$field_type] ) ) {
+            $html .= '<div class="dataTypeDesc"><strong>Format:</strong> ' . esc_html( $dataTypeDesc[$field_type] ) . '</div>';
+        }
+        $html .= '<br />';
+        $html .= '</div>';
+        if ( $i % 2 !== 0 || $i == $len ) {
+            $html .= '</div>';
+        }
+        echo $html;
+        $i++;
+    }
+
+    if ( !empty( $categoryHtml ) ) {
+        echo $categoryHtml;
+    }
+  }
 }
