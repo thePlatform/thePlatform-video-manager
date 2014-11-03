@@ -493,29 +493,8 @@ class ThePlatform_API {
 		$decodedResponse = theplatform_decode_json_from_server( $response, true );
 		
 		// Find the userID response and transform it to a human readable value.
-		foreach ( $decodedResponse['entries'] as $entryKey => $entry ) {		
-			$key = $this->preferences['user_id_customfield'];
-			if ( array_key_exists($this->preferences['user_id_customfield'], $entry) ) {
-				$user = get_userdata ( $entry[ $key ] );
-				if ( $user ) {
-					switch ( $this->preferences['transform_user_id_to']) {
-						case 'username':
-							$decodedResponse['entries'][ $entryKey ][ $key ] = $user->user_login;
-							break;
-						case 'nickname':
-							$decodedResponse['entries'][ $entryKey ][ $key ] = $user->nickname;
-							break;
-						case 'email':
-							$decodedResponse['entries'][ $entryKey ][ $key ] = $user->user_email;
-							break;
-						case 'full_name':
-							$decodedResponse['entries'][ $entryKey ][ $key ] = $user->user_firstname . ' ' . $user->user_lastname;
-							break;
-						default:
-							break;
-					}						
-				}	
-			}								
+		foreach ( $decodedResponse['entries'] as $entryKey => $entry ) {										
+			$decodedResponse['entries'][ $entryKey ] = $this->transform_user_id( $entry );					
 		}
 		
 		wp_send_json( json_encode( $decodedResponse ) );
@@ -547,7 +526,34 @@ class ThePlatform_API {
 
 		$data = theplatform_decode_json_from_server( $response, TRUE );
 		
-		wp_send_json_success( $data['entries'][0] );
+		wp_send_json_success( $this->transform_user_id( $data['entries'][0] ) );
+	}
+
+	function transform_user_id( $entry ) {
+		$key = $this->preferences['user_id_customfield'];
+		if ( array_key_exists($this->preferences['user_id_customfield'], $entry) ) {
+			$user = get_userdata ( $entry[ $key ] );
+			if ( $user ) {
+				switch ( $this->preferences['transform_user_id_to']) {
+					case 'username':
+						$entry[ $key ] = $user->user_login;
+						break;
+					case 'nickname':
+						$entry[ $key ] = $user->nickname;
+						break;
+					case 'email':
+						$entry[ $key ] = $user->user_email;
+						break;
+					case 'full_name':
+						$entry[ $key ] = $user->user_firstname . ' ' . $user->user_lastname;
+						break;
+					default:
+						break;
+				}						
+			}	
+		}
+
+		return $entry;
 	}
 
 	/**
