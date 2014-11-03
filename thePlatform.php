@@ -56,6 +56,7 @@ class ThePlatform_Plugin {
 		require_once( dirname( __FILE__ ) . '/thePlatform-API.php' );
 		require_once( dirname( __FILE__ ) . '/thePlatform-helper.php' );	
 		require_once( dirname( __FILE__ ) . '/thePlatform-proxy.php' );	
+		require_once( dirname( __FILE__ ) . '/thePlatform-HTML.php' );	
 				
 		$this->tp_api = new ThePlatform_API;
 		

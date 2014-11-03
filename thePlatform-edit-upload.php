@@ -40,6 +40,8 @@ if ( $account == false || empty( $account['mpx_account_id'] ) ) {
     wp_die( 'MPX Account ID is not set, please configure the plugin before attempting to manage media' );
 }
 
+$tp_html = new ThePlatform_HTML();
+
 //TODO: Would just be better to not include the upload media link in the sidebar?
 preg_match('/MSIE (.*?);/', $_SERVER['HTTP_USER_AGENT'], $matches);
 
@@ -55,7 +57,7 @@ if ( count( $matches ) > 1 ) {
 if ( !isset( $tp_api ) ) {
     $tp_api = new ThePlatform_API;
 }
-
+$preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
 $metadata = $tp_api->get_custom_metadata_fields();
 $preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
 $account = get_option( TP_ACCOUNT_OPTIONS_KEY );
@@ -254,59 +256,10 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
         echo $catHtml;
     }
 
+
     if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
-        ?>
-        <div class="row">
-            <div class="col-xs-3">
-                <?php
-                $profiles = $tp_api->get_publish_profiles();
-                $html = '<div class="form-group"><label class="control-label" for="publishing_profile">Publishing Profile</label>';
-                $html .= '<select id="publishing_profile" name="publishing_profile" class="form-control upload_profile">';
-                $html .= '<option value="tp_wp_none"' . selected( $preferences['default_publish_id'], 'wp_tp_none', false ) . '>Do not publish</option>';
-                foreach ( $profiles as $entry ) {
-                    $html .= '<option value="' . esc_attr( $entry['id'] ) . '"' . selected( $entry['title'], $preferences['default_publish_id'], false ) . '>' . esc_html( $entry['title'] ) . '</option>';
-                }
-                $html .= '</select></div>';
-                echo $html;
-                ?>
-            </div>
-            <div class="col-xs-3">
-                <?php
-                $servers = $tp_api->get_servers();
-                $html = '<div class="form-group"><label class="control-label" for="theplatform_server">Server</label>';
-                $html .= '<select id="theplatform_server" name="theplatform_server" class="form-control server_id">';
-                $html .= '<option value="DEFAULT_SERVER"' . selected( $preferences['mpx_server_id'], "DEFAULT_SERVER", false ) . '>Default Server</option>';
-                foreach ( $servers as $entry ) {
-                    $html .= '<option value="' . esc_attr( $entry['id'] ) . '"' . selected( $entry['id'], $preferences['mpx_server_id'], false ) . '>' . esc_html( $entry['title'] ) . '</option>';
-                }
-                $html .= '</select></div>';
-                echo $html;
-                ?>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-8">      
-                <div class="form-group" id="file-form-group">
-                    <label class="control-label" for="theplatform_upload_label">File</label>    
-                    <div class="input-group">                   
-                        <span class="input-group-btn">
-                            <span class="btn btn-default btn-file">
-                                Browse&hellip; <input type="file" id="theplatform_upload_file" multiple>
-                            </span>
-                        </span>
-                        <input type="text" class="form-control" style="cursor: text; text-indent: 10px;" id="theplatform_upload_label" readonly value="No file chosen">
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-3">
-                <div class="form-group">
-                    <button id="theplatform_upload_button" class="form-control btn btn-primary" type="button" name="theplatform-upload-button">Upload Media</button>
-                </div>
-            </div>
-        </div>
-    <?php } else {
+        $tp_html->profiles_and_servers("upload");    
+    } else {
         ?>
         <div class="row" style="margin-top: 10px;">
             <div class="col-xs-3">
@@ -320,56 +273,7 @@ if ( defined( 'TP_MEDIA_BROWSER' ) ) { ?>
     </div>
 
     <div class="tab-pane" id="add_files_content">
-        <div class="row">
-            <div class="col-xs-3">
-                <?php
-                $profiles = $tp_api->get_publish_profiles();
-                $html = '<div class="form-group"><label class="control-label" for="publishing_profile">Publishing Profile</label>';
-                $html .= '<select id="publishing_profile" name="publishing_profile" class="form-control upload_profile">';
-                $html .= '<option value="tp_wp_none"' . selected( $preferences['default_publish_id'], 'wp_tp_none', false ) . '>Do not publish</option>';
-                foreach ( $profiles as $entry ) {
-                    $html .= '<option value="' . esc_attr( $entry['id'] ) . '"' . selected( $entry['title'], $preferences['default_publish_id'], false ) . '>' . esc_html( $entry['title'] ) . '</option>';
-                }
-                $html .= '</select></div>';
-                echo $html;
-                ?>
-            </div>
-            <div class="col-xs-3">
-                <?php
-                $servers = $tp_api->get_servers();
-                $html = '<div class="form-group"><label class="control-label" for="theplatform_server">Server</label>';
-                $html .= '<select id="theplatform_server" name="theplatform_server" class="form-control server_id">';
-                $html .= '<option value="DEFAULT_SERVER"' . selected( $preferences['mpx_server_id'], "DEFAULT_SERVER", false ) . '>Default Server</option>';
-                foreach ( $servers as $entry ) {
-                    $html .= '<option value="' . esc_attr( $entry['id'] ) . '"' . selected( $entry['id'], $preferences['mpx_server_id'], false ) . '>' . esc_html( $entry['title'] ) . '</option>';
-                }
-                $html .= '</select></div>';
-                echo $html;
-                ?>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-8">      
-                <div class="form-group" id="file-form-group">
-                    <label class="control-label" for="theplatform_upload_label">File</label>    
-                    <div class="input-group">                   
-                        <span class="input-group-btn">
-                            <span class="btn btn-default btn-file">
-                                Browse&hellip; <input type="file" id="theplatform_upload_file" multiple>
-                            </span>
-                        </span>
-                        <input type="text" class="form-control" style="cursor: text; text-indent: 10px;" id="theplatform_upload_label" readonly value="No file chosen">
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-3">
-                <div class="form-group">
-                    <button id="theplatform_add_file_button" class="form-control btn btn-primary" type="button" name="theplatform-add-file-button">Upload Files</button>
-                </div>
-            </div>
-        </div>
+        <?php $tp_html->profiles_and_servers("add"); ?>
     </div>
 
     <div class="tab-pane" id="publish_content">
