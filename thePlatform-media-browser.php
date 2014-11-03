@@ -345,7 +345,7 @@ function theplatform_media_clear_styles_and_scripts() {
 			?>
 			<div id="tp-edit-dialog" style="display: none; padding-left:10px;">
 				<div id="media-mpx-upload-form">
-					<?php require_once( dirname( __FILE__ ) . '/thePlatform-upload.php' ); ?>
+					<?php require_once( dirname( __FILE__ ) . '/thePlatform-edit-upload.php' ); ?>
 				</div>
 			<?php } ?>
 

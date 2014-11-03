@@ -73,6 +73,7 @@ class ThePlatform_Plugin {
 			add_action( 'wp_ajax_initialize_media_upload', array( $this->tp_api, 'initialize_media_upload' ) );			
 			add_action( 'wp_ajax_theplatform_media', array( $this, 'embed' ) );
 			add_action( 'wp_ajax_theplatform_upload', array( $this, 'upload' ) );
+			add_action( 'wp_ajax_theplatform_upload_form', array( $this, 'upload_form' ) );
 			add_action( 'wp_ajax_theplatform_edit', array( $this, 'edit' ) );
 			add_action( 'wp_ajax_get_categories', array( $this->tp_api, 'get_categories' ) );
 			add_action( 'wp_ajax_get_videos', array( $this->tp_api, 'get_videos' ) );
@@ -208,6 +209,21 @@ class ThePlatform_Plugin {
 		}
 		
 		require_once( $this->plugin_base_dir . 'thePlatform-media-browser.php' );
+		die();
+	}
+
+	/**
+	 * Calls the Upload Form template in an IFrame and Dialog
+	 */
+	function upload_form() {
+		check_admin_referer( 'theplatform-ajax-nonce-theplatform_upload_form' );
+		
+		$tp_uploader_cap = apply_filters( TP_UPLOADER_CAP, TP_UPLOADER_DEFAULT_CAP );
+		if ( !current_user_can( $tp_uploader_cap ) ) {
+			wp_die( 'You do not have sufficient permissions to upload videos' );
+		}
+		
+		require_once( $this->plugin_base_dir . 'thePlatform-edit-upload.php' );
 		die();
 	}
 
