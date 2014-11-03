@@ -46,7 +46,7 @@ function theplatform_upload_clear_styles_and_scripts() {
 		<?php wp_head(); ?>		
     </head>
 
-    <body class="tp">			    
+    <body >			    
     <?php wp_footer(); ?> 
 
     <script type="text/javascript">     

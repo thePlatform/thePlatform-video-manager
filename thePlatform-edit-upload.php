@@ -84,7 +84,7 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
     <?php wp_head(); ?>
     </head>
     <body>
-        <div class="tp"><h1>Upload Media to MPX</h1><div id="media-mpx-upload-form">
+        <div ><h1>Upload Media to MPX</h1><div id="media-mpx-upload-form">
     <?php
 } else {
 

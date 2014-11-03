@@ -180,7 +180,7 @@ header {
 .popover-embed-iframe {} .popover-embed-anchor {
     margin-top: 20px;
 }
-.tp .panel-body {
+ .panel-body {
     padding-left: 25px;
 }
 #btn-container {
@@ -196,8 +196,14 @@ header {
 .category.selected,.media.selected {
     background-color: #D8E8FF !important;
 }
-.tp #selectpick-player {
+ #selectpick-player {
     width: 270px;
 }
 
+.navbar-brand>img {
+display: inline;
+}
 
+.media {
+    overflow: auto;
+}

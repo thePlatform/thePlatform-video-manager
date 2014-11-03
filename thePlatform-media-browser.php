@@ -254,7 +254,7 @@ function theplatform_media_clear_styles_and_scripts() {
 		<?php wp_head(); ?>
 
     </head>
-    <body class="tp">
+    <body >
 		
 		<!-- navbar -->
 		<div class="navbar navbar-default navbar-fixed-top" role="navigation">		
