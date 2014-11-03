@@ -20,6 +20,21 @@ if ( !defined( 'ABSPATH' ) ) {
     exit;
 }
 
+function theplatform_upload_clear_styles_and_scripts() {
+    global $wp_styles; 
+    foreach( $wp_styles->queue as $handle ) {   
+        wp_dequeue_style( $handle );
+    }    
+
+    global $wp_scripts; 
+    foreach( $wp_scripts->queue as $handle ) {          
+        wp_dequeue_script( $handle );
+    }   
+        
+    wp_enqueue_script( 'tp_edit_upload_js' );           
+    wp_enqueue_style( 'tp_bootstrap_css' );    
+}
+
 $account = get_option( TP_ACCOUNT_OPTIONS_KEY );
 if ( $account == false || empty( $account['mpx_account_id'] ) ) {
     wp_die( 'MPX Account ID is not set, please configure the plugin before attempting to manage media' );
@@ -69,8 +84,10 @@ $structureDesc = array(
 );
 
 if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
-    wp_enqueue_style( 'tp_bootstrap_css' );
-    wp_enqueue_script( 'tp_edit_upload_js' );   
+
+    add_action('wp_enqueue_scripts', 'theplatform_upload_clear_styles_and_scripts', 100912);
+
+    theplatform_upload_clear_styles_and_scripts();
 
     if ( !current_user_can( $tp_uploader_cap ) ) {
         wp_die( '<p>You do not have sufficient permissions to upload MPX Media</p>' );

@@ -168,7 +168,7 @@ var theplatform_browser = (function($) {
         addMediaObject: function(media) {
             var placeHolder = "";
             if (media.defaultThumbnailUrl === "")
-                placeHolder = "holder.js/128x72/text:No Thumbnail";
+                placeHolder = "holder.js/128x72/#fff:#aaa/text:No Thumbnail";
 
             var mediaSource = $("#media-template").html();
             var mediaTemplate = _.template(mediaSource);

@@ -91,7 +91,7 @@ function theplatform_media_clear_styles_and_scripts() {
 
 		function theplatform_preview_player_html() { ?>
 			<div id="modal-player" class="marketplacePlayer">
-				<img id="modal-player-placeholder" alt="Preview" data-src="holder.js/320x180/text:No Preview Available" src=""><!-- holder.js/128x72/text:No Thumbnail" -->
+				<img id="modal-player-placeholder" alt="Preview" data-src="holder.js/320x180/#fff:#aaa/text:No Preview Available" src=""><!-- holder.js/128x72/text:No Thumbnail" -->
 				<div class="tpPlayer" id="player"
 					 tp:allowFullScreen="true"
 					 tp:skinUrl="//pdk.theplatform.com/current/pdk/skins/glass/glass.json"
