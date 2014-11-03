@@ -206,10 +206,8 @@ $tp_html = new ThePlatform_HTML();
 		<?php				
 		if ( !$IS_EMBED && current_user_can( $tp_editor_cap ) ) {
 			?>
-			<div id="tp-edit-dialog" style="display: none; padding-left:10px;">
-				<div id="media-mpx-upload-form">
-					<?php require_once( dirname( __FILE__ ) . '/thePlatform-edit-upload.php' ); ?>
-				</div>
+			<div id="tp-edit-dialog" style="display: none; padding-left:10px;">				
+				<?php require_once( dirname( __FILE__ ) . '/thePlatform-edit-upload.php' ); ?>			
 			<?php } ?>
 
 		<?php wp_footer(); ?>

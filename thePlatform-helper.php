@@ -195,7 +195,7 @@ function theplatform_verify_account_settings() {
  * 	Catch JSON decode errors
  */
 function theplatform_decode_json_from_server( $input, $assoc, $die_on_error = TRUE ) {
-
+	
 	$response = json_decode( wp_remote_retrieve_body( $input ), $assoc );
 
 	if ( FALSE === $die_on_error ) {

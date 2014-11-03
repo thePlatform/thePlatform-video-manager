@@ -143,3 +143,25 @@ function TP_PLUGIN_VERSION( $version = TP_PLUGIN_VERSION) {
 function TP_REGIONS() {
 	return array( 'us', 'eu' );
 }
+
+function TP_DATA_TYPE_DESCRIPTIONS() {
+  return array(
+    'Integer' => 'Integer',
+    'Decimal' => 'Decimal',
+    'String' => 'String',
+    'DateTime' => 'MM/DD/YYYY HH:MM:SS',
+    'Date' => 'YYYY-MM-DD',
+    'Time' => '24 hr time (20:00)',
+    'Link' => 'title: Link Title, href: http://www.wordpress.com',
+    'Duration' => 'HH:MM:SS',
+    'Boolean' => 'true, false, or empty',
+    'URI' => 'http://www.wordpress.com',
+  );
+}
+
+function TP_DATA_STRUCTURE_DESCRIPTIONS() {
+  return array(
+    'Map' => 'Map (field1: value1, field2: value2)',
+    'List' => 'List (value1, value2)',
+  );
+}

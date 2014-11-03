@@ -25,24 +25,27 @@ class ThePlatform_HTML {
 private $tp_api;
 private $preferences;  
 private $metadata;
-private $account;
 private $basic_metadata_options;
 private $custom_metadata_options;
+private $profiles;
+private $servers;
+private $players;
 
 function __construct() {
   $this->tp_api = new ThePlatform_API();   
   $this->preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
   $this->metadata = $this->tp_api->get_custom_metadata_fields();
   $this->preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
-  $this->account = get_option( TP_ACCOUNT_OPTIONS_KEY );
   $this->basic_metadata_options = get_option( TP_BASIC_METADATA_OPTIONS_KEY );
   $this->custom_metadata_options = get_option( TP_CUSTOM_METADATA_OPTIONS_KEY );
+  $this->profiles = $this->tp_api->get_publish_profiles();
+  $this->servers = $this->tp_api->get_servers();
+  $this->players = $this->tp_api->get_players();
 }
 
-function player_dropdown() {
-    $players = $this->tp_api->get_players();
+function player_dropdown() {    
     $html = '<p class="navbar-text sort-bar-text">Player:</p><form class="navbar-form navbar-left sort-bar-nav" role="sort"><select id="selectpick-player" class="form-control">';
-    foreach ( $players as $player ) {
+    foreach ( $this->players as $player ) {
       $html .= '<option value="' . esc_attr( $player['pid'] ) . '"' . selected( $player['pid'], $this->preferences['default_player_pid'], false ) . '>' . esc_html( $player['title'] ) . '</option>';
     }
     $html .= '</select></form>';
@@ -179,12 +182,11 @@ function player_dropdown() {
   function profiles_and_servers($upload_or_add) { ?>   
     <div class="row">
         <div class="col-xs-3">
-            <?php
-            $profiles = $this->tp_api->get_publish_profiles();
+            <?php            
             $html = '<div class="form-group"><label class="control-label" for="publishing_profile">Publishing Profile</label>';
             $html .= '<select id="publishing_profile" name="publishing_profile" class="form-control upload_profile">';
             $html .= '<option value="tp_wp_none"' . selected( $this->preferences['default_publish_id'], 'wp_tp_none', false ) . '>Do not publish</option>';
-            foreach ( $profiles as $entry ) {
+            foreach ( $this->profiles as $entry ) {
                 $html .= '<option value="' . esc_attr( $entry['id'] ) . '"' . selected( $entry['title'], $this->preferences['default_publish_id'], false ) . '>' . esc_html( $entry['title'] ) . '</option>';
             }
             $html .= '</select></div>';
@@ -192,12 +194,11 @@ function player_dropdown() {
             ?>
         </div>
         <div class="col-xs-3">
-            <?php
-            $servers = $this->tp_api->get_servers();
+            <?php            
             $html = '<div class="form-group"><label class="control-label" for="theplatform_server">Server</label>';
             $html .= '<select id="theplatform_server" name="theplatform_server" class="form-control server_id">';
             $html .= '<option value="DEFAULT_SERVER"' . selected( $this->preferences['mpx_server_id'], "DEFAULT_SERVER", false ) . '>Default Server</option>';
-            foreach ( $servers as $entry ) {
+            foreach ( $this->servers as $entry ) {
                 $html .= '<option value="' . esc_attr( $entry['id'] ) . '"' . selected( $entry['id'], $this->preferences['mpx_server_id'], false ) . '>' . esc_html( $entry['title'] ) . '</option>';
             }
             $html .= '</select></div>';
@@ -264,8 +265,7 @@ function player_dropdown() {
             $categoryHtml .=         '</div>';
             $categoryHtml .=     '</div>';
             $categoryHtml .= '</div>';
-        } else {
-            $default_value = isset( $media[$basic_field] ) ? esc_attr( $media[$basic_field] ) : '';
+        } else {            
             $html = '';
             if ( $i % 2 == 0 ) {
                 $html .= '<div class="row">';
@@ -273,7 +273,7 @@ function player_dropdown() {
             $html .=        '<div class="col-xs-5">';
             $html .=            '<div class="form-group">';
             $html .=                '<label class="control-label" for="theplatform_upload_' . esc_attr( $basic_field ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
-            $html .=                '<input name="' . esc_attr( $basic_field ) . '" id="theplatform_upload_' . esc_attr( $basic_field ) . '" class="form-control upload_field" type="text" value="' . esc_attr( $default_value ) . '"/>'; //upload_field
+            $html .=                '<input name="' . esc_attr( $basic_field ) . '" id="theplatform_upload_' . esc_attr( $basic_field ) . '" class="form-control upload_field" type="text" />'; //upload_field
             $html .=            '</div>';
             $html .=        '</div>';
             $i++;
@@ -322,8 +322,7 @@ function player_dropdown() {
             continue;
         }
 
-        $field_name = $field_prefix . '$' . $field_title;
-        $field_value = isset( $media[$field_prefix . '$' . $field_title] ) ? $media[$field_prefix . '$' . $field_title] : '';
+        $field_name = $field_prefix . '$' . $field_title;        
 
         $html = '';
         if ( $i % 2 == 0 ) {
@@ -332,12 +331,12 @@ function player_dropdown() {
         $html .= '<div class="col-xs-5">';
         $html .= '<label class="control-label" for="theplatform_upload_' . esc_attr( $field_name ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
 
-        $html .= '<input name="' . esc_attr( $field_title ) . '" id="theplatform_upload_' . esc_attr( $field_name ) . '" class="form-control custom_field" type="text" value="' . esc_attr( $field_value ) . '" data-type="' . esc_attr( $field_type ) . '" data-structure="' . esc_attr( $field_structure ) . '" data-name="' . esc_attr( strtolower( $field_title ) ) . '" data-prefix="' . esc_attr( strtolower( $field_prefix ) ) . '" data-namespace="' . esc_attr( strtolower( $field_namespace ) ) . '"/>';
-        if ( isset( $structureDesc[$field_structure] ) ) {
-            $html .= '<div class="structureDesc"><strong>Structure</strong> ' . esc_html( $structureDesc[$field_structure] ) . '</div>';
+        $html .= '<input name="' . esc_attr( $field_title ) . '" id="theplatform_upload_' . esc_attr( $field_name ) . '" class="form-control custom_field" type="text" data-type="' . esc_attr( $field_type ) . '" data-structure="' . esc_attr( $field_structure ) . '" data-name="' . esc_attr( strtolower( $field_title ) ) . '" data-prefix="' . esc_attr( strtolower( $field_prefix ) ) . '" data-namespace="' . esc_attr( strtolower( $field_namespace ) ) . '"/>';
+        if ( isset( TP_DATA_STRUCTURE_DESCRIPTIONS()[$field_structure] ) ) {
+            $html .= '<div class="structureDesc"><strong>Structure</strong> ' . esc_html( TP_DATA_STRUCTURE_DESCRIPTIONS()[$field_structure] ) . '</div>';
         }
-        if ( isset( $dataTypeDesc[$field_type] ) ) {
-            $html .= '<div class="dataTypeDesc"><strong>Format:</strong> ' . esc_html( $dataTypeDesc[$field_type] ) . '</div>';
+        if ( isset( TP_DATA_TYPE_DESCRIPTIONS()[$field_type] ) ) {
+            $html .= '<div class="dataTypeDesc"><strong>Format:</strong> ' . esc_html( TP_DATA_TYPE_DESCRIPTIONS()[$field_type] ) . '</div>';
         }
         $html .= '<br />';
         $html .= '</div>';
@@ -352,4 +351,82 @@ function player_dropdown() {
         echo $categoryHtml;
     }
   }
+
+  function user_id_field() {
+    $user_id_customfield = $this->preferences['user_id_customfield'];
+    if ( strlen( $user_id_customfield ) && $user_id_customfield !== '(None)' ) {
+        $userIdField = $this->tp_api->get_customfield_info( $user_id_customfield )['entries'];
+        if (array_key_exists(0, $userIdField)) {
+            $field_title = $userIdField[0]['fieldName'];
+            $field_prefix = $userIdField[0]['namespacePrefix'];
+            $field_namespace = $userIdField[0]['namespace'];
+            $userID = strval( wp_get_current_user()->ID );
+            echo '<input name="' . esc_attr( $field_title ) . '" id="theplatform_upload_' . esc_attr( $user_id_customfield ) . '" class="userid custom_field" type="hidden" value="' . esc_attr( $userID ) . '" data-type="String" data-name="' . esc_attr( strtolower( $field_title ) ) . '" data-prefix="' . esc_attr( strtolower( $field_prefix ) ) . '" data-namespace="' . esc_attr( strtolower( $field_namespace ) ) . '"/>';                      
+        }
+    }
+  }
+
+  function edit_tabs_header() { ?>
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="active" id="edit"><a href="#edit_content" role="tab" data-toggle="tab">Edit Metadata</a></li>
+        <?php 
+        $tp_uploader_cap = apply_filters( TP_UPLOADER_CAP, TP_UPLOADER_DEFAULT_CAP );
+        if ( current_user_can( $tp_uploader_cap ) ) { 
+            echo '<li id="add_files"><a href="#add_files_content" role="tab" data-toggle="tab">Add New Files</a></li>';
+            echo '<li id="publish"><a href="#publish_content" role="tab" data-toggle="tab">Publish</a></li>';
+        } 
+        $tp_revoke_cap = apply_filters( TP_REVOKE_CAP, TP_REVOKE_DEFAULT_CAP );
+        if ( current_user_can( $tp_revoke_cap ) ) { 
+            echo '<li id="revoke"><a href="#revoke_content" role="tab" data-toggle="tab">Revoke</a></li>';
+        } ?>
+    </ul>
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="edit_content"> <?php
+  }
+
+  function edit_tabs_content() { ?>
+        </div>
+
+    <div class="tab-pane" id="add_files_content">
+        <?php $this->profiles_and_servers("add"); ?>
+    </div>
+
+    <div class="tab-pane" id="publish_content">
+        <div class="row">
+            <div class="col-xs-3">
+                <?php              
+                $html = '<div class="form-group"><label class="control-label" for="edit_publishing_profile">Publishing Profile</label>';
+                $html .= '<select id="edit_publishing_profile" name="edit_publishing_profile" class="form-control edit_profile">';              
+                foreach ( $this->profiles as $entry ) {
+                    $html .= '<option value="' . esc_attr( $entry['id'] ) . '"' . selected( $entry['title'], $this->preferences['default_publish_id'], false ) . '>' . esc_html( $entry['title'] ) . '</option>';
+                }
+                $html .= '</select></div>';
+                echo $html;
+                ?>
+            </div>          
+        </div>
+        <div class="row" style="margin-top: 10px;">
+            <div class="col-xs-3">
+                <button id="theplatform_publish_button" class="form-control btn btn-primary" type="button" name="theplatform-publish-button">Publish</button>
+            </div>                      
+        </div>
+    </div>
+     <div class="tab-pane" id="revoke_content">
+        <div class="row">           
+            <div class="col-xs-3">
+                <div class="form-group">
+                    <label class="control-label" for="publish_status">Currently Published Profiles</label>
+                    <select id="publish_status" name="publish_status" class="form-control revoke_profile">
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin-top: 10px;">         
+            <div class="col-xs-3">
+                <button id="theplatform_revoke_button" class="form-control btn btn-primary" type="button" name="theplatform-revoke-button">Revoke</button>
+            </div>          
+        </div>
+    </div>
+  <?php }
 }
