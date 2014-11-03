@@ -100,7 +100,7 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
     <head><title>thePlatform Upload Form</title>
     <?php wp_head(); ?>
     </head>
-    <body style="width: 95%;">
+    <body style="width: 95%; padding-left: 10px">
         <div ><h1>Upload Media to MPX</h1><div id="media-mpx-upload-form">
     <?php
 } else { ?>

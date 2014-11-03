@@ -207,3 +207,7 @@ display: inline;
 .media {
     overflow: auto;
 }
+
+.navbar-text {
+    color: #666666 !important;
+}

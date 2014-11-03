@@ -327,7 +327,7 @@ var theplatform_browser = (function($) {
             }
         },
         onSetImage: function() {
-            var post_id = window.parent.$('#post_ID').val();
+            var post_id = window.parent.jQuery('#post_ID').val();
             if (!tpHelper.selectedThumb || !post_id)
                 return;
             var data = {
@@ -337,9 +337,9 @@ var theplatform_browser = (function($) {
                 _wpnonce: tp_browser_local.tp_nonce['set_thumbnail']
             };
 
-            $.post(tp_edit_upload_local.ajaxurl, data, function(response) {
+            $.post(tp_browser_local.ajaxurl, data, function(response) {
                 if (response.success)
-                    window.parent.$('#postimagediv .inside').html(response.data);
+                    window.parent.jQuery('#postimagediv .inside').html(response.data);
             });
         },
         onEditMetadata: function() {

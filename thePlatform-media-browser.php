@@ -132,7 +132,7 @@ function theplatform_media_clear_styles_and_scripts() {
 					 tp:textColor="0x111111"
 					 tp:scrubberColor="0x111111"
 					 tp:scrubTrackColor="0x111111"
-					 tp:pageBackgroundColor="0xcccccc"
+					 tp:pageBackgroundColor="0xeeeeee"
 					 tp:plugin1="type=content|url=//pdk.theplatform.com/current/pdk/swf/akamaiHD.swf|fallback=switch%3Dhttp|bufferProfile=livestable|priority=1|videoLayer=akamaihd"
 					 tp:plugin2="type=content|url=//pdk.theplatform.com/current/pdk/js/plugins/akamaiHD.js|fallback=switch%3Dhttp|bufferProfile=livestable|priority=1|videoLayer=akamaihd">
 					<noscript class="tpError">To view this site, you need to have JavaScript enabled in your browser, and either the Flash Plugin or an HTML5-Video enabled browser. Download <a href="http://get.adobe.com/flashplayer/" target="_black">the latest Flash player</a> and try again.</noscript>

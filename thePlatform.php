@@ -148,7 +148,7 @@ class ThePlatform_Plugin {
 		wp_register_style( 'tp_bootstrap_css', plugins_url( '/css/bootstrap.min.css', __FILE__ ) );
 		wp_register_style( 'tp_options_css', plugins_url( '/css/thePlatform-options.css', __FILE__ ) );
 		wp_register_style( 'tp_nprogress_css', plugins_url( '/css/nprogress.css', __FILE__ ) );
-		wp_register_style( 'tp_file_uploader_css', plugins_url( '/css/thePlatform-file-uploader.css', __FILE__ ), array( 'tp_nprogress_css' ) );
+		wp_register_style( 'tp_file_uploader_css', plugins_url( '/css/thePlatform-file-uploader.css', __FILE__ ), array( 'tp_nprogress_css', 'tp_bootstrap_css' ) );
 	}
 
 	/**
