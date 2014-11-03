@@ -38,6 +38,27 @@ function theplatform_media_clear_styles_and_scripts() {
 	wp_enqueue_style( 'tp_browser_css' );	
 }
 
+if ( !defined( 'ABSPATH' ) ) {
+	exit;
+}
+$tp_viewer_cap = apply_filters( TP_VIEWER_CAP, TP_VIEWER_DEFAULT_CAP );
+$tp_editor_cap = apply_filters( TP_EDITOR_CAP, TP_EDITOR_DEFAULT_CAP );		
+
+if ( !current_user_can( $tp_viewer_cap ) ) {
+	wp_die( '<p>You do not have sufficient permissions to browse MPX Media</p>' );
+}
+
+define( 'TP_MEDIA_BROWSER', true );
+
+$preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
+$account = get_option( TP_ACCOUNT_OPTIONS_KEY );		
+
+if ( $account == false || empty( $account['mpx_account_id'] ) ) {
+	wp_die( 'MPX Account ID is not set, please configure the plugin before attempting to manage media' );
+}
+
+$IS_EMBED = isset( $_GET['embed'] );
+		
 $tp_html = new ThePlatform_HTML();
 
 ?>
@@ -48,40 +69,7 @@ $tp_html = new ThePlatform_HTML();
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="tp:PreferredRuntimes" content="Flash, HTML5" />
 		<meta name="tp:initialize" content="false" />
-		<title>thePlatform Media Browser</title>
-		<?php
-		if ( !defined( 'ABSPATH' ) ) {
-			exit;
-		}
-		$tp_viewer_cap = apply_filters( TP_VIEWER_CAP, TP_VIEWER_DEFAULT_CAP );
-		$tp_editor_cap = apply_filters( TP_EDITOR_CAP, TP_EDITOR_DEFAULT_CAP );		
-
-		if ( !current_user_can( $tp_viewer_cap ) ) {
-			wp_die( '<p>You do not have sufficient permissions to browse MPX Media</p>' );
-		}
-
-		if ( !class_exists( 'ThePlatform_API' ) ) {
-			require_once( dirname( __FILE__ ) . '/thePlatform-API.php' );
-		}
-
-		$tp_api = new ThePlatform_API;
-		$metadata = $tp_api->get_custom_metadata_fields();
-
-		define( 'TP_MEDIA_BROWSER', true );
-		
-		$preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
-		$account = get_option( TP_ACCOUNT_OPTIONS_KEY );		
-
-		if ( $account == false || empty( $account['mpx_account_id'] ) ) {
-			wp_die( 'MPX Account ID is not set, please configure the plugin before attempting to manage media' );
-		}
-
-		//Embed only stuff
-		$players = $tp_api->get_players();		
-		$IS_EMBED = isset( $_GET['embed'] );
-
-	
-		?>
+		<title>thePlatform Media Browser</title>	
 
 		<script type="text/javascript">
 			tpHelper = { };			

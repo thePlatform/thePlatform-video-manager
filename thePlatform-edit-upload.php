@@ -40,7 +40,9 @@ if ( $account == false || empty( $account['mpx_account_id'] ) ) {
     wp_die( 'MPX Account ID is not set, please configure the plugin before attempting to manage media' );
 }
 
-$tp_html = new ThePlatform_HTML();
+if ( !isset( $tp_html ) ) {
+    $tp_html = new ThePlatform_HTML();
+}
 
 // Detect IE 9 and below which doesn't support HTML 5 File API
 preg_match('/MSIE (.*?);/', $_SERVER['HTTP_USER_AGENT'], $matches);
