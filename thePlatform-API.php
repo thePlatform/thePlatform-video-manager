@@ -230,10 +230,6 @@ class ThePlatform_API {
 	function mpx_signin($forceRefresh = false, $updateOptions = true) {		
 		$token = get_option( TP_TOKEN_OPTIONS_KEY );
 		if ( $forceRefresh == true || $token == false ) {					
-
-			// Invalidate the Cache
-			wp_cache_delete( TP_TOKEN_OPTIONS_KEY, 'options' );
-			
 			$response = ThePlatform_API_HTTP::get( TP_API_SIGNIN_URL, $this->basicAuthHeader() );
 
 			$payload = theplatform_decode_json_from_server( $response, TRUE );
