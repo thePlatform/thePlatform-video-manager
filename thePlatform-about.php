@@ -20,77 +20,77 @@
 ?>
 <div class="wrap">
 
-<h2>thePlatform Video Manager</h2>
-<?php
-  $tp_admin_cap = apply_filters( TP_ADMIN_CAP, TP_ADMIN_DEFAULT_CAP ); 
+	<h2>thePlatform Video Manager</h2>
+	<?php
+	$tp_admin_cap = apply_filters( TP_ADMIN_CAP, TP_ADMIN_DEFAULT_CAP );
 
-  if ( current_user_can( $tp_admin_cap ) ) {
-    
-    if ( isset( $_POST['delete'] ) ) {
-      check_admin_referer( 'theplatform_delete_settings_nonce' );
+	if ( current_user_can( $tp_admin_cap ) ) {
 
-      delete_option( TP_ACCOUNT_OPTIONS_KEY );
-      delete_option( TP_PREFERENCES_OPTIONS_KEY );
-      delete_option( TP_CUSTOM_METADATA_OPTIONS_KEY );
-      delete_option( TP_BASIC_METADATA_OPTIONS_KEY );
-      delete_option( TP_TOKEN_OPTIONS_KEY );
+		if ( isset( $_POST['delete'] ) ) {
+			check_admin_referer( 'theplatform_delete_settings_nonce' );
 
-      echo '<div id="message" class="updated"><p>All plugin settings have been reset</p></div>';
-    }
-  }
-?>
-  <p>Version <?php echo TP_PLUGIN_VERSION; ?><br>
-  	Copyright (C) 2013-<?php echo date("Y"); ?> thePlatform LLC.<br>
-  </p>
+			delete_option( TP_ACCOUNT_OPTIONS_KEY );
+			delete_option( TP_PREFERENCES_OPTIONS_KEY );
+			delete_option( TP_CUSTOM_METADATA_OPTIONS_KEY );
+			delete_option( TP_BASIC_METADATA_OPTIONS_KEY );
+			delete_option( TP_TOKEN_OPTIONS_KEY );
 
-  <p>The latest version of the plugin can be found at our GitHub repository:
-  	<a href="https://github.com/thePlatform/thePlatform-video-manager">thePlatform-video-manager</a>
-  </p>
+			echo '<div id="message" class="updated"><p>All plugin settings have been reset</p></div>';
+		}
+	}
+	?>
+	<p>Version <?php echo TP_PLUGIN_VERSION; ?><br>
+		Copyright (C) 2013-<?php echo date( "Y" ); ?> thePlatform LLC.<br>
+	</p>
 
-  <p>The following libraries are used under their respective licenses:<br>
-  	Holder - 2.3.1 - client side image placeholders<br>
-  	(c) 2012-2014 <a href="http://imsky.co">Ivan Malopinsky</a>
-  </p>
+	<p>The latest version of the plugin can be found at our GitHub repository:
+		<a href="https://github.com/thePlatform/thePlatform-video-manager">thePlatform-video-manager</a>
+	</p>
 
-  <p>
-  	Bootstrap<br>
-  	Copyright (c) 2011-2014 <a href="http://getbootstrap.com/">Twitter, Inc</a>
-  </p>
+	<p>The following libraries are used under their respective licenses:<br>
+		Holder - 2.3.1 - client side image placeholders<br>
+		(c) 2012-2014 <a href="http://imsky.co">Ivan Malopinsky</a>
+	</p>
 
-  <p>
-  	jQuery infiniteScroll<br>
-  	Copyright (c) 2010 <a href="https://github.com/denniscalazans/jquery-infinitescroll">DIY Co</a>
-  </p>
+	<p>
+		Bootstrap<br>
+		Copyright (c) 2011-2014 <a href="http://getbootstrap.com/">Twitter, Inc</a>
+	</p>
 
-  <p>
-    NProgress<br>
-    Copyright (c) 2013-2014 <a href="http://ricostacruz.com/nprogress/">Rico Sta. Cruz</a>
-  </p>
+	<p>
+		jQuery infiniteScroll<br>
+		Copyright (c) 2010 <a href="https://github.com/denniscalazans/jquery-infinitescroll">DIY Co</a>
+	</p>
 
-<?php
+	<p>
+		NProgress<br>
+		Copyright (c) 2013-2014 <a href="http://ricostacruz.com/nprogress/">Rico Sta. Cruz</a>
+	</p>
 
-  // Administrators only should be able to delete all of the plugin settings  
-  if ( current_user_can( $tp_admin_cap ) ) {        
-    echo '<form name="delete_settings" action="admin.php?page=theplatform-about" method="post"><input type="hidden" name="delete" value="delete">';
-    wp_nonce_field('theplatform_delete_settings_nonce');
-    submit_button('Reset Plugin Settings'); 
-    echo '</form>';  
-  }
-  ?>
+	<?php
 
-<script type="text/javascript">
-  var clicked=false;
-  jQuery('#submit').click(function(e) {
-    if (!clicked) {      
-      e.preventDefault();
-      clicked=true;
-      jQuery(this).val('Click Again to Confirm');
-    } else {
+	// Administrators only should be able to delete all of the plugin settings
+	if ( current_user_can( $tp_admin_cap ) ) {
+		echo '<form name="delete_settings" action="admin.php?page=theplatform-about" method="post"><input type="hidden" name="delete" value="delete">';
+		wp_nonce_field( 'theplatform_delete_settings_nonce' );
+		submit_button( 'Reset Plugin Settings' );
+		echo '</form>';
+	}
+	?>
 
-    }
+	<script type="text/javascript">
+		var clicked = false;
+		jQuery('#submit').click(function (e) {
+			if (!clicked) {
+				e.preventDefault();
+				clicked = true;
+				jQuery(this).val('Click Again to Confirm');
+			} else {
+
+			}
 
 
-  })
+		})
 
-</script>
+	</script>
 </div>

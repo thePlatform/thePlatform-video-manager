@@ -16,41 +16,41 @@
   with this program; if not, write to the Free Software Foundation, Inc.,
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-if ( !defined( 'ABSPATH' ) ) {
+if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 $tp_viewer_cap = apply_filters( TP_VIEWER_CAP, TP_VIEWER_DEFAULT_CAP );
-if ( !current_user_can( $tp_viewer_cap ) ) {
+if ( ! current_user_can( $tp_viewer_cap ) ) {
 	wp_die( '<p>You do not have sufficient permissions to browse MPX Media</p>' );
 }
 ?>
 
 <style type="text/css">
-    #tp-iframe {
+	#tp-iframe {
 		height: 100%;
 		width: 100%;
-    }
+	}
 
-    #tp-container {
+	#tp-container {
 		height: 100%;
-		width: 100%;	
-		overflow-y: hidden;	
-    }
+		width: 100%;
+		overflow-y: hidden;
+	}
 </style>
 
-<div id="tp-container">		
+<div id="tp-container">
 	<?php
-	$site_url = wp_nonce_url( admin_url( "/admin-ajax.php?action=theplatform_media" ), 'theplatform-ajax-nonce-theplatform_media');
+	$site_url = wp_nonce_url( admin_url( "/admin-ajax.php?action=theplatform_media" ), 'theplatform-ajax-nonce-theplatform_media' );
 	echo '<iframe id="tp-iframe" src="' . esc_url( $site_url ) . '"></iframe>'
-	?>		
+	?>
 </div>
 
 <script type="text/javascript">
-	jQuery( document ).ready( function() {
-		jQuery( '#tp-iframe' ).css( 'height', window.innerHeight - 101 );
+	jQuery(document).ready(function () {
+		jQuery('#tp-iframe').css('height', window.innerHeight - 101);
 
-		jQuery( window ).resize( function() {
-			jQuery( '#tp-iframe' ).css( 'height', window.innerHeight - 101 );
-		} );
-	} );
+		jQuery(window).resize(function () {
+			jQuery('#tp-iframe').css('height', window.innerHeight - 101);
+		});
+	});
 </script>

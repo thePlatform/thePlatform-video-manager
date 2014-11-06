@@ -18,7 +18,7 @@
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 
-if ( !isset( $account ) ) {
+if ( ! isset( $account ) ) {
 	$account = get_option( TP_ACCOUNT_OPTIONS_KEY );
 }
 
@@ -27,214 +27,213 @@ if ( !isset( $account ) ) {
  */
 class ThePlatform_Proxy {
 
-    function __construct() {   
-        if ( is_admin() ) {     
-            add_action( 'wp_ajax_start_upload',     array( $this, 'start_upload' ) );
-            add_action( 'wp_ajax_upload_status',    array( $this, 'upload_status' ) );
-            add_action( 'wp_ajax_upload_fragment',  array( $this, 'upload_fragment' ) );
-            add_action( 'wp_ajax_finish_upload',    array( $this, 'finish_upload' ) );
-            add_action( 'wp_ajax_cancel_upload',    array( $this, 'cancel_upload' ) );
-            add_action( 'wp_ajax_publish_media',    array( $this, 'publish_media' ) );
-            add_action( 'wp_ajax_revoke_media',     array( $this, 'revoke_media' ) );
-        }        
-    }
+	function __construct() {
+		if ( is_admin() ) {
+			add_action( 'wp_ajax_start_upload', array( $this, 'start_upload' ) );
+			add_action( 'wp_ajax_upload_status', array( $this, 'upload_status' ) );
+			add_action( 'wp_ajax_upload_fragment', array( $this, 'upload_fragment' ) );
+			add_action( 'wp_ajax_finish_upload', array( $this, 'finish_upload' ) );
+			add_action( 'wp_ajax_cancel_upload', array( $this, 'cancel_upload' ) );
+			add_action( 'wp_ajax_publish_media', array( $this, 'publish_media' ) );
+			add_action( 'wp_ajax_revoke_media', array( $this, 'revoke_media' ) );
+		}
+	}
 
-    private $cookies;
+	private $cookies;
 
-	private function check_nonce_and_permissions( $action = "") {
+	private function check_nonce_and_permissions( $action = "" ) {
 		if ( empty( $action ) ) {
 			check_admin_referer( 'theplatform-ajax-nonce' );
+		} else {
+			check_admin_referer( 'theplatform-ajax-nonce-' . $action );
 		}
-		else {			
-			check_admin_referer( 'theplatform-ajax-nonce-' . $action);
-		}
-		
+
 		$tp_uploader_cap = apply_filters( TP_UPLOADER_CAP, TP_UPLOADER_DEFAULT_CAP );
-		if ( !current_user_can( $tp_uploader_cap ) ) {
+		if ( ! current_user_can( $tp_uploader_cap ) ) {
 			wp_die( 'You do not have sufficient permissions to modify MPX Media' );
 		}
 	}
-	
+
 	private function check_theplatform_proxy_response( $response, $returnsValue = false ) {
-		
-        // Check if we got an error back and return it
+
+		// Check if we got an error back and return it
 		if ( is_wp_error( $response ) ) {
 			wp_send_json_error( $response->get_error_message() );
 		}
-	
+
 		if ( isset( $response['data'] ) && $response['data'] === false ) {
 			wp_send_json_error( $response['status']['http_code'] );
 		}
-		
-        $responseBody = wp_remote_retrieve_body( $response );
 
-        // This AJAX call should not return a value, in this case we send a json error with the body to the UI
-        if ( !$returnsValue && !empty( $responseBody ) ) {
-            wp_send_json_error( theplatform_decode_json_from_server( $response, TRUE, FALSE ) );
-        } 
+		$responseBody = wp_remote_retrieve_body( $response );
 
-        $parsedResponse = theplatform_decode_json_from_server( $response, TRUE, FALSE );
+		// This AJAX call should not return a value, in this case we send a json error with the body to the UI
+		if ( ! $returnsValue && ! empty( $responseBody ) ) {
+			wp_send_json_error( theplatform_decode_json_from_server( $response, true, false ) );
+		}
 
-        if ( isset($this->cookie ) ) {            
-            $parsedResponse['cookie'] = array ( 'name' => $this->cookie->name, 'value' => $this->cookie->value );
-        }
-		wp_send_json_success( $parsedResponse );                
+		$parsedResponse = theplatform_decode_json_from_server( $response, true, false );
+
+		if ( isset( $this->cookie ) ) {
+			$parsedResponse['cookie'] = array( 'name' => $this->cookie->name, 'value' => $this->cookie->value );
+		}
+		wp_send_json_success( $parsedResponse );
 	}
 
-    private function proxy_http_request( $data = array() ) {
-        $method = strtolower( $_POST['method'] );
-        $url = $_POST['url'];
+	private function proxy_http_request( $data = array() ) {
+		$method = strtolower( $_POST['method'] );
+		$url    = $_POST['url'];
 
-        if ( isset( $_POST['cookie_name'] ) ) {
-            $data['cookies'] = array(
-                new WP_Http_Cookie( 
-                    array(
-                        'name' => $_POST['cookie_name'], 
-                        'value' => $_POST['cookie_value']
-                    )
-                )
-            );
-        }
-        switch ( $method ) {
-            case 'put':
-                $response = ThePlatform_API_HTTP::put( $url, $data );
-                break;
-            case 'get':
-                $response = ThePlatform_API_HTTP::get( $url );
-                break;
-            case 'post':
-                $response = ThePlatform_API_HTTP::post( $url, $data );
-                break;
-            default:
-                $response = array();
-                break;
-        }            
+		if ( isset( $_POST['cookie_name'] ) ) {
+			$data['cookies'] = array(
+				new WP_Http_Cookie(
+					array(
+						'name'  => $_POST['cookie_name'],
+						'value' => $_POST['cookie_value']
+					)
+				)
+			);
+		}
+		switch ( $method ) {
+			case 'put':
+				$response = ThePlatform_API_HTTP::put( $url, $data );
+				break;
+			case 'get':
+				$response = ThePlatform_API_HTTP::get( $url );
+				break;
+			case 'post':
+				$response = ThePlatform_API_HTTP::post( $url, $data );
+				break;
+			default:
+				$response = array();
+				break;
+		}
 
-        return $response;           
-    }
+		return $response;
+	}
 
-    public function start_upload() {                           
-        $this->check_nonce_and_permissions( $_POST['action'] );
-                    
-        $response = $this->proxy_http_request();
-        $this->cookie = $response['cookies'][0];
-        
-        $this->check_theplatform_proxy_response ( $response );
+	public function start_upload() {
+		$this->check_nonce_and_permissions( $_POST['action'] );
 
-        wp_send_json_error("Shouldn't be here.");
-    }
+		$response     = $this->proxy_http_request();
+		$this->cookie = $response['cookies'][0];
 
-    public function upload_status() {                       
-        $this->check_nonce_and_permissions( $_POST['action'] );
+		$this->check_theplatform_proxy_response( $response );
 
-        $response = $this->proxy_http_request();
-        $this->check_theplatform_proxy_response ( $response, true );
-     
-        wp_send_json_error("Shouldn't be here.");
-    }
+		wp_send_json_error( "Shouldn't be here." );
+	}
 
-    public function upload_fragment() {               
-        
-        $this->check_nonce_and_permissions( $_POST['action'] );
+	public function upload_status() {
+		$this->check_nonce_and_permissions( $_POST['action'] );
 
-        $file = file_get_contents( $_FILES['file']['tmp_name'] );            
-        $data = array(
-            'body' => $file,
-            'timeout' => 120,
-            'headers' => array( 'content-type' => 'application/x-www-form-urlencode; charset=UTF-8' )
-        );
+		$response = $this->proxy_http_request();
+		$this->check_theplatform_proxy_response( $response, true );
 
-        $response = $this->proxy_http_request( $data );
+		wp_send_json_error( "Shouldn't be here." );
+	}
 
-        $this->check_theplatform_proxy_response ( $response );
+	public function upload_fragment() {
 
-        wp_send_json_error("Shouldn't be here.");
-    }
+		$this->check_nonce_and_permissions( $_POST['action'] );
 
-    public function finish_upload() {                       
-        $this->check_nonce_and_permissions( $_POST['action'] );
-        
-        $data = array (
-            'body' => 'finished',
-            'timeout' => 30
-        );
+		$file = file_get_contents( $_FILES['file']['tmp_name'] );
+		$data = array(
+			'body'    => $file,
+			'timeout' => 120,
+			'headers' => array( 'content-type' => 'application/x-www-form-urlencode; charset=UTF-8' )
+		);
 
-        $response = $this->proxy_http_request( $data );
+		$response = $this->proxy_http_request( $data );
 
-        $this->check_theplatform_proxy_response ( $response );
-     
-        wp_send_json_error("Shouldn't be here.");
-    }
+		$this->check_theplatform_proxy_response( $response );
 
-    public function cancel_upload() {               
-        $this->check_nonce_and_permissions( $_POST['action'] );
+		wp_send_json_error( "Shouldn't be here." );
+	}
 
-        $response = $this->proxy_http_request();
-        $this->check_theplatform_proxy_response ( $response );
-     
-        wp_send_json_error("Shouldn't be here.");
-     
-    }
+	public function finish_upload() {
+		$this->check_nonce_and_permissions( $_POST['action'] );
 
-    /**
-     * Publish an uploaded media asset using the 'Wordpress' profile
-     * @return mixed JSON response or instance of WP_Error
-     */
-    public function publish_media() {
-        $this->check_nonce_and_permissions( $_POST['action'] );
+		$data = array(
+			'body'    => 'finished',
+			'timeout' => 30
+		);
 
-        if ( $_POST['profile'] == 'wp_tp_none' ) {
-            wp_send_json_success("No Publishing Profile Selected");
-        } 
-        
-        if ( !isset( $_POST['token]'] ) ) {
-            $tp_api = new ThePlatform_API();
-            $token = $tp_api->mpx_signin();
-        } else {
-            $token = $_POST['token]'];
-        }
+		$response = $this->proxy_http_request( $data );
 
-        $profileId = $_POST['profile'];
-        $mediaId = $_POST['mediaId'];
+		$this->check_theplatform_proxy_response( $response );
 
-        $publishUrl = TP_API_PUBLISH_BASE_URL;
-        $publishUrl .= '&token=' . $token;
-        $publishUrl .= '&account=' . urlencode( $_POST['account'] );
-        $publishUrl .= '&_mediaId=' . urlencode( $mediaId );
-        $publishUrl .= '&_profileId=' . urlencode( $profileId );
+		wp_send_json_error( "Shouldn't be here." );
+	}
 
-        $response = ThePlatform_API_HTTP::get( esc_url_raw ( $publishUrl ), array( "timeout" => 120 ) );
+	public function cancel_upload() {
+		$this->check_nonce_and_permissions( $_POST['action'] );
 
-        $this->check_theplatform_proxy_response( $response, true );
-    }
+		$response = $this->proxy_http_request();
+		$this->check_theplatform_proxy_response( $response );
 
-    /**
-     * Publish an uploaded media asset using the 'Wordpress' profile
-     * @return mixed JSON response or instance of WP_Error
-     */
-    public function revoke_media() {
-        $this->check_nonce_and_permissions( $_POST['action'] );      
-        
-        if ( !isset( $_POST['token]'] ) ) {
-            $tp_api = new ThePlatform_API();
-            $token = $tp_api->mpx_signin();
-        } else {
-            $token = $_POST['token]'];
-        }
+		wp_send_json_error( "Shouldn't be here." );
 
-        $profileId = $_POST['profile'];
-        $mediaId = $_POST['mediaId'];
+	}
 
-        $publishUrl = TP_API_REVOKE_BASE_URL;
-        $publishUrl .= '&token=' . $token;
-        $publishUrl .= '&account=' . urlencode( $_POST['account'] );
-        $publishUrl .= '&_mediaId=' . urlencode( $mediaId );
-        $publishUrl .= '&_profileId=' . urlencode( $profileId );
+	/**
+	 * Publish an uploaded media asset using the 'Wordpress' profile
+	 * @return mixed JSON response or instance of WP_Error
+	 */
+	public function publish_media() {
+		$this->check_nonce_and_permissions( $_POST['action'] );
 
-        $response = ThePlatform_API_HTTP::get( esc_url_raw ( $publishUrl ), array( "timeout" => 120 ) );
+		if ( $_POST['profile'] == 'wp_tp_none' ) {
+			wp_send_json_success( "No Publishing Profile Selected" );
+		}
 
-        $this->check_theplatform_proxy_response( $response, true );
-    }
+		if ( ! isset( $_POST['token]'] ) ) {
+			$tp_api = new ThePlatform_API();
+			$token  = $tp_api->mpx_signin();
+		} else {
+			$token = $_POST['token]'];
+		}
+
+		$profileId = $_POST['profile'];
+		$mediaId   = $_POST['mediaId'];
+
+		$publishUrl = TP_API_PUBLISH_BASE_URL;
+		$publishUrl .= '&token=' . $token;
+		$publishUrl .= '&account=' . urlencode( $_POST['account'] );
+		$publishUrl .= '&_mediaId=' . urlencode( $mediaId );
+		$publishUrl .= '&_profileId=' . urlencode( $profileId );
+
+		$response = ThePlatform_API_HTTP::get( esc_url_raw( $publishUrl ), array( "timeout" => 120 ) );
+
+		$this->check_theplatform_proxy_response( $response, true );
+	}
+
+	/**
+	 * Publish an uploaded media asset using the 'Wordpress' profile
+	 * @return mixed JSON response or instance of WP_Error
+	 */
+	public function revoke_media() {
+		$this->check_nonce_and_permissions( $_POST['action'] );
+
+		if ( ! isset( $_POST['token]'] ) ) {
+			$tp_api = new ThePlatform_API();
+			$token  = $tp_api->mpx_signin();
+		} else {
+			$token = $_POST['token]'];
+		}
+
+		$profileId = $_POST['profile'];
+		$mediaId   = $_POST['mediaId'];
+
+		$publishUrl = TP_API_REVOKE_BASE_URL;
+		$publishUrl .= '&token=' . $token;
+		$publishUrl .= '&account=' . urlencode( $_POST['account'] );
+		$publishUrl .= '&_mediaId=' . urlencode( $mediaId );
+		$publishUrl .= '&_profileId=' . urlencode( $profileId );
+
+		$response = ThePlatform_API_HTTP::get( esc_url_raw( $publishUrl ), array( "timeout" => 120 ) );
+
+		$this->check_theplatform_proxy_response( $response, true );
+	}
 }
 
 new ThePlatform_Proxy();

@@ -31,7 +31,7 @@ class ThePlatform_URLs {
 	 */
 	function __construct( $preference_key ) {
 		$region = $this->getRegion( $preference_key );
-		if ( !in_array( $region, TP_REGIONS(), TRUE) ) {
+		if ( ! in_array( $region, TP_REGIONS(), true ) ) {
 			$region = 'us';
 		}
 		// Set the base URLs based on the region
@@ -101,7 +101,9 @@ class ThePlatform_URLs {
 
 	/**
 	 * Determine the region based the plugin's preferences
+	 *
 	 * @param  string $preference_key Our plugin's preference key
+	 *
 	 * @return string                 The current region, either us or eu
 	 */
 	private function getRegion( $preference_key ) {
@@ -113,6 +115,7 @@ class ThePlatform_URLs {
 		} else {
 			$region = 'us';
 		}
+
 		return $region;
 	}
 }
