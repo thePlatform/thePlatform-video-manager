@@ -228,7 +228,7 @@ class ThePlatform_Options {
 	 * Provide a description to the MPX Account Settings Section	 
 	 */
 	function section_mpx_account_desc() {
-		echo 'Set your MPX credentials and Account. If you do not have an account, please reach out to thePlatform.';
+		echo 'Set your MPX credentials and Account. If you do not have an account, please reach out to MediaAMP.';
 	}
 
 	/**

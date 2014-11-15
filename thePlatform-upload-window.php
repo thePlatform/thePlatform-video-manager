@@ -1,4 +1,4 @@
-<!-- thePlatform Video Manager Wordpress Plugin
+<!-- MediaAMP Video Manager Wordpress Plugin
 Copyright (C) 2013-2014  thePlatform for Media Inc.
 
 This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
     <head>
 		<meta charset="<?php bloginfo( 'charset' ); ?>" />
 
-		<title>thePlatform Video Library</title>
+		<title>MediaAMP Video Library</title>
 		
 		<?php wp_head(); ?>		
     </head>

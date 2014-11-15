@@ -111,7 +111,7 @@ wp_enqueue_style( 'wp-jquery-ui-dialog' );
 			<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
 				<div class="row">
 					<div class="navbar-header" style="margin-left: 15px">
-						<a class="navbar-brand" href="#"><img height="25px" width="25px" src="<?php echo esc_url( plugins_url( '/images/embed_button.png', __FILE__ ) ); ?>"> thePlatform</a>
+						<a class="navbar-brand" href="#"><img width="80px" height="30px"src="<?php echo esc_url( plugins_url( '/images/MediaAMP.png', __FILE__ ) ); ?>"></a>
 					</div>            
 					<form class="navbar-form navbar-left" role="search" onsubmit="return false;"><!--TODO: Add seach functionality on Enter -->
 						<div class="form-group">

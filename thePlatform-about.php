@@ -21,8 +21,8 @@
 <style>
 	
 </style>
-<p> thePlatform Video Manager Wordpress Plugin version <?php echo TP_PLUGIN_VERSION; ?><br>
-	Copyright (C) 2013-<?php echo date("Y"); ?> thePlatform for Media Inc.<br>
+<p> MediaAMP Video Manager Wordpress Plugin version <?php echo TP_PLUGIN_VERSION; ?><br>
+	Copyright (C) 2013-<?php echo date("Y"); ?> MediaAMP for Media Inc.<br>
 </p>
 
 <p>The latest version of the plugin can be found at our GitHub repository:
