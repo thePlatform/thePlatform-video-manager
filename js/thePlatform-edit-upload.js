@@ -353,9 +353,13 @@ var theplatform_edit = (function($) {
             };
 
             var upload_window = window.open(tp_edit_upload_local.ajaxurl + '?action=theplatform_upload&_wpnonce=' + tp_edit_upload_local.tp_nonce['theplatform_upload'], '_blank', 'menubar=no,location=no,resizable=no,scrollbars=no,status=no,width=700,height=180')
+            var filesArray = [];
 
+            for (var i = 0; i < files.length; i++) {
+                filesArray.push(files[i]);
+            };
             var uploaderData = {
-                files: files,
+                files: filesArray,
                 params: JSON.stringify(params),
                 custom_params: JSON.stringify(''),
                 profile: profile.val(),
