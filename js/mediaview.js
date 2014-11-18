@@ -200,7 +200,7 @@ jQuery( document ).ready( function() {
 		tpHelper.mediaId = jQuery( this ).data( 'id' );
 		tpHelper.selectedThumb = jQuery( this ).data( 'media' )['defaultThumbnailUrl'];
 		$pdk.controller.resetPlayer();
-		if ( tpHelper.currentRelease !== undefined ) {
+		if ( jQuery(this).data('release') !== undefined ) {
 			jQuery( '#modal-player-placeholder' ).hide();
 			jQuery( '.tpPlayer' ).css( 'visibility', 'visible' );
 			$pdk.controller.loadReleaseURL( "//link.theplatform.com/s/" + tpHelper.accountPid + "/" + tpHelper.currentRelease, true );

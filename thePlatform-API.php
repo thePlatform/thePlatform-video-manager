@@ -315,8 +315,11 @@ class ThePlatform_API {
 		$url .= '&byFieldName=' . $fields;
 		$url .= '&token=' . $token;
 
-		$response = ThePlatform_API_HTTP::get( $url );
+		if ( $this->get_mpx_account_id() ) {
+			$url .= '&account=' . $this->get_mpx_account_id();
+		}
 
+		$response = ThePlatform_API_HTTP::get( $url );
 
 		return theplatform_decode_json_from_server( $response, TRUE );
 	}

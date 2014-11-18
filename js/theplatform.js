@@ -398,16 +398,24 @@ jQuery( document ).ready( function() {
 
 		var upload_window = window.open( theplatform_local.ajaxurl + '?action=theplatform_upload&_wpnonce=' + theplatform_local.tp_nonce['theplatform_upload'], '_blank', 'menubar=no,location=no,resizable=no,scrollbars=no,status=no,width=700,height=180' )
 
-		 var uploaderData = {
-			files: files,
+	  	var filesArray = [];
+
+        for (var i = 0; i < files.length; i++) {
+            filesArray.push(files[i]);
+        };
+        var uploaderData = {
+            files: filesArray,
 			params: JSON.stringify( params ),
 			custom_params: JSON.stringify( custom_params ),
 			profile: profile.val(),
-			server: server.val()
+			server: server.val(),
+			source: 'theplatform_upload_data'
 		}
 
-		window.onmessage = function() {
-			upload_window.postMessage(uploaderData, '*');
+		window.onmessage = function(e) {	
+			if ( e.data == 'theplatform_uploader_ready' ) {
+				upload_window.postMessage(uploaderData, '*');	
+			}					
 		}		
 
 	} );
