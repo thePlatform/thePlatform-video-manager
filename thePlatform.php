@@ -78,7 +78,7 @@ class ThePlatform_Plugin {
 			add_action( 'wp_ajax_get_videos', array( $this->tp_api, 'get_videos' ) );
 			add_action( 'wp_ajax_set_thumbnail', array( $this, 'set_thumbnail_ajax' ) );
 		}
-		add_shortcode( 'theplatform', array( $this, 'shortcode' ) );
+		add_shortcode( 'mediaamp', array( $this, 'shortcode' ) );
 	}
 
 	/**
@@ -395,7 +395,7 @@ class ThePlatform_Plugin {
 			}
 			$output = apply_filters( 'tp_rss_embed_code', $output );
 		}
-
+        var_dump($output);
 		return $output;
 	}
 

@@ -1,5 +1,5 @@
-/* thePlatform Video Manager Wordpress Plugin
- Copyright (C) 2013-2014  thePlatform for Media Inc.
+/* MediaAMP Video Manager Wordpress Plugin
+ Copyright (C) 2013-2014 MediaAMP for Media Inc.
  
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -311,7 +311,7 @@ var objSize = function( obj ) {
 jQuery( document ).ready( function() {
 
 	// Hide PID option fields in the Settings page
-	if ( document.title.indexOf( 'thePlatform Plugin Settings' ) != -1 ) {
+	if ( document.title.indexOf( 'MediaAMP Plugin Settings' ) != -1 ) {
 		jQuery( '#mpx_account_pid' ).parent().parent().hide();
 		jQuery( '#default_player_pid' ).parent().parent().hide();
 

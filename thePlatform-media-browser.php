@@ -101,7 +101,7 @@ wp_enqueue_style( 'wp-jquery-ui-dialog' );
 		</script>
 		
 		<script id="shortcode-template" type="text/x-handlebars-template">
-			[theplatform account="{{account}}" media="{{release}}" player="{{player}}"]
+			[mediaamp account="{{account}}" media="{{release}}" player="{{player}}"]
 		</script>			
 		
 		<?php wp_head(); ?>
