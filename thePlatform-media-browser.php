@@ -16,6 +16,10 @@
   with this program; if not, write to the Free Software Foundation, Inc.,
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /*
  * Load scripts and styles 
  */
@@ -38,9 +42,6 @@ function theplatform_media_clear_styles_and_scripts() {
 	wp_enqueue_style( 'tp_browser_css' );
 }
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
 $tp_viewer_cap = apply_filters( TP_VIEWER_CAP, TP_VIEWER_DEFAULT_CAP );
 $tp_editor_cap = apply_filters( TP_EDITOR_CAP, TP_EDITOR_DEFAULT_CAP );
 

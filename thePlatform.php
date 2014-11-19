@@ -70,7 +70,7 @@ class ThePlatform_Plugin {
 
 		if ( is_admin() ) {
 			add_action( 'admin_menu', array( $this, 'add_admin_page' ) );
-			add_action( 'admin_init', array( $this, 'register_scripts' ) );
+			add_action( 'wp_enqueue_scripts', array( $this, 'register_scripts' ) );
 			add_action( 'wp_ajax_initialize_media_upload', array( $this->tp_api, 'initialize_media_upload' ) );
 			add_action( 'wp_ajax_theplatform_media', array( $this, 'embed' ) );
 			add_action( 'wp_ajax_theplatform_upload', array( $this, 'upload' ) );
@@ -81,7 +81,7 @@ class ThePlatform_Plugin {
 			add_action( 'wp_ajax_get_video_by_id', array( $this->tp_api, 'get_video_by_id' ) );
 			add_action( 'wp_ajax_get_profile_results', array( $this->tp_api, 'get_profile_results' ) );
 			add_action( 'wp_ajax_set_thumbnail', array( $this, 'set_thumbnail_ajax' ) );
-			add_action( 'admin_init', array( $this, 'theplatform_buttonhooks' ) );
+			add_action( 'admin_init', array( $this, 'theplatform_tinymce_button' ) );
 			add_action( 'media_buttons', array( $this, 'theplatform_media_button' ), 999 );
 		}
 		add_shortcode( 'theplatform', array( $this, 'shortcode' ) );
@@ -504,7 +504,7 @@ class ThePlatform_Plugin {
 	/**
 	 * TinyMCE filter hooks to add a new button
 	 */
-	function theplatform_buttonhooks() {
+	function theplatform_tinymce_button() {
 		if ( ! isset( $this->preferences ) ) {
 			$this->preferences = get_option( TP_PREFERENCES_OPTIONS_KEY, array() );
 		}
