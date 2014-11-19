@@ -288,8 +288,10 @@ var theplatform_edit = (function($) {
                 method: 'post',
                 success: function(response) {
                     UI.onSuccess(response, me)
-                    $('#tp-edit-dialog').data('refresh', 'true');
-                    theplatform_browser.updateMediaObject(tpHelper.mediaId);
+                    if (response.success == true) {
+                        $('#tp-edit-dialog').data('refresh', 'true');
+                        theplatform_browser.updateMediaObject(tpHelper.mediaId);    
+                    }                    
                 },
                 complete: function(response) {
                     UI.onComplete(me, "Submit")

@@ -202,6 +202,10 @@ class ThePlatform_API {
 
 		$xmlString = "<?xml version='1.0'?>" . $response;
 
+		if ( empty( $response ) ) {
+			return false;
+		}
+
 		$formats = simplexml_load_string( $xmlString );
 
 		foreach ( $formats->format as $format ) {
@@ -318,7 +322,12 @@ class ThePlatform_API {
 
 		$response = ThePlatform_API_HTTP::post( $url, $data, true );
 
-		return theplatform_decode_json_from_server( $response );
+		$data = theplatform_decode_json_from_server( $response );
+		if ( array_key_exists( 'success', $data ) && $data['success'] == false ) {
+			wp_send_json( $data );
+		}
+
+		return $data;
 	}
 
 	/**
@@ -344,8 +353,9 @@ class ThePlatform_API {
 
 		$data = theplatform_decode_json_from_server( $response );
 		
-		if ( array_key_exists( 'success', $data ) && $data['success'] == false )
+		if ( array_key_exists( 'success', $data ) && $data['success'] == false ) {
 			return array( "entries" => [] );
+		}
 
 		return $data;
 	}
@@ -367,6 +377,10 @@ class ThePlatform_API {
 		$response = ThePlatform_API_HTTP::get( $url );
 
 		$data = theplatform_decode_json_from_server( $response );
+
+		if ( array_key_exists( 'success', $data ) && $data['success'] == false ) {
+			return false;
+		}
 
 		return $data['getUploadUrlsResponse'][0];
 	}
@@ -409,22 +423,25 @@ class ThePlatform_API {
 		// Get the Format based on the file MIME type
 		$format = $this->get_format( $args['filetype'], $extension );
 
+		if ( !$format ) {
+			wp_send_json_error('Unable to get Formats.xml from MPX');
+		}
 		// Get the upload url based on the server id
 		// If no server id is supplied, get the default server for the Format
 		$upload_server_id = $args['server_id'];
 
 		if ( $upload_server_id === 'DEFAULT_SERVER' ) {
-			$upload_server_id = $this->get_default_upload_server( $format['title'] );
+			$upload_server_id = $this->get_default_upload_server( $format['title'] );			
 		}
 
-		if ( false === $upload_server_id ) {
+		if ( !$upload_server_id ) {
 			wp_send_json_error( "Unable to determine MPX Server ID, please check your account configuration" );
 		}
 
 		$upload_server_base_url = $this->get_upload_urls( $upload_server_id, $token );
 
-		if ( is_wp_error( $upload_server_base_url ) ) {
-			wp_send_json_error( $upload_server_base_url );
+		if ( ! $upload_server_base_url ) {
+			wp_send_json_error( "Can't determine the mpx upload endpoint." );
 		}
 
 		// Create a placeholder media to store the new file in
@@ -451,6 +468,11 @@ class ThePlatform_API {
 	 */
 	function get_default_upload_server( $formatTitle ) {
 		$accountSettings  = $this->get_account_settings();
+
+		if ( !$accountSettings ) {
+			return false;
+		}
+
 		$defaultServers   = $accountSettings['entries'][0]['defaultServers'];
 		$defaultServerURN = "urn:theplatform:format:default";
 
@@ -561,6 +583,10 @@ class ThePlatform_API {
 
 		$data = theplatform_decode_json_from_server( $response );
 
+		if ( array_key_exists( 'success', $data ) && $data['success'] == false ) {
+			wp_send_json( $data );
+		}
+
 		wp_send_json_success( $this->transform_user_id( $data['entries'][0] ) );
 	}
 
@@ -615,8 +641,9 @@ class ThePlatform_API {
 
 		$data = theplatform_decode_json_from_server( $response );
 
-		if ( array_key_exists( 'success', $data ) && $data['success'] == false )
+		if ( array_key_exists( 'success', $data ) && $data['success'] == false ) {
 			return array();
+		}
 
 		$ret = array_filter( $data['entries'], array( $this, "filter_disabled_players" ) );
 
@@ -661,8 +688,9 @@ class ThePlatform_API {
 
 		$data = theplatform_decode_json_from_server( $response );
 
-		if ( array_key_exists( 'success', $data ) && $data['success'] == false )
+		if ( array_key_exists( 'success', $data ) && $data['success'] == false ) {
 			return array();
+		}
 
 		return $data['entries'];
 	}
@@ -695,8 +723,9 @@ class ThePlatform_API {
 		$response = ThePlatform_API_HTTP::get( $url );
 		$data     = theplatform_decode_json_from_server( $response );
 
-		if ( array_key_exists( 'success', $data ) && $data['success'] == false )
+		if ( array_key_exists( 'success', $data ) && $data['success'] == false ) {
 			return array();
+		}
 
 		return $data['entries'];
 	}
@@ -717,6 +746,9 @@ class ThePlatform_API {
 		$response = ThePlatform_API_HTTP::get( $url );
 		$data     = theplatform_decode_json_from_server( $response, false );
 
+		if ( is_null( $data ) || ( array_key_exists( 'success', $data ) && $data['success'] == false ) ) {
+			return false;
+		}
 
 		return $data;
 	}
@@ -752,8 +784,9 @@ class ThePlatform_API {
 
 		$data = theplatform_decode_json_from_server( $response );
 
-		if ( array_key_exists( 'success', $data ) && $data['success'] == false )
+		if ( array_key_exists( 'success', $data ) && $data['success'] == false ) {
 			return array();
+		}
 
 		return $data['entries'];
 	}
@@ -801,8 +834,9 @@ class ThePlatform_API {
 
 		$data = theplatform_decode_json_from_server( $response );
 
-		if ( array_key_exists( 'success', $data ) && $data['success'] == false )
+		if ( array_key_exists( 'success', $data ) && $data['success'] == false ) {
 			return array();
+		}
 
 		return $data['entries'];
 	}

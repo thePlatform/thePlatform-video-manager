@@ -68,7 +68,7 @@ TheplatformUploader = ( function() {
 				
 				me.startUpload();
 			} else {
-				me.error( "Unable to upload media asset at this time. Please try again later." + response.data );
+				me.error( "Unable to upload media asset at this time. Please try again later. " + response.data );
 			}
 		});		
 	};
