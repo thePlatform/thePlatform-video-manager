@@ -288,7 +288,7 @@ class ThePlatform_API {
 		$custom_fields = json_decode( stripslashes( $args['custom_fields'] ), true );
 
 		if ( empty( $fields ) ) {
-			wp_die( 'No fields are set, unable to upload Media' );
+			wp_send_json_error( 'No fields are set, unable to upload Media' );
 		}
 
 		// Create the Custom Fields namespace and values arrays
@@ -515,7 +515,7 @@ class ThePlatform_API {
 		if ( $this->get_mpx_account_id() ) {
 			$url .= '&account=' . $this->get_mpx_account_id();
 		} else {
-			wp_die( '<p>MPX Account is not set, unable to retrieve videos.</p>' );
+			wp_send_json_error( 'MPX Account is not set, unable to retrieve videos.' );
 		}
 
 		if ( ! empty( $_POST['query'] ) ) {
@@ -841,7 +841,7 @@ class ThePlatform_API {
 		if ( $username === "mpx/" || $username === "" || $password === "" ) {
 			return false;
 		}	
-		
+
 		$hash = base64_encode( $username . ':' . $password );
 
 		$response = ThePlatform_API_HTTP::get( TP_API_SIGNIN_URL, array( 'headers' => array( 'Authorization' => 'Basic ' . $hash ) ) );
