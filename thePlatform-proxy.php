@@ -69,10 +69,10 @@ class ThePlatform_Proxy {
 
 		// This AJAX call should not return a value, in this case we send a json error with the body to the UI
 		if ( ! $returnsValue && ! empty( $responseBody ) ) {
-			wp_send_json_error( theplatform_decode_json_from_server( $response, true, false ) );
+			wp_send_json_error( theplatform_decode_json_from_server( $response, false ) );
 		}
 
-		$parsedResponse = theplatform_decode_json_from_server( $response, true, false );
+		$parsedResponse = theplatform_decode_json_from_server( $response, false );
 
 		if ( isset( $this->cookie ) ) {
 			$parsedResponse['cookie'] = array( 'name' => $this->cookie->name, 'value' => $this->cookie->value );

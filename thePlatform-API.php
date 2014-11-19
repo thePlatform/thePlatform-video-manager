@@ -245,7 +245,10 @@ class ThePlatform_API {
 		if ( $forceRefresh == true || $token == false ) {
 			$response = ThePlatform_API_HTTP::get( TP_API_SIGNIN_URL, $this->basicAuthHeader() );
 
-			$payload = theplatform_decode_json_from_server( $response, true );
+			if ( is_wp_error( $response ) )
+				return false;
+
+			$payload = theplatform_decode_json_from_server( $response );
 			$token   = $payload['signInResponse']['token'];
 
 			if ( $updateOptions == false ) {
@@ -315,7 +318,7 @@ class ThePlatform_API {
 
 		$response = ThePlatform_API_HTTP::post( $url, $data, true );
 
-		return theplatform_decode_json_from_server( $response, true );
+		return theplatform_decode_json_from_server( $response );
 	}
 
 	/**
@@ -339,8 +342,12 @@ class ThePlatform_API {
 		
 		$response = ThePlatform_API_HTTP::get( $url );
 
+		$data = theplatform_decode_json_from_server( $response );
+		
+		if ( array_key_exists( 'success', $data ) && $data['success'] == false )
+			return array( "entries" => [] );
 
-		return theplatform_decode_json_from_server( $response, true );
+		return $data;
 	}
 
 	/**
@@ -359,7 +366,7 @@ class ThePlatform_API {
 
 		$response = ThePlatform_API_HTTP::get( $url );
 
-		$data = theplatform_decode_json_from_server( $response, true );
+		$data = theplatform_decode_json_from_server( $response );
 
 		return $data['getUploadUrlsResponse'][0];
 	}
@@ -477,7 +484,7 @@ class ThePlatform_API {
 
 		$response = ThePlatform_API_HTTP::get( $url );
 
-		$payload    = theplatform_decode_json_from_server( $response, true );
+		$payload    = theplatform_decode_json_from_server( $response );
 		$releasePID = $payload['entries'][0]['plrelease$pid'];
 
 
@@ -517,7 +524,7 @@ class ThePlatform_API {
 
 		$response = ThePlatform_API_HTTP::get( $url, array( "timeout" => 120 ) );
 
-		$decodedResponse = theplatform_decode_json_from_server( $response, true );
+		$decodedResponse = theplatform_decode_json_from_server( $response );
 
 		// Find the userID response and transform it to a human readable value.
 		foreach ( $decodedResponse['entries'] as $entryKey => $entry ) {
@@ -552,7 +559,7 @@ class ThePlatform_API {
 
 		$response = ThePlatform_API_HTTP::get( $url );
 
-		$data = theplatform_decode_json_from_server( $response, true );
+		$data = theplatform_decode_json_from_server( $response );
 
 		wp_send_json_success( $this->transform_user_id( $data['entries'][0] ) );
 	}
@@ -606,7 +613,10 @@ class ThePlatform_API {
 
 		$response = ThePlatform_API_HTTP::get( $url );
 
-		$data = theplatform_decode_json_from_server( $response, true );
+		$data = theplatform_decode_json_from_server( $response );
+
+		if ( array_key_exists( 'success', $data ) && $data['success'] == false )
+			return array();
 
 		$ret = array_filter( $data['entries'], array( $this, "filter_disabled_players" ) );
 
@@ -649,8 +659,10 @@ class ThePlatform_API {
 
 		$response = ThePlatform_API_HTTP::get( $url );
 
-		$data = theplatform_decode_json_from_server( $response, true );
+		$data = theplatform_decode_json_from_server( $response );
 
+		if ( array_key_exists( 'success', $data ) && $data['success'] == false )
+			return array();
 
 		return $data['entries'];
 	}
@@ -681,8 +693,10 @@ class ThePlatform_API {
 		}
 
 		$response = ThePlatform_API_HTTP::get( $url );
-		$data     = theplatform_decode_json_from_server( $response, true );
+		$data     = theplatform_decode_json_from_server( $response );
 
+		if ( array_key_exists( 'success', $data ) && $data['success'] == false )
+			return array();
 
 		return $data['entries'];
 	}
@@ -701,7 +715,7 @@ class ThePlatform_API {
 		}
 
 		$response = ThePlatform_API_HTTP::get( $url );
-		$data     = theplatform_decode_json_from_server( $response, true, false );
+		$data     = theplatform_decode_json_from_server( $response, false );
 
 
 		return $data;
@@ -736,7 +750,10 @@ class ThePlatform_API {
 			wp_send_json( wp_remote_retrieve_body( $response ) );
 		}
 
-		$data = theplatform_decode_json_from_server( $response, true );
+		$data = theplatform_decode_json_from_server( $response );
+
+		if ( array_key_exists( 'success', $data ) && $data['success'] == false )
+			return array();
 
 		return $data['entries'];
 	}
@@ -754,7 +771,7 @@ class ThePlatform_API {
 
 		$response = ThePlatform_API_HTTP::get( $url );
 
-		$data = theplatform_decode_json_from_server( $response, true );
+		$data = theplatform_decode_json_from_server( $response );
 
 
 		return $data['authorizeResponse']['accounts'];
@@ -782,8 +799,10 @@ class ThePlatform_API {
 
 		$response = ThePlatform_API_HTTP::get( $url );
 
-		$data = theplatform_decode_json_from_server( $response, true );
+		$data = theplatform_decode_json_from_server( $response );
 
+		if ( array_key_exists( 'success', $data ) && $data['success'] == false )
+			return array();
 
 		return $data['entries'];
 	}
@@ -804,7 +823,7 @@ class ThePlatform_API {
 
 		$response = ThePlatform_API_HTTP::get( $url );
 
-		$data = theplatform_decode_json_from_server( $response, true );
+		$data = theplatform_decode_json_from_server( $response );
 
 		wp_send_json_success( $data['entries'] );
 	}
@@ -821,18 +840,18 @@ class ThePlatform_API {
 
 		if ( $username === "mpx/" || $username === "" || $password === "" ) {
 			return false;
-		}
-
+		}	
+		
 		$hash = base64_encode( $username . ':' . $password );
 
 		$response = ThePlatform_API_HTTP::get( TP_API_SIGNIN_URL, array( 'headers' => array( 'Authorization' => 'Basic ' . $hash ) ) );
 
-		$payload = theplatform_decode_json_from_server( $response, true, false );
+		$payload = theplatform_decode_json_from_server( $response, false );
 
-		if ( is_null( $response ) ) {
+		if ( is_null( $response ) || is_wp_error( $response ) ) {
 			return false;
 		}
-
+		
 		if ( ! array_key_exists( 'isException', $payload ) ) {
 			update_option( TP_TOKEN_OPTIONS_KEY, $payload['signInResponse']['token'] );
 

@@ -189,9 +189,9 @@ function theplatform_verify_account_settings() {
 
 	$response = ThePlatform_API_HTTP::get( TP_API_SIGNIN_URL, array( 'headers' => array( 'Authorization' => 'Basic ' . $hash ) ) );
 
-	$payload = theplatform_decode_json_from_server( $response, true );
+	$payload = theplatform_decode_json_from_server( $response );
 
-	if ( ! array_key_exists( 'isException', $payload ) ) {
+	if ( ! is_wp_error( $response ) || ! array_key_exists( 'isException', $payload ) ) {
 		$account_is_verified = true;
 		wp_send_json_success( "Account Verified" );
 	}
@@ -203,16 +203,21 @@ function theplatform_verify_account_settings() {
 /**
  *    Catch JSON decode errors
  */
-function theplatform_decode_json_from_server( $input, $assoc, $die_on_error = true ) {
+function theplatform_decode_json_from_server( $input, $validateResponse = true ) {
 
-	$response = json_decode( wp_remote_retrieve_body( $input ), $assoc );
+	$response = json_decode( wp_remote_retrieve_body( $input ), true );
 
-	if ( false === $die_on_error ) {
+	if ( false === $validateResponse ) {
 		return $response;
 	}
 
+	$errorResponse = array(
+		'success' => false,
+		'data' => 'There was an error getting data from MPX, if the error persists please contact thePlatform. '
+	);
+
 	if ( is_null( $response ) && wp_remote_retrieve_response_code( $input ) != "200" ) {
-		wp_die( '<p>There was an error getting data from MPX, if the error persists please contact thePlatform.</p>' );
+		return $errorResponse;
 	}
 
 	if ( is_null( $response ) && wp_remote_retrieve_response_code( $input ) == "200" ) {
@@ -220,11 +225,13 @@ function theplatform_decode_json_from_server( $input, $assoc, $die_on_error = tr
 	}
 
 	if ( is_wp_error( $response ) ) {
-		wp_die( '<p>There was an error getting data from MPX, if the error persists please contact thePlatform. ' . esc_html( $response->get_error_message() ) . '</p>' );
+		$errorResponse['data'] .= $response->get_error_message();
+		return $errorResponse;
 	}
 
 	if ( is_array( $response ) && array_key_exists( 'isException', $response ) ) {
-		wp_die( '<p>There was an error getting data from MPX, if the error persists please contact thePlatform. ' . esc_html( $response['description'] ) . '</p>' );
+		$errorResponse['data'] .= $response['description'];
+		return $errorResponse;
 	}
 
 	return $response;
