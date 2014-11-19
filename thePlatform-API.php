@@ -546,14 +546,18 @@ class ThePlatform_API {
 
 		$response = ThePlatform_API_HTTP::get( $url, array( "timeout" => 120 ) );
 
-		$decodedResponse = theplatform_decode_json_from_server( $response );
+		$data = theplatform_decode_json_from_server( $response );
 
-		// Find the userID response and transform it to a human readable value.
-		foreach ( $decodedResponse['entries'] as $entryKey => $entry ) {
-			$decodedResponse['entries'][ $entryKey ] = $this->transform_user_id( $entry );
+		if ( array_key_exists( 'success', $data ) && $data['success'] == false ) {
+			wp_send_json( $data );
 		}
 
-		wp_send_json( json_encode( $decodedResponse ) );
+		// Find the userID response and transform it to a human readable value.
+		foreach ( $data['entries'] as $entryKey => $entry ) {
+			$data['entries'][ $entryKey ] = $this->transform_user_id( $entry );
+		}
+
+		wp_send_json_success( $data );
 	}
 
 	/**
@@ -776,7 +780,6 @@ class ThePlatform_API {
 		}
 
 		$response = ThePlatform_API_HTTP::get( $url );
-
 
 		if ( ! $returnResponse ) {
 			wp_send_json( wp_remote_retrieve_body( $response ) );

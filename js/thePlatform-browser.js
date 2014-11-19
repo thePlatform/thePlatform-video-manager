@@ -366,12 +366,7 @@ var theplatform_browser = (function($) {
             $('#load-overlay').show(); // show loading before we call getVideos
             var theRange = parseInt(tpHelper.feedEndRange);
             theRange = (theRange + 1) + '-' + (theRange + MAX_RESULTS);
-            API.getVideos(theRange, function(resp) {
-                if (resp['isException']) {
-                    $('#load-overlay').hide();
-                    //what do we do on error?
-                }
-
+            API.getVideos(theRange, function(resp) {                
                 tpHelper.feedResultCount = resp['entryCount'];
                 tpHelper.feedStartRange = resp['startIndex'];
                 tpHelper.feedEndRange = 0;
@@ -380,13 +375,15 @@ var theplatform_browser = (function($) {
                 else
                     UI.notifyUser('info', 'No Results');
 
-                var entries = resp['entries'];
-                for (var i = 0; i < entries.length; i++)
+                var entries = resp['entries']; 
+               
+                for (var i = 0; i < entries.length; i++) {
                     UI.addMediaObject(entries[i]);
+                }
 
                 $('#load-overlay').hide();
                 Holder.run();
-                callback(parseInt(tpHelper.feedResultCount) == MAX_RESULTS); //True if there are still more results.
+                callback(parseInt(tpHelper.feedResultCount) == MAX_RESULTS); //True if there are still more results.              
             });
         },
         onMouseScroll: function(ev) {
@@ -482,12 +479,12 @@ var theplatform_browser = (function($) {
             };
 
             $.post(tp_browser_local.ajaxurl, data, function(resp) {
-                viewLoading = false;
-                resp = JSON.parse(resp);
-                if (resp.isException) {
-                    UI.notifyUser('danger', resp.description);
+                viewLoading = false;                
+                if (!resp.success) {
+                    UI.notifyUser('danger', resp.data);
+                    $('#load-overlay').hide();
                 } else {
-                    callback(resp);
+                    callback(resp.data);
                 }
             });
         },
