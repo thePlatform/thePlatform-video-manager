@@ -562,7 +562,10 @@ var theplatform_browser = (function($) {
     };
 
     $(document).ready(function() {
-        $pdk.initialize();
+        if (!_.isUndefined(window.$pdk)) {
+            $pdk.initialize();    
+        }
+        
         $('#load-overlay').hide();
 
         $('#btn-embed').click(Events.onEmbed);
