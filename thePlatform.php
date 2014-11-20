@@ -70,7 +70,7 @@ class ThePlatform_Plugin {
 
 		if ( is_admin() ) {
 			add_action( 'admin_menu', array( $this, 'add_admin_page' ) );
-			add_action( 'wp_enqueue_scripts', array( $this, 'register_scripts' ) );
+			add_action( 'admin_init', array( $this, 'register_scripts' ) );
 			add_action( 'wp_ajax_initialize_media_upload', array( $this->tp_api, 'initialize_media_upload' ) );
 			add_action( 'wp_ajax_theplatform_media', array( $this, 'embed' ) );
 			add_action( 'wp_ajax_theplatform_upload', array( $this, 'upload' ) );
