@@ -189,15 +189,13 @@ function theplatform_verify_account_settings() {
 
 	$response = ThePlatform_API_HTTP::get( TP_API_SIGNIN_URL, array( 'headers' => array( 'Authorization' => 'Basic ' . $hash ) ) );
 
-	$payload = theplatform_decode_json_from_server( $response );
+	$data = theplatform_decode_json_from_server( $response );
 
-	if ( ! is_wp_error( $response ) || ! array_key_exists( 'isException', $payload ) ) {
-		$account_is_verified = true;
-		wp_send_json_success( "Account Verified" );
+	if ( array_key_exists( 'success', $data ) && $data['success'] == false ) {
+		wp_send_json_error( "Unable to verify account" );
 	}
 
-	$account_is_verified = false;
-	wp_send_json_error( "Unable to verify account" );
+	wp_send_json_success( "Account Verified" );
 }
 
 /**
