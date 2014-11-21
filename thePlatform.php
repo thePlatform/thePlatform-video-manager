@@ -1,5 +1,4 @@
 <?php
-
 /*
   Plugin Name: thePlatform Video Manager
   Plugin URI: http://theplatform.com/
