@@ -28,9 +28,11 @@ var mpxHelper = {
 		};
 
 		jQuery.post( mpxhelper_local.ajaxurl, data, function( resp ) {
+			viewLoading = false;
 			resp = JSON.parse( resp );
-			if ( resp.isException )
-				displayMessage( resp.description );
+			if ( resp.isException ) {
+				displayMessage( resp.description );				
+			}				
 			else {
 				callback( resp );
 			}

@@ -4,7 +4,7 @@
   Plugin Name: thePlatform Video Manager
   Plugin URI: http://theplatform.com/
   Description: Manage video assets hosted in thePlatform MPX from within WordPress.
-  Version: 1.2.2
+  Version: 1.3.2
   Author: thePlatform for Media, Inc.
   Author URI: http://theplatform.com/
   License: GPL2
@@ -51,11 +51,11 @@ class ThePlatform_Plugin {
 	}
 
 	function __construct() {
-		require_once(dirname( __FILE__ ) . '/thePlatform-constants.php');
-		require_once(dirname( __FILE__ ) . '/thePlatform-URLs.php');
-		require_once(dirname( __FILE__ ) . '/thePlatform-API.php');
-		require_once(dirname( __FILE__ ) . '/thePlatform-helper.php');
-		require_once(dirname( __FILE__ ) . '/thePlatform-proxy.php');
+		require_once( dirname( __FILE__ ) . '/thePlatform-constants.php' );
+		require_once( dirname( __FILE__ ) . '/thePlatform-URLs.php' );
+		require_once( dirname( __FILE__ ) . '/thePlatform-API.php' );
+		require_once( dirname( __FILE__ ) . '/thePlatform-helper.php' );	
+		require_once( dirname( __FILE__ ) . '/thePlatform-proxy.php' );	
 				
 		$this->tp_api = new ThePlatform_API;
 		
@@ -77,6 +77,8 @@ class ThePlatform_Plugin {
 			add_action( 'wp_ajax_get_categories', array( $this->tp_api, 'get_categories' ) );
 			add_action( 'wp_ajax_get_videos', array( $this->tp_api, 'get_videos' ) );
 			add_action( 'wp_ajax_set_thumbnail', array( $this, 'set_thumbnail_ajax' ) );
+			add_action( 'admin_init', array( $this, 'theplatform_buttonhooks' ) );
+			// add_action( 'media_buttons', array( $this, 'theplatform_media_button' ), 999 );			
 		}
 		add_shortcode( 'theplatform', array( $this, 'shortcode' ) );
 	}
@@ -85,18 +87,19 @@ class ThePlatform_Plugin {
 	 * Registers javascripts and css used throughout the plugin	 
 	 */
 	function register_scripts() {
-		wp_register_script( 'pdk', "//pdk.theplatform.com/pdk/tpPdk.js" );
-		wp_register_script( 'holder', plugins_url( '/js/holder.js', __FILE__ ) );
-		wp_register_script( 'handlebars', plugins_url( '/js/handlebars-v1.3.0.js', __FILE__ ) );
-		wp_register_script( 'bootstrap_js', plugins_url( '/js/bootstrap.min.js', __FILE__ ), array( 'jquery' ) );
-		wp_register_script( 'theplatform_js', plugins_url( '/js/theplatform.js', __FILE__ ), array( 'jquery' ) );
-		wp_register_script( 'infiniscroll_js', plugins_url( '/js/jquery.infinitescroll.min.js', __FILE__ ), array( 'jquery' ) );
-		wp_register_script( 'mpxhelper_js', plugins_url( '/js/mpxHelper.js', __FILE__ ), array( 'jquery' ) );
-		wp_register_script( 'theplatform_uploader_js', plugins_url( '/js/theplatform-uploader.js', __FILE__ ), array( 'jquery', 'theplatform_js' ) );
-		wp_register_script( 'mediaview_js', plugins_url( '/js/mediaview.js', __FILE__ ), array( 'jquery', 'jquery-ui-dialog', 'handlebars', 'holder', 'mpxhelper_js', 'theplatform_js', 'pdk', 'infiniscroll_js', 'bootstrap_js' ) );
-		wp_register_script( 'field_views', plugins_url( '/js/fieldViews.js', __FILE__ ), array( 'jquery' ) );
+		wp_register_script( 'tp_pdk_js', "//pdk.theplatform.com/pdk/tpPdk.js" );
+		wp_register_script( 'tp_holder_js', plugins_url( '/js/holder.js', __FILE__ ) );
+		wp_register_script( 'tp_handlebars_js', plugins_url( '/js/handlebars-v1.3.0.js', __FILE__ ) );
+		wp_register_script( 'tp_bootstrap_js', plugins_url( '/js/bootstrap.min.js', __FILE__ ), array( 'jquery' ) );
+		wp_register_script( 'tp_theplatform_js', plugins_url( '/js/theplatform.js', __FILE__ ), array( 'jquery' ) );
+		wp_register_script( 'tp_infiniscroll_js', plugins_url( '/js/jquery.infinitescroll.min.js', __FILE__ ), array( 'jquery' ) );
+		wp_register_script( 'tp_mpxhelper_js', plugins_url( '/js/mpxHelper.js', __FILE__ ), array( 'jquery' ) );
+		wp_register_script( 'tp_uploader_js', plugins_url( '/js/theplatform-uploader.js', __FILE__ ), array( 'jquery', 'tp_theplatform_js' ) );
+		wp_register_script( 'tp_mediaview_js', plugins_url( '/js/mediaview.js', __FILE__ ), array( 'jquery', 'jquery-ui-dialog', 'tp_handlebars_js', 'tp_holder_js', 'tp_mpxhelper_js', 'tp_theplatform_js', 'tp_pdk_js', 'tp_infiniscroll_js', 'tp_bootstrap_js' ) );
+		wp_register_script( 'tp_field_views_js', plugins_url( '/js/fieldViews.js', __FILE__ ), array( 'jquery' ) );
+		wp_register_script( 'tp_nprogress_js', plugins_url( '/js/nprogress.js', __FILE__ ) );
 
-		wp_localize_script( 'theplatform_js', 'theplatform_local', array(
+		wp_localize_script( 'tp_theplatform_js', 'theplatform_local', array(
 			'ajaxurl' => admin_url( 'admin-ajax.php' ),
 			'plugin_base_url' => plugins_url( 'images/', __FILE__ ),
 			'tp_nonce' => array( 				
@@ -107,18 +110,20 @@ class ThePlatform_Plugin {
 			)
 		) );		
 
-		wp_localize_script( 'theplatform_uploader_js', 'theplatform_uploader_local', array(
+		wp_localize_script( 'tp_uploader_js', 'theplatform_uploader_local', array(
 			'ajaxurl' => admin_url( 'admin-ajax.php' ),			
 			'tp_nonce' => array( 				
 				'initialize_media_upload' => wp_create_nonce( 'theplatform-ajax-nonce-initialize_media_upload' ),
-				'publishMedia' => wp_create_nonce( 'theplatform-ajax-nonce-publishMedia' ),
-				'uploadStatus' => wp_create_nonce( 'theplatform-ajax-nonce-uploadStatus' ),
-				'cancelUpload' => wp_create_nonce( 'theplatform-ajax-nonce-cancelUpload' ),
-				'startUpload' => wp_create_nonce( 'theplatform-ajax-nonce-startUpload' ),
+				'start_upload' => wp_create_nonce( 'theplatform-ajax-nonce-start_upload' ),
+				'upload_status' => wp_create_nonce( 'theplatform-ajax-nonce-upload_status' ),
+				'upload_fragment' => wp_create_nonce( 'theplatform-ajax-nonce-upload_fragment' ),
+				'finish_upload' => wp_create_nonce( 'theplatform-ajax-nonce-finish_upload' ),
+				'cancel_upload' => wp_create_nonce( 'theplatform-ajax-nonce-cancel_upload' ),
+				'publish_media' => wp_create_nonce( 'theplatform-ajax-nonce-publish_media' )
 			)
 		) );	
 
-		wp_localize_script( 'mpxhelper_js', 'mpxhelper_local', array(
+		wp_localize_script( 'tp_mpxhelper_js', 'mpxhelper_local', array(
 			'ajaxurl' => admin_url( 'admin-ajax.php' ),			
 			'tp_nonce' => array( 				
 				'get_videos' => wp_create_nonce( 'theplatform-ajax-nonce-get_videos' ),
@@ -126,16 +131,17 @@ class ThePlatform_Plugin {
 			)
 		) );	
 
-		wp_localize_script( 'mediaview_js', 'mediaview_local', array(
+		wp_localize_script( 'tp_mediaview_js', 'mediaview_local', array(
 			'ajaxurl' => admin_url( 'admin-ajax.php' ),			
 			'tp_nonce' => array( 				
 				'set_thumbnail' => wp_create_nonce( 'theplatform-ajax-nonce-set_thumbnail' )
 			)
 		) );		
 
-		wp_register_style( 'theplatform_css', plugins_url( '/css/thePlatform.css', __FILE__ ) );
-		wp_register_style( 'bootstrap_tp_css', plugins_url( '/css/bootstrap_tp.min.css', __FILE__ ) );
-		wp_register_style( 'field_views', plugins_url( '/css/fieldViews.css', __FILE__ ) );
+		wp_register_style( 'tp_theplatform_css', plugins_url( '/css/thePlatform.css', __FILE__ ) );
+		wp_register_style( 'tp_bootstrap_css', plugins_url( '/css/bootstrap_tp.min.css', __FILE__ ) );
+		wp_register_style( 'tp_field_views_css', plugins_url( '/css/fieldViews.css', __FILE__ ) );
+		wp_register_style( 'tp_nprogress_css', plugins_url( '/css/nprogress.css', __FILE__ ) );
 	}
 
 	/**
@@ -157,6 +163,7 @@ class ThePlatform_Plugin {
 	 * Calls the plugin's options page template	 
 	 */
 	function admin_page() {
+		theplatform_check_plugin_update();
 		require_once(dirname( __FILE__ ) . '/thePlatform-options.php' );
 	}
 
@@ -164,6 +171,7 @@ class ThePlatform_Plugin {
 	 * Calls the Media Manager template
 	 */
 	function media_page() {
+		theplatform_check_plugin_update();
 		require_once( dirname( __FILE__ ) . '/thePlatform-media.php' );
 	}
 
@@ -171,6 +179,7 @@ class ThePlatform_Plugin {
 	 * Calls the Upload form template
 	 */
 	function upload_page() {
+		theplatform_check_plugin_update();
 		require_once( dirname( __FILE__ ) . '/thePlatform-upload.php' );
 	}
 	
@@ -178,6 +187,7 @@ class ThePlatform_Plugin {
 	 * Calls the About page template
 	 */
 	function about_page() {
+		theplatform_check_plugin_update();
 		require_once( dirname( __FILE__ ) . '/thePlatform-about.php' );
 	}
 
@@ -252,9 +262,7 @@ class ThePlatform_Plugin {
 
 		$url = isset( $_POST['img'] ) ? $_POST['img'] : '';
 
-		$url = esc_url_raw( $url );
-
-		$thumbnail_id = $this->set_thumbnail( $url, $post_ID );
+		$thumbnail_id = $this->set_thumbnail( esc_url_raw( $url ), $post_ID );
 
 		if ( $thumbnail_id !== FALSE ) {
 			set_post_thumbnail( $post_ID, $thumbnail_id );
@@ -311,7 +319,7 @@ class ThePlatform_Plugin {
 			$this->account = get_option( TP_ACCOUNT_OPTIONS_KEY );
 		}
 
-		list( $account, $width, $height, $media, $player, $mute, $autoplay, $loop, $tag, $params ) = array_values( shortcode_atts( array(
+		list( $account, $width, $height, $media, $player, $mute, $autoplay, $loop, $tag, $embedded, $params ) = array_values( shortcode_atts( array(
 			'account' => '',
 			'width' => '',
 			'height' => '',
@@ -321,10 +329,11 @@ class ThePlatform_Plugin {
 			'autoplay' => '',
 			'loop' => '',
 			'tag' => '',
+			'embedded' => '',
 			'params' => '' ), $atts
 				)
 		);
-
+				
 		if ( empty( $width ) ) {
 			$width = (int) $this->preferences['default_width'];
 		}
@@ -339,28 +348,11 @@ class ThePlatform_Plugin {
 			$height = floor( $width * 9 / 16 );
 		}
 
-		if ( empty( $mute ) ) {
-			$mute = "false";
-		}
-
-		if ( empty( $autoplay ) ) {
-			$autoplay = $this->preferences['autoplay'];
-		}
-		
-		if ( empty( $autoplay ) ) {
-			$autoplay = 'false';
-		}
-
-		if ( empty( $loop ) ) {
-			$loop = "false";
-		}
-
-		if ( empty( $tag ) ) {
-			$tag = $this->preferences['embed_tag_type'];
-		}
-		if ( empty( $tag ) ) {
-			$tag = "iframe";
-		}
+		$mute = $this->check_shortcode_parameter( $mute, 'false', array( 'true', 'false' ) );
+		$loop = $this->check_shortcode_parameter( $loop, 'false', array( 'true', 'false' ) );
+		$autoplay = $this->check_shortcode_parameter( $autoplay, $this->preferences['autoplay'], array( 'false', 'true' ) );
+		$embedded = $this->check_shortcode_parameter( $embedded, $this->preferences['player_embed_type'], array( 'true', 'false' ) );		
+		$tag = $this->check_shortcode_parameter( $tag, $this->preferences['embed_tag_type'], array( 'iframe', 'script' ) );
 
 		if ( empty( $media ) ) {
 			return '<!--Syntax Error: Required Media parameter missing. -->';
@@ -376,18 +368,18 @@ class ThePlatform_Plugin {
 		
 		
 		if ( !is_feed() ) {			
-			$output = $this->get_embed_shortcode( $account, $media, $player, $width, $height, $autoplay, $tag, $loop, $mute, $params );
+			$output = $this->get_embed_shortcode( $account, $media, $player, $width, $height, $autoplay, $tag, $embedded, $loop, $mute, $params );
 			$output = apply_filters( 'tp_embed_code', $output );
 		} else {
-			switch ( $this->preferences['rss_embed_type'] ) {
+			switch ( $this->preferences['rss_embed_type'] ) {			
 				case 'article':
 					$output = '[Sorry. This video cannot be displayed in this feed. <a href="' . get_permalink() . '">View your video here.]</a>';
 					break;
-				case 'iframe':
-					$output = $this->get_embed_shortcode( $account, $media, $player, $width, $height, $autoplay, 'iframe', $loop, $mute, $params );
+				case 'iframe':						
+					$output = $this->get_embed_shortcode( $account, $media, $player, $width, $height, $autoplay, 'iframe', $embedded, $loop, $mute, $params );
 					break;
 				case 'script':
-					$output = $this->get_embed_shortcode( $account, $media, $player, $width, $height, $autoplay, 'script', $loop, $mute, $params );
+					$output = $this->get_embed_shortcode( $account, $media, $player, $width, $height, $autoplay, 'script', $embedded, $loop, $mute, $params );
 					break;
 				default:
 					$output = '[Sorry. This video cannot be displayed in this feed. <a href="' . get_permalink() . '">View your video here.]</a>';
@@ -397,6 +389,30 @@ class ThePlatform_Plugin {
 		}
 
 		return $output;
+	}
+	
+	/**
+	 * Checks a shortcode value is valid and if not returns a default value
+	 * @param string $value The shortcode parameter value
+	 * @param string $defaultValue The default value to return if a user entered an invalid entry.
+	 * @param array $allowedValues An array of valid values for the shortcode parameter
+	 * @return string The final value
+	 */
+	function check_shortcode_parameter( $value, $defaultValue, $allowedValues ) {
+		
+		$value = strtolower( $value );
+		
+		if ( empty ( $value ) ) {
+			return $defaultValue;							
+		} else if ( array_search( $value, $allowedValues) === 0 ) {
+			return $value;
+		}
+				
+		if ( !empty ( $defaultValue ) ) {
+			return $defaultValue;
+		}
+		
+		return $allowedValues[0];
 	}
 
 	/**
@@ -414,10 +430,15 @@ class ThePlatform_Plugin {
 	 * @param string $params Any additional parameters to add to the embed code
 	 * @return string An iframe tag sourced from the selected media embed URL
 	 */
-	function get_embed_shortcode( $accountPID, $releasePID, $playerPID, $player_width, $player_height, $autoplay, $tag, $loop = false, $mute = false, $params = '' ) {
+	function get_embed_shortcode( $accountPID, $releasePID, $playerPID, $player_width, $player_height, $autoplay, $tag, $embedded, $loop = false, $mute = false, $params = '' ) {
 
 		$url = TP_API_PLAYER_EMBED_BASE_URL . urlencode( $accountPID ) . '/' . urlencode( $playerPID );
-		$url .= '/embed/select/' . urlencode( $releasePID );
+		
+		if ( $embedded === 'true') {
+			$url .= '/embed';
+		}
+		
+		$url .= '/select/' . $releasePID;
 
 		$url = apply_filters( 'tp_base_embed_url', $url );
 
@@ -448,44 +469,76 @@ class ThePlatform_Plugin {
 		}
 	}
 
+	/**
+	 * TinyMCE filter hooks to add a new button
+	 */
+	function theplatform_buttonhooks() {
+		if ( !isset( $this->preferences ) ) {
+			$this->preferences = get_option( TP_PREFERENCES_OPTIONS_KEY, array() );
+		}
+		
+		$tp_embedder_cap = apply_filters( TP_EMBEDDER_CAP, TP_EMBEDDER_DEFAULT_CAP );
+		
+		if ( current_user_can( $tp_embedder_cap ) ) {
+			add_filter( "mce_external_plugins", array( $this, "theplatform_register_tinymce_javascript" ) );
+			add_filter( 'mce_buttons', 			array( $this, 'theplatform_register_buttons' ) );
+			add_filter( 'tiny_mce_before_init', array( $this, 'theplatform_tinymce_settings' ) ) ;
+		}
+	}
+
+	/**
+	 * Register a new button in TinyMCE
+	 */
+	function theplatform_register_buttons( $buttons ) {
+		array_push( $buttons, "|", "theplatform" );
+		return $buttons;
+	}
+
+	/**
+	 * Load the TinyMCE plugin
+	 * @param  array $plugin_array Array of TinyMCE Plugins
+	 * @return array The array of TinyMCE plugins with our plugin added
+	 */
+	function theplatform_register_tinymce_javascript( $plugin_array ) {
+		$plugin_array['theplatform'] = plugins_url( '/js/theplatform.tinymce.plugin.js?matan', __file__ );
+		return $plugin_array;
+	}
+
+	/**
+	 * Add our nonce to tinymce so we can call our templates
+	 * @param  array $settings tinyMCE settings
+	 * @return array The array of tinyMCE settings with our value added
+	 */
+	function theplatform_tinymce_settings($settings)
+	{
+	    $settings['theplatform_media_nonce'] = wp_create_nonce( 'theplatform-ajax-nonce-theplatform_media' );
+
+	    return $settings;
+	}
+
+
+	function theplatform_media_button() {
+		if ( !isset( $this->preferences ) ) {
+			$this->preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
+		}
+
+		$tp_embedder_cap = apply_filters( TP_EMBEDDER_CAP, TP_EMBEDDER_DEFAULT_CAP );
+		if ( current_user_can( $tp_embedder_cap ) && $this->preferences['embed_hook'] != 'tinymce' ) {
+			$image_url = plugins_url('/images/embed_button.png', __FILE__);
+			wp_enqueue_script( 'jquery-ui-dialog' );
+			wp_enqueue_style( 'wp-jquery-ui-dialog' );
+			echo '<script type="text/javascript">function theplatform_dialog(){ var iframeUrl=ajaxurl+"?action=theplatform_media&embed=true&_wpnonce=' . esc_js( wp_create_nonce( 'theplatform-ajax-nonce-theplatform_media' ) ) . '";if(jQuery("#tp-embed-dialog").length==0){jQuery("body").append(\'<div id="tp-embed-dialog"></div>\')}if(window.innerHeight<1200){var height=window.innerHeight-50}else{var height=1024}jQuery("#tp-embed-dialog").html(\'<iframe src="\'+iframeUrl+\'" height="100%" width="100%">\').dialog({dialogClass:"wp-dialog",modal:true,resizable:true,minWidth:1024,width:1220,height:height}).css("overflow-y","hidden")};</script>';
+			echo '<a href="#" class="button" onclick="theplatform_dialog()"><img src="' . esc_url($image_url) . '" alt="thePlatform" style="vertical-align: text-top; height: 18px; width: 18px;">thePlatform</a>';
+		}
+	}
+
 }
 
 // Instantiate thePlatform plugin on WordPress init
 add_action( 'init', array( 'ThePlatform_Plugin', 'init' ) );
 add_action( 'wp_ajax_verify_account', 'theplatform_verify_account_settings' );
 add_action( 'admin_init', 'theplatform_register_plugin_settings' );
-add_action( 'admin_init', 'theplatform_check_plugin_update');
-add_action( 'init', 'theplatform_buttonhooks' );
 
-/**
- * TinyMCE filter hooks to add a new button
- */
-function theplatform_buttonhooks() {
-	$tp_embedder_cap = apply_filters( TP_EMBEDDER_CAP, TP_EMBEDDER_DEFAULT_CAP );
-	if ( current_user_can( $tp_embedder_cap ) ) {
-		add_filter( "mce_external_plugins", "theplatform_register_tinymce_javascript" );
-		add_filter( 'mce_buttons', 'theplatform_register_buttons' );
-		add_filter('tiny_mce_before_init','theplatform_tinymce_settings');
-	}
-}
-
-/**
- * Register a new button in TinyMCE
- */
-function theplatform_register_buttons( $buttons ) {
-	array_push( $buttons, "|", "theplatform" );
-	return $buttons;
-}
-
-/**
- * Load the TinyMCE plugin
- * @param  array $plugin_array Array of TinyMCE Plugins
- * @return array The array of TinyMCE plugins with our plugin added
- */
-function theplatform_register_tinymce_javascript( $plugin_array ) {
-	$plugin_array['theplatform'] = plugins_url( '/js/theplatform.tinymce.plugin.js?matan', __file__ );
-	return $plugin_array;
-}
 
 /**
  * Registers initial plugin settings during initalization
@@ -495,37 +548,5 @@ function theplatform_register_plugin_settings() {
 	register_setting( TP_PREFERENCES_OPTIONS_KEY, TP_PREFERENCES_OPTIONS_KEY, 'theplatform_preferences_options_validate' );
 	register_setting( TP_METADATA_OPTIONS_KEY, TP_METADATA_OPTIONS_KEY, 'theplatform_dropdown_options_validate' );
 	register_setting( TP_UPLOAD_OPTIONS_KEY, TP_UPLOAD_OPTIONS_KEY, 'theplatform_dropdown_options_validate' );
-}
-
-/**
- * Add our nonce to tinymce so we can call our templates
- * @param  array $settings tinyMCE settings
- * @return array The array of tinyMCE settings with our value added
- */
-function theplatform_tinymce_settings($settings)
-{
-    $settings['theplatform_media_nonce'] = wp_create_nonce( 'theplatform-ajax-nonce-theplatform_media' );
-
-    return $settings;
-}
-
-/**
- * Checks if the plugin has been updated and performs any necessary updates.
- */
-function theplatform_check_plugin_update() {
-	if ( !theplatform_plugin_version_changed() ) {
-		return;
-	}
-	
-	// Move account settings from preferences (1.2.0)
-	$properties = get_option( TP_PREFERENCES_OPTIONS_KEY, array() );
-	if ( array_key_exists( 'mpx_account_id', $properties ) ) {
-		$accountSettings = TP_ACCOUNT_OPTIONS_DEFAULTS();
-		foreach ( $properties as $key => $value ) {
-			if ( array_key_exists( $key, $accountSettings ) ) {
-				$accountSettings[$key] = $properties[$key];				
-			}
-		}
-		update_option( TP_ACCOUNT_OPTIONS_KEY, $accountSettings );
-	}	
+	register_setting( TP_TOKEN_OPTIONS_KEY, TP_TOKEN_OPTIONS_KEY, 'strval' );
 }

@@ -46,23 +46,26 @@ jQuery( document ).ready( function() {
 		var editor = win.tinyMCE.activeEditor;
 		var isVisual = ( typeof win.tinyMCE != "undefined" ) && editor && !editor.isHidden();
 		if ( isVisual ) {
-			editor.execCommand( 'mceInsertContent', false, shortcode );
+			editor.execCommand( 'mceInsertContent', false, shortcode.trim() );
 		}
 		else {
 			var currentContent = jQuery( '#content', window.parent.document ).val();
 			if ( typeof currentContent == 'undefined' )
 				currentContent = '';
-			jQuery( '#content', window.parent.document ).val( currentContent + shortcode );
+			jQuery( '#content', window.parent.document ).val( currentContent + shortcode.trim() );
 		}
 	} );
 
 	jQuery( '#btn-embed-close' ).click( function() {
 		jQuery( '#btn-embed' ).click();
 		var win = opener || parent
-		if ( win.tinyMCE.majorVersion > 3 )
-			win.tinyMCE.activeEditor.windowManager.close();
-		else
+		if ( win.jQuery( '#tp-embed-dialog' ).length != 0) {
 			win.jQuery( '#tp-embed-dialog' ).dialog( 'close' );
+		} 
+		if ( win.tinyMCE.activeEditor != null ) {
+			win.tinyMCE.activeEditor.windowManager.close();		
+		}
+			
 	} );
 
 	jQuery( '#btn-set-image' ).click( function() {
@@ -83,13 +86,15 @@ jQuery( document ).ready( function() {
 	} );
 	
 	jQuery( '#btn-edit' ).click( function() {
-		jQuery( "#tp-edit-dialog" ).dialog( {
-			dialogClass: "wp-dialog",
+		jQuery( "#tp-edit-dialog" ).dialog( {			
 			modal: true,
+			title: 'Edit Media',
 			resizable: true,
 			minWidth: 800,
-			width: 1024,
-			position: [ 'center', 20 ]
+			width: 1024,			
+			open: function() {
+				jQuery('.ui-dialog-titlebar-close').addClass('ui-button');
+			}
 		} ).css( "overflow", "hidden" );
 		return false;
 	} );
@@ -181,11 +186,21 @@ jQuery( document ).ready( function() {
 		jQuery( '.media' ).css( 'background-color', '' );
 		jQuery( this ).css( 'background-color', '#D8E8FF' );
 		jQuery( this ).data( 'bgc', '#D8E8FF' );
-		tpHelper.currentRelease = jQuery( this ).data( 'release' );
+
+		if (tpHelper.mediaEmbedType == 'pid') {
+			tpHelper.currentRelease = 'media/' + jQuery( this ).data( 'pid' );
+		} else if (tpHelper.mediaEmbedType == 'guid') {
+			var accountId = tpHelper.account.substring(tpHelper.account.lastIndexOf('/') + 1);
+			tpHelper.currentRelease = 'media/guid/' + accountId + '/' + encodeURIComponent( jQuery( this ).data( 'guid' ) );
+		}
+		else {
+			tpHelper.currentRelease = jQuery( this ).data( 'release' );
+		}
+	
 		tpHelper.mediaId = jQuery( this ).data( 'id' );
 		tpHelper.selectedThumb = jQuery( this ).data( 'media' )['defaultThumbnailUrl'];
 		$pdk.controller.resetPlayer();
-		if ( tpHelper.currentRelease !== undefined ) {
+		if ( jQuery(this).data('release') !== undefined ) {
 			jQuery( '#modal-player-placeholder' ).hide();
 			jQuery( '.tpPlayer' ).css( 'visibility', 'visible' );
 			$pdk.controller.loadReleaseURL( "//link.theplatform.com/s/" + tpHelper.accountPid + "/" + tpHelper.currentRelease, true );
@@ -242,7 +257,12 @@ jQuery( document ).ready( function() {
  * @return {void} 
  */
 function refreshView() {
+	if (viewLoading) {
+		return;
+	}
+	viewLoading = true;
 	notifyUser( 'clear' ); //clear alert box.
+	updateContentPane( { title: '' });
 	var $mediaList = jQuery( '#media-list' );
 	//TODO: If sorting clear search?
 	var queryObject = {
@@ -294,7 +314,7 @@ function buildCategoryAccordion( resp ) {
 	var categoryTemplate = Handlebars.compile(categorySource);
 	for ( var idx in entries ) {
 		var entryTitle = entries[idx]['title'];
-		jQuery( '#list-categories' ).append( categoryTemplate({ entryTitle: entryTitle }) );
+		jQuery( '#list-categories' ).append( categoryTemplate({ entryTitle: entryTitle }) );		
 	}
 
 	//Add an empty row for scrolling
@@ -307,7 +327,7 @@ function buildCategoryAccordion( resp ) {
 		jQuery( 'body' )[0].style.overflowY = 'auto';
 	} );
 
-	jQuery( '.cat-list-selector', '#list-categories' ).click( function() {
+	jQuery( '.cat-list-selector', '#list-categories' ).click( function() {		
 		tpHelper.selectedCategory = jQuery( this ).text();
 		if ( tpHelper.selectedCategory == "All Videos" )
 			tpHelper.selectedCategory = '';
@@ -354,6 +374,7 @@ function addMediaObject( media ) {
 	
 	var newMedia = mediaTemplate({ 
 		guid: media.guid, 
+		pid: media.pid,
 		placeHolder: placeHolder, 
 		defaultThumbnailUrl: media.defaultThumbnailUrl,
 		title: media.title,
@@ -363,6 +384,7 @@ function addMediaObject( media ) {
 	newMedia = jQuery( newMedia );	
 
 	newMedia.data( 'guid', media.guid );
+	newMedia.data( 'pid', media.pid );
 	newMedia.data( 'media', media );
 	newMedia.data( 'id', media.id );
 	var previewUrl = mpxHelper.extractVideoUrlfromMedia( media );
@@ -379,6 +401,13 @@ function addMediaObject( media ) {
 }
 
 function updateContentPane( mediaItem ) {
+	if (mediaItem.title == '') {
+		jQuery('#info-container').css('visibility','hidden');
+		jQuery( '.tpPlayer' ).css( 'visibility', 'hidden' );
+	} else {
+		jQuery('#info-container').css('visibility','visible');
+	}
+
 	var i, catArray, catList;
 
 	var $fields = jQuery( '.panel-body span' )
@@ -430,7 +459,11 @@ function updateContentPane( mediaItem ) {
 		}
 
 		jQuery( '#media-' + name ).html( value || '' );
-		jQuery( '#theplatform_upload_' + fullName.replace( '$', "\\$" ) ).val( value || '' );
+
+		var upload_field = jQuery( '#theplatform_upload_' + fullName.replace( '$', "\\$" ) )
+		if ( !upload_field.hasClass('userid')) {
+			jQuery( '#theplatform_upload_' + fullName.replace( '$', "\\$" ) ).val( value || '' );	
+		}		
 	} );
 }
 
