@@ -198,6 +198,9 @@ function theplatform_decode_json_from_server( $input, $assoc, $die_on_error = TR
 
 	$response = json_decode( wp_remote_retrieve_body( $input ), $assoc );
 
+	// VIP: Don't die if the service is unreachable. This can take down all of wp-admin. 
+	return $response;
+
 	if ( FALSE === $die_on_error ) {
 		return $response;
 	}
@@ -321,6 +324,8 @@ function theplatform_check_plugin_update() {
 	// On any version, update defaults that didn't previously exist
 	$newPreferences = array_merge( TP_PREFERENCES_OPTIONS_DEFAULTS(), get_option( TP_PREFERENCES_OPTIONS_KEY, array() ) );
 	$newPreferences['plugin_version'] = TP_PLUGIN_VERSION;
+
+	$newPreferences['embed_hook'] = 'tinymce'; // Workaround for VIP, Remove when fixed
 
 	update_option( TP_PREFERENCES_OPTIONS_KEY,  $newPreferences );
 	update_option( TP_ACCOUNT_OPTIONS_KEY,      array_merge( TP_ACCOUNT_OPTIONS_DEFAULTS(),     get_option( TP_ACCOUNT_OPTIONS_KEY,     array() ) ) );

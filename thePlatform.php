@@ -78,7 +78,7 @@ class ThePlatform_Plugin {
 			add_action( 'wp_ajax_get_videos', array( $this->tp_api, 'get_videos' ) );
 			add_action( 'wp_ajax_set_thumbnail', array( $this, 'set_thumbnail_ajax' ) );
 			add_action( 'admin_init', array( $this, 'theplatform_buttonhooks' ) );
-			add_action( 'media_buttons', array( $this, 'theplatform_media_button' ), 999 );			
+			// add_action( 'media_buttons', array( $this, 'theplatform_media_button' ), 999 );			
 		}
 		add_shortcode( 'theplatform', array( $this, 'shortcode' ) );
 	}
@@ -479,7 +479,7 @@ class ThePlatform_Plugin {
 		
 		$tp_embedder_cap = apply_filters( TP_EMBEDDER_CAP, TP_EMBEDDER_DEFAULT_CAP );
 		
-		if ( current_user_can( $tp_embedder_cap ) && ( array_key_exists( 'embed_hook', $this->preferences ) == false || $this->preferences['embed_hook'] != 'mediabutton' ) ) {
+		if ( current_user_can( $tp_embedder_cap ) ) {
 			add_filter( "mce_external_plugins", array( $this, "theplatform_register_tinymce_javascript" ) );
 			add_filter( 'mce_buttons', 			array( $this, 'theplatform_register_buttons' ) );
 			add_filter( 'tiny_mce_before_init', array( $this, 'theplatform_tinymce_settings' ) ) ;
