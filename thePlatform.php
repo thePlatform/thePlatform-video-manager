@@ -495,9 +495,9 @@ class ThePlatform_Plugin {
 		$url = apply_filters( 'tp_full_embed_url', $url );
 
 		if ( $tag == "script" ) {
-			return '<div style="width:' . esc_attr( $player_width ) . 'px; height:' . esc_attr( $player_height ) . 'px"><script type="text/javascript" src="' . esc_url_raw( $url . "&form=javascript" ) . '"></script></div>';
+			return '<div class="tpContainer" style="width:' . esc_attr( $player_width ) . 'px; height:' . esc_attr( $player_height ) . 'px"><script type="text/javascript" src="' . esc_url_raw( $url . "&form=javascript" ) . '"></script></div>';
 		} else { //Assume iframe			
-			return '<iframe src="' . esc_url( $url ) . '" height=' . esc_attr( $player_height ) . ' width=' . esc_attr( $player_width ) . ' frameBorder="0" seamless="seamless" allowFullScreen></iframe>';
+			return '<iframe class="tpContainer" src="' . esc_url( $url ) . '" height=' . esc_attr( $player_height ) . ' width=' . esc_attr( $player_width ) . ' frameBorder="0" seamless="seamless" allowFullScreen></iframe>';
 		}
 	}
 
