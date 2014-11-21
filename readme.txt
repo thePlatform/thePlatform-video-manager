@@ -28,6 +28,10 @@ Added support to revoke/add files/publish existing media
 Updating media no longer requires to refresh the entire media browser
 Added a button to reset plugin settings in the About page
 
+= 1.3.2 =
+Fixed uploads in Firefox
+Correctly set the preview player in the Media Browser
+
 = 1.3.1 =
 Fixed an issue with the update method copying Basic Metadata settings incorrectly.
 
