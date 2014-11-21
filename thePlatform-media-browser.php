@@ -19,12 +19,25 @@
 /*
  * Load scripts and styles 
  */
-wp_enqueue_script( 'mediaview_js' );
-wp_enqueue_script( 'jquery-ui-dialog' );
-wp_enqueue_style( 'dashicons' );
-wp_enqueue_style( 'bootstrap_tp_css' );
-wp_enqueue_style( 'theplatform_css' );
-wp_enqueue_style( 'wp-jquery-ui-dialog' );
+add_action('wp_enqueue_scripts', 'theplatform_media_clear_styles_and_scripts', 100912);
+function theplatform_media_clear_styles_and_scripts() {
+	global $wp_styles; 
+	foreach( $wp_styles->queue as $handle ) {	
+		wp_dequeue_style( $handle );
+	}    
+
+	global $wp_scripts; 
+    foreach( $wp_scripts->queue as $handle ) {       	
+        wp_dequeue_script( $handle );
+    }   
+
+	wp_enqueue_script( 'tp_mediaview_js' );
+	wp_enqueue_script( 'jquery-ui-dialog' );
+	wp_enqueue_style( 'tp_bootstrap_css' );
+	wp_enqueue_style( 'tp_theplatform_css' );
+	wp_enqueue_style( 'wp-jquery-ui-dialog' );
+	wp_enqueue_style( 'dashicons' );
+}
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -53,10 +66,10 @@ wp_enqueue_style( 'wp-jquery-ui-dialog' );
 
 		define( 'TP_MEDIA_BROWSER', true );
 
-		$metadata_options = get_option( TP_METADATA_OPTIONS_KEY );
-		$upload_options = get_option( TP_UPLOAD_OPTIONS_KEY );
+		$metadata_options = get_option( TP_METADATA_OPTIONS_KEY, array() );
+		$upload_options = get_option( TP_UPLOAD_OPTIONS_KEY, TP_UPLOAD_FIELDS_DEFAULTS() );
 		$preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
-		$account = get_option( TP_ACCOUNT_OPTIONS_KEY );
+		$account = get_option( TP_ACCOUNT_OPTIONS_KEY );		
 
 		if ( strcmp( $account['mpx_account_id'], "" ) == 0 ) {
 			wp_die( 'MPX Account ID is not set, please configure the plugin before attempting to manage media' );
@@ -82,6 +95,7 @@ wp_enqueue_style( 'wp-jquery-ui-dialog' );
 			tpHelper.account = "<?php echo esc_js( $account['mpx_account_id'] ); ?>";
 			tpHelper.accountPid = "<?php echo esc_js( $account['mpx_account_pid'] ); ?>";
 			tpHelper.isEmbed = "<?php echo esc_js( $IS_EMBED ); ?>";
+			tpHelper.mediaEmbedType = "<?php echo esc_js( $preferences['media_embed_type'] ); ?>";
 		</script>
 		
 		<script id="category-template" type="text/x-handlebars-template">
@@ -105,9 +119,10 @@ wp_enqueue_style( 'wp-jquery-ui-dialog' );
 		</script>			
 		
 		<?php wp_head(); ?>
+
     </head>
-    <body>
-		<div class="tp">
+    <body class="tp">
+		<div>
 			<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
 				<div class="row">
 					<div class="navbar-header" style="margin-left: 15px">
@@ -133,7 +148,7 @@ wp_enqueue_style( 'wp-jquery-ui-dialog' );
 						<p class="navbar-text sort-bar-text">
 							<!-- Render My Content checkbox -->
 							<?php if ( $preferences['user_id_customfield'] !== '(None)' ) { ?>
-								<input type="checkbox" id="my-content-cb" <?php checked( $preferences['filter_by_user_id'] === 'TRUE' ); ?> />
+								<input type="checkbox" id="my-content-cb" <?php checked( $preferences['filter_by_user_id'] === 'true' ); ?> />
 								<label for="my-content-cb" style="font-weight: normal">My Content</label>													
 							<?php } ?>
 							<!-- End My Content Checkbox -->	
@@ -155,7 +170,7 @@ wp_enqueue_style( 'wp-jquery-ui-dialog' );
 							<a class="list-group-item active">
 								Categories
 							</a>
-							<a href="#" class="list-group-item cat-list-selector">All Videos</a>
+							<a href="#" class="list-group-item cat-list-selector" style="background-color: #D8E8FF;">All Videos</a>
 						</div>                    
 					</div>
 				</div>
@@ -269,10 +284,6 @@ wp_enqueue_style( 'wp-jquery-ui-dialog' );
 										$field_type = $metadata_info['dataType'];
 										$field_structure = $metadata_info['dataStructure'];
 
-										if ( $field_title === $preferences['user_id_customfield'] ) {
-											continue;
-										}
-
 										$html = '<div class="row">';
 										$html .= '<strong>' . esc_html( mb_convert_case( $field_title, MB_CASE_TITLE ) ) . ': </strong>';
 										$html .= '<span id="media-' . esc_attr( $field_title ) . '" data-type="' . esc_attr( $field_type ) . '" data-structure="' . esc_attr( $field_structure ) . '" data-name="' . esc_attr( $field_title ) . '" data-prefix="' . esc_attr( $field_prefix ) . '" data-namespace="' . esc_attr( $field_namespace ) . '"></span></div>';
@@ -282,12 +293,14 @@ wp_enqueue_style( 'wp-jquery-ui-dialog' );
 								</div>
 								<div id="btn-container">
 									<?php if ( $IS_EMBED ) { ?>
-										<button type="button" id="btn-embed" class="btn btn-primary btn-xs">Embed</button>
-										<button type="button" id="btn-embed-close" class="btn btn-primary btn-xs">Embed and close</button>
-										<button type="button" id="btn-set-image" class="btn btn-primary btn-xs">Set Featured Image</button>  
+									<div class="btn-group">	                            
+										<input type="button" id="btn-embed" class="btn btn-default btn-xs" value="Embed">
+										<input type="button" id="btn-embed-close" class="btn btn-default btn-xs" value="Embed & Close">
+										<input type="button" id="btn-set-image" class="btn btn-default btn-xs" value="Set Featured Image">
+									</div>
 									<?php } else {
 										?>
-										<button type="button" id="btn-edit" class="btn btn-primary btn-xs">Edit Media</button>
+										<input type="button" id="btn-edit" class="btn btn-default btn-xs" value="Edit Media">
 									<?php } ?>
 								</div>
 							</div>
@@ -301,9 +314,11 @@ wp_enqueue_style( 'wp-jquery-ui-dialog' );
 		if ( !$IS_EMBED && current_user_can( $tp_editor_cap ) ) {
 			?>
 			<div id="tp-edit-dialog" class="tp" style="display: none; padding-left:10px;">
-				<h1> Edit Media </h1><div id="media-mpx-upload-form" class="tp">
+				<div id="media-mpx-upload-form" class="tp">
 					<?php require_once( dirname( __FILE__ ) . '/thePlatform-upload.php' ); ?>
 				</div>
 			<?php } ?>
+
+		<?php wp_footer(); ?>
     </body>
 </html>
