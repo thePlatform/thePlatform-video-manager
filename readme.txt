@@ -1,20 +1,20 @@
-=== thePlatform Video Manager ===
-Developed By: thePlatform for Media, Inc.
-Tags: embedding, video, embed, portal, theplatform, shortcode
+=== MediaAMP Video Manager ===
+Developed By: MediaAMP for Media, Inc.
+Tags: embedding, video, embed, portal, mediaamp, shortcode
 Requires at least: 3.7
 Tested up to: 4.0
 Stable tag: 1.2.2
 
-Manage your content hosted by thePlatform and embed media in WordPress posts.
+Manage your content hosted by MediaAMP and embed media in WordPress posts.
 
 == Description ==
-View your content hosted by thePlatform for Media and easily embed videos from your library in WordPress posts, modify media metadata, and upload new media.
+View your content hosted by MediaAMP for Media and easily embed videos from your library in WordPress posts, modify media metadata, and upload new media.
 
 == Installation ==
-Copy the folder "thePlatform-video-manager" with all included files into the "wp-content/plugins" folder of WordPress. Activate the plugin and set your MPX credentials in the plugin settings interface.
+Copy the folder "MediaAMP-video-manager" with all included files into the "wp-content/plugins" folder of WordPress. Activate the plugin and set your MPX credentials in the plugin settings interface.
 
 == Screenshots ==
-thePlatform's Setting screen
+MediaAMP's Setting screen
 View your media library, search for videos, and sort the returned media set
 Modify video metadata
 Easily embed videos from MPX into your posts
@@ -23,7 +23,7 @@ Upload media to your MPX account
 == Changelog ==
 
 = 1.2.2 =
-Changed thePlatform's menu order number
+Changed MediaAMP's menu order number
 Fix references to ajaxurl
 Fix an issue where the Wordpress bar disappears in the about page
 
@@ -56,7 +56,7 @@ Finer control over user capabilities:
 'tp_embedder_cap', 'edit_posts' - Embed MPX media into a post
 'tp_editor_cap', 'upload_files' - Edit MPX Media
 'tp_uploader_cap' - 'upload_files' - Upload MPX media
-'tp_admin_cap', 'manage_options' - Manage thePlatform's plugin settings
+'tp_admin_cap', 'manage_options' - Manage MediaAMP's plugin settings
 Moved the embedding button into a TinyMCE plugin
 
 = 1.1.1 =
@@ -74,7 +74,7 @@ Added a filter for our full embed URL, tp_full_embed_url - The player URL with a
 Added filters for user capabilities:
 'tp_publisher_cap' - 'upload_files' - Upload MPX media
 'tp_editor_cap', 'upload_files' - Edit MPX Media and display the Media Manager
-'tp_admin_cap', 'manage_options' - Manage thePlatform's plugin settings
+'tp_admin_cap', 'manage_options' - Manage MediaAMP's plugin settings
 'tp_embedder_cap', 'edit_posts' - Embed MPX media into a post
 Embed shortcode now supports arbitary parameters
 Removed Query by custom fields
@@ -99,11 +99,11 @@ height	 - (optional) - Player height, if omitted the default value will be taken
 mute	 - (optional) - Force the player to be muted
 autoplay - (optional) - Force autoplay on /embed/ players, if omitted the default value will be taken from the embedding preferences
 loop	 - (optional) - Loop the release
-tag		 - (optional) - iframe/script, if omitted the value will be taken from the embedding preferences
+Tag		 - (Optional) - iframe/script, if omitted the value will be taken from the embedding preferences
 params	 - (optional) - Custom string that will be appended to the embed URL
 
 == Configuration ==
-This plugin requires an account with thePlatform's MPX. Please contact your Account Manager for additional information.
+This plugin requires an account with MediaAMP's MPX. Please contact your Account Manager for additional information.
 
 = MPX Account Options =
 MPX Username - The MPX username to use for all of the plugin capabilities
@@ -134,4 +134,4 @@ tp_viewer_cap, default - 'edit_posts' - View the MPX Media Browser
 tp_embedder_cap, default - 'edit_posts' - Embed MPX media into a post
 tp_editor_cap, default - 'upload_files' - Edit MPX Media
 tp_uploader_cap - default - 'upload_files' - Upload MPX media	
-tp_admin_cap, default - 'manage_options' - Manage thePlatform's plugin settings
+tp_admin_cap, default - 'manage_options' - Manage MediaAMP's plugin settings

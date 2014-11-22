@@ -5,11 +5,11 @@
   Plugin URI: http://theplatform.com/
   Description: Manage video assets hosted in thePlatform MPX from within WordPress.
   Version: 1.2.2
-  Author: thePlatform for Media, Inc.
+  Author: MediaAMP for Media, Inc.
   Author URI: http://theplatform.com/
   License: GPL2
 
-  Copyright 2013-2014 thePlatform for Media, Inc.
+  Copyright 2013-2014 MediaAMP for Media, Inc.
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License, version 2, as
@@ -30,7 +30,7 @@ if ( !defined( 'ABSPATH' ) ) {
 }
 
 /**
- * This is thePlatform's plugin entry class, all initalization and AJAX handlers are defined here.
+ * This is MediaAMP's plugin entry class, all initalization and AJAX handlers are defined here.
  */
 class ThePlatform_Plugin {
 
@@ -296,7 +296,7 @@ class ThePlatform_Plugin {
 	/**
 	 * Shortcode Callback
 	 * @param array $atts Shortcode attributes
-	 * @return string thePlatform video embed shortcode
+	 * @return string MediaAMP video embed shortcode
 	 */
 	function shortcode( $atts ) {
 		if ( !class_exists( 'ThePlatform_API' ) ) {
@@ -450,7 +450,7 @@ class ThePlatform_Plugin {
 
 }
 
-// Instantiate thePlatform plugin on WordPress init
+// Instantiate MediaAMP plugin on WordPress init
 add_action( 'init', array( 'ThePlatform_Plugin', 'init' ) );
 add_action( 'wp_ajax_verify_account', 'theplatform_verify_account_settings' );
 add_action( 'admin_init', 'theplatform_register_plugin_settings' );

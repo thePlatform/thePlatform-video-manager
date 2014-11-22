@@ -1,6 +1,6 @@
 <?php
-/* thePlatform Video Manager Wordpress Plugin
-  Copyright (C) 2013-2014  thePlatform for Media Inc.
+/* MediaAMP Video Manager Wordpress Plugin
+  Copyright (C) 2013-2014 MediaAMP for Media Inc.
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -71,7 +71,7 @@ class ThePlatform_Options {
 	}
 
 	/**
-	 * Loads thePlatform plugin options from
+	 * Loads MediaAMP plugin options from
 	 * the database into their respective arrays. Uses
 	 * array_merge to merge with default values if they're
 	 * missing.
