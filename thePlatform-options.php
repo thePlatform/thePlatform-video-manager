@@ -111,7 +111,7 @@ class ThePlatform_Options {
 
 			if ( $this->account_options['mpx_username'] != 'mpx/' ) {
 				echo '<div id="message" class="error">';
-				echo '<p><strong>Sign in to thePlatform failed, please check your account settings.</strong></p>';
+				echo '<p><strong>Sign in to MediaAMP failed, please check your account settings.</strong></p>';
 				echo '</div>';
 			}
 		}
@@ -425,7 +425,7 @@ class ThePlatform_Options {
 	 * using the plugin_options_page method.
 	 */
 	function add_admin_menus() {
-		add_options_page( 'thePlatform Plugin Settings', 'thePlatform', 'manage_options', $this->plugin_options_key, array( $this, 'plugin_options_page' ) );
+		add_options_page( 'MediaAMP Plugin Settings', 'MediaAMP', 'manage_options', $this->plugin_options_key, array( $this, 'plugin_options_page' ) );
 	}
 
 	/**

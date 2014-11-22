@@ -3,7 +3,7 @@
 /*
   Plugin Name: MediaAMP Video Manager
   Plugin URI: http://theplatform.com/
-  Description: Manage video assets hosted in thePlatform MPX from within WordPress.
+  Description: Manage video assets hosted in MediaAMP MPX from within WordPress.
   Version: 1.2.2
   Author: MediaAMP for Media, Inc.
   Author URI: http://theplatform.com/

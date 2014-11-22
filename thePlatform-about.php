@@ -26,7 +26,7 @@
 </p>
 
 <p>The latest version of the plugin can be found at our GitHub repository:
-	<a href="https://github.com/thePlatform/thePlatform-video-manager">thePlatform-video-manager</a>
+	<a href="https://github.com/thePlatform/thePlatform-video-manager">MediaAMP-video-manager</a>
 </p>
 
 <p>The following libraries are used under their respective licenses:<br>
