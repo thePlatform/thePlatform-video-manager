@@ -473,8 +473,6 @@ class ThePlatform_Plugin {
 
 		$url = apply_filters( 'tp_base_embed_url', $url );
 
-		$url .= '?width=' . (int) $player_width . '&height=' . (int) $player_height;
-
 		if ( $loop !== "false" ) {
 			$url .= "&loop=true";
 		}
@@ -496,7 +494,7 @@ class ThePlatform_Plugin {
 		if ( $tag == "script" ) {
 			return '<div class="tpContainer" style="width:' . esc_attr( $player_width ) . 'px; height:' . esc_attr( $player_height ) . 'px"><script type="text/javascript" src="' . esc_url_raw( $url . "&form=javascript" ) . '"></script></div>';
 		} else { //Assume iframe			
-			return '<iframe class="tpContainer" src="' . esc_url( $url ) . '" height=' . esc_attr( $player_height ) . ' width=' . esc_attr( $player_width ) . ' frameBorder="0" seamless="seamless" allowFullScreen></iframe>';
+			return '<iframe class="tpContainer" src="' . esc_url( $url ) . '" height="' . esc_attr( $player_height ) . '" width="' . esc_attr( $player_width ) . '" frameBorder="0" seamless="seamless" allowFullScreen></iframe>';
 		}
 	}
 
