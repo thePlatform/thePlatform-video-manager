@@ -321,16 +321,25 @@ function theplatform_check_plugin_update() {
 
 	$newVersion = TP_PLUGIN_VERSION();
 	
-	// On any version, update defaults that didn't previously exist
+	// On any version, update defaults that didn't previously exist and update the plugin version
 	$newPreferences = array_merge( TP_PREFERENCES_OPTIONS_DEFAULTS(), get_option( TP_PREFERENCES_OPTIONS_KEY, array() ) );
-	$newPreferences['plugin_version'] = TP_PLUGIN_VERSION;
-
-	$newPreferences['embed_hook'] = 'tinymce'; // Workaround for VIP, Remove when fixed
-
+	$newPreferences['plugin_version'] = TP_PLUGIN_VERSION;		
 	update_option( TP_PREFERENCES_OPTIONS_KEY,  $newPreferences );
 	update_option( TP_ACCOUNT_OPTIONS_KEY,      array_merge( TP_ACCOUNT_OPTIONS_DEFAULTS(),     get_option( TP_ACCOUNT_OPTIONS_KEY,     array() ) ) );
 	update_option( TP_UPLOAD_OPTIONS_KEY,       array_merge( TP_UPLOAD_FIELDS_DEFAULTS(),       get_option( TP_UPLOAD_OPTIONS_KEY,	    array() ) ) );  
 	
+
+	// Set the default embed hook and media embed types (1.2.2 ~ 1.3.2)
+	if ( ( $oldVersion['major'] == '1' && $oldVersion['minor'] == '2' && $oldVersion['patch'] == '2' ) ||
+		 ( $oldVersion['major'] == '1' && $oldVersion['minor'] == '3' && $oldVersion['patch'] < '3' ) ) {
+		if ( defined( 'WPCOM_IS_VIP_ENV' ) ) {
+			$newPreferences['embed_hook'] = 'tinymce';	// VIP Only
+		}		
+		$newPreferences['media_embed_type'] = 'release';
+
+		update_option( TP_PREFERENCES_OPTIONS_KEY,  $newPreferences );		
+	}
+
 	// We had a messy update with 1.2.2/1.3.0, let's clean up	
 	if ( ( $oldVersion['major'] == '1' && $oldVersion['minor'] == '2' && $oldVersion['patch'] == '2' ) ||
 		 ( $oldVersion['major'] == '1' && $oldVersion['minor'] == '3' && $oldVersion['patch'] == '0' ) ) {

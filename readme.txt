@@ -2,8 +2,8 @@
 Developed By: thePlatform for Media, Inc.
 Tags: embedding, video, embed, portal, theplatform, shortcode
 Requires at least: 3.7
-Tested up to: 4.0
-Stable tag: 1.3.2
+Tested up to: 4.1
+Stable tag: 1.3.3
 Contributors: thePlatform
 
 Manage your content hosted by thePlatform and embed media in WordPress posts.
@@ -22,6 +22,10 @@ Easily embed videos from MPX into your posts
 Upload media to your MPX account
 
 == Changelog ==
+
+= 1.3.3 =
+Set default media embed type to release
+Add a tpEmbed class to our embed dialogs
 
 = 1.3.2 =
 Fixed uploads in Firefox
