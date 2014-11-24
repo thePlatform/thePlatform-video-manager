@@ -330,11 +330,14 @@ var theplatform_edit = (function($) {
                 params: JSON.stringify(params),
                 custom_params: JSON.stringify(custom_params),
                 profile: profile.val(),
-                server: server.val()
+                server: server.val(),
+                source: 'theplatform_upload_data'
             }
 
             window.onmessage = function() {
-                upload_window.postMessage(uploaderData, '*');
+                if ( e.data == 'theplatform_uploader_ready' ) {
+                    upload_window.postMessage(uploaderData, '*');
+                }
             }
         },
         onAddFiles: function(event) {
@@ -365,11 +368,14 @@ var theplatform_edit = (function($) {
                 params: JSON.stringify(params),
                 custom_params: JSON.stringify(''),
                 profile: profile.val(),
-                server: server.val()
+                server: server.val(),
+                source: 'theplatform_upload_data'
             };
 
             window.onmessage = function() {
-                upload_window.postMessage(uploaderData, '*');
+                if ( e.data == 'theplatform_uploader_ready' ) {
+                    upload_window.postMessage(uploaderData, '*');
+                }
             };
         },
         onPublishMedia: function(event) {

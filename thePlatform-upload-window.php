@@ -51,11 +51,13 @@ function theplatform_upload_clear_styles_and_scripts() {
 
 <script type="text/javascript">
 
-	window.opener.postMessage('ready', '*');
+	window.opener.postMessage('theplatform_uploader_ready', '*');
 
 	window.onmessage = function (e) {
-		var uploaderData = e.data;
-		var theplatformUploader = new TheplatformUploader(uploaderData.files, uploaderData.params, uploaderData.custom_params, uploaderData.profile, uploaderData.server);
+		if (e.data.source == 'theplatform_upload_data') {                          
+			var uploaderData = e.data;
+			var theplatformUploader = new TheplatformUploader(uploaderData.files, uploaderData.params, uploaderData.custom_params, uploaderData.profile, uploaderData.server);
+		}
 	};
 </script>
 </body>
