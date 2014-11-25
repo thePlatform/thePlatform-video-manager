@@ -1,5 +1,5 @@
 <!-- MediaAMP Video Manager Wordpress Plugin
-Copyright (C) 2013-2014 MediaAMP for Media Inc.
+Copyright (C) 2013-2014 thePlatform for Media Inc.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
