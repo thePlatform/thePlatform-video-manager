@@ -54,7 +54,7 @@ function theplatform_upload_clear_styles_and_scripts() {
 	window.opener.postMessage('theplatform_uploader_ready', '*');
 
 	window.onmessage = function (e) {
-		if (e.data.source == 'theplatform_upload_data') {                          
+		if (e.data.source == 'theplatform_upload_data') {
 			var uploaderData = e.data;
 			var theplatformUploader = new TheplatformUploader(uploaderData.files, uploaderData.params, uploaderData.custom_params, uploaderData.profile, uploaderData.server);
 		}

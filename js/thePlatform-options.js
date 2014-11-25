@@ -1,21 +1,21 @@
 /* thePlatform Video Manager Wordpress Plugin
  Copyright (C) 2013-2014 thePlatform, LLC
- 
+
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
- 
+
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
- 
+
  You should have received a copy of the GNU General Public License along
  with this program; if not, write to the Free Software Foundation, Inc.,
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
- 
-(function($) {
+
+(function ($) {
 
     function configure_metadata_fields() {
         var $optionsPageName = $('input[name=option_page]');
@@ -29,7 +29,7 @@
             'read': [],
             'hide': []
         };
-        $sortableFields.each(function() {
+        $sortableFields.each(function () {
             var name = $(this).parent().siblings('th').html();
             var value = $(this).val();
             if (!value.length)
@@ -59,11 +59,11 @@
         $(".sortable").sortable({
             items: "li:not([data-id=title])",
             connectWith: ".sortable",
-            receive: function(e, ui) {
+            receive: function (e, ui) {
                 var receiver = $(e.target).data('col');
                 var itemId = $(ui.item).data('id');
 
-                if (receiver == "write" && ( $(ui.item).data('userfield') == true || $(ui.item).data('id') == 'id' ) ) {
+                if (receiver == "write" && ( $(ui.item).data('userfield') == true || $(ui.item).data('id') == 'id' )) {
                     $(ui.sender).sortable('cancel');
                 } else {
                     var $selectField = $('select[name="' + $optionsPageName.val() + '[' + itemId + ']"]');
@@ -80,7 +80,7 @@
 
     function authenticate() {
         var usr = $("#mpx_username").val();
-        var pwd = $("#mpx_password").val();        
+        var pwd = $("#mpx_password").val();
 
         var hash = base64Encode(usr + ":" + pwd);
 
@@ -90,7 +90,7 @@
             auth_hash: hash
         };
 
-        $.post(tp_options_local.ajaxurl, data, function(response) {
+        $.post(tp_options_local.ajaxurl, data, function (response) {
             if ($("#verification_image").length > 0) {
                 $("#verification_image").remove();
             }
@@ -156,17 +156,17 @@
         }
 
         //Set up the PID for the MPX account on change in the Settings page 
-        $('#mpx_account_id').change(function(e) {
+        $('#mpx_account_id').change(function (e) {
             $('#mpx_account_pid').val($('#mpx_account_id option:selected').val().split('|')[1]);
         })
 
         //Set up the PID for the Player on change in the Settings page
-        $('#default_player_name').change(function(e) {
+        $('#default_player_name').change(function (e) {
             $('#default_player_pid').val($('#default_player_name option:selected').val().split('|')[1]);
         })
     }
 
-    $(document).ready(function() {
+    $(document).ready(function () {
         var TP_PAGE_KEY = $('#TP_PAGE_KEY').text();
         var current_page_key = $('input[name=option_page]').val();
 

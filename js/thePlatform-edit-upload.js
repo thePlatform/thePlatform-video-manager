@@ -1,21 +1,21 @@
 /* thePlatform Video Manager Wordpress Plugin
  Copyright (C) 2013-2014 thePlatform, LLC
- 
+
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
- 
+
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
- 
+
  You should have received a copy of the GNU General Public License along
  with this program; if not, write to the Free Software Foundation, Inc.,
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-var theplatform_edit = (function($) {
+var theplatform_edit = (function ($) {
 
     var Validation = {
         /**
@@ -23,12 +23,12 @@ var theplatform_edit = (function($) {
          * @param  {Object} event click event
          * @return {boolean}       Did validation pass or not
          */
-        validateMedia: function(event) {
+        validateMedia: function (event) {
 
             //TODO: Validate that file has been selected for upload but not edit
             var validationError = false;
 
-            $('.upload_field, .custom_field').each(function() {
+            $('.upload_field, .custom_field').each(function () {
                 var $field = $(this);
                 var dataStructure = $field.data('structure');
                 var dataType = $field.data('type');
@@ -91,7 +91,7 @@ var theplatform_edit = (function($) {
             return validationError;
         },
 
-        validateFormat: function(value, dataType) {
+        validateFormat: function (value, dataType) {
             var validationError = false;
 
             switch (dataType) {
@@ -142,9 +142,9 @@ var theplatform_edit = (function($) {
     };
 
     var Data = {
-        parseMediaParams: function() {
+        parseMediaParams: function () {
             var params = {};
-            $('.upload_field').each(function(i) {
+            $('.upload_field').each(function (i) {
                 if ($(this).val().length != 0)
                     params[$(this).attr('name')] = $(this).val();
             });
@@ -165,10 +165,10 @@ var theplatform_edit = (function($) {
             return params;
         },
 
-        parseCustomParams: function() {
+        parseCustomParams: function () {
             var custom_params = {};
 
-            $('.custom_field').each(function(i) {
+            $('.custom_field').each(function (i) {
                 if ($(this).val().length != 0) {
                     var $field = $(this);
                     var dataStructure = $field.data('structure');
@@ -206,7 +206,7 @@ var theplatform_edit = (function($) {
             return custom_params;
         },
 
-        parseDataType: function(value, dataType) {
+        parseDataType: function (value, dataType) {
             switch (dataType) {
                 case 'Link':
                     var titleRegex = /title[\s+]?:[\s+]?([^,]+)/;
@@ -222,10 +222,10 @@ var theplatform_edit = (function($) {
             return value;
         }
     };
-	
+
     var UI = {
-        onSuccess: function(response, button) {
-            if (response.success && !_.has(response.data, 'isException')) {                
+        onSuccess: function (response, button) {
+            if (response.success && !_.has(response.data, 'isException')) {
                 jQuery(button).text('Success').removeClass('btn-primary btn-success btn-danger btn-info').addClass('btn-success');
             } else {
                 jQuery(button).text('Failed').removeClass('btn-primary btn-success btn-danger btn-info').addClass('btn-danger');
@@ -233,14 +233,14 @@ var theplatform_edit = (function($) {
             }
         },
 
-        onComplete: function(button, value) {
-            setTimeout(function() {
+        onComplete: function (button, value) {
+            setTimeout(function () {
                 jQuery(button).text(value).removeClass('btn-primary btn-success btn-danger btn-info').addClass('btn-primary');
             }, 1500);
         },
 
-        updatePublishProfiles: function(mediaId) {
-            API.getProfileResults(mediaId, function(data) {
+        updatePublishProfiles: function (mediaId) {
+            API.getProfileResults(mediaId, function (data) {
                 var revokeDropdown = jQuery('#publish_status');
                 revokeDropdown.empty();
                 var publishDropdown = jQuery('#edit_publishing_profile');
@@ -252,7 +252,8 @@ var theplatform_edit = (function($) {
                         option.text = publishDropdown.find('option[value="' + data[i].profileId + '"]').text();
                         revokeDropdown.append(option);
                     }
-                };
+                }
+                ;
 
                 if (revokeDropdown.children().length == 0) {
                     revokeDropdown.attr('disabled', 'true');
@@ -264,7 +265,7 @@ var theplatform_edit = (function($) {
     };
 
     var Events = {
-        onEditMetadata: function(event) {
+        onEditMetadata: function (event) {
             var me = this;
             var validationError = Validation.validateMedia(event);
             if (validationError)
@@ -286,19 +287,19 @@ var theplatform_edit = (function($) {
                 url: tp_edit_upload_local.ajaxurl,
                 data: data,
                 method: 'post',
-                success: function(response) {
+                success: function (response) {
                     UI.onSuccess(response, me)
                     if (response.success == true) {
                         $('#tp-edit-dialog').data('refresh', 'true');
-                        theplatform_browser.updateMediaObject(tpHelper.mediaId);    
-                    }                    
+                        theplatform_browser.updateMediaObject(tpHelper.mediaId);
+                    }
                 },
-                complete: function(response) {
+                complete: function (response) {
                     UI.onComplete(me, "Submit")
                 }
             });
         },
-        onUploadMedia: function(event) {
+        onUploadMedia: function (event) {
             var files = document.getElementById('theplatform_upload_file').files;
 
             var validationError = Validation.validateMedia(event);
@@ -324,7 +325,8 @@ var theplatform_edit = (function($) {
 
             for (var i = 0; i < files.length; i++) {
                 filesArray.push(files[i]);
-            };
+            }
+            ;
             var uploaderData = {
                 files: filesArray,
                 params: JSON.stringify(params),
@@ -334,13 +336,13 @@ var theplatform_edit = (function($) {
                 source: 'theplatform_upload_data'
             }
 
-            window.onmessage = function() {
-                if ( e.data == 'theplatform_uploader_ready' ) {
+            window.onmessage = function () {
+                if (e.data == 'theplatform_uploader_ready') {
                     upload_window.postMessage(uploaderData, '*');
                 }
             }
         },
-        onAddFiles: function(event) {
+        onAddFiles: function (event) {
             var files = document.getElementById('theplatform_upload_file').files;
 
             if (files[0] === undefined) {
@@ -362,7 +364,8 @@ var theplatform_edit = (function($) {
 
             for (var i = 0; i < files.length; i++) {
                 filesArray.push(files[i]);
-            };
+            }
+            ;
             var uploaderData = {
                 files: filesArray,
                 params: JSON.stringify(params),
@@ -372,17 +375,16 @@ var theplatform_edit = (function($) {
                 source: 'theplatform_upload_data'
             };
 
-            window.onmessage = function() {
-                if ( e.data == 'theplatform_uploader_ready' ) {
+            window.onmessage = function () {
+                if (e.data == 'theplatform_uploader_ready') {
                     upload_window.postMessage(uploaderData, '*');
                 }
             };
         },
-        onPublishMedia: function(event) {
+        onPublishMedia: function (event) {
             var profile = jQuery('.edit_profile').val();
             if (profile === 'tp_wp_none')
                 return false;
-
 
             var me = this;
             jQuery(this).text('Publishing').removeClass('btn-primary btn-success btn-danger btn-info').addClass('btn-info');
@@ -399,15 +401,15 @@ var theplatform_edit = (function($) {
                 url: tp_edit_upload_local.ajaxurl,
                 data: params,
                 type: "POST",
-                success: function(response) {
+                success: function (response) {
                     UI.onSuccess(response, me)
                 },
-                complete: function(response) {
+                complete: function (response) {
                     UI.onComplete(me, "Publish")
                 }
             });
         },
-        onRevokeMedia: function(event) {
+        onRevokeMedia: function (event) {
 
             var profile = jQuery('.revoke_profile option:selected');
 
@@ -429,24 +431,24 @@ var theplatform_edit = (function($) {
                 url: tp_edit_upload_local.ajaxurl,
                 data: params,
                 type: "POST",
-                success: function(response) {
+                success: function (response) {
                     UI.onSuccess(response, me);
                 },
-                complete: function(response) {
+                complete: function (response) {
                     UI.onComplete(me, "Revoke");
-                    setTimeout(function() { 
+                    setTimeout(function () {
                         UI.updatePublishProfiles(tpHelper.mediaId)
-                         }, 1500);
+                    }, 1500);
                 }
             });
         },
-        onChangeFile: function() {
+        onChangeFile: function () {
             var input = $(this),
                 numFiles = input.get(0).files ? input.get(0).files.length : 1,
                 label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
             input.trigger('fileselect', [numFiles, label]);
         },
-        onFileSelect: function(event, numFiles, label) {
+        onFileSelect: function (event, numFiles, label) {
             var input = $(this).parents('.input-group').find(':text'),
                 log = numFiles > 1 ? numFiles + ' files selected' : label;
 
@@ -454,20 +456,20 @@ var theplatform_edit = (function($) {
                 input.val(log);
             }
         },
-        onRevokeTabOpened: function() {
+        onRevokeTabOpened: function () {
             UI.updatePublishProfiles(tpHelper.mediaId);
         }
     };
 
-    var API = {        
-        getProfileResults: function(mediaId, callback) {
+    var API = {
+        getProfileResults: function (mediaId, callback) {
             var data = {
                 _wpnonce: tp_browser_local.tp_nonce['get_profile_results'],
                 action: 'get_profile_results',
                 mediaId: mediaId
             };
 
-            jQuery.post(tp_browser_local.ajaxurl, data, function(resp) {
+            jQuery.post(tp_browser_local.ajaxurl, data, function (resp) {
                 if (resp.success) {
                     callback(resp.data);
                 } else {
@@ -478,7 +480,7 @@ var theplatform_edit = (function($) {
         }
     }
 
-    $(document).ready(function() {
+    $(document).ready(function () {
         // Handle the custom file browser button
         $('.btn-file :file').on('fileselect', Events.onFileSelect);
         $('.btn-file :file').on('change', Events.onChangeFile);

@@ -249,8 +249,9 @@ class ThePlatform_API {
 		if ( $forceRefresh == true || $token == false ) {
 			$response = ThePlatform_API_HTTP::get( TP_API_SIGNIN_URL, $this->basicAuthHeader() );
 
-			if ( is_wp_error( $response ) )
+			if ( is_wp_error( $response ) ) {
 				return false;
+			}
 
 			$payload = theplatform_decode_json_from_server( $response );
 			$token   = $payload['signInResponse']['token'];
@@ -348,13 +349,13 @@ class ThePlatform_API {
 		if ( $this->get_mpx_account_id() ) {
 			$url .= '&account=' . $this->get_mpx_account_id();
 		}
-		
+
 		$response = ThePlatform_API_HTTP::get( $url );
 
 		$data = theplatform_decode_json_from_server( $response );
-		
+
 		if ( array_key_exists( 'success', $data ) && $data['success'] == false ) {
-			return array( "entries" => [] );
+			return array( "entries" => [ ] );
 		}
 
 		return $data;
@@ -423,18 +424,18 @@ class ThePlatform_API {
 		// Get the Format based on the file MIME type
 		$format = $this->get_format( $args['filetype'], $extension );
 
-		if ( !$format ) {
-			wp_send_json_error('Unable to get Formats.xml from MPX');
+		if ( ! $format ) {
+			wp_send_json_error( 'Unable to get Formats.xml from MPX' );
 		}
 		// Get the upload url based on the server id
 		// If no server id is supplied, get the default server for the Format
 		$upload_server_id = $args['server_id'];
 
 		if ( $upload_server_id === 'DEFAULT_SERVER' ) {
-			$upload_server_id = $this->get_default_upload_server( $format['title'] );			
+			$upload_server_id = $this->get_default_upload_server( $format['title'] );
 		}
 
-		if ( !$upload_server_id ) {
+		if ( ! $upload_server_id ) {
 			wp_send_json_error( "Unable to determine MPX Server ID, please check your account configuration" );
 		}
 
@@ -467,9 +468,9 @@ class ThePlatform_API {
 	 * @return string|boolean MPX Server ID or FALSE
 	 */
 	function get_default_upload_server( $formatTitle ) {
-		$accountSettings  = $this->get_account_settings();
+		$accountSettings = $this->get_account_settings();
 
-		if ( !$accountSettings ) {
+		if ( ! $accountSettings ) {
 			return false;
 		}
 
@@ -877,7 +878,7 @@ class ThePlatform_API {
 
 		if ( $username === "mpx/" || $username === "" || $password === "" ) {
 			return false;
-		}	
+		}
 
 		$hash = base64_encode( $username . ':' . $password );
 
@@ -888,7 +889,7 @@ class ThePlatform_API {
 		if ( is_null( $response ) || is_wp_error( $response ) ) {
 			return false;
 		}
-		
+
 		if ( ! array_key_exists( 'isException', $payload ) ) {
 			update_option( TP_TOKEN_OPTIONS_KEY, $payload['signInResponse']['token'] );
 

@@ -211,7 +211,7 @@ function theplatform_decode_json_from_server( $input, $validateResponse = true )
 
 	$errorResponse = array(
 		'success' => false,
-		'data' => 'There was an error getting data from MPX, if the error persists please contact thePlatform. '
+		'data'    => 'There was an error getting data from MPX, if the error persists please contact thePlatform. '
 	);
 
 	if ( is_null( $response ) && wp_remote_retrieve_response_code( $input ) != "200" ) {
@@ -224,11 +224,13 @@ function theplatform_decode_json_from_server( $input, $validateResponse = true )
 
 	if ( is_wp_error( $response ) ) {
 		$errorResponse['data'] .= $response->get_error_message();
+
 		return $errorResponse;
 	}
 
 	if ( is_array( $response ) && array_key_exists( 'isException', $response ) ) {
 		$errorResponse['data'] .= $response['description'];
+
 		return $errorResponse;
 	}
 

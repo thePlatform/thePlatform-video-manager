@@ -87,8 +87,8 @@ class ThePlatform_Plugin {
 		add_shortcode( 'theplatform', array( $this, 'shortcode' ) );
 	}
 
-	function enqueue_post_scripts($hook) {
-		if ( !isset( $this->preferences ) ) {
+	function enqueue_post_scripts( $hook ) {
+		if ( ! isset( $this->preferences ) ) {
 			$this->preferences = get_option( TP_PREFERENCES_OPTIONS_KEY, array() );
 		}
 
@@ -101,7 +101,7 @@ class ThePlatform_Plugin {
 		if ( 'post.php' == $hook || 'post-new.php' == $hook ) {
 			wp_enqueue_script( 'jquery-ui-dialog' );
 			wp_enqueue_style( 'wp-jquery-ui-dialog' );
-	    }		
+		}
 	}
 
 	/**
@@ -491,11 +491,11 @@ class ThePlatform_Plugin {
 
 		$url = apply_filters( 'tp_base_embed_url', $url );
 
-		if ($tag == 'script') {
-			$url .= '?form=javascript';	
+		if ( $tag == 'script' ) {
+			$url .= '?form=javascript';
 		} else {
 			$url .= '?form=html';
-		}				
+		}
 
 		if ( $loop !== "false" ) {
 			$url .= "&loop=true";
