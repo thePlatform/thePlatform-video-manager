@@ -15,12 +15,12 @@
  with this program; if not, write to the Free Software Foundation, Inc.,
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-tinymce.PluginManager.add('theplatform', function (editor, url) {
+tinymce.PluginManager.add('theplatform', function(editor, url) {
     // Add a button that opens a window
     editor.addButton('theplatform', {
         tooltip: 'Embed MPX Media',
         image: url.substring(0, url.lastIndexOf('/js')) + '/images/embed_button.png',
-        onclick: function () {
+        onclick: function() {
             // Open window
 
             var iframeUrl = ajaxurl + "?action=theplatform_media&embed=true&_wpnonce=" + editor.settings.theplatform_media_nonce;
