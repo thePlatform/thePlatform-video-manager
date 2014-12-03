@@ -1,7 +1,7 @@
 **Warning, you are looking at a development branch which may not be stable. For the latest Wordpress VIP release please switch to either the Master or Release branch**
 
 # === thePlatform Video Manager ===
-Developed By: MediaAMP for Media, Inc.  
+Developed By: thePlatform for Media, Inc.  
 Tags: embedding, video, embed, portal, theplatform, shortcode  
 Requires at least: 3.7  
 Tested up to: 4.0
@@ -15,7 +15,7 @@ library in WordPress posts, modify media metadata, and upload new media.
   
 # == Installation ==
 
-Copy the folder "MediaAMP-video-manager" with all included files into the "wp-content/plugins" folder of WordPress. Activate the plugin and set your MPX credentials in the plugin settings interface.
+Copy the folder "thePlatform-video-manager" with all included files into the "wp-content/plugins" folder of WordPress. Activate the plugin and set your MPX credentials in the plugin settings interface.
 
 # == Screenshots ==
 
