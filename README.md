@@ -1,6 +1,6 @@
 **Warning, you are looking at a development branch which may not be stable. For the latest Wordpress VIP release please switch to either the Master or Release branch**
 
-# === MediaAMP Video Manager ===
+# === thePlatform Video Manager ===
 Developed By: MediaAMP for Media, Inc.  
 Tags: embedding, video, embed, portal, theplatform, shortcode  
 Requires at least: 3.7  

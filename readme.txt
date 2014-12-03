@@ -1,4 +1,4 @@
-=== MediaAMP Video Manager ===
+=== thePlatform Video Manager ===
 Developed By: MediaAMP for Media, Inc.
 Tags: embedding, video, embed, portal, mediaamp, shortcode
 Requires at least: 3.7

@@ -1,0 +1,15 @@
+<html>
+<head>
+</head>
+<body onLoad="document.relay.submit()">
+<form method=post action="https://weblogin.washington.edu/" name=relay>
+<input type=hidden name=pubcookie_g_req value="b25lPWlkcC51Lndhc2hpbmd0b24uZWR1JnR3bz1pZHAmdGhyZWU9MSZmb3VyPWE1JmZpdmU9R0VUJnNpeD1pZHAudS53YXNoaW5ndG9uLmVkdSZzZXZlbj1MMmxrY0M5QmRYUm9iaTlWVjB4dloybHUmZWlnaHQ9Jmhvc3RuYW1lPWlkcC51Lndhc2hpbmd0b24uZWR1Jm5pbmU9MSZmaWxlPSZyZWZlcmVyPShudWxsKSZzZXNzX3JlPTAmcHJlX3Nlc3NfdG9rPTIxMTU4ODEzMyZmbGFnPTA=">
+<input type=hidden name=post_stuff value="">
+<input type=hidden name=relay_url value="https://idp.u.washington.edu/PubCookie.reply">
+<noscript>
+<p align=center>You do not have Javascript turned on,   please click the button to continue.
+<p align=center>
+<input type=submit name=go value=Continue>
+</noscript>
+</form>
+</html>

@@ -1,6 +1,6 @@
 <?php
 
-/* MediaAMP Video Manager Wordpress Plugin
+/* thePlatform Video Manager Wordpress Plugin
   Copyright (C) 2013-2014 thePlatform for Media Inc.
 
   This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
 <style>
 	
 </style>
-<p> MediaAMP Video Manager Wordpress Plugin version <?php echo TP_PLUGIN_VERSION; ?><br>
+<p> thePlatform Video Manager Wordpress Plugin version <?php echo TP_PLUGIN_VERSION; ?><br>
 	Copyright (C) 2013-<?php echo date("Y"); ?> thePlatform for Media Inc.<br>
 </p>
 
