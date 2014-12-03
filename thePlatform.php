@@ -395,7 +395,6 @@ class ThePlatform_Plugin {
 			}
 			$output = apply_filters( 'tp_rss_embed_code', $output );
 		}
-        var_dump($output);
 		return $output;
 	}
 
