@@ -30,7 +30,7 @@ if ( !defined( 'ABSPATH' ) ) {
 }
 
 /**
- * This is MediaAMP's plugin entry class, all initalization and AJAX handlers are defined here.
+ * This is thePlatform's plugin entry class, all initalization and AJAX handlers are defined here.
  */
 class ThePlatform_Plugin {
 

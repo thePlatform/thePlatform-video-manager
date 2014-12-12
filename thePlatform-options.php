@@ -71,7 +71,7 @@ class ThePlatform_Options {
 	}
 
 	/**
-	 * Loads MediaAMP plugin options from
+	 * Loads thePlatform plugin options from
 	 * the database into their respective arrays. Uses
 	 * array_merge to merge with default values if they're
 	 * missing.
