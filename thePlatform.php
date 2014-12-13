@@ -23,6 +23,13 @@
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+  Changes
+  ========================================
+
+  qaz2wsx3@uw.edu: changed the shortcode from [theplatform] to [mediaamp]
+                   changed the text of the menus
+
  */
 
 if ( !defined( 'ABSPATH' ) ) {
@@ -449,7 +456,7 @@ class ThePlatform_Plugin {
 
 }
 
-// Instantiate MediaAMP plugin on WordPress init
+// Instantiate thePlatform plugin on WordPress init
 add_action( 'init', array( 'ThePlatform_Plugin', 'init' ) );
 add_action( 'wp_ajax_verify_account', 'theplatform_verify_account_settings' );
 add_action( 'admin_init', 'theplatform_register_plugin_settings' );
