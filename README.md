@@ -8,6 +8,7 @@ Tested up to: 4.0
 Stable tag: 1.2.2
 
 Manage your content hosted by thePlatform and embed media in WordPress posts.
+* This edition of the plug-in has been rebranded for MediaAMP.
 
 # == Description ==
 View your content hosted by thePlatform for Media and easily embed videos from your
