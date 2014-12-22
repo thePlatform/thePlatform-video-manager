@@ -15,7 +15,15 @@
 
   You should have received a copy of the GNU General Public License along
   with this program; if not, write to the Free Software Foundation, Inc.,
-  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
+  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. 
+
+  Changes
+  ==============================
+  
+  qaz2wsx3@uw.edu: Changed the link of github repository to uw-it-aca/thePlatform-video-manager
+ qaz2wsx3@uw.edu: Added a notice that the plugin has been rebranded for MediaAMP
+
+*/
 
 ?>
 <style>
@@ -23,10 +31,11 @@
 </style>
 <p> thePlatform Video Manager Wordpress Plugin version <?php echo TP_PLUGIN_VERSION; ?><br>
 	Copyright (C) 2013-<?php echo date("Y"); ?> thePlatform for Media Inc.<br>
+    This edition of the plug-in has been rebranded for MediaAMP.<br>
 </p>
 
 <p>The latest version of the plugin can be found at our GitHub repository:
-	<a href="https://github.com/thePlatform/thePlatform-video-manager">MediaAMP-video-manager</a>
+	<a href="https://github.com/uw-it-aca/thePlatform-video-manager">uw-it-aca/thePlatform-video-manager</a>
 </p>
 
 <p>The following libraries are used under their respective licenses:<br>
