@@ -133,12 +133,7 @@ class ThePlatform_Plugin {
 		wp_localize_script( 'tp_file_uploader_js', 'tp_file_uploader_local', array(
 			'ajaxurl'  => admin_url( 'admin-ajax.php' ),
 			'tp_nonce' => array(
-				'initialize_media_upload' => wp_create_nonce( 'theplatform-ajax-nonce-initialize_media_upload' ),
-				'start_upload'            => wp_create_nonce( 'theplatform-ajax-nonce-start_upload' ),
-				'upload_status'           => wp_create_nonce( 'theplatform-ajax-nonce-upload_status' ),
-				'upload_fragment'         => wp_create_nonce( 'theplatform-ajax-nonce-upload_fragment' ),
-				'finish_upload'           => wp_create_nonce( 'theplatform-ajax-nonce-finish_upload' ),
-				'cancel_upload'           => wp_create_nonce( 'theplatform-ajax-nonce-cancel_upload' ),
+				'initialize_media_upload' => wp_create_nonce( 'theplatform-ajax-nonce-initialize_media_upload' ),				
 				'publish_media'           => wp_create_nonce( 'theplatform-ajax-nonce-publish_media' )
 			)
 		) );

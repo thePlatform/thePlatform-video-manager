@@ -29,17 +29,10 @@ class ThePlatform_Proxy {
 
 	function __construct() {
 		if ( is_admin() ) {
-			add_action( 'wp_ajax_start_upload', array( $this, 'start_upload' ) );
-			add_action( 'wp_ajax_upload_status', array( $this, 'upload_status' ) );
-			add_action( 'wp_ajax_upload_fragment', array( $this, 'upload_fragment' ) );
-			add_action( 'wp_ajax_finish_upload', array( $this, 'finish_upload' ) );
-			add_action( 'wp_ajax_cancel_upload', array( $this, 'cancel_upload' ) );
 			add_action( 'wp_ajax_publish_media', array( $this, 'publish_media' ) );
 			add_action( 'wp_ajax_revoke_media', array( $this, 'revoke_media' ) );
 		}
 	}
-
-	private $cookies;
 
 	private function check_nonce_and_permissions( $action = "" ) {
 		if ( empty( $action ) ) {
@@ -74,9 +67,6 @@ class ThePlatform_Proxy {
 
 		$parsedResponse = theplatform_decode_json_from_server( $response, false );
 
-		if ( isset( $this->cookie ) ) {
-			$parsedResponse['cookie'] = array( 'name' => $this->cookie->name, 'value' => $this->cookie->value );
-		}
 		wp_send_json_success( $parsedResponse );
 	}
 
@@ -110,69 +100,6 @@ class ThePlatform_Proxy {
 		}
 
 		return $response;
-	}
-
-	public function start_upload() {
-		$this->check_nonce_and_permissions( $_POST['action'] );
-
-		$response     = $this->proxy_http_request();
-		$this->cookie = $response['cookies'][0];
-
-		$this->check_theplatform_proxy_response( $response );
-
-		wp_send_json_error( "Shouldn't be here." );
-	}
-
-	public function upload_status() {
-		$this->check_nonce_and_permissions( $_POST['action'] );
-
-		$response = $this->proxy_http_request();
-		$this->check_theplatform_proxy_response( $response, true );
-
-		wp_send_json_error( "Shouldn't be here." );
-	}
-
-	public function upload_fragment() {
-
-		$this->check_nonce_and_permissions( $_POST['action'] );
-
-		$file = file_get_contents( $_FILES['file']['tmp_name'] );
-		$data = array(
-			'body'    => $file,
-			'timeout' => 120,
-			'headers' => array( 'content-type' => 'application/x-www-form-urlencode; charset=UTF-8' )
-		);
-
-		$response = $this->proxy_http_request( $data );
-
-		$this->check_theplatform_proxy_response( $response );
-
-		wp_send_json_error( "Shouldn't be here." );
-	}
-
-	public function finish_upload() {
-		$this->check_nonce_and_permissions( $_POST['action'] );
-
-		$data = array(
-			'body'    => 'finished',
-			'timeout' => 30
-		);
-
-		$response = $this->proxy_http_request( $data );
-
-		$this->check_theplatform_proxy_response( $response );
-
-		wp_send_json_error( "Shouldn't be here." );
-	}
-
-	public function cancel_upload() {
-		$this->check_nonce_and_permissions( $_POST['action'] );
-
-		$response = $this->proxy_http_request();
-		$this->check_theplatform_proxy_response( $response );
-
-		wp_send_json_error( "Shouldn't be here." );
-
 	}
 
 	/**

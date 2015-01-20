@@ -336,7 +336,7 @@ var theplatform_edit = (function($) {
                 source: 'theplatform_upload_data'
             }
 
-            window.onmessage = function() {
+            window.onmessage = function(e) {
                 if (e.data == 'theplatform_uploader_ready') {
                     upload_window.postMessage(uploaderData, '*');
                 }
@@ -375,7 +375,7 @@ var theplatform_edit = (function($) {
                 source: 'theplatform_upload_data'
             };
 
-            window.onmessage = function() {
+            window.onmessage = function(e) {
                 if (e.data == 'theplatform_uploader_ready') {
                     upload_window.postMessage(uploaderData, '*');
                 }
