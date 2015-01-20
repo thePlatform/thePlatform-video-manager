@@ -284,7 +284,11 @@ class ThePlatform_HTML {
 				$html .= '<div class="col-xs-5">';
 				$html .= '<div class="form-group">';
 				$html .= '<label class="control-label" for="theplatform_upload_' . esc_attr( $basic_field ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
-				$html .= '<input name="' . esc_attr( $basic_field ) . '" id="theplatform_upload_' . esc_attr( $basic_field ) . '" class="form-control upload_field" type="text" />'; //upload_field
+				$html .= '<input name="' . esc_attr( $basic_field ) . '" id="theplatform_upload_' . esc_attr( $basic_field ) . '" class="form-control upload_field" type="text" placeholder="' . esc_attr( ucfirst( $field_title ) ) . '"';
+				if ( $basic_field == 'title' ) {
+					$html .= ' autofocus ';	// Autofocus on title
+				} 				
+				$html .= '/>';
 				$html .= '</div>';
 				$html .= '</div>';
 				$i ++;
