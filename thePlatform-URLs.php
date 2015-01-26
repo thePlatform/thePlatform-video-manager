@@ -47,6 +47,7 @@ class ThePlatform_URLs {
 				define( 'TP_API_PUBLISH_DATA_BASE_URL', 'http://data.publish.theplatform.com/publish/data/' );
 				define( 'TP_API_FMS_BASE_URL', 'http://fms.theplatform.com/web/FileManagement/' );
 				define( 'TP_API_PLAYER_EMBED_BASE_URL', '//player.theplatform.com/p/' );
+				define( 'TP_API_TASK_BASE_URL', 'http://data.task.theplatform.com/task/data/');
 				break;
 			case 'eu':
 				define( 'TP_API_ADMIN_IDENTITY_BASE_URL', 'https://identity.auth.theplatform.eu/idm/web/Authentication/' );
@@ -59,6 +60,7 @@ class ThePlatform_URLs {
 				define( 'TP_API_PUBLISH_DATA_BASE_URL', 'http://data.publish.theplatform.eu/publish/data/' );
 				define( 'TP_API_FMS_BASE_URL', 'http://fms.theplatform.eu/web/FileManagement/' );
 				define( 'TP_API_PLAYER_EMBED_BASE_URL', '//player.theplatform.eu/p/' );
+				define( 'TP_API_TASK_BASE_URL', 'http://data.task.theplatform.eu/task/data/');
 				break;
 			default:
 				wp_die( 'Invalid Region. Cannot match on region: ' . $region );
@@ -74,6 +76,7 @@ class ThePlatform_URLs {
 
 		// Media Data Service URLs
 		define( 'TP_API_MEDIA_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Media?schema=1.7.0&searchSchema=1.0&form=cjson' );
+		define( 'TP_API_MEDIA_FILE_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'MediaFile?schema=1.7.0&form=cjson' );
 		define( 'TP_API_MEDIA_FIELD_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Media/Field?schema=1.7.0&form=cjson' );
 		define( 'TP_API_MEDIA_SERVER_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Server?schema=1.7.0&form=cjson' );
 		define( 'TP_API_MEDIA_RELEASE_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Release?schema=1.7.0&form=cjson' );
@@ -95,8 +98,13 @@ class ThePlatform_URLs {
 		// Publish Data Service URLs
 		define( 'TP_API_PUBLISH_PROFILE_ENDPOINT', TP_API_PUBLISH_DATA_BASE_URL . 'PublishProfile?schema=1.5.0&form=json' );
 
+		// Task Data Service URLs
+		define( 'TP_API_TASK_TEMPLATE_ENDPOINT', TP_API_TASK_BASE_URL . 'TaskTemplate?schema=1.3.0&form=cjson' );
+
 		// FMS URLs
-		define( 'TP_API_FMS_GET_UPLOAD_URLS_ENDPOINT', TP_API_FMS_BASE_URL . 'getUploadUrls?schema=1.4&form=json' );
+		define( 'TP_API_FMS_GET_UPLOAD_URLS_ENDPOINT', TP_API_FMS_BASE_URL . 'getUploadUrls?schema=1.5&form=json' );
+		define( 'TP_API_FMS_GENERATE_THUMBNAIL_ENDPOINT', TP_API_FMS_BASE_URL . 'generateNewFiles?schema=1.5&form=json' );
+
 	}
 
 	/**

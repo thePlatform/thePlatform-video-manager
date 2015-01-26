@@ -55,6 +55,7 @@ function TP_PREFERENCES_OPTIONS_DEFAULTS() {
 		'default_player_pid'   => '',
 		'mpx_server_id'        => 'DEFAULT_SERVER',
 		'default_publish_id'   => 'tp_wp_none',
+		'thumbnail_profile_id' => '',
 		'user_id_customfield'  => '(None)',
 		'transform_user_id_to' => 'nickname',
 		'filter_by_user_id'    => 'false',
@@ -119,7 +120,8 @@ function TP_PREFERENCES_OPTIONS_FIELDS() {
 			array( 'id' => 'transform_user_id_to', 'title' => 'Show User ID as', 'type' => 'select', 'values' => array( 'Email' => 'email', 'Full Name' => 'full_name', 'Nickname' => 'nickname', 'Username' => 'username' ) ),
 			array( 'id' => 'embed_hook', 'title' => 'Plugin Embed button type', 'type' => 'select', 'values' => array( 'Media Button' => 'mediabutton', 'Editor Button' => 'tinymce', 'Both' => 'both' ) ),
 			array( 'id' => 'mpx_server_id', 'title' => 'MPX Upload Server', 'type' => 'callback' ),
-			array( 'id' => 'default_publish_id', 'title' => 'Default Publishing Profile', 'type' => 'callback' )
+			array( 'id' => 'default_publish_id', 'title' => 'Default Publishing Profile', 'type' => 'callback' ),
+			array( 'id' => 'thumbnail_profile_id', 'title' => 'Thumbnail Encoding Profile', 'type' => 'callback' )
 		)
 		)
 	);

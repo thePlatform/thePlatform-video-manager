@@ -846,6 +846,110 @@ class ThePlatform_API {
 	}
 
 	/**
+	 * Query MPX for Task Templates for generating Thumbnails associated with the configured account
+	 *
+	 * @param array $fields Optional set of fields to request from the data service
+	 *
+	 * @return array The Media data service response
+	 */
+	function get_thumbnail_encoding_profiles( $fields = array() ) {
+		$default_fields = array( 'id', 'title' );
+
+		$fieldsString = implode( ',', array_merge( $default_fields, $fields ) );
+
+		$token = $this->mpx_signin();
+
+		$url = TP_API_TASK_TEMPLATE_ENDPOINT . '&byTaskType=thePlatform.RMP.Task.ImageGenerator&fields=' . $fieldsString . '&token=' . $token . '&sort=title';
+
+		if ( $this->get_mpx_account_id() ) {
+			$url .= '&account=' . $this->get_mpx_account_id();
+		}
+
+		$response = ThePlatform_API_HTTP::get( $url );
+
+		$data = theplatform_decode_json_from_server( $response );
+
+		if ( array_key_exists( 'success', $data ) && $data['success'] == false ) {
+			return array();
+		}
+
+		return $data['entries'];
+	}
+
+	function generate_thumbnail() {
+		check_admin_referer( 'theplatform-ajax-nonce-generate_thumbnail' );
+		
+		if ( isset( $_POST['time'] ) {
+			$time = $_POST['time'];
+		}
+		$mediaId = $_POST['mediaId'];
+		$taskTemplateId = $this->preferences['thumbnail_profile_id'];
+
+		$mediaFiles = get_media_files_by_media_id( $mediaId );
+		
+		// Get the nearest video in size
+		foreach ($mediaFiles as $file) {
+			if ( $file['width'] == $task['width'] ) {
+				$mediaFileId = $file['id'];
+				break;
+			} else if ( $file['width'] < $task['width'] ) {
+				continue;
+			} else {
+				$mediaFileId = $file['id'];
+			}
+		}
+
+		// We couldn't find a video bigger than the thumbnail template
+		// Get the biggest one and crop it
+		if ( empty( $mediaFileId ) ) {
+			$mediaFilesSize = count( $mediaFiles );
+			$mediaFildId = $mediaFiles[ $mediaFilesSize ]['id'];
+			$crop = true;
+			$mediaHeight = $mediaFiles[ $mediaFilesSize ]['height'];
+			$mediaWidth = $mediaFiles[ $mediaFilesSize ]['width'];
+		}
+
+		$url = TP_API_FMS_GENERATE_THUMBNAIL_ENDPOINT;
+		$url .= '_sourceFileIds[0]=' . urlencode( $mediaFileId );
+		$url .= '_transformId=' . urlencode( $taskTemplateId );
+		$url .= '_mediaId=' . urlencode( $mediaId );
+		$url .= '_mediaFileSettings[0].mediaFileInfo.contentType=image';
+		$url .= '_mediaFileSettings[0].mediaFileInfo.isThumbnail=true';
+
+		if ( isset( $time ) ) {
+			$url .= '_transformArguments[0].name=startTime';
+			$url .= '_transformArguments[0].value=' . $time;	
+		}
+		
+		if ( $crop == true ) {
+			$url .= '_transformArguments[1].name=cropTop';
+			$url .= '_transformArguments[1].value=0';
+			$url .= '_transformArguments[2].name=cropWidth';
+			$url .= '_transformArguments[2].value=' . $mediaWidth;
+			$url .= '_transformArguments[3].name=cropHeight';
+			$url .= '_transformArguments[3].value='. $mediaHeight;
+		}
+		
+
+		ThePlatform_API_HTTP::get( $url );
+	}
+
+	function get_video_files_by_media_id( $mediaId, $fields = array() ) {
+		$default_fields = array( 'id', 'title', 'width', 'height', 'disabled' );
+		$fieldsString = implode( ',', array_merge( $default_fields, $fields ) );
+
+		$url = TP_MEDIA_FILE_ENDPOINT;
+		$url .= '&byMediaId=' . urlencode( $mediaId );
+		$url .= '&fields=' . $fieldsString;
+		$url .= '&byContentType=video';
+		$url .= '&sort=width';
+
+		$response = ThePlatform_API_HTTP::get( TP_MEDIA_FILE_ENDPOINT )
+
+		return theplatform_decode_json_from_server( $response );
+	}
+
+	/**
 	 * Return publish profile results for the provided media
 	 *
 	 * @param  string $mediaId mpx Media ID

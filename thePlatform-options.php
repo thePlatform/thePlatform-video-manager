@@ -306,6 +306,23 @@ class ThePlatform_Options {
 		echo $html;
 	}
 
+	function field_thumbnail_profile_id_option( $args ) {
+		$field   = $args['field'];
+		$options = $args['options'];
+		$name    = $args['key'] . '[' . $field['id'] . ']';
+		$html    = '<select class="tpOption" id="' . esc_attr( $field['id'] ) . '" name="' . esc_attr( $name ) . '">';
+		$html .= '<option value="tp_wp_none">None</option>';
+
+		if ( $this->account_options['mpx_account_id'] !== '' ) {
+			$profiles = $this->tp_api->get_thumbnail_encoding_profiles();
+			foreach ( $profiles as $profile ) {
+				$html .= '<option value="' . esc_attr( $profile['title'] ) . '"' . selected( $options[ $field['id'] ], $profile['title'], false ) . '>' . esc_html( $profile['title'] ) . '</option>';
+			}
+		}
+		$html .= '</select>';
+		echo $html;
+	}
+
 	function field_user_id_customfield_option( $args ) {
 		$field   = $args['field'];
 		$options = $args['options'];
