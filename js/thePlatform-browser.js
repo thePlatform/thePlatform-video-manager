@@ -39,13 +39,12 @@ var theplatform_browser = (function($) {
             var queryObject = {
                 search: $('#input-search').val(),
                 category: tpHelper.selectedCategory,
-                sort: Search.getSort(),
-                desc: $('#sort-desc').data('sort'),
+                sort: $('#selectpick-sort').val(),
+                order: $('#selectpick-order').val(),
                 myContent: $('#my-content-cb').prop('checked')
             };
 
-            tpHelper.queryParams = queryObject;
-            var newFeed = API.buildMediaQuery(queryObject);
+            tpHelper.queryParams = queryObject;            
 
             tpHelper.queryString = API.buildMediaQuery(queryObject);
             tpHelper.feedEndRange = 0;
@@ -216,34 +215,6 @@ var theplatform_browser = (function($) {
                 UI.updateContentPane(media);
                 Holder.run();
             });
-        }
-    }
-
-    /**
-     * Search bar functionality
-     * @type {Object}
-     */
-    var Search = {
-        getSort: function() {
-            var sortMethod = $('option:selected', '#selectpick-sort').val();
-
-            switch (sortMethod) {
-                case "Added":
-                    sortMethod = "added|desc";
-                    break;
-                case "Updated":
-                    sortMethod = "updated|desc";
-                    break;
-                case "Title":
-                    sortMethod = "title";
-                    break;
-            }
-
-            return sortMethod || "added";
-        },
-
-        getSearch: function() {
-            return $('#input-search').val();
         }
     }
 
@@ -497,12 +468,11 @@ var theplatform_browser = (function($) {
             if (data.search) {
                 queryParams = queryParams.appendParams({
                     q: encodeURIComponent(data.search)
-                });
-                data.sort = ''; //Workaround because solr hates sorts.
+                });                
             }
 
             if (data.sort) {
-                var sortValue = data.sort + (data.desc ? '|desc' : '');
+                var sortValue = data.sort + data.order;
                 queryParams = queryParams.appendParams({
                     sort: sortValue
                 });
@@ -577,9 +547,7 @@ var theplatform_browser = (function($) {
         /**
          * Search form event handlers
          */
-        $('#btn-feed-preview').click(UI.refreshView);
-        $('input:checkbox', '#my-content').click(UI.refreshView);
-        $('#selectpick-sort').on('change', UI.refreshView);
+        $('#btn-search').click(UI.refreshView);
         $('#input-search').keyup(function(event) {
             if (event.keyCode == 13)
                 UI.refreshView();

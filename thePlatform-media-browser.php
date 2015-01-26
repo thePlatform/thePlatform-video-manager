@@ -126,30 +126,30 @@ $tp_html = new ThePlatform_HTML();
 			<div class="form-group">
 				<input id="input-search" type="text" class="form-control" placeholder="Keywords">
 			</div>
-			<button id="btn-feed-preview" type="button" class="btn btn-default">Search</button>
+			<div class="form-group">
+				<label for="selectpick-sort" style="font-weight: normal">Sort By:</label>
+				<select id="selectpick-sort" class="form-control">
+					<option value="added">Added</option>
+					<option value="title">Title</option>
+					<option value="updated">Updated</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<label for="selectpick-order" style="font-weight: normal">Order By:</label>
+				<select id="selectpick-order" class="form-control">
+					<option value="|desc">Descending</option>
+					<option value="">Ascending</option>					
+				</select>
+			</div>			
+			<?php if ( $preferences['user_id_customfield'] !== '(None)' ) { ?>
+			<div class="form-group">
+				<input type="checkbox"
+				       id="my-content-cb" <?php checked( $preferences['filter_by_user_id'] === 'true' ); ?> />
+				<label for="my-content-cb" style="font-weight: normal">My Content</label>
+			</div>
+			<?php } ?>
+			<button id="btn-search" type="button" class="btn btn-primary" style="margin-left: 10px">Search</button>
 		</form>
-
-		<!-- Sort dropdown -->
-		<p class="navbar-text sort-bar-text">Sort:</p>
-
-		<form class="navbar-form navbar-left sort-bar-nav" role="sort">
-			<select id="selectpick-sort" class="form-control">
-				<option>Added</option>
-				<option>Title</option>
-				<option>Updated</option>
-			</select>
-		</form>
-
-		<!-- My Content Checkbox -->
-		<div id="my-content" class="navbar-left">
-			<p class="navbar-text sort-bar-text">
-				<?php if ( $preferences['user_id_customfield'] !== '(None)' ) { ?>
-					<input type="checkbox"
-					       id="my-content-cb" <?php checked( $preferences['filter_by_user_id'] === 'true' ); ?> />
-					<label for="my-content-cb" style="font-weight: normal">My Content</label>
-				<?php } ?>
-			</p>
-		</div>
 
 		<!-- Player dropdown -->
 		<?php

@@ -255,3 +255,7 @@ header {
 .navbar-text {
     color: #666666 !important;
 }
+
+.navbar-form .form-group {
+    margin-left: 10px;
+}
