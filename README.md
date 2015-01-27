@@ -2,7 +2,7 @@
 Developed By: thePlatform LLC  
 Tags: embedding, video, embed, portal, theplatform, shortcode  
 Requires at least: 3.7  
-Tested up to: 4.0  
+Tested up to: 4.2  
 Stable tag: 1.4.0
 
 Manage your content hosted by thePlatform and embed media in WordPress posts.
@@ -28,6 +28,7 @@ Copy the folder "thePlatform-video-manager" with all included files into the "wp
 ## = 1.4.0 = 
 * Added the ability to Publish, Revoke and Add Files to existing Media via the Edit dialog
 * Added Thumbnailing functionality
+* Support sorting search results
 * Updating media no longer requires to refresh the entire media browser
 * Added a button to reset plugin settings in the About page
 
