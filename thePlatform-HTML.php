@@ -58,7 +58,7 @@ class ThePlatform_HTML {
 			     src=""><!-- holder.js/128x72/text:No Thumbnail" -->
 			<div class="tpPlayer" id="player"
 			     tp:allowFullScreen="true"
-			     tp:skinUrl="//pdk.theplatform.com/current/pdk/skins/glass/glass.json"
+			     tp:skinUrl="//pdk.theplatform.com/current/pdk/skins/flat/flat.json"
 			     tp:layoutUrl="<?php echo plugins_url( '/assets/layout.xml', __FILE__ ) ?>"
 			     tp:showFullTime="true"
 			     tp:controlBackgroundColor="0xbbbbbb"
@@ -77,8 +77,8 @@ class ThePlatform_HTML {
 			     tp:scrubberColor="0x111111"
 			     tp:scrubTrackColor="0x111111"
 			     tp:pageBackgroundColor="0xeeeeee"
-			     tp:plugin1="type=content|url=//pdk.theplatform.com/current/pdk/swf/akamaiHD.swf|fallback=switch%3Dhttp|bufferProfile=livestable|priority=1|videoLayer=akamaihd"
-			     tp:plugin2="type=content|url=//pdk.theplatform.com/current/pdk/js/plugins/akamaiHD.js|fallback=switch%3Dhttp|bufferProfile=livestable|priority=1|videoLayer=akamaihd">
+			     tp:plugin1="type=content|url=//pdk.theplatform.com/current/pdk/swf/akamaiHD.swf|fallback=switch%3Dhttp|bufferProfile=livestable|priority=1|videoLayer=akamaihd|manifest=true"
+			     tp:plugin2="type=content|url=//pdk.theplatform.com/current/pdk/js/plugins/akamaiHD.js|fallback=switch%3Dhttp|bufferProfile=livestable|priority=1|videoLayer=akamaihd|manifest=true">
 				<noscript class="tpError">To view this site, you need to have JavaScript enabled in your browser, and
 					either the Flash Plugin or an HTML5-Video enabled browser. Download <a
 						href="http://get.adobe.com/flashplayer/" target="_black">the latest Flash player</a> and try
