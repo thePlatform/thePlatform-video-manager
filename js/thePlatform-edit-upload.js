@@ -226,16 +226,16 @@ var theplatform_edit = (function($) {
     var UI = {
         onSuccess: function(response, button) {
             if (response.success && !_.has(response.data, 'isException')) {
-                jQuery(button).text('Success').removeClass('btn-primary btn-success btn-danger btn-info').addClass('btn-success');
+                jQuery(button).text('Success').val('Success').removeClass('btn-primary btn-success btn-danger btn-info').addClass('btn-success');
             } else {
-                jQuery(button).text('Failed').removeClass('btn-primary btn-success btn-danger btn-info').addClass('btn-danger');
+                jQuery(button).text('Failed').val('Failed').removeClass('btn-primary btn-success btn-danger btn-info').addClass('btn-danger');
                 console.log(response.data.description);
             }
         },
 
         onComplete: function(button, value) {
             setTimeout(function() {
-                jQuery(button).text(value).removeClass('btn-primary btn-success btn-danger btn-info').addClass('btn-primary');
+                jQuery(button).text(value).val(value).removeClass('btn-primary btn-success btn-danger btn-info').addClass('btn-primary');
             }, 1500);
         },
 
@@ -493,6 +493,8 @@ var theplatform_edit = (function($) {
     });
 
     return {
-        updatePublishProfiles: UI.updatePublishProfiles
+        updatePublishProfiles: UI.updatePublishProfiles,
+        onSuccess: UI.onSuccess,
+        onComplete: UI.onComplete
     }
 })(jQuery);

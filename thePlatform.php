@@ -81,6 +81,7 @@ class ThePlatform_Plugin {
 			add_action( 'wp_ajax_get_video_by_id', array( $this->tp_api, 'get_video_by_id' ) );
 			add_action( 'wp_ajax_get_profile_results', array( $this->tp_api, 'get_profile_results' ) );
 			add_action( 'wp_ajax_set_thumbnail', array( $this, 'set_thumbnail_ajax' ) );
+			add_action( 'wp_ajax_generate_thumbnail', array( $this->tp_api, 'generate_thumbnail' ) );
 			add_action( 'admin_init', array( $this, 'theplatform_tinymce_button' ) );
 			add_action( 'media_buttons', array( $this, 'theplatform_media_button' ), 20 );
 		}
@@ -115,7 +116,7 @@ class ThePlatform_Plugin {
 		wp_register_script( 'tp_nprogress_js', plugins_url( '/js/nprogress.js', __FILE__ ) );
 		wp_register_script( 'tp_edit_upload_js', plugins_url( '/js/thePlatform-edit-upload.js', __FILE__ ), array( 'jquery' ) );
 		wp_register_script( 'tp_file_uploader_js', plugins_url( '/js/theplatform-uploader.js', __FILE__ ), array( 'jquery', 'tp_nprogress_js' ) );
-		wp_register_script( 'tp_browser_js', plugins_url( '/js/thePlatform-browser.js', __FILE__ ), array( 'jquery', 'underscore', 'jquery-ui-dialog', 'tp_holder_js', 'tp_pdk_js', 'tp_infiniscroll_js', 'tp_bootstrap_js' ) );
+		wp_register_script( 'tp_browser_js', plugins_url( '/js/thePlatform-browser.js', __FILE__ ), array( 'jquery', 'underscore', 'jquery-ui-dialog', 'tp_holder_js', 'tp_pdk_js', 'tp_infiniscroll_js', 'tp_bootstrap_js', 'tp_nprogress_js' ) );
 		wp_register_script( 'tp_options_js', plugins_url( '/js/thePlatform-options.js', __FILE__ ), array( 'jquery', 'jquery-ui-sortable' ) );
 
 
@@ -145,7 +146,8 @@ class ThePlatform_Plugin {
 				'get_video_by_id'     => wp_create_nonce( 'theplatform-ajax-nonce-get_video_by_id' ),
 				'get_categories'      => wp_create_nonce( 'theplatform-ajax-nonce-get_categories' ),
 				'get_profile_results' => wp_create_nonce( 'theplatform-ajax-nonce-profile_result' ),
-				'set_thumbnail'       => wp_create_nonce( 'theplatform-ajax-nonce-set_thumbnail' )
+				'set_thumbnail'       => wp_create_nonce( 'theplatform-ajax-nonce-set_thumbnail' ),
+				'generate_thumbnail'  => wp_create_nonce( 'theplatform-ajax-nonce-generate_thumbnail' )
 			)
 		) );
 
@@ -157,7 +159,7 @@ class ThePlatform_Plugin {
 		) );
 
 		wp_register_style( 'tp_edit_upload_css', plugins_url( '/css/thePlatform-edit-upload.css', __FILE__ ), array( 'tp_bootstrap_css' ) );
-		wp_register_style( 'tp_browser_css', plugins_url( '/css/thePlatform-browser.css', __FILE__ ), array( 'tp_edit_upload_css', 'tp_bootstrap_css', 'wp-jquery-ui-dialog' ) );
+		wp_register_style( 'tp_browser_css', plugins_url( '/css/thePlatform-browser.css', __FILE__ ), array( 'tp_edit_upload_css', 'tp_bootstrap_css', 'wp-jquery-ui-dialog', 'tp_nprogress_css' ) );
 		wp_register_style( 'tp_bootstrap_css', plugins_url( '/css/bootstrap.min.css', __FILE__ ) );
 		wp_register_style( 'tp_options_css', plugins_url( '/css/thePlatform-options.css', __FILE__ ) );
 		wp_register_style( 'tp_nprogress_css', plugins_url( '/css/nprogress.css', __FILE__ ) );

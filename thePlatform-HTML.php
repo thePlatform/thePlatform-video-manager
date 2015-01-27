@@ -173,15 +173,16 @@ class ThePlatform_HTML {
 			<div id="btn-container">
 				<?php if ( $IS_EMBED ) { ?>
 					<div class="btn-group">
-						<input type="button" id="btn-embed" class="btn btn-default btn-xs" value="Embed">
-						<input type="button" id="btn-embed-close" class="btn btn-default btn-xs" value="Embed & Close">
-						<input type="button" id="btn-set-image" class="btn btn-default btn-xs"
+						<input type="button" id="btn-embed" class="btn btn-primary btn-xs btn-embed" value="Embed">
+						<input type="button" id="btn-embed-close" class="btn btn-primary btn-xs btn-embed" value="Embed & Close">
+						<input type="button" id="btn-set-image" class="btn btn-primary btn-xs btn-embed"
 						       value="Set Featured Image">
 					</div>
 				<?php
 				} else {
 					?>
-					<input type="button" id="btn-edit" class="btn btn-default btn-xs" value="Edit Media">
+					<input type="button" id="btn-edit" class="btn btn-primary btn-xs" value="Edit Media">
+					<input type="button" id="btn-generate-thumbnail" class="btn btn-primary btn-xs" value="Generate Thumbnail">
 				<?php } ?>
 			</div>
 		</div> <?php

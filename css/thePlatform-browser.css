@@ -94,11 +94,6 @@ header {
         width: 180px;
     }
 
-    #load-overlay.affix, #load-overlay.affix-top {
-        position: fixed;
-        top: 0;
-    }
-
     #feed-affix.affix, #feed-affix.affix-top {
         position: fixed;
         bottom: 0;
@@ -236,12 +231,16 @@ header {
     background-color: #f5f5f5;
 }
 
+.btn-embed {
+    margin-right: 5px;
+}
+
 .category.selected, .media.selected {
     background-color: #D8E8FF !important;
 }
 
 #selectpick-player {
-    width: 270px;
+    width: 190px;
 }
 
 .navbar-brand > img {
@@ -258,4 +257,8 @@ header {
 
 .navbar-form .form-group {
     margin-left: 10px;
+}
+
+#btn-generate-thumbnail {
+    width: 145px;
 }

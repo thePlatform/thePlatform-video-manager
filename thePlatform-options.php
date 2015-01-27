@@ -316,7 +316,7 @@ class ThePlatform_Options {
 		if ( $this->account_options['mpx_account_id'] !== '' ) {
 			$profiles = $this->tp_api->get_thumbnail_encoding_profiles();
 			foreach ( $profiles as $profile ) {
-				$html .= '<option value="' . esc_attr( $profile['title'] ) . '"' . selected( $options[ $field['id'] ], $profile['title'], false ) . '>' . esc_html( $profile['title'] ) . '</option>';
+				$html .= '<option value="' . esc_attr( $profile['id'] ) . '"' . selected( $options[ $field['id'] ], $profile['id'], false ) . '>' . esc_html( $profile['title'] ) . '</option>';
 			}
 		}
 		$html .= '</select>';

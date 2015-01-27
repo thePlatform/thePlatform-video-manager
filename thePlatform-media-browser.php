@@ -158,9 +158,6 @@ $tp_html = new ThePlatform_HTML();
 		}
 		?>
 
-		<!-- Loading Image -->
-		<img id="load-overlay" alt="Loading..."
-		     src="<?php echo esc_url( plugins_url( '/images/loading.gif', __FILE__ ) ) ?>" class="loadimg navbar-right">
 	</div>
 	<!-- /.container-fluid -->
 </div>

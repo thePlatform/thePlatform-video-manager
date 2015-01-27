@@ -44,7 +44,7 @@ var theplatform_browser = (function($) {
                 myContent: $('#my-content-cb').prop('checked')
             };
 
-            tpHelper.queryParams = queryObject;            
+            tpHelper.queryParams = queryObject;
 
             tpHelper.queryString = API.buildMediaQuery(queryObject);
             tpHelper.feedEndRange = 0;
@@ -329,9 +329,44 @@ var theplatform_browser = (function($) {
             }).css("overflow", "hidden");
             return false;
         },
+        onGenerateThumbnail: function() {
+            if ( $(this).val() == 'Generating' ) {
+                return;
+            }          
+                  
+            $(this).val('Generating').removeClass('btn-primary btn-success btn-danger btn-info').addClass('btn-info');
+            var data = {
+                action: 'generate_thumbnail',
+                mediaId: tpHelper.mediaId,
+                _wpnonce: tp_browser_local.tp_nonce['generate_thumbnail']
+            };
+
+            if (!_.isUndefined(tpHelper.currentMediaTime)) {
+                data.time = tpHelper.currentMediaTime;
+            }
+            var me = this;
+            $.ajax({
+                url: tp_browser_local.ajaxurl,
+                method: 'post',
+                data: data,
+                success: function(response) {
+                    theplatform_edit.onSuccess(response, me)
+                },
+                complete: function(response) {
+                    theplatform_edit.onComplete(me, "Generate Thumbnail")
+                }
+
+            });
+        },
+        onMediaPlaying: function(media) {
+            tpHelper.currentMediaTime = media.data.currentTimeAggregate;
+        },
+        OnLoadReleaseUrl: function(release) {
+            tpHelper.currentMediaTime = undefined;
+        },
         onMediaListBottom: function(callback) {
             var MAX_RESULTS = 20;
-            $('#load-overlay').show(); // show loading before we call getVideos
+            NProgress.start(); // show loading before we call getVideos
             var theRange = parseInt(tpHelper.feedEndRange);
             theRange = (theRange + 1) + '-' + (theRange + MAX_RESULTS);
             API.getVideos(theRange, function(resp) {
@@ -349,7 +384,7 @@ var theplatform_browser = (function($) {
                     UI.addMediaObject(entries[i]);
                 }
 
-                $('#load-overlay').hide();
+                NProgress.done();
                 Holder.run();
                 callback(parseInt(tpHelper.feedResultCount) == MAX_RESULTS); //True if there are still more results.              
             });
@@ -423,8 +458,7 @@ var theplatform_browser = (function($) {
                             urls.push(content.releases[releaseIndex].pid);
                     }
                 }
-            }
-            ;
+            };
 
             return urls;
         }
@@ -451,7 +485,7 @@ var theplatform_browser = (function($) {
                 viewLoading = false;
                 if (!resp.success) {
                     UI.notifyUser('danger', resp.data);
-                    $('#load-overlay').hide();
+                    NProgress.done();
                 } else {
                     callback(resp.data);
                 }
@@ -468,7 +502,7 @@ var theplatform_browser = (function($) {
             if (data.search) {
                 queryParams = queryParams.appendParams({
                     q: encodeURIComponent(data.search)
-                });                
+                });
             }
 
             if (data.sort) {
@@ -532,14 +566,15 @@ var theplatform_browser = (function($) {
     $(document).ready(function() {
         if (!_.isUndefined(window.$pdk)) {
             $pdk.initialize();
-        }
-
-        $('#load-overlay').hide();
+            $pdk.controller.addEventListener('OnMediaPlaying', Events.onMediaPlaying)
+            $pdk.controller.addEventListener('OnLoadReleaseUrl', Events.onLoadReleaseUrl)
+        }        
 
         $('#btn-embed').click(Events.onEmbed);
         $('#btn-embed-close').click(Events.onEmbedAndClose);
         $('#btn-set-image').click(Events.onSetImage);
         $('#btn-edit').click(Events.onEditMetadata);
+        $('#btn-generate-thumbnail').click(Events.onGenerateThumbnail);
 
         // Only allow scrolling on the current column were on
         $('.scrollable').on('DOMMouseScroll mousewheel', Events.onMouseScroll);
