@@ -26,7 +26,8 @@ Copy the folder "thePlatform-video-manager" with all included files into the "wp
 # == Changelog ==
 
 ## = 1.4.0 = 
-* Added support to revoke/add files/publish existing media
+* Added the ability to Publish, Revoke and Add Files to existing Media via the Edit dialog
+* Added Thumbnailing functionality
 * Updating media no longer requires to refresh the entire media browser
 * Added a button to reset plugin settings in the About page
 
@@ -160,7 +161,8 @@ This plugin requires an account with thePlatform's MPX. Please contact your Acco
 * Show User ID as - If the User ID Custom Field is visible to editors, we will substitute it by either the user Full Name, Email, Nickname or Username
 * Plugin Embed button type - Determine if thePlatform button should appear as a media_button, a TinyMCE button or both
 * MPX Upload Server - Default MPX server to upload new media to, Default Server will attempt to intelligently pick a server
-* Default Publish Profile - If set, uploaded media will automatically publish to the selected profile. 
+* Default Publish Profile - If set, uploaded media will automatically publish to the selected profile
+* Thumbnail Encoding Profile - The Encoding Profile to use when generating new thumbnails via the plugin
 
 ## = Filters =
 * tp_base_embed_url - Just the player URL
