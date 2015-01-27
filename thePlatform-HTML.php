@@ -147,20 +147,21 @@ class ThePlatform_HTML {
 				}
 				?>
 			</div>
-			<div id="btn-container">
+			<div id="btn-container" class="metadata-buttons">
 				<?php if ( $IS_EMBED ) { ?>
 					<div class="btn-group">
-						<input type="button" id="btn-embed" class="btn btn-primary btn-xs btn-embed" value="Embed">
-						<input type="button" id="btn-embed-close" class="btn btn-primary btn-xs btn-embed" value="Embed & Close">
-						<input type="button" id="btn-set-image" class="btn btn-primary btn-xs btn-embed"
+						<input type="button" id="btn-embed" class="btn btn-primary btn-xs btn-metadata" value="Embed">
+						<input type="button" id="btn-embed-close" class="btn btn-primary btn-xs btn-metadata" value="Embed & Close">
+						<input type="button" id="btn-set-image" class="btn btn-primary btn-xs btn-metadata"
 						       value="Set Featured Image">
 					</div>
 				<?php
-				} else {
-					?>
-					<input type="button" id="btn-edit" class="btn btn-primary btn-xs" value="Edit Media">
-					<input type="button" id="btn-generate-thumbnail" class="btn btn-primary btn-xs" value="Generate Thumbnail">
-				<?php } ?>
+				} else {					
+					echo '<input type="button" id="btn-edit" class="btn btn-primary btn-xs btn-metadata" value="Edit Media">';					
+					if ( $this->preferences['thumbnail_profile_id'] != 'tp_wp_none' )  {
+						echo '<input type="button" id="btn-generate-thumbnail" class="btn btn-primary btn-xs btn-metadata" value="Generate Thumbnail">';
+					}
+				 } ?>
 			</div>
 		</div> <?php
 	}

@@ -886,6 +886,9 @@ class ThePlatform_API {
 		$taskTemplateId = $this->preferences['thumbnail_profile_id'];
 		$task = $this->get_task_template_by_id( $taskTemplateId );
 
+		if ( $task == false ) {
+			wp_send_json_error( array( 'description' => 'Profile ID not found' ) );
+		}
 
 		foreach ( $task['taskArguments'] as $argument ) {			
 			if ( $argument['name'] == 'width' ) {
@@ -908,7 +911,7 @@ class ThePlatform_API {
 			$mediaFilesSize = count( $mediaFiles ) - 1;
 
 			if ( $mediaFilesSize < 0 ) {
-				wp_send_json_error('No Media Files Found');
+				wp_send_json_error( array( 'description' => 'No Media Files Found' ) );
 			}
 			$mediaFileId = $mediaFiles[ $mediaFilesSize ]['id'];			
 			$crop = true;
@@ -971,7 +974,13 @@ class ThePlatform_API {
 
 		$response = ThePlatform_API_HTTP::get( $url );
 
-		return theplatform_decode_json_from_server( $response )['entries'][0];
+		$data = theplatform_decode_json_from_server( $response );
+		
+		if ( count( $data['entries'] ) == 0 ) {
+			return false;
+		}
+
+		return $data['entries'][0];
 	}
 
 	/**
