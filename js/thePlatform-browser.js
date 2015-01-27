@@ -272,17 +272,11 @@ var theplatform_browser = (function($) {
                 player: player
             });
 
+
             var win = window.dialogArguments || opener || parent || top;
-            var editor = win.tinyMCE.activeEditor;
-            var isVisual = (typeof win.tinyMCE != "undefined") && editor && !editor.isHidden();
-            if (isVisual) {
-                editor.execCommand('mceInsertContent', false, shortcode.trim());
-            } else {
-                var currentContent = $('#content', window.parent.document).val();
-                if (typeof currentContent == 'undefined')
-                    currentContent = '';
-                $('#content', window.parent.document).val(currentContent + shortcode.trim());
-            }
+            
+            win.wp.media.editor.insert(shortcode.trim());
+           
         },
         onEmbedAndClose: function() {
             Events.onEmbed();
