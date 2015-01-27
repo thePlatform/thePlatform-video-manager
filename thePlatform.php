@@ -49,6 +49,9 @@ class ThePlatform_Plugin {
 		return self::$instance;
 	}
 
+	/**
+	 * Class constructor
+	 */
 	function __construct() {
 		require_once( dirname( __FILE__ ) . '/thePlatform-constants.php' );
 		require_once( dirname( __FILE__ ) . '/thePlatform-URLs.php' );
@@ -562,7 +565,9 @@ class ThePlatform_Plugin {
 		return $settings;
 	}
 
-
+	/**
+	 * Outputs thePlatform's Media Button
+	 */
 	function theplatform_media_button() {
 		if ( ! isset( $this->preferences ) ) {
 			$this->preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
@@ -575,6 +580,9 @@ class ThePlatform_Plugin {
 		}
 	}
 
+	/**
+	 * Enqueue thePlatform's media button callback
+	 */
 	function theplatform_enqueue_media_button_scripts() {
 		wp_enqueue_script( 'tp_media_button_js' );
 		wp_enqueue_style( 'wp-jquery-ui-dialog' );
@@ -589,7 +597,7 @@ add_action( 'admin_init', 'theplatform_register_plugin_settings' );
 
 
 /**
- * Registers initial plugin settings during initalization
+ * Registers initial plugin settings during initialization
  */
 function theplatform_register_plugin_settings() {
 	register_setting( TP_ACCOUNT_OPTIONS_KEY, TP_ACCOUNT_OPTIONS_KEY, 'theplatform_account_options_validate' );

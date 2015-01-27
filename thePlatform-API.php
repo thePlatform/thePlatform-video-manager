@@ -22,6 +22,14 @@
  */
 class ThePlatform_API_HTTP {
 
+	/**
+	 * Checks API calls for authentication errors, and re-authenticates if needed
+	 *
+	 * @param $response The response from thePlatform's API
+	 * @param $url The URL used to make the initial call that failed
+	 *
+	 * @return bool|string Returns the URL with a new authentication token if the call failed, or false if the call did not have an authentication error
+	 */
 	private static function check_for_auth_error( $response, $url ) {
 		// Sign in if the token is invalid/expired
 		$responseBody = wp_remote_retrieve_body( $response );
@@ -595,23 +603,30 @@ class ThePlatform_API {
 		wp_send_json_success( $this->transform_user_id( $data['entries'][0] ) );
 	}
 
-	function transform_user_id( $entry ) {
-		$key = $this->preferences['user_id_customfield'];
-		if ( array_key_exists( $this->preferences['user_id_customfield'], $entry ) ) {
-			$user = get_userdata( $entry[ $key ] );
+	/**
+	 * Transforms a numerical WordPress User ID from a custom field to a human readable value
+	 *
+	 * @param object $media MPX Media Object
+	 *
+	 * @return object Returns the same Media object back with the field transformed
+	 */
+	function transform_user_id( $media ) {
+		$customIdFieldName = $this->preferences['user_id_customfield'];
+		if ( array_key_exists( $this->preferences['user_id_customfield'], $media ) ) {
+			$user = get_userdata( $media[ $customIdFieldName ] );
 			if ( $user ) {
 				switch ( $this->preferences['transform_user_id_to'] ) {
 					case 'username':
-						$entry[ $key ] = $user->user_login;
+						$media[ $customIdFieldName ] = $user->user_login;
 						break;
 					case 'nickname':
-						$entry[ $key ] = $user->nickname;
+						$media[ $customIdFieldName ] = $user->nickname;
 						break;
 					case 'email':
-						$entry[ $key ] = $user->user_email;
+						$media[ $customIdFieldName ] = $user->user_email;
 						break;
 					case 'full_name':
-						$entry[ $key ] = $user->user_firstname . ' ' . $user->user_lastname;
+						$media[ $customIdFieldName ] = $user->user_firstname . ' ' . $user->user_lastname;
 						break;
 					default:
 						break;
@@ -619,7 +634,7 @@ class ThePlatform_API {
 			}
 		}
 
-		return $entry;
+		return $media;
 	}
 
 	/**
@@ -876,6 +891,9 @@ class ThePlatform_API {
 		return $data['entries'];
 	}
 
+	/**
+	 * Generate a thumbnail from the Media either at the default, or provided time
+	 */
 	function generate_thumbnail() {
 		check_admin_referer( 'theplatform-ajax-nonce-generate_thumbnail' );
 
@@ -883,10 +901,10 @@ class ThePlatform_API {
 			$time = $_POST['time'];
 		}
 
-		if ( !isset( $_POST['mediaId'] ) ) {
+		if ( ! isset( $_POST['mediaId'] ) ) {
 			wp_send_json_error( array( 'description' => 'Media ID is not set' ) );
 		}
-		
+
 		$mediaId        = $_POST['mediaId'];
 		$taskTemplateId = $this->preferences['thumbnail_profile_id'];
 		$task           = $this->get_task_template_by_id( $taskTemplateId );
@@ -953,6 +971,14 @@ class ThePlatform_API {
 		wp_send_json_success( 'Completed' );
 	}
 
+	/**
+	 * Returns all of the MediaFile objects for the provided Media ID
+	 *
+	 * @param string $mediaId mpx Media ID
+	 * @param array $fields Media File fields to query
+	 *
+	 * @return array MediaFile array
+	 */
 	function get_video_files_by_media_id( $mediaId, $fields = array() ) {
 		$default_fields = array( 'id', 'title', 'width', 'height', 'disabled' );
 		$fieldsString   = implode( ',', array_merge( $default_fields, $fields ) );
@@ -969,6 +995,13 @@ class ThePlatform_API {
 		return theplatform_decode_json_from_server( $response );
 	}
 
+	/**
+	 * Get the TaskTemplate object from mpx by ID
+	 *
+	 * @param string $taskTemplateId The full TaskTemplate URI
+	 *
+	 * @return bool|array False if the TaskTemplate can't be found, otherwise returns the TaskTemplate object as an array
+	 */
 	function get_task_template_by_id( $taskTemplateId ) {
 		$url = TP_API_TASK_TEMPLATE_ENDPOINT;
 
