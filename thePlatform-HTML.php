@@ -59,30 +59,7 @@ class ThePlatform_HTML {
 			<div class="tpPlayer" id="player"
 			     tp:allowFullScreen="true"
 			     tp:skinUrl="//pdk.theplatform.com/current/pdk/skins/glass/glass.json"
-			     tp:layout="&lt;controls&gt;
-         &lt;region id=&quot;tpAdCountdownRegion&quot;&gt;
-         &lt;row id=&quot;tpAdCountdownContainer&quot;&gt;
-         &lt;control id=&quot;tpAdCountdown&quot;/&gt;
-         &lt;/row&gt;
-         &lt;/region&gt;
-         &lt;region id=&quot;tpBottomFloatRegion&quot; alpha=&quot;85&quot;&gt;
-         &lt;row height=&quot;10&quot;&gt;
-         &lt;group percentWidth=&quot;100&quot; direction=&quot;horizontal&quot; verticalAlign=&quot;middle&quot;&gt;
-         &lt;control id=&quot;tpScrubber&quot;/&gt;       
-         &lt;/group&gt;
-         &lt;/row&gt;
-         &lt;row&gt;
-         &lt;control id=&quot;tpPlay&quot;/&gt;               
-         &lt;spacer/&gt;
-         &lt;control id=&quot;tpCurrentTime&quot;/&gt;
-         &lt;control id=&quot;tpTimeDivider&quot;/&gt;
-         &lt;control id=&quot;tpTotalTime&quot;/&gt;
-         &lt;spacer percentWidth=&quot;100&quot;/&gt;
-         &lt;control id=&quot;tpVolumeSlider&quot;/&gt;
-         &lt;control id=&quot;tpFullScreen&quot;/&gt;     
-         &lt;/row&gt;
-         &lt;/region&gt;
-         &lt;/controls&gt;"
+			     tp:layoutUrl="<?php echo plugins_url( '/assets/layout.xml', __FILE__ ) ?>"
 			     tp:showFullTime="true"
 			     tp:controlBackgroundColor="0xbbbbbb"
 			     tp:backgroundColor="0xbbbbbb"
