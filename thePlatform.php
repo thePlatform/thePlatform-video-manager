@@ -69,8 +69,8 @@ class ThePlatform_Plugin {
 
 		if ( is_admin() ) {
 			add_action( 'admin_menu', array( $this, 'add_admin_page' ) );
-			add_action( 'admin_init', array( $this, 'register_scripts' ) );			
-			add_action( 'wp_enqueue_media', array ( $this, 'theplatform_enqueue_media_button_scripts' ) );
+			add_action( 'admin_init', array( $this, 'register_scripts' ) );
+			add_action( 'wp_enqueue_media', array( $this, 'theplatform_enqueue_media_button_scripts' ) );
 			add_action( 'wp_ajax_initialize_media_upload', array( $this->tp_api, 'initialize_media_upload' ) );
 			add_action( 'wp_ajax_theplatform_media', array( $this, 'embed' ) );
 			add_action( 'wp_ajax_theplatform_upload', array( $this, 'upload' ) );
@@ -118,7 +118,7 @@ class ThePlatform_Plugin {
 		wp_localize_script( 'tp_file_uploader_js', 'tp_file_uploader_local', array(
 			'ajaxurl'  => admin_url( 'admin-ajax.php' ),
 			'tp_nonce' => array(
-				'initialize_media_upload' => wp_create_nonce( 'theplatform-ajax-nonce-initialize_media_upload' ),				
+				'initialize_media_upload' => wp_create_nonce( 'theplatform-ajax-nonce-initialize_media_upload' ),
 				'publish_media'           => wp_create_nonce( 'theplatform-ajax-nonce-publish_media' )
 			)
 		) );
@@ -353,18 +353,18 @@ class ThePlatform_Plugin {
 		}
 
 		list( $account, $width, $height, $media, $player, $mute, $autoplay, $loop, $tag, $embedded, $params ) = array_values( shortcode_atts( array(
-					'account'  => '',
-					'width'    => '',
-					'height'   => '',
-					'media'    => '',
-					'player'   => '',
-					'mute'     => '',
-					'autoplay' => '',
-					'loop'     => '',
-					'tag'      => '',
-					'embedded' => '',
-					'params'   => ''
-				), $atts
+				'account'  => '',
+				'width'    => '',
+				'height'   => '',
+				'media'    => '',
+				'player'   => '',
+				'mute'     => '',
+				'autoplay' => '',
+				'loop'     => '',
+				'tag'      => '',
+				'embedded' => '',
+				'params'   => ''
+			), $atts
 			)
 		);
 
@@ -570,14 +570,14 @@ class ThePlatform_Plugin {
 
 		$tp_embedder_cap = apply_filters( TP_EMBEDDER_CAP, TP_EMBEDDER_DEFAULT_CAP );
 		if ( current_user_can( $tp_embedder_cap ) && ( array_key_exists( 'embed_hook', $this->preferences ) == false || $this->preferences['embed_hook'] != 'tinymce' ) ) {
-			$image_url = plugins_url( '/images/embed_button.png', __FILE__ );			
+			$image_url = plugins_url( '/images/embed_button.png', __FILE__ );
 			echo '<a href="#" class="button" id="theplatform-media-button"><img src="' . esc_url( $image_url ) . '" alt="thePlatform" style="vertical-align: text-top; height: 18px; width: 18px;">thePlatform</a>';
 		}
 	}
 
-	function theplatform_enqueue_media_button_scripts() {		
+	function theplatform_enqueue_media_button_scripts() {
 		wp_enqueue_script( 'tp_media_button_js' );
-		wp_enqueue_style( 'wp-jquery-ui-dialog' );    
+		wp_enqueue_style( 'wp-jquery-ui-dialog' );
 	}
 
 }

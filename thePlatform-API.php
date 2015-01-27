@@ -311,8 +311,8 @@ class ThePlatform_API {
 		}
 
 		$payload = array_merge( array(
-				'$xmlns' => array_merge( array(), $custom_field_ns )
-			), array_merge( $fields, $custom_field_values )
+			'$xmlns' => array_merge( array(), $custom_field_ns )
+		), array_merge( $fields, $custom_field_values )
 		);
 
 		$url = TP_API_MEDIA_ENDPOINT;
@@ -878,31 +878,36 @@ class ThePlatform_API {
 
 	function generate_thumbnail() {
 		check_admin_referer( 'theplatform-ajax-nonce-generate_thumbnail' );
-		
+
 		if ( isset( $_POST['time'] ) ) {
 			$time = $_POST['time'];
 		}
-		$mediaId = $_POST['mediaId'];
+
+		if ( !isset( $_POST['mediaId'] ) ) {
+			wp_send_json_error( array( 'description' => 'Media ID is not set' ) );
+		}
+		
+		$mediaId        = $_POST['mediaId'];
 		$taskTemplateId = $this->preferences['thumbnail_profile_id'];
-		$task = $this->get_task_template_by_id( $taskTemplateId );
+		$task           = $this->get_task_template_by_id( $taskTemplateId );
 
 		if ( $task == false ) {
 			wp_send_json_error( array( 'description' => 'Profile ID not found' ) );
 		}
 
-		foreach ( $task['taskArguments'] as $argument ) {			
+		foreach ( $task['taskArguments'] as $argument ) {
 			if ( $argument['name'] == 'width' ) {
 				$taskWidth = $argument['value'];
 			}
 		}
 		$mediaFiles = $this->get_video_files_by_media_id( $mediaId )['entries'];
-		
+
 		// Get the nearest video in size
 		foreach ( $mediaFiles as $file ) {
 			if ( $file['width'] >= $taskWidth ) {
 				$mediaFileId = $file['id'];
 				break;
-			} 
+			}
 		}
 
 		// We couldn't find a video bigger than the thumbnail template
@@ -913,10 +918,10 @@ class ThePlatform_API {
 			if ( $mediaFilesSize < 0 ) {
 				wp_send_json_error( array( 'description' => 'No Media Files Found' ) );
 			}
-			$mediaFileId = $mediaFiles[ $mediaFilesSize ]['id'];			
-			$crop = true;
+			$mediaFileId = $mediaFiles[ $mediaFilesSize ]['id'];
+			$crop        = true;
 			$mediaHeight = $mediaFiles[ $mediaFilesSize ]['height'];
-			$mediaWidth = $mediaFiles[ $mediaFilesSize ]['width'];
+			$mediaWidth  = $mediaFiles[ $mediaFilesSize ]['width'];
 		}
 
 		$url = TP_API_FMS_GENERATE_THUMBNAIL_ENDPOINT;
@@ -928,29 +933,29 @@ class ThePlatform_API {
 
 		if ( isset( $time ) ) {
 			$url .= '&_transformArguments[0].name=startTime';
-			$url .= '&_transformArguments[0].value=' . $time;	
+			$url .= '&_transformArguments[0].value=' . $time;
 		}
-		
+
 		if ( isset( $crop ) ) {
 			$url .= '&_transformArguments[1].name=cropTop';
 			$url .= '&_transformArguments[1].value=0';
 			$url .= '&_transformArguments[2].name=cropWidth';
 			$url .= '&_transformArguments[2].value=' . $mediaWidth;
 			$url .= '&_transformArguments[3].name=cropHeight';
-			$url .= '&_transformArguments[3].value='. $mediaHeight;
+			$url .= '&_transformArguments[3].value=' . $mediaHeight;
 		}
 
-		$url .= '&token=' . $this->mpx_signin();			
+		$url .= '&token=' . $this->mpx_signin();
 
 
 		ThePlatform_API_HTTP::get( $url );
 
-		wp_send_json_success('Completed');
+		wp_send_json_success( 'Completed' );
 	}
 
 	function get_video_files_by_media_id( $mediaId, $fields = array() ) {
 		$default_fields = array( 'id', 'title', 'width', 'height', 'disabled' );
-		$fieldsString = implode( ',', array_merge( $default_fields, $fields ) );
+		$fieldsString   = implode( ',', array_merge( $default_fields, $fields ) );
 
 		$url = TP_API_MEDIA_FILE_ENDPOINT;
 		$url .= '&byMediaId=' . urlencode( $mediaId );
@@ -958,7 +963,7 @@ class ThePlatform_API {
 		$url .= '&byContentType=video';
 		$url .= '&sort=width';
 		$url .= '&token=' . $this->mpx_signin();
-		
+
 		$response = ThePlatform_API_HTTP::get( $url );
 
 		return theplatform_decode_json_from_server( $response );
@@ -975,7 +980,7 @@ class ThePlatform_API {
 		$response = ThePlatform_API_HTTP::get( $url );
 
 		$data = theplatform_decode_json_from_server( $response );
-		
+
 		if ( count( $data['entries'] ) == 0 ) {
 			return false;
 		}

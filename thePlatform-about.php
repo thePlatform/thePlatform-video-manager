@@ -88,9 +88,6 @@
 			} else {
 
 			}
-
-
 		})
-
 	</script>
 </div>

@@ -47,7 +47,7 @@ class ThePlatform_URLs {
 				define( 'TP_API_PUBLISH_DATA_BASE_URL', 'http://data.publish.theplatform.com/publish/data/' );
 				define( 'TP_API_FMS_BASE_URL', 'http://fms.theplatform.com/web/FileManagement/' );
 				define( 'TP_API_PLAYER_EMBED_BASE_URL', '//player.theplatform.com/p/' );
-				define( 'TP_API_TASK_BASE_URL', 'http://data.task.theplatform.com/task/data/');
+				define( 'TP_API_TASK_BASE_URL', 'http://data.task.theplatform.com/task/data/' );
 				break;
 			case 'eu':
 				define( 'TP_API_ADMIN_IDENTITY_BASE_URL', 'https://identity.auth.theplatform.eu/idm/web/Authentication/' );
@@ -60,7 +60,7 @@ class ThePlatform_URLs {
 				define( 'TP_API_PUBLISH_DATA_BASE_URL', 'http://data.publish.theplatform.eu/publish/data/' );
 				define( 'TP_API_FMS_BASE_URL', 'http://fms.theplatform.eu/web/FileManagement/' );
 				define( 'TP_API_PLAYER_EMBED_BASE_URL', '//player.theplatform.eu/p/' );
-				define( 'TP_API_TASK_BASE_URL', 'http://data.task.theplatform.eu/task/data/');
+				define( 'TP_API_TASK_BASE_URL', 'http://data.task.theplatform.eu/task/data/' );
 				break;
 			default:
 				wp_die( 'Invalid Region. Cannot match on region: ' . $region );

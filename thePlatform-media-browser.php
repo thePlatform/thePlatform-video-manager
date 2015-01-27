@@ -138,15 +138,15 @@ $tp_html = new ThePlatform_HTML();
 				<label for="selectpick-order" style="font-weight: normal">Order By:</label>
 				<select id="selectpick-order" class="form-control">
 					<option value="|desc">Descending</option>
-					<option value="">Ascending</option>					
+					<option value="">Ascending</option>
 				</select>
-			</div>			
-			<?php if ( $preferences['user_id_customfield'] !== '(None)' ) { ?>
-			<div class="form-group">
-				<input type="checkbox"
-				       id="my-content-cb" <?php checked( $preferences['filter_by_user_id'] === 'true' ); ?> />
-				<label for="my-content-cb" style="font-weight: normal">My Content</label>
 			</div>
+			<?php if ( $preferences['user_id_customfield'] !== '(None)' ) { ?>
+				<div class="form-group">
+					<input type="checkbox"
+					       id="my-content-cb" <?php checked( $preferences['filter_by_user_id'] === 'true' ); ?> />
+					<label for="my-content-cb" style="font-weight: normal">My Content</label>
+				</div>
 			<?php } ?>
 			<button id="btn-search" type="button" class="btn btn-primary" style="margin-left: 10px">Search</button>
 		</form>

@@ -151,17 +151,18 @@ class ThePlatform_HTML {
 				<?php if ( $IS_EMBED ) { ?>
 					<div class="btn-group">
 						<input type="button" id="btn-embed" class="btn btn-primary btn-xs btn-metadata" value="Embed">
-						<input type="button" id="btn-embed-close" class="btn btn-primary btn-xs btn-metadata" value="Embed & Close">
+						<input type="button" id="btn-embed-close" class="btn btn-primary btn-xs btn-metadata"
+						       value="Embed & Close">
 						<input type="button" id="btn-set-image" class="btn btn-primary btn-xs btn-metadata"
 						       value="Set Featured Image">
 					</div>
 				<?php
-				} else {					
-					echo '<input type="button" id="btn-edit" class="btn btn-primary btn-xs btn-metadata" value="Edit Media">';					
-					if ( $this->preferences['thumbnail_profile_id'] != 'tp_wp_none' )  {
+				} else {
+					echo '<input type="button" id="btn-edit" class="btn btn-primary btn-xs btn-metadata" value="Edit Media">';
+					if ( $this->preferences['thumbnail_profile_id'] != 'tp_wp_none' ) {
 						echo '<input type="button" id="btn-generate-thumbnail" class="btn btn-primary btn-xs btn-metadata" value="Generate Thumbnail">';
 					}
-				 } ?>
+				} ?>
 			</div>
 		</div> <?php
 	}
@@ -265,8 +266,8 @@ class ThePlatform_HTML {
 				$html .= '<label class="control-label" for="theplatform_upload_' . esc_attr( $basic_field ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
 				$html .= '<input name="' . esc_attr( $basic_field ) . '" id="theplatform_upload_' . esc_attr( $basic_field ) . '" class="form-control upload_field" type="text" placeholder="' . esc_attr( ucfirst( $field_title ) ) . '"';
 				if ( $basic_field == 'title' ) {
-					$html .= ' autofocus ';	// Autofocus on title
-				} 				
+					$html .= ' autofocus ';    // Autofocus on title
+				}
 				$html .= '/>';
 				$html .= '</div>';
 				$html .= '</div>';
