@@ -843,7 +843,7 @@ class ThePlatform_API {
 
 		$token = $this->mpx_signin();
 
-		$url = TP_API_PUBLISH_PROFILE_ENDPOINT . '&fields=' . $fieldsString . '&token=' . $token . '&sort=title';
+		$url = TP_API_PUBLISH_PROFILE_ENDPOINT . '&bySupportingProfile=false&fields=' . $fieldsString . '&token=' . $token . '&sort=title';
 
 		if ( $this->get_mpx_account_id() ) {
 			$url .= '&account=' . $this->get_mpx_account_id();

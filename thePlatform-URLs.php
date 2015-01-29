@@ -96,7 +96,7 @@ class ThePlatform_URLs {
 		define( 'TP_API_WORKFLOW_PROFILE_RESULT_ENDPOINT', TP_API_WORKFLOW_BASE_URL . 'ProfileResult?schema=1.0&form=cjson' );
 
 		// Publish Data Service URLs
-		define( 'TP_API_PUBLISH_PROFILE_ENDPOINT', TP_API_PUBLISH_DATA_BASE_URL . 'PublishProfile?schema=1.5.0&form=json' );
+		define( 'TP_API_PUBLISH_PROFILE_ENDPOINT', TP_API_PUBLISH_DATA_BASE_URL . 'PublishProfile?schema=1.8.0&form=json' );
 
 		// Task Data Service URLs
 		define( 'TP_API_TASK_TEMPLATE_ENDPOINT', TP_API_TASK_BASE_URL . 'TaskTemplate?schema=1.3.0&form=cjson' );
