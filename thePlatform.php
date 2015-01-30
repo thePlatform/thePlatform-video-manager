@@ -504,6 +504,10 @@ class ThePlatform_Plugin {
 			$url .= '&' . $params;
 		}
 
+		if ( $embedded == 'false' && $tag == 'script' ) {
+			$url .= '&videoHeight=' . $player_height . '&videoWidth=' . $player_width;
+		}
+		
 		$url = apply_filters( 'tp_full_embed_url', $url );
 
 		if ( $tag == "script" ) {
