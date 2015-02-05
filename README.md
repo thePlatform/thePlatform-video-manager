@@ -31,6 +31,7 @@ Copy the folder "thePlatform-video-manager" with all included files into the "wp
 * Support sorting search results
 * Updating media no longer requires to refresh the entire media browser
 * Added a button to reset plugin settings in the About page
+* Uploads have been greatly sped up
 
 ## = 1.3.2 =
 * Fixed uploads in Firefox

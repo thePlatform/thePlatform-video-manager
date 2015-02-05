@@ -138,8 +138,16 @@ TheplatformUploader = (function() {
 
                         me.message("Beginning upload of " + frags.length + " fragments");
 
-                        me.uploadFragments(frags, 0);
 
+                        me.message('Uploading file ' + (me.currentFileIndex + 1) + ' out of ' + (me.lastFileIndex + 1), true)
+                        NProgress.set(0.00001)
+                        NProgress.settings.trickle = true;
+                        NProgress.settings.trickleRate = me.progressIncrements / 35;
+                        NProgress.settings.trickleSpeed = 650;
+                        NProgress.start();
+                        
+
+                        me.uploadFragments(frags, 0);
                     } else {
                         setTimeout(function() {
                             me.waitForReady()
@@ -168,20 +176,23 @@ TheplatformUploader = (function() {
     TheplatformUploader.prototype.uploadFragments = function(fragments, index) {
         var me = this;
 
+        if (index >= this.num_fragments) {
+            return;
+        }
+
+        this.current_uploads++;
+    
+        if (this.current_uploads < this.max_uploads) {
+            me.uploadFragments(fragments, this.frags_uploaded + this.current_uploads);
+        }
+
         if (this.failed) {
             return;
         }
 
-        NProgress.settings.incLimit = me.progressIncrements * (index + 1);
+        
 
-        if (me.frags_uploaded == 0) {
-            me.message('Uploading file ' + (me.currentFileIndex + 1) + ' out of ' + (me.lastFileIndex + 1), true)
-            NProgress.set(0.00001)
-            NProgress.settings.trickle = true;
-            NProgress.settings.trickleRate = me.progressIncrements / 35;
-            NProgress.settings.trickleSpeed = 650;
-            NProgress.start();
-        }
+        NProgress.settings.incLimit = me.progressIncrements * (index + 1);
 
         var requestUrl = me.uploadUrl + '/web/Upload/uploadFragment';
         requestUrl += '?schema=1.1';
@@ -203,7 +214,7 @@ TheplatformUploader = (function() {
             },
             success: function(response) {                
                 me.frags_uploaded++;
-
+                me.current_uploads--;
                 if (me.num_fragments == me.frags_uploaded) {
                     me.message("Uploaded last fragment. Finishing up");
                     NProgress.inc(me.progressIncrements);
@@ -216,10 +227,9 @@ TheplatformUploader = (function() {
                             trickleRate: me.progressIncrements / ((lastSegmentEnd - lastSegmentStart) / 1000)
                         })
                     }
-                    me.message("Finished uploading fragment " + me.frags_uploaded + " of " + me.num_fragments);
-                    index++;
+                    me.message("Finished uploading fragment " + me.frags_uploaded + " of " + me.num_fragments);                    
                     me.attempts = 0;
-                    me.uploadFragments(fragments, index);
+                    me.uploadFragments(fragments, me.frags_uploaded + me.current_uploads);                   
                 }               
             },
             error: function(data) {            	
@@ -504,7 +514,9 @@ TheplatformUploader = (function() {
         this.publishProfile = profile;
         this.fields = fields;
         this.custom_fields = custom_fields;
-        this.server = server
+        this.server = server;
+        this.max_uploads = 3;
+        this.current_uploads = 0;
 
         this.prepareForUpload();
     };
