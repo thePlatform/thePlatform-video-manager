@@ -20,6 +20,18 @@ if ( !defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+//TODO: Would just be better to not include the upload media link in the sidebar?
+preg_match('/MSIE (.*?);/', $_SERVER['HTTP_USER_AGENT'], $matches);
+
+if ( count( $matches ) > 1 ) {
+	//Then we're using IE
+	$version = $matches[1];
+	if ( $version <= 9 ) {
+		echo "<h2>Internet Explorer " . $version . ' is not supported</h2>';
+		exit;
+	}      
+}
+
 if ( !isset( $tp_api ) ) {
 	$tp_api = new ThePlatform_API;
 }
@@ -49,8 +61,8 @@ $structureDesc = array(
 );
 
 if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
-	wp_enqueue_style( 'bootstrap_tp_css' );
-	wp_enqueue_script( 'theplatform_js' );
+	wp_enqueue_style( 'tp_bootstrap_css' );
+	wp_enqueue_script( 'tp_theplatform_js' );
 
 	$tp_uploader_cap = apply_filters( TP_UPLOADER_CAP, TP_UPLOADER_DEFAULT_CAP );
 
@@ -59,7 +71,7 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 	}
 	$media = array();
 
-	echo '<h1> Upload Media to MPX </h1><div id="media-mpx-upload-form" class="tp">';
+	echo '<div class="tp"><h1> Upload Media to MPX </h1><div id="media-mpx-upload-form">';
 }
 ?>
 
@@ -70,7 +82,16 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 	$html = '';
 
 	if ( strlen( $preferences['user_id_customfield'] ) && $preferences['user_id_customfield'] !== '(None)' ) {
-		echo '<input type="hidden" name="' . esc_attr( $preferences['user_id_customfield'] ) . '" class="custom_field" value="' . esc_attr( wp_get_current_user()->ID ) . '" />';
+		$userIdField = $tp_api->get_customfield_info( $preferences['user_id_customfield'] )['entries'];
+		if (array_key_exists(0, $userIdField)) {
+			$field_title = $userIdField[0]['fieldName'];
+			$field_prefix = $userIdField[0]['namespacePrefix'];
+			$field_namespace = $userIdField[0]['namespace'];
+			$userID = strval( wp_get_current_user()->ID );
+			echo '<input name="' . esc_attr( $field_title ) . '" id="theplatform_upload_' . esc_attr( $preferences['user_id_customfield'] ) . '" class="userid custom_field" type="hidden" value="' . esc_attr( $userID ) . '" data-type="String" data-name="' . esc_attr( strtolower( $field_title ) ) . '" data-prefix="' . esc_attr( strtolower( $field_prefix ) ) . '" data-namespace="' . esc_attr( strtolower( $field_namespace ) ) . '"/>';						
+		}
+		
+		
 	}
 
 	$catHtml = '';
@@ -88,15 +109,18 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 		$field_title = (strstr( $upload_field, '$' ) !== FALSE) ? substr( strstr( $upload_field, '$' ), 1 ) : $upload_field;
 		if ( $upload_field == 'categories' ) {
 			$categories = $tp_api->get_categories( TRUE );
+			// Always Put categories on it's own row
 			$catHtml .= '<div class="row">';
-			$catHtml .= '<div class="col-xs-5">';
-			$catHtml .= '<label class="control-label" for="theplatform_upload_' . esc_attr( $upload_field ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
-			$catHtml .= '<select class="category_field form-control" multiple id="theplatform_upload_' . esc_attr( $upload_field ) . '" name="' . esc_attr( $upload_field ) . '">';
+			$catHtml .= 	'<div class="col-xs-5">';
+			$catHtml .=			'<div class="form-group">';
+			$catHtml .= 			'<label class="control-label" for="theplatform_upload_' . esc_attr( $upload_field ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
+			$catHtml .= 			'<select class="category_field form-control" multiple id="theplatform_upload_' . esc_attr( $upload_field ) . '" name="' . esc_attr( $upload_field ) . '">';
 			foreach ( $categories as $category ) {
-				$catHtml .= '<option value="' . esc_attr( $category['fullTitle'] ) . '">' . esc_html( $category['fullTitle'] ) . '</option>';
+				$catHtml .= 			'<option value="' . esc_attr( $category['fullTitle'] ) . '">' . esc_html( $category['fullTitle'] ) . '</option>';
 			}
-			$catHtml .= '</select>';
-			$catHtml .= '</div>';
+			$catHtml .= 			'</select>';
+			$catHtml .= 		'</div>';
+			$catHtml .= 	'</div>';
 			$catHtml .= '</div>';
 		} else {
 			$default_value = isset( $media[$upload_field] ) ? esc_attr( $media[$upload_field] ) : '';
@@ -104,16 +128,21 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 			if ( $i % 2 == 0 ) {
 				$html .= '<div class="row">';
 			}
-			$html .= '<div class="col-xs-5">';
-			$html .= '<label class="control-label" for="theplatform_upload_' . esc_attr( $upload_field ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
-			$html .= '<input name="' . esc_attr( $upload_field ) . '" id="theplatform_upload_' . esc_attr( $upload_field ) . '" class="form-control upload_field" type="text" value="' . esc_attr( $default_value ) . '"/>'; //upload_field
-			$html .= '</div>';
-			if ( $i % 2 !== 0 ) {
-				$html .= '</div>';
-			}
-			echo $html;
+			$html .= 		'<div class="col-xs-5">';
+			$html .=			'<div class="form-group">';
+			$html .= 				'<label class="control-label" for="theplatform_upload_' . esc_attr( $upload_field ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
+			$html .= 				'<input name="' . esc_attr( $upload_field ) . '" id="theplatform_upload_' . esc_attr( $upload_field ) . '" class="form-control upload_field" type="text" value="' . esc_attr( $default_value ) . '"/>'; //upload_field
+			$html .= 			'</div>';
+			$html .= 		'</div>';
 			$i++;
-		}
+			if ( $i % 2 == 0 ) {
+				$html .= '</div>';
+			} 
+			echo $html;			
+		}		
+	}
+	if ( $i % 2 != 0 ) {
+		echo '</div>';
 	}
 	
 	$html = '';
@@ -187,38 +216,50 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 			<div class="col-xs-3">
 				<?php
 				$profiles = $tp_api->get_publish_profiles();
-				$html = '<label class="control-label" for="publishing_profile">Publishing Profile</label>';
+				$html = '<div class="form-group"><label class="control-label" for="publishing_profile">Publishing Profile</label>';
 				$html .= '<select id="publishing_profile" name="publishing_profile" class="form-control upload_profile">';
 				$html .= '<option value="tp_wp_none"' . selected( $preferences['default_publish_id'], 'wp_tp_none', false ) . '>Do not publish</option>';
 				foreach ( $profiles as $entry ) {
 					$html .= '<option value="' . esc_attr( $entry['title'] ) . '"' . selected( $entry['title'], $preferences['default_publish_id'], false ) . '>' . esc_html( $entry['title'] ) . '</option>';
 				}
-				$html .= '</select>';
+				$html .= '</select></div>';
 				echo $html;
 				?>
 			</div>
 			<div class="col-xs-3">
 				<?php
 				$servers = $tp_api->get_servers();
-				$html = '<label class="control-label" for="theplatform_server">Server</label>';
+				$html = '<div class="form-group"><label class="control-label" for="theplatform_server">Server</label>';
 				$html .= '<select id="theplatform_server" name="theplatform_server" class="form-control server_id">';
 				$html .= '<option value="DEFAULT_SERVER"' . selected( $preferences['mpx_server_id'], "DEFAULT_SERVER", false ) . '>Default Server</option>';
 				foreach ( $servers as $entry ) {
 					$html .= '<option value="' . esc_attr( $entry['id'] ) . '"' . selected( $entry['id'], $preferences['mpx_server_id'], false ) . '>' . esc_html( $entry['title'] ) . '</option>';
 				}
-				$html .= '</select>';
+				$html .= '</select></div>';
 				echo $html;
 				?>
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-xs-3">
-				<label class="control-label" for="theplatform_upload_file">File</label><input type="file" accept="audio/*|video/*|image/*" id="theplatform_upload_file" />
+			<div class="col-md-8">		
+				<div class="form-group" id="file-form-group">
+					<label class="control-label" for="theplatform_upload_label">File</label>	
+					<div class="input-group">					
+		                <span class="input-group-btn">
+		                    <span class="btn btn-default btn-file">
+		                        Browse&hellip; <input type="file" id="theplatform_upload_file" multiple>
+		                    </span>
+		                </span>
+	                	<input type="text" class="form-control" style="cursor: text; text-indent: 10px;" id="theplatform_upload_label" readonly value="No file chosen">
+	           		</div>
+				</div>
 			</div>
 		</div>
 		<div class="row">
 			<div class="col-xs-3">
-				<button id="theplatform_upload_button" class="form-control btn btn-primary" type="button" name="theplatform-upload-button">Upload Media</button>
+				<div class="form-group">
+					<button id="theplatform_upload_button" class="form-control btn btn-primary" type="button" name="theplatform-upload-button">Upload Media</button>
+				</div>
 			</div>
 		</div>
 	<?php } else {
@@ -230,4 +271,5 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 		</div>
 	<?php } ?>
 </form>
+</div>
 </div>

@@ -54,8 +54,7 @@ function theplatform_account_options_validate ( $input ) {
 	}
 			
 	$account_is_verified = $tp_api->internal_verify_account_settings();
-	if ( $account_is_verified ) {
-		$region_is_verified = $tp_api->internal_verify_account_region();
+	if ( $account_is_verified ) {		
 		
 		if ( strpos( $input['mpx_account_id'], '|' ) !== FALSE ) {
 			$ids = explode( '|', $input['mpx_account_id'] );			
@@ -67,7 +66,6 @@ function theplatform_account_options_validate ( $input ) {
 			$ids = explode( '|', $input['mpx_region'] );
 			$input['mpx_region'] = $ids[0];
 		}
-
 	}
 	
 	foreach ($input as $key => $value) {
@@ -100,6 +98,7 @@ function theplatform_account_options_validate ( $input ) {
 			delete_option( TP_PREFERENCES_OPTIONS_KEY );
 			delete_option( TP_METADATA_OPTIONS_KEY );
 			delete_option( TP_UPLOAD_OPTIONS_KEY );
+			delete_option( TP_TOKEN_OPTIONS_KEY );
 		}
 	}
 		
@@ -135,8 +134,7 @@ function theplatform_setting_changed( $key, $oldArray, $newArray ) {
  * @return array A cleaned up copy of the array, invalid values will be cleared.
  */
 function theplatform_preferences_options_validate( $input ) {	
-	$tp_api = new ThePlatform_API;
-	$defaults = TP_PREFERENCES_OPTIONS_DEFAULTS();
+	$tp_api = new ThePlatform_API;	
 
 	$account_is_verified = $tp_api->internal_verify_account_settings();	
 	if ( $account_is_verified ) {
@@ -207,6 +205,9 @@ function theplatform_verify_account_settings() {
 function theplatform_decode_json_from_server( $input, $assoc, $die_on_error = TRUE ) {
 
 	$response = json_decode( wp_remote_retrieve_body( $input ), $assoc );
+
+	// VIP: Don't die if the service is unreachable. This can take down all of wp-admin. 
+	return $response;
 
 	if ( FALSE === $die_on_error ) {
 		return $response;
@@ -297,23 +298,68 @@ function theplatform_plugin_version_changed() {
 	}
 	
 	if ( !isset( $preferences['plugin_version'] ) ) {
-		return TRUE; //Old versions didn't have plugin_version stored
+		return TP_PLUGIN_VERSION('1.0.0'); //Old versions didn't have plugin_version stored
 	}
 	
-	$version = explode( '.', $preferences['plugin_version'] );
+	$version = TP_PLUGIN_VERSION( $preferences['plugin_version'] );
 	$currentVersion = TP_PLUGIN_VERSION();
-	if ( $version[0] != $currentVersion['major']) {
-		return TRUE;
+	if ( $version['major'] != $currentVersion['major']) {
+		return $version;
 	}
 	
-	if ( $version[1] != $currentVersion['minor']) {
-		return TRUE;
+	if ( $version['minor'] != $currentVersion['minor']) {
+		return $version;
 	}
 	
-	if ( $version[2] != $currentVersion['patch']) {
-		return TRUE;
+	if ( $version['patch'] != $currentVersion['patch']) {
+		return $version;
 	}	
 	
 	return FALSE;
 }
 
+/**
+ * Checks if the plugin has been updated and performs any necessary updates.
+ */
+function theplatform_check_plugin_update() {		
+	$oldVersion = theplatform_plugin_version_changed();	
+	if ( FALSE === $oldVersion ) {
+		return;
+	}	
+
+	$newVersion = TP_PLUGIN_VERSION();
+	
+	// On any version, update defaults that didn't previously exist
+	$newPreferences = array_merge( TP_PREFERENCES_OPTIONS_DEFAULTS(), get_option( TP_PREFERENCES_OPTIONS_KEY, array() ) );
+	$newPreferences['plugin_version'] = TP_PLUGIN_VERSION;
+
+	$newPreferences['embed_hook'] = 'tinymce'; // Workaround for VIP, Remove when fixed
+
+	update_option( TP_PREFERENCES_OPTIONS_KEY,  $newPreferences );
+	update_option( TP_ACCOUNT_OPTIONS_KEY,      array_merge( TP_ACCOUNT_OPTIONS_DEFAULTS(),     get_option( TP_ACCOUNT_OPTIONS_KEY,     array() ) ) );
+	update_option( TP_UPLOAD_OPTIONS_KEY,       array_merge( TP_UPLOAD_FIELDS_DEFAULTS(),       get_option( TP_UPLOAD_OPTIONS_KEY,	    array() ) ) );  
+	
+	// We had a messy update with 1.2.2/1.3.0, let's clean up	
+	if ( ( $oldVersion['major'] == '1' && $oldVersion['minor'] == '2' && $oldVersion['patch'] == '2' ) ||
+		 ( $oldVersion['major'] == '1' && $oldVersion['minor'] == '3' && $oldVersion['patch'] == '0' ) ) {
+		$basicMetadataFields = get_option( TP_UPLOAD_OPTIONS_KEY, array() );
+		$customMetadataFields = get_option( TP_METADATA_OPTIONS_KEY, array() );
+		update_option ( TP_UPLOAD_OPTIONS_KEY, array_diff_assoc( $basicMetadataFields, $customMetadataFields ) );
+	}
+
+	// Move account settings from preferences (1.2.0)	
+	if ( ( $oldVersion['major'] == '1' && $oldVersion['minor'] <  '2' ) && 
+		 ( $newVersion['major'] > '1' || ( $newVersion['major'] >= '1' && $newVersion['minor'] >= '2' ) )
+		) {
+		$preferences = get_option( TP_PREFERENCES_OPTIONS_KEY, array() );
+		if ( array_key_exists( 'mpx_account_id', $preferences ) ) {
+			$accountSettings = TP_ACCOUNT_OPTIONS_DEFAULTS();
+			foreach ( $preferences as $key => $value ) {
+				if ( array_key_exists( $key, $accountSettings ) ) {
+					$accountSettings[$key] = $preferences[$key];				
+				}
+			}
+			update_option( TP_ACCOUNT_OPTIONS_KEY, $accountSettings );
+		}	
+	}
+}

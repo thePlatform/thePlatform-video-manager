@@ -3,7 +3,8 @@ Developed By: thePlatform for Media, Inc.
 Tags: embedding, video, embed, portal, mediaamp, shortcode
 Requires at least: 3.7
 Tested up to: 4.0
-Stable tag: 1.2.2
+Stable tag: 1.3.2
+Contributors: thePlatform
 
 Manage your content hosted by thePlatform and embed media in WordPress posts.
 
@@ -21,6 +22,31 @@ Easily embed videos from MPX into your posts
 Upload media to your MPX account
 
 == Changelog ==
+
+= 1.3.2 =
+Fixed uploads in Firefox
+Correctly set the preview player in the Media Browser
+
+= 1.3.1 =
+Fixed an issue with the update method copying Basic Metadata settings incorrectly.
+
+= 1.3.0 =
+Allow multiple files to be uploaded
+Complete update to the plugin UX. Fixed numerous layouting issues across all the different pages
+The video upload dialog has been completely redesigned
+Video uploads should no longer fail randomly
+Support a wider range of file formats 
+Admins can choose the where the embed button should appear - media_buttons, tinymce plugin or both
+Fixed an issue where the shortcode did not append correctly in the text editor
+Accessing the plugin settings is now about 40% faster
+Media outside the availability window will now show in the media browser
+Admins can choose to display either the username, full name or email address instead of the numerical user id.
+Fixed the autoPlay shortcode attribute
+Admins can choose the Player embed type - either full player or a single embedded player
+Disabled players no longer show up in the Players dropdown
+
+= 1.2.3 = 
+Fix uploads sporadically not working in HTTPS 
 
 = 1.2.2 =
 Changed thePlatform's menu order number
@@ -91,7 +117,7 @@ Upload/custom fields default to Omit instead of Allow
 Initial release
 
 == Short code parameters ==
-account	 - (optional) - Account PID to use in the embed code, if omitted it will be taken from the account settings
+account	 - (optional) - Account PID to use in the embed code, if omitted it will be taken from the account settings. It is highly recommended to keep this on all shortcodes
 player	 - (required) - Player PID to use in the embed code
 media	 - (required) - Release PID to load in the player
 width	 - (optional) - Player width, if omitted the default value will be taken from the embedding preferences
@@ -99,7 +125,8 @@ height	 - (optional) - Player height, if omitted the default value will be taken
 mute	 - (optional) - Force the player to be muted
 autoplay - (optional) - Force autoplay on /embed/ players, if omitted the default value will be taken from the embedding preferences
 loop	 - (optional) - Loop the release
-Tag		 - (Optional) - iframe/script, if omitted the value will be taken from the embedding preferences
+tag		 - (optional) - iframe/script, if omitted the value will be taken from the embedding preferences
+embedded - (optional) - true/false, if true the player will have /embed in the URI
 params	 - (optional) - Custom string that will be appended to the embed URL
 
 == Configuration ==
@@ -114,6 +141,7 @@ MPX Account - The MPX account to upload and retrieve media from
 = Embedding Preferences =
 Default Player - The default player used for embedding and in the Media Browser
 Embed Tag Type - IFrame or Script embed
+Player Embed Type - Video Only (/embed/) or Full Player
 RSS Embed Type - In an RSS feed, provide a link back to the Article, or an iframe/script tag
 Force Autoplay - Pass the autoplay parameter to embedded players
 Default Player Width - Initially based on the current theme content width
@@ -122,6 +150,8 @@ Default Player Height - a 1.78 aspect ration value based on the content width
 = General Preferences =
 Filter Users Own Video - Filter by the User ID custom field, ignored if the User ID is blank
 User ID Custom Field - Name of the Custom Field to store the WordPress User ID, (None) to disable
+Show User ID as - If the User ID Custom Field is visible to editors, we will substitute it by either the user Full Name, Email, Nickname or Username
+Plugin Embed button type - Determine if thePlatform button should appear as a media_button, a TinyMCE button or both
 MPX Upload Server - Default MPX server to upload new media to, Default Server will attempt to intelligently pick a server
 Default Publish Profile - If set, uploaded media will automatically publish to the selected profile. 
 

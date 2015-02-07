@@ -52,5 +52,5 @@ if ( !current_user_can( $tp_viewer_cap ) ) {
 		jQuery( window ).resize( function() {
 			jQuery( '#tp-iframe' ).css( 'height', window.innerHeight - 101 );
 		} );
-	} )
+	} );
 </script>

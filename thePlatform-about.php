@@ -29,7 +29,7 @@
 <style>
 	
 </style>
-<p> thePlatform Video Manager Wordpress Plugin version <?php echo TP_PLUGIN_VERSION; ?><br>
+<p> MediaAMP Video Manager Wordpress Plugin version <?php echo TP_PLUGIN_VERSION; ?><br>
 	Copyright (C) 2013-<?php echo date("Y"); ?> thePlatform for Media Inc.<br>
     This edition of the plug-in has been rebranded for MediaAMP.<br>
 </p>
@@ -51,4 +51,9 @@
 <p>
 	jQuery infiniteScroll<br>
 	Copyright (c) 2010 <a href="https://github.com/denniscalazans/jquery-infinitescroll">DIY Co</a>
+</p>
+
+<p>
+  NProgress<br>
+  Copyright (c) 2013-2014 <a href="http://ricostacruz.com/nprogress/">Rico Sta. Cruz</a>
 </p>

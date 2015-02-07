@@ -64,51 +64,13 @@
 	} );
 } )( jQuery );
 
-
-/**
- @function message_nag Display an informative message to the user
- @param {String} msg - The message to display
- @param {Boolean} fade - Whether or not to fade the message div after some delay
- */
-var message_nag = function( msg, fade, isError ) {
-	fade = typeof fade !== 'undefined' ? fade : false;
-	var messageType = "updated";
-	if ( isError )
-		messageType = "error";
-
-	if ( jQuery( '#message_nag' ).length == 0 ) {
-		jQuery( '.wrap > h2' ).parent().prev().after( '<div id="message_nag" class="' + messageType + '"><p id="message_nag_text">' + msg + '</p></div>' ).fadeIn( 1000 );
-	} else {
-		jQuery( '#message_nag' ).removeClass();
-		jQuery( '#message_nag' ).addClass( messageType );
-		jQuery( '#message_nag' ).fadeIn( 500 );
-		jQuery( '#message_nag_text' ).animate( { 'opacity': 0 }, 500, function() {
-			jQuery( this ).html( msg );
-		} ).animate( { 'opacity': 1 }, 500 );
-	}
-
-	if ( fade == true ) {
-		jQuery( '#message_nag' ).delay( 6000 ).fadeOut( 10000 );
-	}
-};
-
-/**
- @function error_nag Display an error message to the user
- @param {String} msg - The message to display
- @param {Boolean} fade - Whether or not to fade the message div after some delay
- */
-var error_nag = function( msg, fade ) {
-	message_nag( msg, fade, true );
-};
-
 /**
  * Validate Media data is valid before submitting upload/edit
  * @param  {Object} event click event
  * @return {boolean}       Did validation pass or not
  */
 var validate_media = function( event ) {
-
-	//TODO: Change CSS to Bootstrap classes
+	
 	//TODO: Validate that file has been selected for upload but not edit
 	var validation_error = false;
 
@@ -157,17 +119,19 @@ var validate_media = function( event ) {
 			}
 		}
 		if ( fieldError ) {
-			$field.css( { border: 'solid 1px #FF0000' } );
+			$field.parent().addClass('has-error');
 			validation_error = fieldError;
 		} else {
-			$field.css( { border: '1px solid #ccc' } );
+			$field.parent().removeClass('has-error');
 		}
 	} );
 
 	var $titleField = jQuery( '#theplatform_upload_title' );
 	if ( $titleField.val() === "" ) {
 		validation_error = true;
-		$titleField.css( { border: 'solid 1px #FF0000' } );
+		$titleField.parent().addClass('has-error');
+	} else {
+		$titleField.parent().removeClass('has-error');
 	}
 
 	return validation_error;
@@ -317,6 +281,25 @@ var objSize = function( obj ) {
 
 jQuery( document ).ready( function() {
 
+	// Handle the custom file browser button
+	jQuery('.btn-file :file').on('fileselect', function(event, numFiles, label) {
+        
+        var input = jQuery(this).parents('.input-group').find(':text'),
+            log = numFiles > 1 ? numFiles + ' files selected' : label;
+        
+        if( input.length ) {
+            input.val(log);
+        } 
+        
+    });
+
+    jQuery(document).on('change', '.btn-file :file', function() {
+	  var input = jQuery(this),
+	      numFiles = input.get(0).files ? input.get(0).files.length : 1,
+	      label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+	  input.trigger('fileselect', [numFiles, label]);
+	});
+
 	// Hide PID option fields in the Settings page
 	if ( document.title.indexOf( 'MediaAMP Plugin Settings' ) != -1 ) {
 		jQuery( '#mpx_account_pid' ).parent().parent().hide();
@@ -401,11 +384,17 @@ jQuery( document ).ready( function() {
 
 	// Upload media button handler
 	jQuery( "#theplatform_upload_button" ).click( function( event ) {
-		var file = document.getElementById( 'theplatform_upload_file' ).files[0];
+		var files = document.getElementById( 'theplatform_upload_file' ).files;
 
 		var validation_error = validate_media( event );
 
-		if ( validation_error || file === undefined )
+		if (files[0] === undefined) {
+			jQuery('#file-form-group').addClass('has-error');
+		} else {
+			jQuery('#file-form-group').removeClass('has-error');
+		}
+
+		if ( validation_error || files[0] === undefined )
 			return false;
 
 		var params = parseMediaParams();
@@ -414,17 +403,27 @@ jQuery( document ).ready( function() {
 		var profile = jQuery( '.upload_profile' );
 		var server = jQuery( '.server_id' );
 
-		var upload_window = window.open( theplatform_local.ajaxurl + '?action=theplatform_upload&_wpnonce=' + theplatform_local.tp_nonce['theplatform_upload'], '_blank', 'menubar=no,location=no,resizable=yes,scrollbars=no,status=no,width=700,height=150' )
+		var upload_window = window.open( theplatform_local.ajaxurl + '?action=theplatform_upload&_wpnonce=' + theplatform_local.tp_nonce['theplatform_upload'], '_blank', 'menubar=no,location=no,resizable=no,scrollbars=no,status=no,width=700,height=180' )
 
-		upload_window.uploaderData = {
-			file: file,
+	  	var filesArray = [];
+
+        for (var i = 0; i < files.length; i++) {
+            filesArray.push(files[i]);
+        };
+        var uploaderData = {
+            files: filesArray,
 			params: JSON.stringify( params ),
 			custom_params: JSON.stringify( custom_params ),
 			profile: profile.val(),
-			server: server.val()
+			server: server.val(),
+			source: 'theplatform_upload_data'
 		}
 
-		upload_window.parentLocation = window.location;
+		window.onmessage = function(e) {	
+			if ( e.data == 'theplatform_uploader_ready' ) {
+				upload_window.postMessage(uploaderData, '*');	
+			}					
+		}		
 
 	} );
 } );
