@@ -53,8 +53,8 @@ class ThePlatform_HTML {
 
 	function preview_player() {
 		?>
-		<div id="modal-player" class="marketplacePlayer">
-			<img id="modal-player-placeholder" alt="Preview" data-src="holder.js/320x180/text:No Preview Available"
+		<div id="modal-player">
+			<img id="modal-player-placeholder" alt="Preview" data-src="holder.js/100%x100%/text:No Preview Available"
 			     src=""><!-- holder.js/128x72/text:No Thumbnail" -->
 			<div class="tpPlayer" id="player"
 			     tp:allowFullScreen="true"
@@ -111,7 +111,7 @@ class ThePlatform_HTML {
 					if ( $field_title === 'link' ) {
 						$display_title = 'Related Link';
 					}
-					$html = '<div class="row">';
+					$html = '<div class="row row-no-margin">';
 					$html .= '<strong>' . esc_html( $display_title ) . ': </strong>';
 					$html .= '<span class="field" id="media-' . esc_attr( strtolower( $field_title ) ) . '" data-name="' . esc_attr( strtolower( $field_title ) ) . '"></span></div>';
 					echo $html;

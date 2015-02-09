@@ -88,14 +88,14 @@ $tp_html = new ThePlatform_HTML();
 	</script>
 
 	<script id="media-template" type="text/template">
-		<div class="media" id="<%= id %>"><img class="media-object pull-left thumb-img" data-src="<%= placeHolder %>"
-		                                       alt="128x72" src="<%= defaultThumbnailUrl %>">
-
+		<div class="media" id="<%= id %>">
+			<div class="media-left">
+				<img class="media-object thumb-img" data-src="<%= placeHolder %>" alt="128x72"
+				     src="<%= defaultThumbnailUrl %>">
+			</div>
 			<div class="media-body">
-				<div id="head">
-					<strong class="media-heading"><%= title %></strong>
-				</div>
-				<div id="source"></div>
+				<strong class="media-heading"><%= title %></strong>
+
 				<div id="desc"><%= _ . template . formatDescription( description ) %></div>
 			</div>
 		</div>
@@ -111,15 +111,15 @@ $tp_html = new ThePlatform_HTML();
 <body>
 
 <!-- navbar -->
-<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+<div class="navbar navbar-default navbar-fixed-top hidden-xs" role="navigation">
 	<div class="container-fluid">
 		<!-- Logo -->
-		<div class="navbar-header">
+		<!-- <div class="navbar-header">
 			<a class="navbar-brand" href="#">
 				<img alt="thePlatform"
 				     src="<?php echo esc_url( plugins_url( '/images/embed_button.png', __FILE__ ) ); ?>">
 				thePlatform</a>
-		</div>
+		</div> -->
 
 		<!-- Q Search input -->
 		<form class="navbar-form navbar-left" role="search" onsubmit="return false;">
@@ -165,38 +165,43 @@ $tp_html = new ThePlatform_HTML();
 
 
 <!-- 3 Column main layout -->
-<div class="fs-main">
 
-	<!-- Sidebar -->
-	<div id="filter-container">
-		<div id="filter-affix" class="scrollable affix-top">
-			<div id="list-categories" class="list-group">
-				<a class="list-group-item active">
-					Categories
-				</a>
-				<a href="#" class="list-group-item category selected">All Videos</a>
+<div class="container-fluid"> <!-- main container -->
+	<div class="row"> <!-- column row -->
+
+		<!-- Categories Sidebar -->
+		<div class="col-md-2 col-lg-2 hidden-xs hidden-sm">
+			<div id="cat-container">
+				<div id="list-categories" class="list-group">
+					<a class="list-group-item active">Categories</a>
+					<a href="#" class="list-group-item category selected">All Videos</a>
+				</div>
 			</div>
 		</div>
-	</div>
-	<!-- END sidebar -->
+		<!-- Categories Sidebar -->
 
-	<!-- Media List -->
-	<div id="content-container">
-		<div id="message-panel"></div>
-		<div id="media-list"></div>
-	</div>
-	<!-- END Media List -->
+		<!-- Media list -->
+		<div class="col-md-6 col-lg-6 col-sm-8 col-xs-8">
+			<div id="content-container">
+				<div id="message-panel"></div>
+				<div id="media-list"></div>
+			</div>
+		</div>
+		<!-- Media list -->
 
-	<div id="info-container">
-		<div id="info-affix" class="scrollable affix-top">
+		<!-- Preview sidebar -->
+		<div class="col-md-4 col-lg-4 col-sm-4 col-xs-4">
 			<div id="info-player-container">
 				<?php $tp_html->preview_player() ?>
 				<?php $tp_html->content_pane( $IS_EMBED ) ?>
 			</div>
 		</div>
-	</div>
+		<!-- Preview sidebar -->
 
+	</div>
+	<!-- column row -->
 </div>
+<!-- main container -->
 
 <?php
 if ( ! $IS_EMBED && current_user_can( $tp_editor_cap )) {

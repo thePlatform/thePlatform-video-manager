@@ -15,188 +15,49 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-.loadimg {
-    z-index: 99999;
-    height: 50px;
-    width: 50px;
-    margin-right: 20px;
+body {
+    padding-top: 10px;
+    line-height: 1.5;
+    font-family: 'Open Sans', sans-serif;
 }
-
-.cb-even {
-    width: 100%;
-    background-color: #dee0e8;
+@media (min-width: 768px) {
+    body {
+        padding-top: 70px;
+    }
 }
-
-.media-cb {
-    margin-top: 12px !important;
-    margin-left: 5px !important;
-}
-
-.row {
-    margin-right: 0;
-    margin-left: 0;
-}
-
 .thumb-img {
     width: 128px;
     height: 72px;
 }
-
-.page-below-nav {
-    top: 225px;
-}
-
-.bootstrap-select {
-    max-width: 150px;
-}
-
-.scrollable {
-    overflow-y: scroll;
-    height: 100%;
-}
-
-.bm-delete {
-    float: right;
-}
-
-header {
-    height: 270px;
-}
-
-@media (min-width: 0px) {
-    #info-affix.affix-top {
-        position: fixed;
-        top: 75px;
-        right: 0;
-        margin: 5px;
-    }
-
-    #info-affix.affix {
-        position: fixed;
-        top: 75px;
-        right: 0;
-        margin: 5px;
-    }
-
-    #filter-affix.affix-top {
-        position: fixed;
-        height: 100%;
-        top: 75px;
-        margin: 5px;
-        width: 180px;
-    }
-
-    #filter-affix.affix {
-        position: fixed;
-        top: 75px;
-        height: 100%;
-        margin: 5px;
-        width: 180px;
-    }
-
-    #feed-affix.affix, #feed-affix.affix-top {
-        position: fixed;
-        bottom: 0;
-    }
-
-    .fs-main {
-        margin-top: 80px;
-        min-width: 800px;
-    }
-}
-
-.affix, .affix-top {
-    position: static;
-}
-
-#info-container {
-    visibility: hidden;
-}
-
-.col-md-4-fix {
-    width: 33.33333333333333% !important;
-}
-
-.col-sm-4-fix {
-}
-
-.col-lg-4-fix {
-    width: 33.33333333333333% !important;
-}
-
-.sort-bar-text {
-    margin-right: 0;
-}
-
-.sort-bar-nav {
-    margin-left: 0;
-    padding-left: 5px;
-}
-
-#content-container {
-    top: 0;
-    margin-left: 200px;
-    margin-right: 345px;
-}
-
-#filter-container {
-    width: 180px;
-}
-
-#info-player-container {
-    width: 320px;
-}
-
-#player {
-    position: absolute;
-    width: 320px;
-    height: 180px;
-}
-
-#modal-player-placeholder {
-    position: absolute;
-    width: 320px;
-    height: 180px;
-}
-
 #modal-player {
     position: relative;
-    width: 320px;
-    height: 180px;
-}
-
-#bm-panel {
-    margin-bottom: 150px;
-}
-
-#panel-contentpane {
-    margin-bottom: 150px;
-    overflow-wrap: break-word;
-}
-
-#bmtable {
     width: 100%;
 }
-
-.popover {
-    z-index: 2000;
-    max-width: 100% !important;
-    min-width: 235px;
+#modal-player:before {
+    content: "";
+    display: block;
+    padding-top: 56.25%;
 }
-
-.media > .popover {
-    width: 250px;
-    /*height: 210px;*/
+#player {
+    position: absolute !important;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
 }
-
-.embedIframe {
-    width: 100%;
-    height: 145px;
-    max-width: 468px;
-    max-height: 75px;
-    resize: none;
+#modal-player-placeholder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
 }
-
+.category.selected, .media.selected {
+    background-color: #D8E8FF !important;
+}
+.category:hover, .media:hover {
+    background-color: #f5f5f5;
+}
 .list-group-item.active {
     border-color: #dddddd !important;
     background-color: #f5f5f5 !important;
@@ -206,59 +67,25 @@ header {
     font-weight: 500;
     line-height: 1.1;
 }
-
-.feedurl-nav {
-    width: 100%;
+#cat-container {
+    position: fixed;
+    width: 15%;
 }
-
-.popover-embed-iframe {
+#info-player-container {
+    position: fixed;
+    width: 31%;
 }
-
-.popover-embed-anchor {
-    margin-top: 20px;
+.row-no-margin {
+    margin: 0px;
 }
-
-.panel-body {
-    padding-left: 25px;
+.btn-metadata {
+    margin-right: 5px;
+    margin-bottom: 5px;
 }
-
 #btn-container {
     padding-left: 10px;
     padding-bottom: 5px;
 }
-
-.category:hover, .media:hover {
-    background-color: #f5f5f5;
-}
-
-.btn-metadata {
-    margin-right: 5px;
-}
-
-.category.selected, .media.selected {
-    background-color: #D8E8FF !important;
-}
-
-#selectpick-player {
-    width: 190px;
-}
-
-.navbar-brand > img {
-    display: inline;
-}
-
-.media {
-    overflow: auto;
-}
-
-.navbar-text {
-    color: #666666 !important;
-}
-
 .navbar-form .form-group {
     margin-left: 10px;
-}
-
-#btn-generate-thumbnail {
-    width: 145px;
 }
