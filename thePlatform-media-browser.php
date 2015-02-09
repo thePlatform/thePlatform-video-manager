@@ -171,7 +171,7 @@ $tp_html = new ThePlatform_HTML();
 
 		<!-- Categories Sidebar -->
 		<div class="col-md-2 col-lg-2 hidden-xs hidden-sm">
-			<div id="cat-container">
+			<div id="cat-container" class="scrollable">
 				<div id="list-categories" class="list-group">
 					<a class="list-group-item active">Categories</a>
 					<a href="#" class="list-group-item category selected">All Videos</a>
@@ -191,7 +191,7 @@ $tp_html = new ThePlatform_HTML();
 
 		<!-- Preview sidebar -->
 		<div class="col-md-4 col-lg-4 col-sm-4 col-xs-4">
-			<div id="info-player-container">
+			<div id="info-player-container" class="scrollable">
 				<?php $tp_html->preview_player() ?>
 				<?php $tp_html->content_pane( $IS_EMBED ) ?>
 			</div>
