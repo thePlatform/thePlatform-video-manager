@@ -36,6 +36,14 @@ define( 'TP_EDITOR_DEFAULT_CAP', 'edit_posts' );
 define( 'TP_UPLOADER_DEFAULT_CAP', 'upload_files' );
 define( 'TP_REVOKE_DEFAULT_CAP', 'upload_files' );
 
+function TP_MANIFEST_FORMATS() {
+	return array(
+		'MPEG-DASH',
+		'M3U',		
+		'F4M',
+		'ISM'
+		);
+}
 
 function TP_ACCOUNT_OPTIONS_DEFAULTS() {
 	return array(

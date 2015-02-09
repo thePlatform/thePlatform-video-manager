@@ -922,7 +922,7 @@ class ThePlatform_API {
 
 		// Get the nearest video in size
 		foreach ( $mediaFiles as $file ) {
-			if ( $file['width'] >= $taskWidth ) {
+			if ( $file['width'] >= $taskWidth && !in_array( $file['format'] , TP_MANIFEST_FORMATS() ) ) {
 				$mediaFileId = $file['id'];
 				break;
 			}
@@ -980,7 +980,7 @@ class ThePlatform_API {
 	 * @return array MediaFile array
 	 */
 	function get_video_files_by_media_id( $mediaId, $fields = array() ) {
-		$default_fields = array( 'id', 'title', 'width', 'height', 'disabled' );
+		$default_fields = array( 'id', 'title', 'width', 'height', 'disabled', 'format' );
 		$fieldsString   = implode( ',', array_merge( $default_fields, $fields ) );
 
 		$url = TP_API_MEDIA_FILE_ENDPOINT;
