@@ -4,7 +4,7 @@
   Plugin Name: thePlatform Video Manager
   Plugin URI: http://theplatform.com/
   Description: Manage video assets hosted in thePlatform MPX from within WordPress.
-  Version: 1.3.3
+  Version: 1.3.4
   Author: thePlatform for Media, Inc.
   Author URI: http://theplatform.com/
   License: GPL2
@@ -549,8 +549,8 @@ class ThePlatform_Plugin {
 			$image_url = plugins_url('/images/embed_button.png', __FILE__);
 			wp_enqueue_script( 'jquery-ui-dialog' );
 			wp_enqueue_style( 'wp-jquery-ui-dialog' );
-			echo '<script type="text/javascript">function theplatform_dialog(){ var iframeUrl="' . esc_js( admin_url( 'admin-ajax.php' ) ) . '?action=theplatform_media&embed=true&_wpnonce=' . esc_js( wp_create_nonce( 'theplatform-ajax-nonce-theplatform_media' ) ) . '";if(jQuery("#tp-embed-dialog").length==0){jQuery("body").append(\'<div id="tp-embed-dialog"></div>\')}if(window.innerHeight<1200){var height=window.innerHeight-50}else{var height=1024}jQuery("#tp-embed-dialog").html(\'<iframe src="\'+iframeUrl+\'" height="100%" width="100%">\').dialog({dialogClass:"wp-dialog",modal:true,resizable:true,minWidth:1024,width:1220,height:height}).css("overflow-y","hidden")};</script>';
-			echo '<a href="#" class="button" onclick="theplatform_dialog()"><img src="' . esc_url($image_url) . '" alt="thePlatform" style="vertical-align: text-top; height: 18px; width: 18px;">thePlatform</a>';
+			echo '<script type="text/javascript">function theplatform_dialog(){ jQuery("#tpMediaButton").hide(); if (jQuery().dialog == undefined) { alert("jquery-ui-dialog not available, please use the TinyMCE button instead"); return; } var iframeUrl="' . esc_js( admin_url( 'admin-ajax.php' ) ) . '?action=theplatform_media&embed=true&_wpnonce=' . esc_js( wp_create_nonce( 'theplatform-ajax-nonce-theplatform_media' ) ) . '";if(jQuery("#tp-embed-dialog").length==0){jQuery("body").append(\'<div id="tp-embed-dialog"></div>\')}if(window.innerHeight<1200){var height=window.innerHeight-50}else{var height=1024}jQuery("#tp-embed-dialog").html(\'<iframe src="\'+iframeUrl+\'" height="100%" width="100%">\').dialog({dialogClass:"wp-dialog",modal:true,resizable:true,minWidth:1024,width:1220,height:height}).css("overflow-y","hidden")};</script>';
+			echo '<a href="#" class="button" onclick="theplatform_dialog()" id="tpMediaButton"><img src="' . esc_url($image_url) . '" alt="thePlatform" style="vertical-align: text-top; height: 18px; width: 18px;">thePlatform</a>';
 		}
 	}
 

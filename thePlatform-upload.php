@@ -88,7 +88,7 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 			$field_prefix = $userIdField[0]['namespacePrefix'];
 			$field_namespace = $userIdField[0]['namespace'];
 			$userID = strval( wp_get_current_user()->ID );
-			echo '<input name="' . esc_attr( $field_title ) . '" id="theplatform_upload_' . esc_attr( $preferences['user_id_customfield'] ) . '" class="userid custom_field" type="hidden" value="' . esc_attr( $userID ) . '" data-type="String" data-name="' . esc_attr( strtolower( $field_title ) ) . '" data-prefix="' . esc_attr( strtolower( $field_prefix ) ) . '" data-namespace="' . esc_attr( strtolower( $field_namespace ) ) . '"/>';						
+			echo '<input name="' . esc_attr( $field_title ) . '" id="theplatform_upload_' . esc_attr( $preferences['user_id_customfield'] ) . '" class="userid custom_field" type="hidden" value="' . esc_attr( $userID ) . '" data-type="String" data-name="' . esc_attr( strtolower( $field_title ) ) . '" data-prefix="' . esc_attr( strtolower( $field_prefix ) ) . '" data-namespace="' . esc_attr( strtolower( $field_namespace ) ) . '" />';						
 		}
 		
 		
@@ -131,7 +131,7 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 			$html .= 		'<div class="col-xs-5">';
 			$html .=			'<div class="form-group">';
 			$html .= 				'<label class="control-label" for="theplatform_upload_' . esc_attr( $upload_field ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
-			$html .= 				'<input name="' . esc_attr( $upload_field ) . '" id="theplatform_upload_' . esc_attr( $upload_field ) . '" class="form-control upload_field" type="text" value="' . esc_attr( $default_value ) . '"/>'; //upload_field
+			$html .= 				'<input placeholder="' . esc_attr( ucfirst( $field_title ) ) . '" name="' . esc_attr( $upload_field ) . '" id="theplatform_upload_' . esc_attr( $upload_field ) . '" class="form-control upload_field" type="text" value="' . esc_attr( $default_value ) . '"/>'; //upload_field
 			$html .= 			'</div>';
 			$html .= 		'</div>';
 			$i++;
@@ -190,7 +190,7 @@ if ( !defined( 'TP_MEDIA_BROWSER' ) ) {
 		$html .= '<div class="col-xs-5">';
 		$html .= '<label class="control-label" for="theplatform_upload_' . esc_attr( $field_name ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
 
-		$html .= '<input name="' . esc_attr( $field_title ) . '" id="theplatform_upload_' . esc_attr( $field_name ) . '" class="form-control custom_field" type="text" value="' . esc_attr( $field_value ) . '" data-type="' . esc_attr( $field_type ) . '" data-structure="' . esc_attr( $field_structure ) . '" data-name="' . esc_attr( strtolower( $field_title ) ) . '" data-prefix="' . esc_attr( strtolower( $field_prefix ) ) . '" data-namespace="' . esc_attr( strtolower( $field_namespace ) ) . '"/>';
+		$html .= '<input placeholder="' . esc_attr( ucfirst( $field_title ) ) . '" name="' . esc_attr( $field_title ) . '" id="theplatform_upload_' . esc_attr( $field_name ) . '" class="form-control custom_field" type="text" value="' . esc_attr( $field_value ) . '" data-type="' . esc_attr( $field_type ) . '" data-structure="' . esc_attr( $field_structure ) . '" data-name="' . esc_attr( strtolower( $field_title ) ) . '" data-prefix="' . esc_attr( strtolower( $field_prefix ) ) . '" data-namespace="' . esc_attr( strtolower( $field_namespace ) ) . '"/>';
 		if ( isset( $structureDesc[$field_structure] ) ) {
 			$html .= '<div class="structureDesc"><strong>Structure</strong> ' . esc_html( $structureDesc[$field_structure] ) . '</div>';
 		}
