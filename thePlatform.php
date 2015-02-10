@@ -4,7 +4,7 @@
   Plugin Name: thePlatform Video Manager
   Plugin URI: http://theplatform.com/
   Description: Manage video assets hosted in thePlatform MPX from within WordPress.
-  Version: 1.3.2
+  Version: 1.3.4
   Author: thePlatform for Media, Inc.
   Author URI: http://theplatform.com/
   License: GPL2
@@ -70,6 +70,7 @@ class ThePlatform_Plugin {
 		if ( is_admin() ) {
 			add_action( 'admin_menu', array( $this, 'add_admin_page' ) );
 			add_action( 'admin_init', array( $this, 'register_scripts' ) );
+			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_post_scripts' ) );
 			add_action( 'wp_ajax_initialize_media_upload', array( $this->tp_api, 'initialize_media_upload' ) );			
 			add_action( 'wp_ajax_theplatform_media', array( $this, 'embed' ) );
 			add_action( 'wp_ajax_theplatform_upload', array( $this, 'upload' ) );
@@ -78,9 +79,26 @@ class ThePlatform_Plugin {
 			add_action( 'wp_ajax_get_videos', array( $this->tp_api, 'get_videos' ) );
 			add_action( 'wp_ajax_set_thumbnail', array( $this, 'set_thumbnail_ajax' ) );
 			add_action( 'admin_init', array( $this, 'theplatform_buttonhooks' ) );
-			// add_action( 'media_buttons', array( $this, 'theplatform_media_button' ), 999 );			
+			add_action( 'media_buttons', array( $this, 'theplatform_media_button' ), 20 );			
 		}
 		add_shortcode( 'theplatform', array( $this, 'shortcode' ) );
+	}
+
+	function enqueue_post_scripts($hook) {
+		if ( !isset( $this->preferences ) ) {
+			$this->preferences = get_option( TP_PREFERENCES_OPTIONS_KEY, array() );
+		}
+
+		// No need to enqueue dialog if the button is on the editor only
+		if ( array_key_exists( 'embed_hook', $this->preferences ) && $this->preferences['embed_hook'] == 'tinymce' ) {
+			return;
+		}
+
+		// Only enqueue on a post page	
+		if ( 'post.php' == $hook || 'post-new.php' == $hook ) {
+			wp_enqueue_script( 'jquery-ui-dialog' );
+			wp_enqueue_style( 'wp-jquery-ui-dialog' );
+	    }		
 	}
 
 	/**
@@ -404,7 +422,7 @@ class ThePlatform_Plugin {
 		
 		if ( empty ( $value ) ) {
 			return $defaultValue;							
-		} else if ( array_search( $value, $allowedValues) === 0 ) {
+		} else if ( in_array( $value, $allowedValues) ) {	
 			return $value;
 		}
 				
@@ -442,7 +460,11 @@ class ThePlatform_Plugin {
 
 		$url = apply_filters( 'tp_base_embed_url', $url );
 
-		$url .= '?width=' . (int) $player_width . '&height=' . (int) $player_height;
+		if ($tag == 'script') {
+			$url .= '?form=javascript';	
+		} else {
+			$url .= '?form=html';
+		}				
 
 		if ( $loop !== "false" ) {
 			$url .= "&loop=true";
@@ -463,9 +485,9 @@ class ThePlatform_Plugin {
 		$url = apply_filters( 'tp_full_embed_url', $url );
 
 		if ( $tag == "script" ) {
-			return '<div style="width:' . esc_attr( $player_width ) . 'px; height:' . esc_attr( $player_height ) . 'px"><script type="text/javascript" src="' . esc_url_raw( $url . "&form=javascript" ) . '"></script></div>';
+			return '<div class="tpEmbed" style="width:' . esc_attr( $player_width ) . 'px; height:' . esc_attr( $player_height ) . 'px;"><script type="text/javascript" src="' . esc_url_raw( $url ) . '"></script></div>';
 		} else { //Assume iframe			
-			return '<iframe src="' . esc_url( $url ) . '" height=' . esc_attr( $player_height ) . ' width=' . esc_attr( $player_width ) . ' frameBorder="0" seamless="seamless" allowFullScreen></iframe>';
+			return '<iframe class="tpEmbed" src="' . esc_url( $url ) . '" height="' . esc_attr( $player_height ) . '" width="' . esc_attr( $player_width ) . '" frameBorder="0" seamless="seamless" allowFullScreen></iframe>';
 		}
 	}
 
@@ -527,8 +549,8 @@ class ThePlatform_Plugin {
 			$image_url = plugins_url('/images/embed_button.png', __FILE__);
 			wp_enqueue_script( 'jquery-ui-dialog' );
 			wp_enqueue_style( 'wp-jquery-ui-dialog' );
-			echo '<script type="text/javascript">function theplatform_dialog(){ var iframeUrl=ajaxurl+"?action=theplatform_media&embed=true&_wpnonce=' . esc_js( wp_create_nonce( 'theplatform-ajax-nonce-theplatform_media' ) ) . '";if(jQuery("#tp-embed-dialog").length==0){jQuery("body").append(\'<div id="tp-embed-dialog"></div>\')}if(window.innerHeight<1200){var height=window.innerHeight-50}else{var height=1024}jQuery("#tp-embed-dialog").html(\'<iframe src="\'+iframeUrl+\'" height="100%" width="100%">\').dialog({dialogClass:"wp-dialog",modal:true,resizable:true,minWidth:1024,width:1220,height:height}).css("overflow-y","hidden")};</script>';
-			echo '<a href="#" class="button" onclick="theplatform_dialog()"><img src="' . esc_url($image_url) . '" alt="thePlatform" style="vertical-align: text-top; height: 18px; width: 18px;">thePlatform</a>';
+			echo '<script type="text/javascript">function theplatform_dialog(){ jQuery("#tpMediaButton").hide(); if (jQuery().dialog == undefined) { alert("jquery-ui-dialog not available, please use the TinyMCE button instead"); return; } var iframeUrl="' . esc_js( admin_url( 'admin-ajax.php' ) ) . '?action=theplatform_media&embed=true&_wpnonce=' . esc_js( wp_create_nonce( 'theplatform-ajax-nonce-theplatform_media' ) ) . '";if(jQuery("#tp-embed-dialog").length==0){jQuery("body").append(\'<div id="tp-embed-dialog"></div>\')}if(window.innerHeight<1200){var height=window.innerHeight-50}else{var height=1024}jQuery("#tp-embed-dialog").html(\'<iframe src="\'+iframeUrl+\'" height="100%" width="100%">\').dialog({dialogClass:"wp-dialog",modal:true,resizable:true,minWidth:1024,width:1220,height:height}).css("overflow-y","hidden")};</script>';
+			echo '<a href="#" class="button" onclick="theplatform_dialog()" id="tpMediaButton"><img src="' . esc_url($image_url) . '" alt="thePlatform" style="vertical-align: text-top; height: 18px; width: 18px;">thePlatform</a>';
 		}
 	}
 

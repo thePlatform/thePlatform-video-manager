@@ -17,7 +17,7 @@
   with this program; if not, write to the Free Software Foundation, Inc.,
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-define( 'TP_PLUGIN_VERSION', '1.3.2' );
+define( 'TP_PLUGIN_VERSION', '1.3.4' );
 define( 'TP_PREFERENCES_OPTIONS_KEY', 'theplatform_preferences_options' );
 define( 'TP_ACCOUNT_OPTIONS_KEY', 'theplatform_account_options' );
 define( 'TP_METADATA_OPTIONS_KEY', 'theplatform_metadata_options' );
@@ -58,8 +58,8 @@ function TP_PREFERENCES_OPTIONS_DEFAULTS() {
 					'default_width' => intval ( $GLOBALS['content_width'] ),
 					'default_height' => intval( ($GLOBALS['content_width'] / 16) * 9 ),
 					'player_embed_type' => 'embed',
-          'embed_hook' => 'tinymce',
-          'media_embed_type' => 'pid'
+			        'embed_hook' => 'tinymce',
+			        'media_embed_type' => 'release'
 				);
 }
 
@@ -108,8 +108,8 @@ function TP_PREFERENCES_OPTIONS_FIELDS() {
                 array( 'id' => 'section_preferences_options', 'title' => 'General Preferences', 'callback' => 'section_preferences_desc', 'fields' => array (
                         array( 'id' => 'filter_by_user_id',     'title' => 'Filter Users Own Videos',       'type' => 'boolean' ),
                         array( 'id' => 'user_id_customfield',   'title' => 'User ID Custom Field',          'type' => 'callback' ),
-                        array( 'id' => 'transform_user_id_to',  'title' => 'Show User ID as',               'type' => 'select',     'values' => array( 'Email' => 'email', 'Full Name' => 'full_name', 'Nickname' => 'nickname', 'Username' => 'username' ) ),
-                        // array( 'id' => 'embed_hook',            'title' => 'Plugin Embed button type',      'type' => 'select',     'values' => array( 'Media Button' => 'mediabutton', 'Editor Button' => 'tinymce', 'Both' => 'both' ) ),
+                        array( 'id' => 'transform_user_id_to',  'title' => 'Show User ID as',               'type' => 'select',     'values' => array( 'Email' => 'email', 'Full Name' => 'full_name', 'Nickname' => 'nickname', 'Username' => 'username' ) ),                        
+                        array( 'id' => 'embed_hook', 			'title' => 'Plugin Embed button location', 	'type' => 'select', 	'values' => array( 'Media Button' => 'mediabutton', 'Editor Button' => 'tinymce', 'Both' => 'both' ) ),
                         array( 'id' => 'mpx_server_id',         'title' => 'MPX Upload Server',             'type' => 'callback' ),
                         array( 'id' => 'default_publish_id',    'title' => 'Default Publishing Profile',    'type' => 'callback' )
                     )
