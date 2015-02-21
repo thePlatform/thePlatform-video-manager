@@ -15,16 +15,6 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-body {
-    padding-top: 10px;
-    line-height: 1.5;
-    font-family: 'Open Sans', sans-serif;
-}
-@media (min-width: 768px) {
-    body {
-        padding-top: 70px;
-    }
-}
 .thumb-img {
     width: 128px;
     height: 72px;
@@ -52,10 +42,10 @@ body {
     bottom: 0;
     right: 0;
 }
-.category.selected, .media.selected {
+.media.selected {
     background-color: #D8E8FF !important;
 }
-.category:hover, .media:hover {
+.media:hover {
     background-color: #f5f5f5;
 }
 .list-group-item.active {
@@ -66,18 +56,6 @@ body {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-weight: 500;
     line-height: 1.1;
-}
-#cat-container {
-    position: fixed;
-    width: 15%;
-}
-#info-player-container {
-    position: fixed;
-    width: 31%;
-    padding-bottom: 45px;
-}
-.row-no-margin {
-    margin: 0px;
 }
 .btn-metadata {
     margin-right: 5px;
@@ -90,7 +68,40 @@ body {
 .navbar-form .form-group {
     margin-left: 10px;
 }
-.scrollable {
-    overflow-y: scroll;
-    height: 100%;
+img.media-object.thumb-img {
+    width: 128px;
+    height: 72px;
+}
+.media-left, .media-right, .media-body {
+    display: table-cell;
+    vertical-align: top;
+}
+.media, .media-body {
+    zoom: 1;
+    overflow: hidden;
+}
+.media {
+    margin-top: 15px;
+}
+.media-left, .media>.pull-left {
+    padding-right: 10px;
+}
+.tp-post-body {
+    margin-right: 400px !important;
+}
+.tp-postbox-container-1 {
+    margin-right: -400px !important;
+    width: 380px !important;
+}
+@media only screen and (max-width: 1060px) {
+    #poststuff {
+        min-width: 0 !important;
+    }
+    #wpbody-content #poststuff #post-body {
+        margin: 0 !important;
+    }
+    #wpbody-content #post-body.columns-2 #postbox-container-1 {
+        margin-right: 0 !important;
+        width: 100% !important;
+    }
 }

@@ -48,31 +48,22 @@ var theplatform_browser = (function($) {
 
             tpHelper.queryString = API.buildMediaQuery(queryObject);
             tpHelper.feedEndRange = 0;
-            $mediaList.empty();
-            $mediaList.infiniteScroll('reset');
+            $mediaList.empty();            
         },
 
         buildCategoryAccordion: function(resp) {
             var entries = resp['entries'];
-            var categorySource = $("#category-template").html();
-            var categoryTemplate = _.template(categorySource);
-
-            // Set an event handler for All Videos
-            $('.category').first().click(Events.onClickCategory);
-
+            var categoryPicker = $('#selectpick-categories');
             // Add each category
             for (var idx in entries) {
                 var entryTitle = entries[idx]['title'];
-                category = categoryTemplate({
-                    entryTitle: entryTitle
-                });
-                newCategory = $(category);
-                newCategory.on('click', Events.onClickCategory);
-                $('#list-categories').append(newCategory);
+                var option = document.createElement('option');
+                option.value = entryTitle;
+                option.text = entryTitle;
+                $('#selectpick-categories').append(option);
             }
 
-            //Add an empty row for scrolling
-            $('#list-categories').append('<div style="height: 70px;"></div>');
+           
         },
 
         notifyUser: function(type, msg) {
@@ -359,8 +350,9 @@ var theplatform_browser = (function($) {
             tpHelper.currentMediaTime = undefined;
         },
         onMediaListBottom: function(callback) {
-            var MAX_RESULTS = 20;
+            var MAX_RESULTS = 10;
             NProgress.start(); // show loading before we call getVideos
+            API.getVideoCount();
             var theRange = parseInt(tpHelper.feedEndRange);
             theRange = (theRange + 1) + '-' + (theRange + MAX_RESULTS);
             API.getVideos(theRange, function(resp) {
@@ -379,8 +371,7 @@ var theplatform_browser = (function($) {
                 }
 
                 NProgress.done();
-                Holder.run();
-                callback(parseInt(tpHelper.feedResultCount) == MAX_RESULTS); //True if there are still more results.              
+                Holder.run();                
             });
         },
         onMouseScroll: function(ev) {
@@ -485,6 +476,18 @@ var theplatform_browser = (function($) {
                 }
             });
         },
+        getVideoCount: function() {
+             var data = {
+                _wpnonce: tp_browser_local.tp_nonce['get_videos'],
+                action: 'get_video_count',
+                myContent: $('#my-content-cb').prop('checked')
+            };
+
+            $.post(tp_browser_local.ajaxurl, data, function(resp) {
+                $('.displaying-num').text(resp.data + ' items');
+                console.log(resp);
+            });
+        },        
         buildMediaQuery: function(data) {
 
             var queryParams = '';
@@ -588,13 +591,7 @@ var theplatform_browser = (function($) {
         /**
          * Set up the infinite scrolling media list and load the first sets of media
          */
-        $('#media-list').infiniteScroll({
-            threshold: 100,
-            onEnd: function() {
-                //No more results                
-            },
-            onBottom: Events.onMediaListBottom
-        });
+        Events.onMediaListBottom();
     });
 
     // Expose the updateMediaObject method outside this module
