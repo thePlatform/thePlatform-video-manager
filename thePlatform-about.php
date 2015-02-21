@@ -49,23 +49,13 @@
 
 	<p>The following libraries are used under their respective licenses:<br>
 		Holder - 2.3.1 - client side image placeholders<br>
-		(c) 2012-2014 <a href="http://imsky.co">Ivan Malopinsky</a>
-	</p>
-
-	<p>
-		Bootstrap<br>
-		Copyright (c) 2011-2014 <a href="http://getbootstrap.com/">Twitter, Inc</a>
-	</p>
-
-	<p>
-		jQuery infiniteScroll<br>
-		Copyright (c) 2010 <a href="https://github.com/denniscalazans/jquery-infinitescroll">DIY Co</a>
+		(c) 2012-<?php echo date( "Y" ); ?> <a href="http://imsky.co">Ivan Malopinsky</a>
 	</p>
 
 	<p>
 		NProgress<br>
-		Copyright (c) 2013-2015 <a href="http://ricostacruz.com/nprogress/">Rico Sta. Cruz</a>
-	</p>
+		Copyright (c) 2013-<?php echo date( "Y" ); ?> <a href="http://ricostacruz.com/nprogress/">Rico Sta. Cruz</a>
+	</p>	
 
 	<?php
 
