@@ -15,39 +15,7 @@
   You should have received a copy of the GNU General Public License along
   with this program; if not, write to the Free Software Foundation, Inc.,
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
-
-/*
- * Load scripts and styles 
- */
-add_action( 'wp_enqueue_scripts', 'theplatform_upload_clear_styles_and_scripts', 100912 );
-function theplatform_upload_clear_styles_and_scripts() {
-	global $wp_styles;
-	foreach ( $wp_styles->queue as $handle ) {
-		wp_dequeue_style( $handle );
-	}
-
-	global $wp_scripts;
-	foreach ( $wp_scripts->queue as $handle ) {
-		wp_dequeue_script( $handle );
-	}
-
-	wp_enqueue_script( 'tp_file_uploader_js' );
-	wp_enqueue_style( 'tp_file_uploader_css' );
-}
-
 ?>
-<!DOCTYPE html>
-<html <?php language_attributes(); ?>>
-<head>
-	<meta charset="<?php bloginfo( 'charset' ); ?>"/>
-
-	<title>thePlatform Video Library</title>
-
-	<?php wp_head(); ?>
-</head>
-
-<body>
-<?php wp_footer(); ?>
 
 <script type="text/javascript">
 
@@ -60,5 +28,4 @@ function theplatform_upload_clear_styles_and_scripts() {
 		}
 	};
 </script>
-</body>
-</html>
+

@@ -482,16 +482,16 @@ TheplatformUploader = (function() {
         var me = this;
 
         this.fragSize = 5000000; // 5 Mb
-
-        var splashHtml = '<div class="splash card">' +
-            '<div role="spinner">' +
-            '<div class="spinner-icon"></div>' +
-            '</div>' +
-            '<p class="lead" style="text-align:center">Initalizing upload</p>' +
-            '<div class="progress">' +
-            '<div class="mybar" role="bar"></div>' +
-            '</div>' +
-            '</div>';
+        var splashHtml = 
+        '<div class="postbox">' +
+            '<p class="lead">Initalizing upload</p>' +                                     
+                '<div role="spinner">' +
+                    '<div class="spinner-icon"></div>' +
+                '</div>' +
+                '<div class="progress">' +
+                    '<div class="mybar" role="bar"></div>' +
+                '</div>' +            
+        '</div>';
 
         NProgress.configure({
             template: splashHtml,
