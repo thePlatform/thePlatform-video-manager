@@ -3,7 +3,7 @@
   Plugin Name: thePlatform Video Manager
   Plugin URI: http://theplatform.com/
   Description: Manage video assets hosted in thePlatform MPX from within WordPress.
-  Version: 1.4.0
+  Version: 1.5.0
   Author: thePlatform
   Author URI: http://theplatform.com/
   License: GPL2
@@ -54,12 +54,13 @@ class ThePlatform_Plugin {
 	 */
 	function __construct() {
 		require_once( dirname( __FILE__ ) . '/thePlatform-constants.php' );
+
+		// TODO: Move these
 		require_once( dirname( __FILE__ ) . '/thePlatform-URLs.php' );
 		require_once( dirname( __FILE__ ) . '/thePlatform-API.php' );
 		require_once( dirname( __FILE__ ) . '/thePlatform-helper.php' );
 		require_once( dirname( __FILE__ ) . '/thePlatform-proxy.php' );
 		require_once( dirname( __FILE__ ) . '/thePlatform-HTML.php' );
-
 		$this->tp_api = new ThePlatform_API;
 
 		//Disable oLark in if the plugin is loaded in AJAX
@@ -73,42 +74,71 @@ class ThePlatform_Plugin {
 		if ( is_admin() ) {
 			add_action( 'admin_menu', array( $this, 'add_admin_page' ) );
 			add_action( 'admin_init', array( $this, 'register_scripts' ) );
-			add_action( 'wp_enqueue_media', array( $this, 'theplatform_enqueue_media_button_scripts' ) );
-			add_action( 'wp_ajax_initialize_media_upload', array( $this->tp_api, 'initialize_media_upload' ) );
+			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
+			add_action( 'wp_enqueue_media', array( $this, 'theplatform_enqueue_media_button_scripts' ) );				
 			add_action( 'wp_ajax_theplatform_media', array( $this, 'embed' ) );
 			add_action( 'wp_ajax_theplatform_upload', array( $this, 'upload' ) );
 			add_action( 'wp_ajax_theplatform_upload_form', array( $this, 'upload_form' ) );
-			add_action( 'wp_ajax_theplatform_edit', array( $this, 'edit' ) );
-			add_action( 'wp_ajax_get_categories', array( $this->tp_api, 'get_categories' ) );
-			add_action( 'wp_ajax_get_videos', array( $this->tp_api, 'get_videos' ) );
-			add_action( 'wp_ajax_get_video_by_id', array( $this->tp_api, 'get_video_by_id' ) );
-			add_action( 'wp_ajax_get_profile_results', array( $this->tp_api, 'get_profile_results' ) );
+			add_action( 'wp_ajax_theplatform_edit', array( $this, 'edit' ) );			
 			add_action( 'wp_ajax_set_thumbnail', array( $this, 'set_thumbnail_ajax' ) );
-			add_action( 'wp_ajax_generate_thumbnail', array( $this->tp_api, 'generate_thumbnail' ) );
 			add_action( 'admin_init', array( $this, 'theplatform_tinymce_button' ) );
 			add_action( 'media_buttons', array( $this, 'theplatform_media_button' ), 20 );
+
+
+
+			// TODO: Move these
+			add_action( 'wp_ajax_get_categories', array( $this->tp_api, 'get_categories' ) );	
+			add_action( 'wp_ajax_get_videos', array( $this->tp_api, 'get_videos' ) );
+			add_action( 'wp_ajax_get_video_count', array( $this->tp_api, 'get_video_count' ) );
+			add_action( 'wp_ajax_get_video_by_id', array( $this->tp_api, 'get_video_by_id' ) );
+			add_action( 'wp_ajax_get_profile_results', array( $this->tp_api, 'get_profile_results' ) );			
+			add_action( 'wp_ajax_generate_thumbnail', array( $this->tp_api, 'generate_thumbnail' ) );
+			add_action( 'wp_ajax_initialize_media_upload', array( $this->tp_api, 'initialize_media_upload' ) );
 		}
 		add_shortcode( 'theplatform', array( $this, 'shortcode' ) );
+	}
+
+	function admin_enqueue_scripts( $hook ) {
+		// echo $hook;
+
+		// Media Browser		
+		if ( $hook == 'toplevel_page_theplatform' ) {
+			if ( ! isset( $_GET['embed'] ) ) {
+				wp_enqueue_script( 'tp_edit_upload_js' );
+			}
+			wp_enqueue_script( 'tp_browser_js' );
+			wp_enqueue_style( 'tp_browser_css' );
+		}
+		// Edit/Upload Form
+		if ( $hook == 'theplatform_page_theplatform-uploader' ) {
+			wp_enqueue_script( 'tp_edit_upload_js' );
+			wp_enqueue_style( 'tp_edit_upload_css' );		
+		}
+		// Upload popup
+		if ( $hook == 'admin_page_theplatform-upload-window' ) {
+			wp_enqueue_script( 'tp_file_uploader_js' );
+			wp_enqueue_style( 'tp_file_uploader_css' );				
+		}
+		
 	}
 
 	/**
 	 * Registers javascripts and css used throughout the plugin
 	 */
 	function register_scripts() {
-		wp_register_script( 'tp_pdk_js', "//pdk.theplatform.com/pdk/tpPdk.js" );
+		wp_register_script( 'tp_pdk_js', "//pdk.theplatform.com/next/pdk/tpPdk.js" );
 		wp_register_script( 'tp_holder_js', plugins_url( '/js/holder.js', __FILE__ ) );
-		wp_register_script( 'tp_media_button_js', plugins_url( '/js/thePlatform-media-button.js', __FILE__ ), array( 'jquery-ui-dialog' ) );
-		wp_register_script( 'tp_bootstrap_js', plugins_url( '/js/bootstrap.min.js', __FILE__ ), array( 'jquery' ) );
-		wp_register_script( 'tp_infiniscroll_js', plugins_url( '/js/jquery.infinitescroll.min.js', __FILE__ ), array( 'jquery' ) );
+		wp_register_script( 'tp_media_button_js', plugins_url( '/js/thePlatform-media-button.js', __FILE__ ), array( 'jquery-ui-dialog' ) );		
 		wp_register_script( 'tp_nprogress_js', plugins_url( '/js/nprogress.js', __FILE__ ) );
 		wp_register_script( 'tp_edit_upload_js', plugins_url( '/js/thePlatform-edit-upload.js', __FILE__ ), array( 'jquery' ) );
 		wp_register_script( 'tp_file_uploader_js', plugins_url( '/js/theplatform-uploader.js', __FILE__ ), array( 'jquery', 'tp_nprogress_js' ) );
-		wp_register_script( 'tp_browser_js', plugins_url( '/js/thePlatform-browser.js', __FILE__ ), array( 'jquery', 'underscore', 'jquery-ui-dialog', 'tp_holder_js', 'tp_pdk_js', 'tp_infiniscroll_js', 'tp_bootstrap_js', 'tp_nprogress_js' ) );
+		wp_register_script( 'tp_browser_js', plugins_url( '/js/thePlatform-browser.js', __FILE__ ), array( 'jquery', 'underscore', 'backbone', 'jquery-ui-dialog', 'tp_holder_js', 'tp_pdk_js', 'tp_nprogress_js' ) );
 		wp_register_script( 'tp_options_js', plugins_url( '/js/thePlatform-options.js', __FILE__ ), array( 'jquery', 'jquery-ui-sortable' ) );
 
 
 		wp_localize_script( 'tp_edit_upload_js', 'tp_edit_upload_local', array(
 			'ajaxurl'  => admin_url( 'admin-ajax.php' ),
+			'uploader_window_url' => admin_url('admin.php?page=theplatform-upload-window'),
 			'tp_nonce' => array(
 				'theplatform_edit'    => wp_create_nonce( 'theplatform-ajax-nonce-theplatform_edit' ),
 				'theplatform_media'   => wp_create_nonce( 'theplatform-ajax-nonce-theplatform_media' ),
@@ -120,8 +150,9 @@ class ThePlatform_Plugin {
 
 		wp_localize_script( 'tp_file_uploader_js', 'tp_file_uploader_local', array(
 			'ajaxurl'  => admin_url( 'admin-ajax.php' ),
+			'uploader_window_url' => $this->plugin_base_url . 'theplatform-upload-window.php',
 			'tp_nonce' => array(
-				'initialize_media_upload' => wp_create_nonce( 'theplatform-ajax-nonce-initialize_media_upload' ),
+				'initialize_media_upload' => wp_create_nonce( 'theplatform-ajax-nonce-initialize_media_upload' ),				
 				'publish_media'           => wp_create_nonce( 'theplatform-ajax-nonce-publish_media' )
 			)
 		) );
@@ -152,12 +183,11 @@ class ThePlatform_Plugin {
 			)
 		) );
 
-		wp_register_style( 'tp_edit_upload_css', plugins_url( '/css/thePlatform-edit-upload.css', __FILE__ ), array( 'tp_bootstrap_css' ) );
-		wp_register_style( 'tp_browser_css', plugins_url( '/css/thePlatform-browser.css', __FILE__ ), array( 'tp_edit_upload_css', 'tp_bootstrap_css', 'wp-jquery-ui-dialog', 'tp_nprogress_css' ) );
-		wp_register_style( 'tp_bootstrap_css', plugins_url( '/css/bootstrap.min.css', __FILE__ ) );
+		wp_register_style( 'tp_edit_upload_css', plugins_url( '/css/thePlatform-edit-upload.css', __FILE__ ) );
+		wp_register_style( 'tp_browser_css', plugins_url( '/css/thePlatform-browser.css', __FILE__ ), array( 'tp_edit_upload_css', 'wp-jquery-ui-dialog', 'tp_nprogress_css' ) );		
 		wp_register_style( 'tp_options_css', plugins_url( '/css/thePlatform-options.css', __FILE__ ) );
 		wp_register_style( 'tp_nprogress_css', plugins_url( '/css/nprogress.css', __FILE__ ) );
-		wp_register_style( 'tp_file_uploader_css', plugins_url( '/css/thePlatform-file-uploader.css', __FILE__ ), array( 'tp_nprogress_css', 'tp_bootstrap_css' ) );
+		wp_register_style( 'tp_file_uploader_css', plugins_url( '/css/thePlatform-file-uploader.css', __FILE__ ), array( 'tp_nprogress_css' ) );
 	}
 
 	/**
@@ -173,6 +203,7 @@ class ThePlatform_Plugin {
 		add_submenu_page( $slug, 'thePlatform Video Uploader', 'Upload Media to MPX', $tp_uploader_cap, 'theplatform-uploader', array( $this, 'upload_page' ) );
 		add_submenu_page( $slug, 'thePlatform Plugin Settings', 'Settings', $tp_admin_cap, 'theplatform-settings', array( $this, 'admin_page' ) );
 		add_submenu_page( $slug, 'thePlatform Plugin About', 'About', $tp_admin_cap, 'theplatform-about', array( $this, 'about_page' ) );
+		add_submenu_page( 'options.php', 'thePlatform Plugin Uploader', 'Uploader', $tp_uploader_cap, 'theplatform-upload-window', array( $this, 'upload' ) );
 	}
 
 	/**
@@ -196,7 +227,7 @@ class ThePlatform_Plugin {
 	 */
 	function upload_page() {
 		theplatform_check_plugin_update();
-		require_once( dirname( __FILE__ ) . '/thePlatform-upload.php' );
+		require_once( dirname( __FILE__ ) . '/thePlatform-edit-upload.php' );
 	}
 
 	/**
@@ -233,7 +264,7 @@ class ThePlatform_Plugin {
 		}
 
 		require_once( $this->plugin_base_dir . 'thePlatform-edit-upload.php' );
-		die();
+		// die();
 	}
 
 	/**
@@ -255,7 +286,7 @@ class ThePlatform_Plugin {
 	 * Calls the Upload Window template in a popup
 	 */
 	function upload() {
-		check_admin_referer( 'theplatform-ajax-nonce-theplatform_upload' );
+		// check_admin_referer( 'theplatform-ajax-nonce-theplatform_upload' );
 
 		$tp_uploader_cap = apply_filters( TP_UPLOADER_CAP, TP_UPLOADER_DEFAULT_CAP );
 		if ( ! current_user_can( $tp_uploader_cap ) ) {
