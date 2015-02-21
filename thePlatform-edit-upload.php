@@ -51,7 +51,7 @@ $tp_uploader_cap = apply_filters( TP_UPLOADER_CAP, TP_UPLOADER_DEFAULT_CAP );
 $tp_revoke_cap   = apply_filters( TP_REVOKE_CAP, TP_REVOKE_DEFAULT_CAP );
 
 if ( ! defined( 'TP_MEDIA_BROWSER' ) ) {
-	add_action( 'wp_enqueue_scripts', 'theplatform_upload_clear_styles_and_scripts', 100912 );	
+	add_action( 'wp_enqueue_scripts', 'theplatform_upload_clear_styles_and_scripts', 100912 );
 
 	if ( ! current_user_can( $tp_uploader_cap ) ) {
 		wp_die( '<p>You do not have sufficient permissions to upload MPX Media</p>' );
@@ -60,46 +60,46 @@ if ( ! defined( 'TP_MEDIA_BROWSER' ) ) {
 
 	?>
 	<div class="wrap">
-		<h2>Upload Media to MPX</h2>
+	<h2>Upload Media to MPX</h2>
 <?php
 } else {
 	// Edit Dialog has tabs, so we do all the necessary prefixing here
 	$tp_html->edit_tabs_header();
 } ?>
 
-<div id="responsive-form" class="clearfix">
-	<form role="form">
-		<?php
-		wp_nonce_field( 'theplatform_upload_nonce' );
+	<div id="responsive-form" class="clearfix">
+		<form role="form">
+			<?php
+			wp_nonce_field( 'theplatform_upload_nonce' );
 
-		// Output a hidden WP User ID field if the plugin is configured to store it.
-		$tp_html->user_id_field();
+			// Output a hidden WP User ID field if the plugin is configured to store it.
+			$tp_html->user_id_field();
 
-		// Output rows of all our writable metadata
-		$tp_html->metadata_fields();
+			// Output rows of all our writable metadata
+			$tp_html->metadata_fields();
 
 
-		if ( ! defined( 'TP_MEDIA_BROWSER' ) ) {
-			$tp_html->profiles_and_servers( "upload" );
-		} else {
-			?>
-			<div class="form-row" style="margin-top: 10px;">
-				<div class="column-half">
-					<button id="theplatform_edit_button" class="tp-input button button-primary" type="button"
-					        name="theplatform-edit-button">Submit
-					</button>
+			if ( ! defined( 'TP_MEDIA_BROWSER' ) ) {
+				$tp_html->profiles_and_servers( "upload" );
+			} else {
+				?>
+				<div class="form-row" style="margin-top: 10px;">
+					<div class="column-half">
+						<button id="theplatform_edit_button" class="tp-input button button-primary" type="button"
+						        name="theplatform-edit-button">Submit
+						</button>
+					</div>
 				</div>
-			</div>
-		<?php } ?>
-	</form>
-</div>
+			<?php } ?>
+		</form>
+	</div>
 <?php
 if ( defined( 'TP_MEDIA_BROWSER' ) ) {
 	// Write all of our edit dialog tabs
 	$tp_html->edit_tabs_content();
 } else {
 	?>
-</div> <!-- wrap -->
+	</div> <!-- wrap -->
 <?php
 }
 ?>

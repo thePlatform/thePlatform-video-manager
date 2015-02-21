@@ -39,10 +39,10 @@ define( 'TP_REVOKE_DEFAULT_CAP', 'upload_files' );
 function TP_MANIFEST_FORMATS() {
 	return array(
 		'MPEG-DASH',
-		'M3U',		
+		'M3U',
 		'F4M',
 		'ISM'
-		);
+	);
 }
 
 function TP_ACCOUNT_OPTIONS_DEFAULTS() {

@@ -53,20 +53,21 @@ class ThePlatform_HTML {
 
 	function pagination( $position ) { ?>
 		<div class="tablenav <?php echo $position ?>">
-			    <div class="tablenav-pages">
-			    	<span class="displaying-num">0 items</span>
+			<div class="tablenav-pages">
+				<span class="displaying-num">0 items</span>
 			        <span class="pagination-links">
 			        	<a class="first-page disabled" title="Go to the first page" href="">«</a>
 						<a class="prev-page disabled" title="Go to the previous page" href="">‹</a>
 						<span class="paging-input">
 							<label for="current-page-selector" class="screen-reader-text">Select Page</label>
-							<input class="current-page" id="current-page-selector" title="Current page" type="text" name="paged" value="1" size="2"> of <span class="total-pages">13</span>
+							<input class="current-page" id="current-page-selector" title="Current page" type="text"
+							       name="paged" value="1" size="2"> of <span class="total-pages">13</span>
 						</span>
 			        	<a class="next-page" title="Go to the next page" href="">›</a>
 			        	<a class="last-page" title="Go to the last page" href="">»</a>
 			        </span>
-			    </div>			    
-			</div> <?php
+			</div>
+		</div> <?php
 	}
 
 	function preview_player() {
@@ -384,7 +385,7 @@ class ThePlatform_HTML {
 	function edit_tabs_header() {
 		?>
 
-		<h2 class="nav-tab-wrapper" >
+		<h2 class="nav-tab-wrapper">
 			<a href="#edit_content" class="nav-tab-active nav-tab">Update Metadata</a>
 			<?php
 			$tp_uploader_cap = apply_filters( TP_UPLOADER_CAP, TP_UPLOADER_DEFAULT_CAP );

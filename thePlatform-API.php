@@ -578,8 +578,8 @@ class ThePlatform_API {
 		check_admin_referer( 'theplatform-ajax-nonce-get_videos' );
 
 		$token = $this->mpx_signin();
-		
-		$url = TP_API_MEDIA_ENDPOINT . '&entries=false&count=true&token=' . $token;		
+
+		$url = TP_API_MEDIA_ENDPOINT . '&entries=false&count=true&token=' . $token;
 
 		if ( ! empty( $_POST['myContent'] ) && $_POST['myContent'] === 'true' ) {
 			$url .= '&byCustomValue=' . urlencode( '{' . $this->preferences['user_id_customfield'] . '}{' . wp_get_current_user()->ID . '}' );
@@ -597,7 +597,7 @@ class ThePlatform_API {
 
 		if ( array_key_exists( 'success', $data ) && $data['success'] == false ) {
 			wp_send_json( $data );
-		}		
+		}
 
 		wp_send_json_success( $data['totalResults'] );
 	}
@@ -955,7 +955,7 @@ class ThePlatform_API {
 
 		// Get the nearest video in size
 		foreach ( $mediaFiles as $file ) {
-			if ( $file['width'] >= $taskWidth && !in_array( $file['format'] , TP_MANIFEST_FORMATS() ) ) {
+			if ( $file['width'] >= $taskWidth && ! in_array( $file['format'], TP_MANIFEST_FORMATS() ) ) {
 				$mediaFileId = $file['id'];
 				break;
 			}

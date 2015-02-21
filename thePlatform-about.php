@@ -55,7 +55,7 @@
 	<p>
 		NProgress<br>
 		Copyright (c) 2013-<?php echo date( "Y" ); ?> <a href="http://ricostacruz.com/nprogress/">Rico Sta. Cruz</a>
-	</p>	
+	</p>
 
 	<?php
 
