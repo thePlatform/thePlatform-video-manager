@@ -43,12 +43,30 @@ class ThePlatform_HTML {
 	}
 
 	function player_dropdown() {
-		$html = '<p class="navbar-text sort-bar-text">Player:</p><form class="navbar-form navbar-left sort-bar-nav" role="sort"><select id="selectpick-player" class="form-control">';
+		$html = '<p class="navbar-text sort-bar-text">Player:</p><form class="navbar-form navbar-left sort-bar-nav" role="sort"><select id="selectpick-player" class="tp-input">';
 		foreach ( $this->players as $player ) {
 			$html .= '<option value="' . esc_attr( $player['pid'] ) . '"' . selected( $player['pid'], $this->preferences['default_player_pid'], false ) . '>' . esc_html( $player['title'] ) . '</option>';
 		}
 		$html .= '</select></form>';
 		echo $html;
+	}
+
+	function pagination( $position ) { ?>
+		<div class="tablenav <?php echo $position ?>">
+			    <div class="tablenav-pages">
+			    	<span class="displaying-num">0 items</span>
+			        <span class="pagination-links">
+			        	<a class="first-page disabled" title="Go to the first page" href="">«</a>
+						<a class="prev-page disabled" title="Go to the previous page" href="">‹</a>
+						<span class="paging-input">
+							<label for="current-page-selector" class="screen-reader-text">Select Page</label>
+							<input class="current-page" id="current-page-selector" title="Current page" type="text" name="paged" value="1" size="2"> of <span class="total-pages">13</span>
+						</span>
+			        	<a class="next-page" title="Go to the next page" href="">›</a>
+			        	<a class="last-page" title="Go to the last page" href="">»</a>
+			        </span>
+			    </div>			    
+			</div> <?php
 	}
 
 	function preview_player() {
@@ -150,17 +168,17 @@ class ThePlatform_HTML {
 			<div id="btn-container" class="metadata-buttons">
 				<?php if ( $IS_EMBED ) { ?>
 					<div class="btn-group">
-						<input type="button" id="btn-embed" class="btn btn-primary btn-xs btn-metadata" value="Embed">
-						<input type="button" id="btn-embed-close" class="btn btn-primary btn-xs btn-metadata"
+						<input type="button" id="btn-embed" class="button button-small btn-metadata" value="Embed">
+						<input type="button" id="btn-embed-close" class="button button-small btn-metadata"
 						       value="Embed & Close">
-						<input type="button" id="btn-set-image" class="btn btn-primary btn-xs btn-metadata"
+						<input type="button" id="btn-set-image" class="button button-small btn-metadata"
 						       value="Set Featured Image">
 					</div>
 				<?php
 				} else {
-					echo '<input type="button" id="btn-edit" class="btn btn-primary btn-xs btn-metadata" value="Edit Media">';
+					echo '<input type="button" id="btn-edit" class="button button-small btn-metadata" value="Edit Media">';
 					if ( $this->preferences['thumbnail_profile_id'] != 'tp_wp_none' ) {
-						echo '<input type="button" id="btn-generate-thumbnail" class="btn btn-primary btn-xs btn-metadata" value="Generate Thumbnail">';
+						echo '<input type="button" id="btn-generate-thumbnail" class="button button-small btn-metadata" value="Generate Thumbnail">';
 					}
 				} ?>
 			</div>
@@ -169,11 +187,11 @@ class ThePlatform_HTML {
 
 	function profiles_and_servers( $upload_or_add ) {
 		?>
-		<div class="row">
-			<div class="col-xs-3">
+		<div class="form-row">
+			<div class="column-third">
 				<?php
-				$html = '<div class="form-group"><label class="control-label" for="publishing_profile">Publishing Profile</label>';
-				$html .= '<select id="publishing_profile" name="publishing_profile" class="form-control upload_profile">';
+				$html = '<div class="form-group"><label class="tp-label" for="publishing_profile">Publishing Profile</label>';
+				$html .= '<select id="publishing_profile" name="publishing_profile" class="tp-input upload_profile">';
 				$html .= '<option value="tp_wp_none"' . selected( $this->preferences['default_publish_id'], 'wp_tp_none', false ) . '>Do not publish</option>';
 				foreach ( $this->profiles as $entry ) {
 					$html .= '<option value="' . esc_attr( $entry['id'] ) . '"' . selected( $entry['title'], $this->preferences['default_publish_id'], false ) . '>' . esc_html( $entry['title'] ) . '</option>';
@@ -182,10 +200,10 @@ class ThePlatform_HTML {
 				echo $html;
 				?>
 			</div>
-			<div class="col-xs-3">
+			<div class="column-third">
 				<?php
-				$html = '<div class="form-group"><label class="control-label" for="theplatform_server">Server</label>';
-				$html .= '<select id="theplatform_server" name="theplatform_server" class="form-control server_id">';
+				$html = '<div class="form-group"><label class="tp-label" for="theplatform_server">Server</label>';
+				$html .= '<select id="theplatform_server" name="theplatform_server" class="tp-input server_id">';
 				$html .= '<option value="DEFAULT_SERVER"' . selected( $this->preferences['mpx_server_id'], "DEFAULT_SERVER", false ) . '>Default Server</option>';
 				foreach ( $this->servers as $entry ) {
 					$html .= '<option value="' . esc_attr( $entry['id'] ) . '"' . selected( $entry['id'], $this->preferences['mpx_server_id'], false ) . '>' . esc_html( $entry['title'] ) . '</option>';
@@ -195,31 +213,31 @@ class ThePlatform_HTML {
 				?>
 			</div>
 		</div>
-		<div class="row">
-			<div class="col-md-8">
+		<div class="form-row">
+			<div class="column-half">
 				<div class="form-group" id="file-form-group">
-					<label class="control-label" for="theplatform_upload_label">File</label>
+					<label class="tp-label" for="theplatform_upload_label">File</label>
 
 					<div class="input-group">
                     <span class="input-group-btn">
-                        <span class="btn btn-default btn-file">
+                        <span class="button button-secondary button-file">
                             Browse&hellip; <input type="file" id="theplatform_upload_file" multiple>
                         </span>
                     </span>
-						<input type="text" class="form-control" style="cursor: text; text-indent: 10px;"
+						<input type="text" class="tp-input" style="cursor: text; text-indent: 10px;"
 						       id="theplatform_upload_label" readonly value="No file chosen">
 					</div>
 				</div>
 			</div>
 		</div>
-		<div class="row">
-			<div class="col-xs-3">
+		<div class="form-row">
+			<div class="column-third">
 				<div class="form-group">
 					<?php
 					if ( $upload_or_add == "add" ) {
-						echo '<button id="theplatform_add_file_button" class="form-control btn btn-primary" type="button" name="theplatform-add-file-button">Upload Files</button>';
+						echo '<button id="theplatform_add_file_button" class="tp-input button button-primary" type="button" name="theplatform-add-file-button">Upload Files</button>';
 					} else {
-						echo '<button id="theplatform_upload_button" class="form-control btn btn-primary" type="button" name="theplatform-upload-button">Upload Media</button>';
+						echo '<button id="theplatform_upload_button" class="tp-input button button-primary" type="button" name="theplatform-upload-button">Upload Media</button>';
 					}
 					?>
 				</div>
@@ -228,6 +246,8 @@ class ThePlatform_HTML {
 	}
 
 	function metadata_fields() {
+
+
 		$categoryHtml = '';
 		$write_fields = array();
 		// We need a count of the write enabled fields in order to display rows appropriately.
@@ -244,11 +264,11 @@ class ThePlatform_HTML {
 			if ( $basic_field == 'categories' ) {
 				$categories = $this->tp_api->get_categories( true );
 				// Always Put categories on it's own row
-				$categoryHtml .= '<div class="row">';
-				$categoryHtml .= '<div class="col-xs-5">';
+				$categoryHtml .= '<div class="form-row">';
+				$categoryHtml .= '<div class="column-half">';
 				$categoryHtml .= '<div class="form-group">';
-				$categoryHtml .= '<label class="control-label" for="theplatform_upload_' . esc_attr( $basic_field ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
-				$categoryHtml .= '<select class="category_field form-control" multiple id="theplatform_upload_' . esc_attr( $basic_field ) . '" name="' . esc_attr( $basic_field ) . '">';
+				$categoryHtml .= '<label class="tp-label" for="theplatform_upload_' . esc_attr( $basic_field ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
+				$categoryHtml .= '<select class="category_field tp-input" multiple id="theplatform_upload_' . esc_attr( $basic_field ) . '" name="' . esc_attr( $basic_field ) . '">';
 				foreach ( $categories as $category ) {
 					$categoryHtml .= '<option value="' . esc_attr( $category['fullTitle'] ) . '">' . esc_html( $category['fullTitle'] ) . '</option>';
 				}
@@ -259,12 +279,12 @@ class ThePlatform_HTML {
 			} else {
 				$html = '';
 				if ( $i % 2 == 0 ) {
-					$html .= '<div class="row">';
+					$html .= '<div class="form-row">';
 				}
-				$html .= '<div class="col-xs-5">';
+				$html .= '<div class="column-half">';
 				$html .= '<div class="form-group">';
-				$html .= '<label class="control-label" for="theplatform_upload_' . esc_attr( $basic_field ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
-				$html .= '<input name="' . esc_attr( $basic_field ) . '" id="theplatform_upload_' . esc_attr( $basic_field ) . '" class="form-control upload_field" type="text" placeholder="' . esc_attr( ucfirst( $field_title ) ) . '"';
+				$html .= '<label class="tp-label" for="theplatform_upload_' . esc_attr( $basic_field ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
+				$html .= '<input name="' . esc_attr( $basic_field ) . '" id="theplatform_upload_' . esc_attr( $basic_field ) . '" class="tp-input upload_field" type="text" placeholder="' . esc_attr( ucfirst( $field_title ) ) . '"';
 				if ( $basic_field == 'title' ) {
 					$html .= ' autofocus ';    // Autofocus on title
 				}
@@ -321,12 +341,12 @@ class ThePlatform_HTML {
 
 			$html = '';
 			if ( $i % 2 == 0 ) {
-				$html .= '<div class="row">';
+				$html .= '<div class="form-row">';
 			}
-			$html .= '<div class="col-xs-5">';
-			$html .= '<label class="control-label" for="theplatform_upload_' . esc_attr( $field_name ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
+			$html .= '<div class="column-half">';
+			$html .= '<label class="tp-label" for="theplatform_upload_' . esc_attr( $field_name ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
 
-			$html .= '<input name="' . esc_attr( $field_title ) . '" id="theplatform_upload_' . esc_attr( $field_name ) . '" class="form-control custom_field" type="text" data-type="' . esc_attr( $field_type ) . '" data-structure="' . esc_attr( $field_structure ) . '" data-name="' . esc_attr( strtolower( $field_title ) ) . '" data-prefix="' . esc_attr( strtolower( $field_prefix ) ) . '" data-namespace="' . esc_attr( strtolower( $field_namespace ) ) . '"/>';
+			$html .= '<input name="' . esc_attr( $field_title ) . '" id="theplatform_upload_' . esc_attr( $field_name ) . '" class="tp-input custom_field" type="text" data-type="' . esc_attr( $field_type ) . '" data-structure="' . esc_attr( $field_structure ) . '" data-name="' . esc_attr( strtolower( $field_title ) ) . '" data-prefix="' . esc_attr( strtolower( $field_prefix ) ) . '" data-namespace="' . esc_attr( strtolower( $field_namespace ) ) . '"/>';
 			if ( isset( TP_DATA_STRUCTURE_DESCRIPTIONS()[ $field_structure ] ) ) {
 				$html .= '<div class="structureDesc"><strong>Structure</strong> ' . esc_html( TP_DATA_STRUCTURE_DESCRIPTIONS()[ $field_structure ] ) . '</div>';
 			}
@@ -363,19 +383,20 @@ class ThePlatform_HTML {
 
 	function edit_tabs_header() {
 		?>
-		<ul class="nav nav-tabs" role="tablist">
-			<li class="active" id="edit"><a href="#edit_content" role="tab" data-toggle="tab">Edit Metadata</a></li>
+
+		<h2 class="nav-tab-wrapper" >
+			<a href="#edit_content" class="nav-tab-active nav-tab">Update Metadata</a>
 			<?php
 			$tp_uploader_cap = apply_filters( TP_UPLOADER_CAP, TP_UPLOADER_DEFAULT_CAP );
 			if ( current_user_can( $tp_uploader_cap ) ) {
-				echo '<li id="add_files"><a href="#add_files_content" role="tab" data-toggle="tab">Add New Files</a></li>';
-				echo '<li id="publish"><a href="#publish_content" role="tab" data-toggle="tab">Publish</a></li>';
+				echo '<a href="#add_files_content" class="nav-tab">Add New Files</a>';
+				echo '<a href="#publish_content" class="nav-tab">Publish</a>';
 			}
 			$tp_revoke_cap = apply_filters( TP_REVOKE_CAP, TP_REVOKE_DEFAULT_CAP );
 			if ( current_user_can( $tp_revoke_cap ) ) {
-				echo '<li id="revoke"><a href="#revoke_content" role="tab" data-toggle="tab">Revoke</a></li>';
+				echo '<a href="#revoke_content" class="nav-tab">Revoke</a>';
 			} ?>
-		</ul>
+		</h2>
 
 		<div class="tab-content">
 		<div class="tab-pane active" id="edit_content"> <?php
@@ -390,11 +411,11 @@ class ThePlatform_HTML {
     </div>
 
     <div class="tab-pane" id="publish_content">
-        <div class="row">
-            <div class="col-xs-3">
+        <div class="form-row">
+            <div class="column-third">
                 <?php
-		$html = '<div class="form-group"><label class="control-label" for="edit_publishing_profile">Publishing Profile</label>';
-		$html .= '<select id="edit_publishing_profile" name="edit_publishing_profile" class="form-control edit_profile">';
+		$html = '<div class="form-group"><label class="tp-label" for="edit_publishing_profile">Publishing Profile</label>';
+		$html .= '<select id="edit_publishing_profile" name="edit_publishing_profile" class="tp-input edit_profile">';
 		foreach ( $this->profiles as $entry ) {
 			$html .= '<option value="' . esc_attr( $entry['id'] ) . '"' . selected( $entry['title'], $this->preferences['default_publish_id'], false ) . '>' . esc_html( $entry['title'] ) . '</option>';
 		}
@@ -403,25 +424,25 @@ class ThePlatform_HTML {
 		?>
             </div>          
         </div>
-        <div class="row" style="margin-top: 10px;">
-            <div class="col-xs-3">
-                <button id="theplatform_publish_button" class="form-control btn btn-primary" type="button" name="theplatform-publish-button">Publish</button>
+        <div class="form-row" style="margin-top: 10px;">
+            <div class="column-third">
+                <button id="theplatform_publish_button" class="tp-input button button-primary" type="button" name="theplatform-publish-button">Publish</button>
             </div>                      
         </div>
     </div>
      <div class="tab-pane" id="revoke_content">
-        <div class="row">           
-            <div class="col-xs-3">
+        <div class="form-row">           
+            <div class="column-third">
                 <div class="form-group">
-                    <label class="control-label" for="publish_status">Currently Published Profiles</label>
-                    <select id="publish_status" name="publish_status" class="form-control revoke_profile">
+                    <label class="tp-label" for="publish_status">Currently Published Profiles</label>
+                    <select id="publish_status" name="publish_status" class="tp-input revoke_profile">
                     </select>
                 </div>
             </div>
         </div>
-        <div class="row" style="margin-top: 10px;">         
-            <div class="col-xs-3">
-                <button id="theplatform_revoke_button" class="form-control btn btn-primary" type="button" name="theplatform-revoke-button">Revoke</button>
+        <div class="form-row" style="margin-top: 10px;">         
+            <div class="column-third">
+                <button id="theplatform_revoke_button" class="tp-input button button-primary" type="button" name="theplatform-revoke-button">Revoke</button>
             </div>          
         </div>
     </div>
