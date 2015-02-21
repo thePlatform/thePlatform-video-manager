@@ -226,16 +226,16 @@ var theplatform_edit = (function($) {
     var UI = {
         onSuccess: function(response, button) {
             if (response.success && !_.has(response.data, 'isException')) {
-                jQuery(button).text('Success').val('Success').removeClass('btn-primary btn-success btn-danger btn-info').addClass('btn-success');
+                jQuery(button).text('Success').val('Success').removeClass('button-primary button-success button-danger button-info').addClass('button-success');
             } else {
-                jQuery(button).text('Failed').val('Failed').removeClass('btn-primary btn-success btn-danger btn-info').addClass('btn-danger');
+                jQuery(button).text('Failed').val('Failed').removeClass('button-primary button-success button-danger button-info').addClass('button-danger');
                 console.log(response.data.description);
             }
         },
 
         onComplete: function(button, value) {
             setTimeout(function() {
-                jQuery(button).text(value).val(value).removeClass('btn-primary btn-success btn-danger btn-info').addClass('btn-primary');
+                jQuery(button).text(value).val(value).removeClass('button-primary button-success button-danger button-info').addClass('button-primary');
             }, 1500);
         },
 
@@ -274,7 +274,7 @@ var theplatform_edit = (function($) {
             var custom_params = Data.parseCustomParams();
             params.id = tpHelper.mediaId;
 
-            jQuery(this).text('Updating').removeClass('btn-primary btn-success btn-danger btn-info').addClass('btn-info');
+            jQuery(this).text('Updating').removeClass('button-primary button-success button-danger button-info').addClass('button-info');
 
             var data = {
                 _wpnonce: tp_edit_upload_local.tp_nonce['theplatform_edit'],
@@ -319,7 +319,7 @@ var theplatform_edit = (function($) {
             var profile = $('.upload_profile');
             var server = $('.server_id');
 
-            var upload_window = window.open(tp_edit_upload_local.ajaxurl + '?action=theplatform_upload&_wpnonce=' + tp_edit_upload_local.tp_nonce['theplatform_upload'], '_blank', 'menubar=no,location=no,resizable=no,scrollbars=no,status=no,width=700,height=180')
+            var upload_window = window.open(tp_edit_upload_local.uploader_window_url, '_blank', 'menubar=no,location=no,resizable=no,scrollbars=no,status=no,width=700,height=180')
 
             var filesArray = [];
 
@@ -359,7 +359,7 @@ var theplatform_edit = (function($) {
                 id: tpHelper.mediaId
             };
 
-            var upload_window = window.open(tp_edit_upload_local.ajaxurl + '?action=theplatform_upload&_wpnonce=' + tp_edit_upload_local.tp_nonce['theplatform_upload'], '_blank', 'menubar=no,location=no,resizable=no,scrollbars=no,status=no,width=700,height=180')
+            var upload_window = window.open(tp_edit_upload_local.uploader_window_url, '_blank', 'menubar=no,location=no,resizable=no,scrollbars=no,status=no,width=700,height=180')
             var filesArray = [];
 
             for (var i = 0; i < files.length; i++) {
@@ -387,7 +387,7 @@ var theplatform_edit = (function($) {
                 return false;
 
             var me = this;
-            jQuery(this).text('Publishing').removeClass('btn-primary btn-success btn-danger btn-info').addClass('btn-info');
+            jQuery(this).text('Publishing').removeClass('button-primary button-success button-danger button-info').addClass('button-info');
 
             var params = {
                 mediaId: tpHelper.mediaId,
@@ -417,7 +417,7 @@ var theplatform_edit = (function($) {
                 return false;
 
             var me = this;
-            jQuery(this).text('Revoking').removeClass('btn-primary btn-success btn-danger btn-info').addClass('btn-info');
+            jQuery(this).text('Revoking').removeClass('button-primary button-success button-danger button-info').addClass('button-info');
 
             var params = {
                 mediaId: tpHelper.mediaId,
@@ -482,14 +482,26 @@ var theplatform_edit = (function($) {
 
     $(document).ready(function() {
         // Handle the custom file browser button
-        $('.btn-file :file').on('fileselect', Events.onFileSelect);
-        $('.btn-file :file').on('change', Events.onChangeFile);
+        $('.button-file :file').on('fileselect', Events.onFileSelect);
+        $('.button-file :file').on('change', Events.onChangeFile);
         $("#theplatform_edit_button").click(Events.onEditMetadata);
         $("#theplatform_upload_button").click(Events.onUploadMedia);
         $("#theplatform_add_file_button").click(Events.onAddFiles);
         $("#theplatform_publish_button").click(Events.onPublishMedia);
         $("#theplatform_revoke_button").click(Events.onRevokeMedia);
-        $(".nav-tabs #revoke").click(Events.onRevokeTabOpened);
+        $(".nav-tab #revoke").click(Events.onRevokeTabOpened);
+        $(".nav-tab").click(function(e) {
+            // TODO: move this to a function
+            e.preventDefault();
+
+            $(".nav-tab-active").removeClass('nav-tab-active');
+            $(this).addClass('nav-tab-active');
+            var tabId = $(this).attr('href');
+            $(".tab-pane.active").removeClass('active');
+            $(tabId).addClass('active');
+
+            $
+        })
     });
 
     return {

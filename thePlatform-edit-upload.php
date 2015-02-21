@@ -20,21 +20,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-function theplatform_upload_clear_styles_and_scripts() {
-	global $wp_styles;
-	foreach ( $wp_styles->queue as $handle ) {
-		wp_dequeue_style( $handle );
-	}
-
-	global $wp_scripts;
-	foreach ( $wp_scripts->queue as $handle ) {
-		wp_dequeue_script( $handle );
-	}
-
-	wp_enqueue_script( 'tp_edit_upload_js' );
-	wp_enqueue_style( 'tp_edit_upload_css' );
-}
-
 $account = get_option( TP_ACCOUNT_OPTIONS_KEY );
 if ( $account == false || empty( $account['mpx_account_id'] ) ) {
 	wp_die( 'MPX Account ID is not set, please configure the plugin before attempting to manage media' );
@@ -66,8 +51,7 @@ $tp_uploader_cap = apply_filters( TP_UPLOADER_CAP, TP_UPLOADER_DEFAULT_CAP );
 $tp_revoke_cap   = apply_filters( TP_REVOKE_CAP, TP_REVOKE_DEFAULT_CAP );
 
 if ( ! defined( 'TP_MEDIA_BROWSER' ) ) {
-	add_action( 'wp_enqueue_scripts', 'theplatform_upload_clear_styles_and_scripts', 100912 );
-	theplatform_upload_clear_styles_and_scripts();
+	add_action( 'wp_enqueue_scripts', 'theplatform_upload_clear_styles_and_scripts', 100912 );	
 
 	if ( ! current_user_can( $tp_uploader_cap ) ) {
 		wp_die( '<p>You do not have sufficient permissions to upload MPX Media</p>' );
@@ -75,20 +59,15 @@ if ( ! defined( 'TP_MEDIA_BROWSER' ) ) {
 
 
 	?>
-	<!DOCTYPE html>
-	<html <?php language_attributes(); ?>>
-	<head>
-		<title>thePlatform Upload Form</title>
-		<?php wp_head(); ?>
-	</head>
-	<body style="width: 95%; padding-left: 10px">
-	<h1>Upload Media to MPX</h1>
+	<div class="wrap">
+		<h2>Upload Media to MPX</h2>
 <?php
 } else {
 	// Edit Dialog has tabs, so we do all the necessary prefixing here
 	$tp_html->edit_tabs_header();
 } ?>
 
+<div id="responsive-form" class="clearfix">
 	<form role="form">
 		<?php
 		wp_nonce_field( 'theplatform_upload_nonce' );
@@ -104,22 +83,23 @@ if ( ! defined( 'TP_MEDIA_BROWSER' ) ) {
 			$tp_html->profiles_and_servers( "upload" );
 		} else {
 			?>
-			<div class="row" style="margin-top: 10px;">
-				<div class="col-xs-3">
-					<button id="theplatform_edit_button" class="form-control btn btn-primary" type="button"
+			<div class="form-row" style="margin-top: 10px;">
+				<div class="column-half">
+					<button id="theplatform_edit_button" class="tp-input button button-primary" type="button"
 					        name="theplatform-edit-button">Submit
 					</button>
 				</div>
 			</div>
 		<?php } ?>
 	</form>
+</div>
 <?php
 if ( defined( 'TP_MEDIA_BROWSER' ) ) {
 	// Write all of our edit dialog tabs
 	$tp_html->edit_tabs_content();
 } else {
-	wp_footer(); ?>
-	</body>
-	</html> <?php
+	?>
+</div> <!-- wrap -->
+<?php
 }
 ?>
