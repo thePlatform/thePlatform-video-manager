@@ -570,6 +570,39 @@ class ThePlatform_API {
 	}
 
 	/**
+	 * Query MPX for videos
+	 * @return array The Media data service response
+	 */
+	function get_video_count() {
+		// TODO: update nonce
+		check_admin_referer( 'theplatform-ajax-nonce-get_videos' );
+
+		$token = $this->mpx_signin();
+		
+		$url = TP_API_MEDIA_ENDPOINT . '&entries=false&count=true&token=' . $token;		
+
+		if ( ! empty( $_POST['myContent'] ) && $_POST['myContent'] === 'true' ) {
+			$url .= '&byCustomValue=' . urlencode( '{' . $this->preferences['user_id_customfield'] . '}{' . wp_get_current_user()->ID . '}' );
+		}
+
+		if ( $this->get_mpx_account_id() ) {
+			$url .= '&account=' . $this->get_mpx_account_id();
+		} else {
+			wp_send_json_error( 'MPX Account is not set, unable to retrieve videos.' );
+		}
+
+		$response = ThePlatform_API_HTTP::get( $url, array( "timeout" => 120 ) );
+
+		$data = theplatform_decode_json_from_server( $response );
+
+		if ( array_key_exists( 'success', $data ) && $data['success'] == false ) {
+			wp_send_json( $data );
+		}		
+
+		wp_send_json_success( $data['totalResults'] );
+	}
+
+	/**
 	 * Query MPX for a specific video
 	 *
 	 * @param string $id The Media ID associated with the asset we are requesting
