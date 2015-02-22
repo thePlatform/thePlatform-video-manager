@@ -129,4 +129,6 @@ img.tp-media-object.tp-thumb-img {
     float: right;
     height: 100%;
 }
-
+#media-upload {
+    margin: 0px 15px;
+}
