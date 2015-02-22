@@ -18,26 +18,41 @@
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 
-if ( ! isset( $account ) ) {
-	$account = get_option( TP_ACCOUNT_OPTIONS_KEY );
-}
 
 /**
- * This class is responsible for uploading and publishing Media to MPX
+ * This class is responsible for proxying API calls from the UI to PHP
  */
 class ThePlatform_Proxy {
 
+	private $tp_api;
 	function __construct() {
-		if ( is_admin() ) {
-			add_action( 'wp_ajax_publish_media', array( $this, 'publish_media' ) );
-			add_action( 'wp_ajax_revoke_media', array( $this, 'revoke_media' ) );
+		add_action( 'wp_ajax_publish_media', array( $this, 'publish_media' ) );
+		add_action( 'wp_ajax_revoke_media', array( $this, 'revoke_media' ) );
+
+		add_action( 'wp_ajax_get_categories', array( $this, 'get_categories' ) );
+		add_action( 'wp_ajax_get_videos', array( $this, 'get_videos' ) );		
+		add_action( 'wp_ajax_get_video_by_id', array( $this, 'get_video_by_id' ) );
+		add_action( 'wp_ajax_get_profile_results', array( $this, 'get_profile_results' ) );
+		add_action( 'wp_ajax_generate_thumbnail', array( $this, 'generate_thumbnail' ) );
+		add_action( 'wp_ajax_initialize_media_upload', array( $this, 'initialize_media_upload' ) );
+		
+	}
+
+	private function get_api() {
+		if ( !isset($this->tp_api)) {
+			require_once( dirname( __FILE__ ) . '/thePlatform-API.php' );
+
+			$this->tp_api = new ThePlatform_API();
 		}
+
+		return $this->tp_api;
 	}
 
 	private function check_nonce_and_permissions( $action = "" ) {
 		if ( empty( $action ) ) {
 			check_admin_referer( 'theplatform-ajax-nonce' );
 		} else {
+			// die($action);
 			check_admin_referer( 'theplatform-ajax-nonce-' . $action );
 		}
 
@@ -74,16 +89,6 @@ class ThePlatform_Proxy {
 		$method = strtolower( $_POST['method'] );
 		$url    = $_POST['url'];
 
-		if ( isset( $_POST['cookie_name'] ) ) {
-			$data['cookies'] = array(
-				new WP_Http_Cookie(
-					array(
-						'name'  => $_POST['cookie_name'],
-						'value' => $_POST['cookie_value']
-					)
-				)
-			);
-		}
 		switch ( $method ) {
 			case 'put':
 				$response = ThePlatform_API_HTTP::put( $url, $data );
@@ -114,7 +119,7 @@ class ThePlatform_Proxy {
 		}
 
 		if ( ! isset( $_POST['token]'] ) ) {
-			$tp_api = new ThePlatform_API();
+			$tp_api = $this->get_api();
 			$token  = $tp_api->mpx_signin();
 		} else {
 			$token = $_POST['token]'];
@@ -142,7 +147,7 @@ class ThePlatform_Proxy {
 		$this->check_nonce_and_permissions( $_POST['action'] );
 
 		if ( ! isset( $_POST['token]'] ) ) {
-			$tp_api = new ThePlatform_API();
+			$tp_api = $this->get_api();
 			$token  = $tp_api->mpx_signin();
 		} else {
 			$token = $_POST['token]'];
@@ -160,6 +165,38 @@ class ThePlatform_Proxy {
 		$response = ThePlatform_API_HTTP::get( esc_url_raw( $publishUrl ), array( "timeout" => 120 ) );
 
 		$this->check_theplatform_proxy_response( $response, true );
+	}
+
+	public function get_categories() {
+		$this->check_nonce_and_permissions( $_POST['action'] );
+		$response = $this->get_api()->get_categories();
+
+		wp_send_json( $response );
+	}
+
+	public function get_videos() {
+		$this->check_nonce_and_permissions( $_POST['action'] );
+		$this->get_api()->get_videos_ajax();		
+	}
+
+	public function get_video_by_id() {
+		$this->check_nonce_and_permissions( $_POST['action'] );
+		$this->get_api()->get_video_by_id_ajax();
+	}
+
+	public function get_profile_results() {
+		$this->check_nonce_and_permissions( $_POST['action'] );
+		$this->get_api()->get_profile_results_ajax();
+	}
+
+	public function generate_thumbnail() {
+		$this->check_nonce_and_permissions( $_POST['action'] );
+		$this->get_api()->generate_thumbnail_ajax();
+	}
+
+	public function initialize_media_upload() {
+		$this->check_nonce_and_permissions( $_POST['action'] );
+		$this->get_api()->initialize_media_upload_ajax();
 	}
 }
 

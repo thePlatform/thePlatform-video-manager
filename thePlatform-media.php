@@ -19,6 +19,8 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+define( 'TP_MEDIA_BROWSER', true );
+
 $tp_viewer_cap = apply_filters( TP_VIEWER_CAP, TP_VIEWER_DEFAULT_CAP );
 $tp_editor_cap = apply_filters( TP_EDITOR_CAP, TP_EDITOR_DEFAULT_CAP );
 
@@ -27,6 +29,10 @@ global $page_hook;
 if ( ! current_user_can( $tp_viewer_cap ) ) {
 	wp_die( '<p>You do not have sufficient permissions to browse MPX Media</p>' );
 }
+
+require_once( dirname( __FILE__ ) . '/thePlatform-HTML.php' );
+require_once( dirname( __FILE__ ) . '/thePlatform-API.php' );
+
 
 $IS_EMBED    = $page_hook != 'toplevel_page_theplatform' ;
 $tp_html     = new ThePlatform_HTML();

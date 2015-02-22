@@ -49,22 +49,7 @@ var theplatform_browser = (function($) {
             tpHelper.currentPage = 1;
             Events.onGetMedia(tpHelper.currentPage);       
         },
-
-        buildCategoryAccordion: function(resp) {
-            var entries = resp['entries'];
-            var categoryPicker = $('#selectpick-categories');
-            // Add each category
-            for (var idx in entries) {
-                var entryTitle = entries[idx]['title'];
-                var option = document.createElement('option');
-                option.value = entryTitle;
-                option.text = entryTitle;
-                $('#selectpick-categories').append(option);
-            }
-
-           
-        },
-
+       
         notifyUser: function(type, msg) {
             var $msgPanel = $('#message-panel');
             
@@ -536,8 +521,16 @@ var theplatform_browser = (function($) {
             };
 
             $.post(tp_browser_local.ajaxurl, data,
-                function(resp) {
-                    callback(JSON.parse(resp));
+                function(entries) {
+                     var categoryPicker = $('#selectpick-categories');
+                    // Add each category
+                    for (var idx in entries) {
+                        var entryTitle = entries[idx]['title'];
+                        var option = document.createElement('option');
+                        option.value = entryTitle;
+                        option.text = entryTitle;
+                        $('#selectpick-categories').append(option);
+                    }
                 });
         },
         getVideoById: function(mediaId, callback) {
@@ -633,7 +626,7 @@ var theplatform_browser = (function($) {
         })
 
         // Load Categories from mpx
-        API.getCategoryList(UI.buildCategoryAccordion);
+        API.getCategoryList();
 
         /**
          * Set up the infinite scrolling media list and load the first sets of media

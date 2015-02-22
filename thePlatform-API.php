@@ -401,9 +401,7 @@ class ThePlatform_API {
 	 *
 	 * @return array An array of parameters for the fragmented uploader service
 	 */
-	function initialize_media_upload() {
-		check_admin_referer( 'theplatform-ajax-nonce-initialize_media_upload' );
-
+	function initialize_media_upload_ajax() {		
 		$args = array(
 			'filesize'      => $_POST['filesize'],
 			'filetype'      => $_POST['filetype'],
@@ -526,9 +524,7 @@ class ThePlatform_API {
 	 * Query MPX for videos
 	 * @return array The Media data service response
 	 */
-	function get_videos() {
-		check_admin_referer( 'theplatform-ajax-nonce-get_videos' );
-
+	function get_videos_ajax() {		
 		$token = $this->mpx_signin();
 
 		$fields = theplatform_get_query_fields( $this->get_custom_metadata_fields() );
@@ -609,9 +605,7 @@ class ThePlatform_API {
 	 *
 	 * @return array The Media data service response
 	 */
-	function get_video_by_id() {
-		check_admin_referer( 'theplatform-ajax-nonce-get_video_by_id' );
-
+	function get_video_by_id_ajax() {		
 		if ( ! isset( $_POST['mediaId'] ) ) {
 			wp_send_json_error( "No Media ID specificed in the request" );
 		}
@@ -815,11 +809,7 @@ class ThePlatform_API {
 	 *
 	 * @return array The Media data service response
 	 */
-	function get_categories( $returnResponse = false ) {
-		// Check nonce if we got here through an AJAX call
-		if ( ! $returnResponse ) {
-			check_admin_referer( 'theplatform-ajax-nonce-get_categories' );
-		}
+	function get_categories() {
 		$token = $this->mpx_signin();
 
 		$url = TP_API_MEDIA_CATEGORY_ENDPOINT . '&fields=title,fullTitle&sort=title,order&token=' . $token;
@@ -829,10 +819,6 @@ class ThePlatform_API {
 		}
 
 		$response = ThePlatform_API_HTTP::get( $url );
-
-		if ( ! $returnResponse ) {
-			wp_send_json( wp_remote_retrieve_body( $response ) );
-		}
 
 		$data = theplatform_decode_json_from_server( $response );
 
@@ -927,8 +913,7 @@ class ThePlatform_API {
 	/**
 	 * Generate a thumbnail from the Media either at the default, or provided time
 	 */
-	function generate_thumbnail() {
-		check_admin_referer( 'theplatform-ajax-nonce-generate_thumbnail' );
+	function generate_thumbnail_ajax() {		
 
 		if ( isset( $_POST['time'] ) ) {
 			$time = $_POST['time'];
@@ -1061,8 +1046,7 @@ class ThePlatform_API {
 	 *
 	 * @return array          ProfileResults response
 	 */
-	function get_profile_results() {
-		check_admin_referer( 'theplatform-ajax-nonce-profile_result' );
+	function get_profile_results_ajax() {		
 		$mediaId = $_POST['mediaId'];
 		$token   = $this->mpx_signin();
 

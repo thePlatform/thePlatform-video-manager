@@ -25,6 +25,9 @@ if ( $account == false || empty( $account['mpx_account_id'] ) ) {
 	wp_die( 'MPX Account ID is not set, please configure the plugin before attempting to manage media' );
 }
 
+require_once( dirname( __FILE__ ) . '/thePlatform-HTML.php' );
+require_once( dirname( __FILE__ ) . '/thePlatform-API.php' );
+
 if ( ! isset( $tp_html ) ) {
 	$tp_html = new ThePlatform_HTML();
 }

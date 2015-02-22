@@ -250,7 +250,11 @@ var theplatform_edit = (function($) {
                         var option = document.createElement('option');
                         option.value = data[i].profileId;
                         option.text = publishDropdown.find('option[value="' + data[i].profileId + '"]').text();
-                        revokeDropdown.append(option);
+
+                        if ( !_.isEmpty(option.text) ) {
+                            revokeDropdown.append(option);    
+                        }
+                        
                     }
                 }
                 ;
