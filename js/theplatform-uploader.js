@@ -313,8 +313,7 @@ TheplatformUploader = (function() {
                             if (me.publishProfile != "tp_wp_none") {
                                 me.publishMedia();
                             } else {
-                                me.message("Upload completed. This window will close in 5 seconds.", true);
-                                window.setTimeout('window.close()', 5000);
+                                me.message("Upload completed.", true);
                             }
                         } else { // We have more files, upload the next file
                             me.currentFileIndex++;
@@ -367,7 +366,6 @@ TheplatformUploader = (function() {
             success: function(response) {
                 if (response.success) {
                     me.message("Media published successfully", true);
-                    window.setTimeout('window.close()', 5000);
                 } else {
                     me.message(response.data.description, true);
                 }
