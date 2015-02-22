@@ -167,28 +167,28 @@ class ThePlatform_HTML {
 				}
 				?>
 			</div>
-			
+
 		</div> <?php
 	}
 
 	function content_pane_buttons( $IS_EMBED ) { ?>
 		<div id="btn-container" class="metadata-buttons">
-				<?php if ( $IS_EMBED ) { ?>
-					<div class="btn-group">											
-						<input type="button" id="btn-set-image" class="button button-secondary"
-						       value="Set Featured Image">
-						<input type="button" id="btn-embed" class="button button-primary" value="Embed">
-					</div>
-				<?php
-				} else {
-					
-if ( $this->preferences['thumbnail_profile_id'] != 'tp_wp_none' ) {
-						echo '<input type="button" id="btn-generate-thumbnail" class="button button-secondary btn-metadata" value="Generate Thumbnail">';
-					}
-					echo '<input type="button" id="btn-edit" class="button button-primary btn-metadata" value="Edit Media">';
-					
-				} ?>
-			</div> <?php
+			<?php if ( $IS_EMBED ) { ?>
+				<div class="btn-group">
+					<input type="button" id="btn-set-image" class="button button-secondary"
+					       value="Set Featured Image">
+					<input type="button" id="btn-embed" class="button button-primary" value="Embed">
+				</div>
+			<?php
+			} else {
+
+				if ( $this->preferences['thumbnail_profile_id'] != 'tp_wp_none' ) {
+					echo '<input type="button" id="btn-generate-thumbnail" class="button button-secondary btn-metadata" value="Generate Thumbnail">';
+				}
+				echo '<input type="button" id="btn-edit" class="button button-primary btn-metadata" value="Edit Media">';
+
+			} ?>
+		</div> <?php
 	}
 
 	function profiles_and_servers( $upload_or_add ) {
