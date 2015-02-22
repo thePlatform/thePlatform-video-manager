@@ -61,7 +61,8 @@ class ThePlatform_HTML {
 						<span class="paging-input">
 							<label for="current-page-selector" class="screen-reader-text">Select Page</label>
 							<input class="current-page" id="current-page-selector" title="Current page" type="number"
-							       name="paged" min="1" max="1" value="1" size="2"> of <span class="total-pages">1</span>
+							       name="paged" min="1" max="1" value="1" size="2"> of <span
+								class="total-pages">1</span>
 						</span>
 			        	<a class="next-page disabled" title="Go to the next page" href="">›</a>
 			        	<a class="last-page disabled" title="Go to the last page" href="">»</a>

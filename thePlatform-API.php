@@ -17,6 +17,9 @@
   with this program; if not, write to the Free Software Foundation, Inc.,
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
+
+require_once( dirname( __FILE__ ) . '/thePlatform-URLs.php' );
+
 /**
  * Simple wrapper class for the WordPress HTTP API methods
  */
@@ -401,7 +404,7 @@ class ThePlatform_API {
 	 *
 	 * @return array An array of parameters for the fragmented uploader service
 	 */
-	function initialize_media_upload_ajax() {		
+	function initialize_media_upload_ajax() {
 		$args = array(
 			'filesize'      => $_POST['filesize'],
 			'filetype'      => $_POST['filetype'],
@@ -524,7 +527,7 @@ class ThePlatform_API {
 	 * Query MPX for videos
 	 * @return array The Media data service response
 	 */
-	function get_videos_ajax() {		
+	function get_videos_ajax() {
 		$token = $this->mpx_signin();
 
 		$fields = theplatform_get_query_fields( $this->get_custom_metadata_fields() );
@@ -605,7 +608,7 @@ class ThePlatform_API {
 	 *
 	 * @return array The Media data service response
 	 */
-	function get_video_by_id_ajax() {		
+	function get_video_by_id_ajax() {
 		if ( ! isset( $_POST['mediaId'] ) ) {
 			wp_send_json_error( "No Media ID specificed in the request" );
 		}
@@ -913,7 +916,7 @@ class ThePlatform_API {
 	/**
 	 * Generate a thumbnail from the Media either at the default, or provided time
 	 */
-	function generate_thumbnail_ajax() {		
+	function generate_thumbnail_ajax() {
 
 		if ( isset( $_POST['time'] ) ) {
 			$time = $_POST['time'];
@@ -1046,7 +1049,7 @@ class ThePlatform_API {
 	 *
 	 * @return array          ProfileResults response
 	 */
-	function get_profile_results_ajax() {		
+	function get_profile_results_ajax() {
 		$mediaId = $_POST['mediaId'];
 		$token   = $this->mpx_signin();
 

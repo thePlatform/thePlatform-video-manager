@@ -55,29 +55,38 @@ class ThePlatform_Plugin {
 	function __construct() {
 		require_once( dirname( __FILE__ ) . '/thePlatform-constants.php' );
 		require_once( dirname( __FILE__ ) . '/thePlatform-proxy.php' );
-
-		// TODO: Move these
-		require_once( dirname( __FILE__ ) . '/thePlatform-URLs.php' );		
 		require_once( dirname( __FILE__ ) . '/thePlatform-helper.php' );
-
-		//Disable oLark in if the plugin is loaded in AJAX
-		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-			add_filter( 'vip_live_chat_enabled', '__return_false' );
-		}
 
 		$this->plugin_base_dir = plugin_dir_path( __FILE__ );
 		$this->plugin_base_url = plugins_url( '/', __FILE__ );
 
-		if ( is_admin() ) {
-			add_action( 'admin_menu', array( $this, 'add_admin_page' ) );
-			add_action( 'admin_init', array( $this, 'register_scripts' ) );
-			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );			
-			add_action( 'wp_ajax_set_thumbnail', array( $this, 'set_thumbnail_ajax' ) );						
+		add_action( 'admin_menu', array( $this, 'add_admin_page' ) );
+		add_action( 'admin_init', array( $this, 'register_scripts' ) );
+		add_action( 'admin_init', array( $this, 'theplatform_register_plugin_settings' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 
-			// TODO: Move these
-			
-		}
+		add_filter( 'media_upload_tabs', array( $this, 'tp_upload_tab' ) );
+		add_action( 'media_upload_mytabname', array( $this, 'add_tp_media_form' ) );
+
+
 		add_shortcode( 'theplatform', array( $this, 'shortcode' ) );
+	}
+
+	function tp_upload_tab( $tabs ) {
+		$tabs['mytabname'] = "thePlatform";
+
+		return $tabs;
+	}
+
+// call the new tab with wp_iframe
+
+	function add_tp_media_form() {
+		wp_iframe( array( $this, 'tp_media_form' ) );
+	}
+
+// the tab content
+	function tp_media_form() {
+		require_once( dirname( __FILE__ ) . '/thePlatform-media.php' );
 	}
 
 	function admin_enqueue_scripts( $hook ) {
@@ -102,6 +111,17 @@ class ThePlatform_Plugin {
 			wp_enqueue_style( 'tp_file_uploader_css' );
 		}
 
+	}
+
+	/**
+	 * Registers initial plugin settings during initialization
+	 */
+	function theplatform_register_plugin_settings() {
+		register_setting( TP_ACCOUNT_OPTIONS_KEY, TP_ACCOUNT_OPTIONS_KEY, 'theplatform_account_options_validate' );
+		register_setting( TP_PREFERENCES_OPTIONS_KEY, TP_PREFERENCES_OPTIONS_KEY, 'theplatform_preferences_options_validate' );
+		register_setting( TP_CUSTOM_METADATA_OPTIONS_KEY, TP_CUSTOM_METADATA_OPTIONS_KEY, 'theplatform_dropdown_options_validate' );
+		register_setting( TP_BASIC_METADATA_OPTIONS_KEY, TP_BASIC_METADATA_OPTIONS_KEY, 'theplatform_dropdown_options_validate' );
+		register_setting( TP_TOKEN_OPTIONS_KEY, TP_TOKEN_OPTIONS_KEY, 'strval' );
 	}
 
 	/**
@@ -156,7 +176,7 @@ class ThePlatform_Plugin {
 			'tp_nonce' => array(
 				'verify_account' => wp_create_nonce( 'theplatform-ajax-nonce-verify_account' )
 			)
-		) );		
+		) );
 
 		wp_register_style( 'tp_edit_upload_css', plugins_url( '/css/thePlatform-edit-upload.css', __FILE__ ) );
 		wp_register_style( 'tp_browser_css', plugins_url( '/css/thePlatform-browser.css', __FILE__ ), array( 'tp_edit_upload_css', 'wp-jquery-ui-dialog', 'tp_nprogress_css' ) );
@@ -212,77 +232,8 @@ class ThePlatform_Plugin {
 		require_once( dirname( __FILE__ ) . '/thePlatform-about.php' );
 	}
 
-	function upload_window() {		
-		require_once( $this->plugin_base_dir . 'thePlatform-upload-window.php' );		
-	}
-
-	/**
-	 * Ajax callback to initiate the change of a Post default thumbnail
-	 * @return string HTML code to update the Post page to display the new thumbnail
-	 */
-	function set_thumbnail_ajax() {
-		check_admin_referer( 'theplatform-ajax-nonce-set_thumbnail' );
-
-		$tp_embedder_cap = apply_filters( TP_EMBEDDER_CAP, TP_EMBEDDER_DEFAULT_CAP );
-		if ( ! current_user_can( $tp_embedder_cap ) ) {
-			wp_die( 'You do not have sufficient permissions to change the post thumbnail' );
-		}
-
-		global $post_ID;
-
-		if ( ! isset( $_POST['id'] ) ) {
-			wp_send_json_error( "Post ID not found" );
-		}
-
-		$post_ID = intval( $_POST['id'] );
-
-		if ( ! $post_ID ) {
-			wp_send_json_error( "Illegal Post ID" );
-		}
-
-		$url = isset( $_POST['img'] ) ? $_POST['img'] : '';
-
-		$thumbnail_id = $this->set_thumbnail( esc_url_raw( $url ), $post_ID );
-
-		if ( $thumbnail_id !== false ) {
-			set_post_thumbnail( $post_ID, $thumbnail_id );
-			wp_send_json_success( _wp_post_thumbnail_html( $thumbnail_id, $post_ID ) );
-		}
-
-		//TODO: Better error
-		wp_send_json_error( "Something went wrong" );
-	}
-
-	/**
-	 * Change the provided Post ID default thumbnail
-	 *
-	 * @param string $url Link to the image URL
-	 * @param int $post_id WordPress Post ID to apply the change to
-	 *
-	 * @return int The newly created WordPress Thumbnail ID
-	 */
-	function set_thumbnail( $url, $post_id ) {
-		$file = download_url( $url );
-
-		preg_match( '/[^\?]+\.(jpg|JPG|jpe|JPE|jpeg|JPEG|gif|GIF|png|PNG)/', $url, $matches );
-		$file_array['name']     = basename( $matches[0] );
-		$file_array['tmp_name'] = $file;
-
-		if ( is_wp_error( $file ) ) {
-			unlink( $file_array['tmp_name'] );
-
-			return false;
-		}
-
-		$thumbnail_id = media_handle_sideload( $file_array, $post_id );
-
-		if ( is_wp_error( $thumbnail_id ) ) {
-			unlink( $file_array['tmp_name'] );
-
-			return false;
-		}
-
-		return $thumbnail_id;
+	function upload_window() {
+		require_once( $this->plugin_base_dir . 'thePlatform-upload-window.php' );
 	}
 
 	/**
@@ -471,33 +422,8 @@ class ThePlatform_Plugin {
 // Instantiate thePlatform plugin on WordPress init
 add_action( 'init', array( 'ThePlatform_Plugin', 'init' ) );
 add_action( 'wp_ajax_verify_account', 'theplatform_verify_account_settings' );
-add_action( 'admin_init', 'theplatform_register_plugin_settings' );
 
 
-add_filter('media_upload_tabs', 'my_upload_tab');
-function my_upload_tab($tabs) {
-	$tabs['mytabname'] = "thePlatform";
-	return $tabs;
-}
 
-// call the new tab with wp_iframe
-add_action('media_upload_mytabname', 'add_my_new_form');
-function add_my_new_form() {
-	wp_iframe( 'my_new_form' );
-}
 
-// the tab content
-function my_new_form() {
-	require_once( dirname( __FILE__ ) . '/thePlatform-media.php' );
-}
 
-/**
- * Registers initial plugin settings during initialization
- */
-function theplatform_register_plugin_settings() {
-	register_setting( TP_ACCOUNT_OPTIONS_KEY, TP_ACCOUNT_OPTIONS_KEY, 'theplatform_account_options_validate' );
-	register_setting( TP_PREFERENCES_OPTIONS_KEY, TP_PREFERENCES_OPTIONS_KEY, 'theplatform_preferences_options_validate' );
-	register_setting( TP_CUSTOM_METADATA_OPTIONS_KEY, TP_CUSTOM_METADATA_OPTIONS_KEY, 'theplatform_dropdown_options_validate' );
-	register_setting( TP_BASIC_METADATA_OPTIONS_KEY, TP_BASIC_METADATA_OPTIONS_KEY, 'theplatform_dropdown_options_validate' );
-	register_setting( TP_TOKEN_OPTIONS_KEY, TP_TOKEN_OPTIONS_KEY, 'strval' );
-}

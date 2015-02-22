@@ -18,28 +18,28 @@
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 
-
 /**
  * This class is responsible for proxying API calls from the UI to PHP
  */
 class ThePlatform_Proxy {
 
 	private $tp_api;
+
 	function __construct() {
 		add_action( 'wp_ajax_publish_media', array( $this, 'publish_media' ) );
 		add_action( 'wp_ajax_revoke_media', array( $this, 'revoke_media' ) );
 
 		add_action( 'wp_ajax_get_categories', array( $this, 'get_categories' ) );
-		add_action( 'wp_ajax_get_videos', array( $this, 'get_videos' ) );		
+		add_action( 'wp_ajax_get_videos', array( $this, 'get_videos' ) );
 		add_action( 'wp_ajax_get_video_by_id', array( $this, 'get_video_by_id' ) );
 		add_action( 'wp_ajax_get_profile_results', array( $this, 'get_profile_results' ) );
 		add_action( 'wp_ajax_generate_thumbnail', array( $this, 'generate_thumbnail' ) );
 		add_action( 'wp_ajax_initialize_media_upload', array( $this, 'initialize_media_upload' ) );
-		
+		add_action( 'wp_ajax_set_thumbnail', array( $this, 'set_thumbnail_ajax' ) );
 	}
 
 	private function get_api() {
-		if ( !isset($this->tp_api)) {
+		if ( ! isset( $this->tp_api ) ) {
 			require_once( dirname( __FILE__ ) . '/thePlatform-API.php' );
 
 			$this->tp_api = new ThePlatform_API();
@@ -176,7 +176,7 @@ class ThePlatform_Proxy {
 
 	public function get_videos() {
 		$this->check_nonce_and_permissions( $_POST['action'] );
-		$this->get_api()->get_videos_ajax();		
+		$this->get_api()->get_videos_ajax();
 	}
 
 	public function get_video_by_id() {
@@ -197,6 +197,75 @@ class ThePlatform_Proxy {
 	public function initialize_media_upload() {
 		$this->check_nonce_and_permissions( $_POST['action'] );
 		$this->get_api()->initialize_media_upload_ajax();
+	}
+
+	/**
+	 * Ajax callback to initiate the change of a Post default thumbnail
+	 * @return string HTML code to update the Post page to display the new thumbnail
+	 */
+	public function set_thumbnail_ajax() {
+		$this->check_nonce_and_permissions( $_POST['action'] );
+
+		$tp_embedder_cap = apply_filters( TP_EMBEDDER_CAP, TP_EMBEDDER_DEFAULT_CAP );
+		if ( ! current_user_can( $tp_embedder_cap ) ) {
+			wp_die( 'You do not have sufficient permissions to change the post thumbnail' );
+		}
+
+		global $post_ID;
+
+		if ( ! isset( $_POST['id'] ) ) {
+			wp_send_json_error( "Post ID not found" );
+		}
+
+		$post_ID = intval( $_POST['id'] );
+
+		if ( ! $post_ID ) {
+			wp_send_json_error( "Illegal Post ID" );
+		}
+
+		$url = isset( $_POST['img'] ) ? $_POST['img'] : '';
+
+		$thumbnail_id = $this->set_thumbnail( esc_url_raw( $url ), $post_ID );
+
+		if ( $thumbnail_id !== false ) {
+			set_post_thumbnail( $post_ID, $thumbnail_id );
+			wp_send_json_success( _wp_post_thumbnail_html( $thumbnail_id, $post_ID ) );
+		}
+
+		//TODO: Better error
+		wp_send_json_error( "Something went wrong" );
+	}
+
+	/**
+	 * Change the provided Post ID default thumbnail
+	 *
+	 * @param string $url Link to the image URL
+	 * @param int $post_id WordPress Post ID to apply the change to
+	 *
+	 * @return int The newly created WordPress Thumbnail ID
+	 */
+	public function set_thumbnail( $url, $post_id ) {
+		$file = download_url( $url );
+
+		preg_match( '/[^\?]+\.(jpg|JPG|jpe|JPE|jpeg|JPEG|gif|GIF|png|PNG)/', $url, $matches );
+		$file_array['name']     = basename( $matches[0] );
+		$file_array['tmp_name'] = $file;
+
+		if ( is_wp_error( $file ) ) {
+			unlink( $file_array['tmp_name'] );
+
+			return false;
+		}
+
+		$thumbnail_id = media_handle_sideload( $file_array, $post_id );
+
+		if ( is_wp_error( $thumbnail_id ) ) {
+			unlink( $file_array['tmp_name'] );
+
+			return false;
+		}
+
+		return $thumbnail_id;
 	}
 }
 

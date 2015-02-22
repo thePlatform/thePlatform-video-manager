@@ -34,7 +34,7 @@ require_once( dirname( __FILE__ ) . '/thePlatform-HTML.php' );
 require_once( dirname( __FILE__ ) . '/thePlatform-API.php' );
 
 
-$IS_EMBED    = $page_hook != 'toplevel_page_theplatform' ;
+$IS_EMBED    = $page_hook != 'toplevel_page_theplatform';
 $tp_html     = new ThePlatform_HTML();
 $preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
 $account     = get_option( TP_ACCOUNT_OPTIONS_KEY );
@@ -91,10 +91,14 @@ $account     = get_option( TP_ACCOUNT_OPTIONS_KEY );
 								<p></p></div>
 							<div id="media-list"></div>
 							<?php $tp_html->pagination( 'bottom' ) ?>
-						</div> <!-- .inside -->
-					</div> <!-- .postbox -->
-				</div> <!-- .meta-box-sortables .ui-sortable -->
-			</div> <!-- post-body-content -->
+						</div>
+						<!-- .inside -->
+					</div>
+					<!-- .postbox -->
+				</div>
+				<!-- .meta-box-sortables .ui-sortable -->
+			</div>
+			<!-- post-body-content -->
 
 			<!-- sidebar -->
 			<div id="postbox-container-1" class="postbox-container tp-postbox-container-1">
@@ -105,13 +109,19 @@ $account     = get_option( TP_ACCOUNT_OPTIONS_KEY );
 								<?php $tp_html->preview_player() ?>
 								<?php $tp_html->content_pane( $IS_EMBED ) ?>
 							</div>
-						</div> <!-- .inside -->
-					</div> <!-- .postbox -->
-				</div> <!-- .meta-box-sortables -->				
-			</div> <!-- #postbox-container-1 .postbox-container -->
-		</div> <!-- #post-body .metabox-holder .columns-2 -->
+						</div>
+						<!-- .inside -->
+					</div>
+					<!-- .postbox -->
+				</div>
+				<!-- .meta-box-sortables -->
+			</div>
+			<!-- #postbox-container-1 .postbox-container -->
+		</div>
+		<!-- #post-body .metabox-holder .columns-2 -->
 		<br class="clear">
-	</div> <!-- #poststuff -->
+	</div>
+	<!-- #poststuff -->
 
 </div> <!-- .wrap -->
 
@@ -128,7 +138,7 @@ if ( ! $IS_EMBED && current_user_can( $tp_editor_cap )) {
 		tpHelper.accountPid = "<?php echo esc_js( $account['mpx_account_pid'] ); ?>";
 		tpHelper.isEmbed = "<?php echo esc_js( $IS_EMBED ); ?>";
 		tpHelper.mediaEmbedType = "<?php echo esc_js( $preferences['media_embed_type'] ); ?>";
-		tpHelper.selectedCategory = '';		
+		tpHelper.selectedCategory = '';
 		tpHelper.queryString = '';
 		tpHelper.currentPage = 1;
 	</script>
