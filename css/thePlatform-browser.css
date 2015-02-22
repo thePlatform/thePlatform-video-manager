@@ -58,14 +58,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
     line-height: 1.1;
 }
 .btn-metadata {
-    margin-right: 5px;
-    margin-bottom: 5px;
+    width: 49.5%;
 }
-#btn-container {
-    padding-left: 10px;
-    padding-bottom: 5px;
-}
-.navbar-form .form-group {
+.btn-group {} .tp-form-group {
     margin-left: 10px;
 }
 img.media-object.thumb-img {
@@ -128,6 +123,26 @@ img.media-object.thumb-img {
     display: none;
 }
 #selectpick-player-wrapper {
-    float:right;
+    float: right;
     display: inline;
+}
+.media-toolbar {
+    position: fixed;
+    bottom: 0px;
+    border-top: 1px solid #ddd;
+    width: 100%;
+    height: 60px;
+    z-index: 100;
+    background: white;
+}
+.media-button-insert {
+    margin-left: 10px !important;
+    float: left !important;
+    margin-top: 15px !important;
+    margin-right: 10px !important;
+}
+.media-toolbar-primary {
+    float: right;
+    height: 100%;
+    max-width: 33%;
 }

@@ -28,6 +28,7 @@ class ThePlatform_Proxy {
 	function __construct() {
 		add_action( 'wp_ajax_publish_media', array( $this, 'publish_media' ) );
 		add_action( 'wp_ajax_revoke_media', array( $this, 'revoke_media' ) );
+		add_action( 'wp_ajax_theplatform_edit', array( $this, 'edit_media' ) );
 
 		add_action( 'wp_ajax_get_categories', array( $this, 'get_categories' ) );
 		add_action( 'wp_ajax_get_videos', array( $this, 'get_videos' ) );
@@ -197,6 +198,11 @@ class ThePlatform_Proxy {
 	public function initialize_media_upload() {
 		$this->check_nonce_and_permissions( $_POST['action'] );
 		$this->get_api()->initialize_media_upload_ajax();
+	}
+
+	function edit_media() {
+		$args = array( 'fields' => $_POST['params'], 'custom_fields' => $_POST['custom_params'] );
+		$this->get_api()->update_media( $args );
 	}
 
 	/**

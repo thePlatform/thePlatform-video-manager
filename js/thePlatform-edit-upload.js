@@ -233,9 +233,12 @@ var theplatform_edit = (function($) {
             }
         },
 
-        onComplete: function(button, value) {
+        onComplete: function(button, value, type) {
             setTimeout(function() {
-                jQuery(button).text(value).val(value).removeClass('button-success button-danger button-info').addClass('button-primary');
+                if (_.isEmpty(type)) {
+                    type = "primary"
+                }
+                jQuery(button).text(value).val(value).removeClass('button-success button-danger button-info').addClass('button-' + type);
             }, 1500);
         },
 
@@ -309,9 +312,9 @@ var theplatform_edit = (function($) {
             var validationError = Validation.validateMedia(event);
 
             if (files[0] === undefined) {
-                $('#file-form-group').addClass('has-error');
+                $('#file-tp-form-group').addClass('has-error');
             } else {
-                $('#file-form-group').removeClass('has-error');
+                $('#file-tp-form-group').removeClass('has-error');
             }
 
             if (validationError || files[0] === undefined)
@@ -350,10 +353,10 @@ var theplatform_edit = (function($) {
             var files = document.getElementById('theplatform_upload_file').files;
 
             if (files[0] === undefined) {
-                jQuery('#file-form-group').addClass('has-error');
+                jQuery('#file-tp-form-group').addClass('has-error');
                 return false;
             } else {
-                jQuery('#file-form-group').removeClass('has-error');
+                jQuery('#file-tp-form-group').removeClass('has-error');
             }
 
             var profile = jQuery('.upload_profile');

@@ -94,9 +94,7 @@ class ThePlatform_Plugin {
 		// wp_enqueue_style( 'tp_bootstrap_css', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css' );
 		// Media Browser		
 		if ( $hook == 'toplevel_page_theplatform' || $hook == 'media-upload-popup' ) {
-			if ( ! isset( $_GET['embed'] ) ) {
-				wp_enqueue_script( 'tp_edit_upload_js' );
-			}
+			wp_enqueue_script( 'tp_edit_upload_js' );
 			wp_enqueue_script( 'tp_browser_js' );
 			wp_enqueue_style( 'tp_browser_css' );
 		}
@@ -423,7 +421,13 @@ class ThePlatform_Plugin {
 add_action( 'init', array( 'ThePlatform_Plugin', 'init' ) );
 add_action( 'wp_ajax_verify_account', 'theplatform_verify_account_settings' );
 
-
+// function wpa54064_inspect_scripts() {
+//     global $wp_styles;
+//     foreach( $wp_styles->queue as $handle ) :
+//         echo $handle . ' | ';
+//     endforeach;
+// }
+// add_action( 'wp_print_scripts', 'wpa54064_inspect_scripts' );
 
 
 

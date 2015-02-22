@@ -121,7 +121,9 @@ $account     = get_option( TP_ACCOUNT_OPTIONS_KEY );
 						<!-- .inside -->
 					</div>
 					<!-- .postbox -->
-					<?php $tp_html->content_pane_buttons( $IS_EMBED ) ?>
+					<?php if ( ! $IS_EMBED ) {
+						$tp_html->content_pane_buttons();
+					} ?>
 				</div>
 				<!-- .meta-box-sortables -->
 			</div>
@@ -131,7 +133,9 @@ $account     = get_option( TP_ACCOUNT_OPTIONS_KEY );
 		<br class="clear">
 	</div>
 	<!-- #poststuff -->
-
+	<?php if ( $IS_EMBED ) {
+		$tp_html->add_media_buttons();
+	} ?>
 </div> <!-- .wrap -->
 
 <?php

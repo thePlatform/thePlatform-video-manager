@@ -292,7 +292,7 @@ var theplatform_browser = (function($) {
                 return;
             }          
                   
-            $(this).val('Generating').removeClass('btn-primary btn-success btn-danger btn-info').addClass('btn-info');
+            $(this).val('Generating').removeClass('button-primary button-success button-danger button-info').addClass('button-info');
             var data = {
                 action: 'generate_thumbnail',
                 mediaId: tpHelper.mediaId,
@@ -311,7 +311,7 @@ var theplatform_browser = (function($) {
                     theplatform_edit.onSuccess(response, me)
                 },
                 complete: function(response) {
-                    theplatform_edit.onComplete(me, "Generate Thumbnail")
+                    theplatform_edit.onComplete(me, "Generate Thumbnail", "secondary")
                 }
 
             });

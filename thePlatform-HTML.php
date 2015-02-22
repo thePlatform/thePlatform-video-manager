@@ -171,24 +171,27 @@ class ThePlatform_HTML {
 		</div> <?php
 	}
 
-	function content_pane_buttons( $IS_EMBED ) { ?>
-		<div id="btn-container" class="metadata-buttons">
-			<?php if ( $IS_EMBED ) { ?>
-				<div class="btn-group">
-					<input type="button" id="btn-set-image" class="button button-secondary"
-					       value="Set Featured Image">
-					<input type="button" id="btn-embed" class="button button-primary" value="Embed">
+	function content_pane_buttons() {
+		echo '<div id="btn-container" class="metadata-buttons">';
+		if ( $this->preferences['thumbnail_profile_id'] != 'tp_wp_none' ) {
+			echo '<input type="button" id="btn-generate-thumbnail" class="button button-secondary btn-metadata" value="Generate Thumbnail">';
+		}
+		echo '<input type="button" id="btn-edit" class="button button-primary btn-metadata" value="Edit Media">';
+		echo '</div>';
+	}
+
+	function add_media_buttons() { ?>
+		<div class="media-frame-toolbar">
+			<div class="media-toolbar">
+				<div class="media-toolbar-primary search-form">
+					<a href="#" id="btn-set-image"
+					   class="button media-button button-secondary button-large media-button-insert">Set Featured
+						Image</a>
+					<a href="#" id="btn-embed"
+					   class="button media-button button-primary button-large media-button-insert">Insert into post</a>
 				</div>
-			<?php
-			} else {
-
-				if ( $this->preferences['thumbnail_profile_id'] != 'tp_wp_none' ) {
-					echo '<input type="button" id="btn-generate-thumbnail" class="button button-secondary btn-metadata" value="Generate Thumbnail">';
-				}
-				echo '<input type="button" id="btn-edit" class="button button-primary btn-metadata" value="Edit Media">';
-
-			} ?>
-		</div> <?php
+			</div>
+		</div>        <?php
 	}
 
 	function profiles_and_servers( $upload_or_add ) {
@@ -196,7 +199,7 @@ class ThePlatform_HTML {
 		<div class="form-row">
 			<div class="column-third">
 				<?php
-				$html = '<div class="form-group"><label class="tp-label" for="publishing_profile">Publishing Profile</label>';
+				$html = '<div class="tp-form-group"><label class="tp-label" for="publishing_profile">Publishing Profile</label>';
 				$html .= '<select id="publishing_profile" name="publishing_profile" class="tp-input upload_profile">';
 				$html .= '<option value="tp_wp_none"' . selected( $this->preferences['default_publish_id'], 'wp_tp_none', false ) . '>Do not publish</option>';
 				foreach ( $this->profiles as $entry ) {
@@ -208,7 +211,7 @@ class ThePlatform_HTML {
 			</div>
 			<div class="column-third">
 				<?php
-				$html = '<div class="form-group"><label class="tp-label" for="theplatform_server">Server</label>';
+				$html = '<div class="tp-form-group"><label class="tp-label" for="theplatform_server">Server</label>';
 				$html .= '<select id="theplatform_server" name="theplatform_server" class="tp-input server_id">';
 				$html .= '<option value="DEFAULT_SERVER"' . selected( $this->preferences['mpx_server_id'], "DEFAULT_SERVER", false ) . '>Default Server</option>';
 				foreach ( $this->servers as $entry ) {
@@ -221,7 +224,7 @@ class ThePlatform_HTML {
 		</div>
 		<div class="form-row">
 			<div class="column-half">
-				<div class="form-group" id="file-form-group">
+				<div class="tp-form-group" id="file-tp-form-group">
 					<label class="tp-label" for="theplatform_upload_label">File</label>
 
 					<div class="input-group">
@@ -238,7 +241,7 @@ class ThePlatform_HTML {
 		</div>
 		<div class="form-row">
 			<div class="column-third">
-				<div class="form-group">
+				<div class="tp-form-group">
 					<?php
 					if ( $upload_or_add == "add" ) {
 						echo '<button id="theplatform_add_file_button" class="tp-input button button-primary" type="button" name="theplatform-add-file-button">Upload Files</button>';
@@ -272,7 +275,7 @@ class ThePlatform_HTML {
 				// Always Put categories on it's own row
 				$categoryHtml .= '<div class="form-row">';
 				$categoryHtml .= '<div class="column-half">';
-				$categoryHtml .= '<div class="form-group">';
+				$categoryHtml .= '<div class="tp-form-group">';
 				$categoryHtml .= '<label class="tp-label" for="theplatform_upload_' . esc_attr( $basic_field ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
 				$categoryHtml .= '<select class="category_field tp-input" multiple id="theplatform_upload_' . esc_attr( $basic_field ) . '" name="' . esc_attr( $basic_field ) . '">';
 				foreach ( $categories as $category ) {
@@ -288,7 +291,7 @@ class ThePlatform_HTML {
 					$html .= '<div class="form-row">';
 				}
 				$html .= '<div class="column-half">';
-				$html .= '<div class="form-group">';
+				$html .= '<div class="tp-form-group">';
 				$html .= '<label class="tp-label" for="theplatform_upload_' . esc_attr( $basic_field ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
 				$html .= '<input name="' . esc_attr( $basic_field ) . '" id="theplatform_upload_' . esc_attr( $basic_field ) . '" class="tp-input upload_field" type="text" placeholder="' . esc_attr( ucfirst( $field_title ) ) . '"';
 				if ( $basic_field == 'title' ) {
@@ -420,7 +423,7 @@ class ThePlatform_HTML {
         <div class="form-row">
             <div class="column-third">
                 <?php
-		$html = '<div class="form-group"><label class="tp-label" for="edit_publishing_profile">Publishing Profile</label>';
+		$html = '<div class="tp-form-group"><label class="tp-label" for="edit_publishing_profile">Publishing Profile</label>';
 		$html .= '<select id="edit_publishing_profile" name="edit_publishing_profile" class="tp-input edit_profile">';
 		foreach ( $this->profiles as $entry ) {
 			$html .= '<option value="' . esc_attr( $entry['id'] ) . '"' . selected( $entry['title'], $this->preferences['default_publish_id'], false ) . '>' . esc_html( $entry['title'] ) . '</option>';
@@ -439,7 +442,7 @@ class ThePlatform_HTML {
      <div class="tab-pane" id="revoke_content">
         <div class="form-row">           
             <div class="column-third">
-                <div class="form-group">
+                <div class="tp-form-group">
                     <label class="tp-label" for="publish_status">Currently Published Profiles</label>
                     <select id="publish_status" name="publish_status" class="tp-input revoke_profile">
                     </select>
