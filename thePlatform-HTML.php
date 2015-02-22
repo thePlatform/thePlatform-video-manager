@@ -43,11 +43,11 @@ class ThePlatform_HTML {
 	}
 
 	function player_dropdown() {
-		$html = '<p class="navbar-text sort-bar-text">Player:</p><form class="navbar-form navbar-left sort-bar-nav" role="sort"><select id="selectpick-player" class="tp-input">';
+		$html = '<span id="selectpick-player-wrapper"><label for="selectpick-player">Player:</label><select id="selectpick-player">';
 		foreach ( $this->players as $player ) {
 			$html .= '<option value="' . esc_attr( $player['pid'] ) . '"' . selected( $player['pid'], $this->preferences['default_player_pid'], false ) . '>' . esc_html( $player['title'] ) . '</option>';
 		}
-		$html .= '</select></form>';
+		$html .= '</select></span>';
 		echo $html;
 	}
 

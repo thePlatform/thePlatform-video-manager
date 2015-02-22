@@ -75,7 +75,15 @@ $account     = get_option( TP_ACCOUNT_OPTIONS_KEY );
 
 			<?php } ?>
 			<button id="btn-search" type="button" class="button-primary">Search</button>
+<?php		
+				if ( $IS_EMBED ) {		
+					$tp_html->player_dropdown();		
+				}		
+				?>
+			
 		</form>
+
+		
 	</div>
 
 

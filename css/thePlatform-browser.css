@@ -127,3 +127,7 @@ img.media-object.thumb-img {
 #tp-edit-dialog {
     display: none;
 }
+#selectpick-player-wrapper {
+    float:right;
+    display: inline;
+}
