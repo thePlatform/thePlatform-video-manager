@@ -124,7 +124,7 @@ TheplatformUploader = (function() {
             xhrFields: {
                 withCredentials: true
             },
-            success: function(data) {                
+            success: function(data) {
                 if (data.entries.length !== 0) {
                     var state = data.entries[0].state;
 
@@ -145,7 +145,7 @@ TheplatformUploader = (function() {
                         NProgress.settings.trickleRate = me.progressIncrements / 35;
                         NProgress.settings.trickleSpeed = 650;
                         NProgress.start();
-                        
+
 
                         me.uploadFragments(frags, 0);
                     } else {
@@ -159,11 +159,11 @@ TheplatformUploader = (function() {
                     }, 1000);
                 }
             },
-            error: function (data) {
-				setTimeout(function() {
+            error: function(data) {
+                setTimeout(function() {
                     me.waitForReady()
                 }, 1000);
-			}
+            }
         });
     };
 
@@ -181,7 +181,7 @@ TheplatformUploader = (function() {
         }
 
         this.current_uploads++;
-    
+
         if (this.current_uploads < this.max_uploads) {
             me.uploadFragments(fragments, this.frags_uploaded + this.current_uploads);
         }
@@ -190,7 +190,7 @@ TheplatformUploader = (function() {
             return;
         }
 
-        
+
 
         NProgress.settings.incLimit = me.progressIncrements * (index + 1);
 
@@ -212,7 +212,7 @@ TheplatformUploader = (function() {
             xhrFields: {
                 withCredentials: true
             },
-            success: function(response) {                
+            success: function(response) {
                 me.frags_uploaded++;
                 me.current_uploads--;
                 if (me.num_fragments == me.frags_uploaded) {
@@ -227,16 +227,16 @@ TheplatformUploader = (function() {
                             trickleRate: me.progressIncrements / ((lastSegmentEnd - lastSegmentStart) / 1000)
                         })
                     }
-                    me.message("Finished uploading fragment " + me.frags_uploaded + " of " + me.num_fragments);                    
+                    me.message("Finished uploading fragment " + me.frags_uploaded + " of " + me.num_fragments);
                     me.attempts = 0;
-                    me.uploadFragments(fragments, me.frags_uploaded + me.current_uploads);                   
-                }               
+                    me.uploadFragments(fragments, me.frags_uploaded + me.current_uploads);
+                }
             },
-            error: function(data) {            	
+            error: function(data) {
                 me.message(response.data.description, true);
                 setTimeout(function() {
                     me.uploadFragments(fragments, index);
-                }, 1000);                
+                }, 1000);
             }
         });
     };
@@ -257,8 +257,8 @@ TheplatformUploader = (function() {
 
         me.message('Finishing upload of file ' + (me.currentFileIndex + 1) + ' out of ' + (me.lastFileIndex + 1), true)
         jQuery.ajax({
-            url: requestUrl,  
-            data: data,          
+            url: requestUrl,
+            data: data,
             type: "post",
             xhrFields: {
                 withCredentials: true
@@ -299,7 +299,7 @@ TheplatformUploader = (function() {
                     me.waitForComplete();
                 }, 5000)
             },
-            success: function(data) {                                
+            success: function(data) {
                 if (data.entries.length != 0) {
                     var state = data.entries[0].state;
 
@@ -331,7 +331,7 @@ TheplatformUploader = (function() {
                     setTimeout(function() {
                         me.waitForComplete();
                     }, 5000)
-                }                
+                }
             }
         });
     };
@@ -480,16 +480,16 @@ TheplatformUploader = (function() {
         var me = this;
 
         this.fragSize = 5000000; // 5 Mb
-        var splashHtml = 
-        '<div class="postbox">' +
-            '<p class="lead">Initalizing upload</p>' +                                     
-                '<div role="spinner">' +
-                    '<div class="spinner-icon"></div>' +
-                '</div>' +
-                '<div class="progress">' +
-                    '<div class="mybar" role="bar"></div>' +
-                '</div>' +            
-        '</div>';
+        var splashHtml =
+            '<div class="postbox">' +
+            '<p class="lead">Initalizing upload</p>' +
+            '<div role="spinner">' +
+            '<div class="spinner-icon"></div>' +
+            '</div>' +
+            '<div class="progress">' +
+            '<div class="mybar" role="bar"></div>' +
+            '</div>' +
+            '</div>';
 
         NProgress.configure({
             template: splashHtml,

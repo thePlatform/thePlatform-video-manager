@@ -76,10 +76,10 @@ img.tp-media-object.tp-thumb-img {
     overflow: hidden;
 }
 .tp-media-body {
-    width:100%;
+    width: 100%;
 }
 .tp-media {
-    margin-top: 15px;    
+    margin-top: 15px;
     display: table;
 }
 .tp-media-left, .tp-media>.pull-left {

@@ -47,17 +47,17 @@ var theplatform_browser = (function($) {
             tpHelper.queryParams = queryObject;
             tpHelper.queryString = API.buildMediaQuery(queryObject);
             tpHelper.currentPage = 1;
-            Events.onGetMedia(tpHelper.currentPage);       
+            Events.onGetMedia(tpHelper.currentPage);
         },
-       
+
         notifyUser: function(type, msg) {
             var $msgPanel = $('#message-panel');
-            
+
             if (type === 'clear') {
                 $msgPanel.addClass('hidden');
                 msg = '';
             } else {
-                $msgPanel.removeClass('hidden');                
+                $msgPanel.removeClass('hidden');
             }
             $msgPanel.children().text(msg);
         },
@@ -222,7 +222,7 @@ var theplatform_browser = (function($) {
                 $('.tpPlayer').css('visibility', 'hidden');
                 $('#modal-player-placeholder').show();
             }
-        },       
+        },
         onEmbed: function() {
             var player = $('#selectpick-player').val();
 
@@ -238,9 +238,9 @@ var theplatform_browser = (function($) {
 
 
             var win = window.dialogArguments || opener || parent || top;
-            
+
             win.wp.media.editor.insert(shortcode.trim());
-           
+
         },
         onEmbedAndClose: function() {
             Events.onEmbed();
@@ -288,10 +288,10 @@ var theplatform_browser = (function($) {
             return false;
         },
         onGenerateThumbnail: function() {
-            if ( $(this).val() == 'Generating' ) {
+            if ($(this).val() == 'Generating') {
                 return;
-            }          
-                  
+            }
+
             $(this).val('Generating').removeClass('button-primary button-success button-danger button-info').addClass('button-info');
             var data = {
                 action: 'generate_thumbnail',
@@ -334,37 +334,51 @@ var theplatform_browser = (function($) {
                 // Update pagination
                 var totalResults = resp['totalResults'];
                 $('.displaying-num').text(totalResults + ' items');
-                if ( totalResults != 0 ) {
+                if (totalResults != 0) {
                     var pages = Math.ceil(resp['totalResults'] / MAX_RESULTS)
                     $('.total-pages').text(pages);
-                    $('.current-page').each(function() { $(this).attr('max', pages).val(page) });                    
+                    $('.current-page').each(function() {
+                        $(this).attr('max', pages).val(page)
+                    });
 
                     if (pages <= 1) {
-                        $('.pagination-links a').each(function() { $(this).addClass('disabled') } )
+                        $('.pagination-links a').each(function() {
+                            $(this).addClass('disabled')
+                        })
                     }
 
                     if (pages > 1) {
-                        $('.first-page,.prev-page,.last-page,.next-page').each(function() { $(this).removeClass('disabled') } )
+                        $('.first-page,.prev-page,.last-page,.next-page').each(function() {
+                            $(this).removeClass('disabled')
+                        })
                     }
 
                     if (page == pages) {
-                        $('.last-page,.next-page').each(function() { $(this).addClass('disabled') } )
+                        $('.last-page,.next-page').each(function() {
+                            $(this).addClass('disabled')
+                        })
                     }
 
                     if (page == 1) {
-                        $('.first-page,.prev-page').each(function() { $(this).addClass('disabled') } )   
+                        $('.first-page,.prev-page').each(function() {
+                            $(this).addClass('disabled')
+                        })
                     }
                 } else {
                     $('.total-pages').text(1);
-                    $('.current-page').each(function() { $(this).attr('max', 1).val(1) });   
-                    $('.pagination-links a').each(function() { $(this).addClass('disabled') } )                 
+                    $('.current-page').each(function() {
+                        $(this).attr('max', 1).val(1)
+                    });
+                    $('.pagination-links a').each(function() {
+                        $(this).addClass('disabled')
+                    })
                 }
-                
-                if (resp['entryCount'] == 0) {
-                    UI.notifyUser('info', 'No Results');                    
-                }                                    
 
-                $('#media-list').empty();     
+                if (resp['entryCount'] == 0) {
+                    UI.notifyUser('info', 'No Results');
+                }
+
+                $('#media-list').empty();
                 var entries = resp['entries'];
 
                 for (var i = 0; i < entries.length; i++) {
@@ -372,7 +386,7 @@ var theplatform_browser = (function($) {
                 }
 
                 NProgress.done();
-                Holder.run();                
+                Holder.run();
             });
         },
         onMouseScroll: function(ev) {
@@ -478,7 +492,7 @@ var theplatform_browser = (function($) {
             });
         },
         getVideoCount: function() {
-             var data = {
+            var data = {
                 _wpnonce: tp_browser_local.tp_nonce['get_videos'],
                 action: 'get_video_count',
                 myContent: $('#my-content-cb').prop('checked')
@@ -488,7 +502,7 @@ var theplatform_browser = (function($) {
                 $('.displaying-num').text(resp.data + ' items');
                 console.log(resp);
             });
-        },        
+        },
         buildMediaQuery: function(data) {
 
             var queryParams = '';
@@ -522,7 +536,7 @@ var theplatform_browser = (function($) {
 
             $.post(tp_browser_local.ajaxurl, data,
                 function(entries) {
-                     var categoryPicker = $('#selectpick-categories');
+                    var categoryPicker = $('#selectpick-categories');
                     // Add each category
                     for (var idx in entries) {
                         var entryTitle = entries[idx]['title'];
@@ -574,7 +588,7 @@ var theplatform_browser = (function($) {
             $pdk.initialize();
             $pdk.controller.addEventListener('OnMediaPlaying', Events.onMediaPlaying)
             $pdk.controller.addEventListener('OnLoadReleaseUrl', Events.onLoadReleaseUrl)
-        }        
+        }
 
         $('#btn-embed').click(Events.onEmbed);
         $('#btn-embed-close').click(Events.onEmbedAndClose);
@@ -582,7 +596,7 @@ var theplatform_browser = (function($) {
         $('#btn-edit').click(Events.onEditMetadata);
         $('.next-page').click(Events.onNextPage);
         $('.next-page').click(Events.onNextPage);
-        $('#btn-generate-thumbnail').click(Events.onGenerateThumbnail);        
+        $('#btn-generate-thumbnail').click(Events.onGenerateThumbnail);
 
         /**
          * Search form event handlers
@@ -606,21 +620,21 @@ var theplatform_browser = (function($) {
             }
             var buttonClass = $(this).attr('class');
 
-            switch(buttonClass) {
+            switch (buttonClass) {
                 case 'next-page':
                     tpHelper.currentPage++
-                    break;
+                        break;
                 case 'prev-page':
                     tpHelper.currentPage--
-                    break;
+                        break;
                 case 'last-page':
-                    tpHelper.currentPage = parseInt( $('.total-pages')[0].innerText );
+                    tpHelper.currentPage = parseInt($('.total-pages')[0].innerText);
                     break;
                 case 'first-page':
                     tpHelper.currentPage = 1;
                     break;
             }
-            
+
             Events.onGetMedia(tpHelper.currentPage)
 
         })
