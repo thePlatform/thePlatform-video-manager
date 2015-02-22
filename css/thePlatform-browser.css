@@ -156,3 +156,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   -webkit-animation: nprogress-spinner 400ms linear infinite;
           animation: nprogress-spinner 400ms linear infinite;
 }
+.tp-field {
+    overflow-wrap: break-word;
+}
