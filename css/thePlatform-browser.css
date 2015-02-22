@@ -60,7 +60,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 .btn-metadata {
     width: 49.5%;
 }
-.btn-group {} .tp-form-group {
+.tp-form-group {
     margin-left: 10px;
 }
 img.tp-media-object.tp-thumb-img {
@@ -85,33 +85,13 @@ img.tp-media-object.tp-thumb-img {
 .tp-media-left, .tp-media>.pull-left {
     padding-right: 10px;
 }
-.tp-post-body {
-    margin-right: 400px !important;
-}
-.tp-postbox-container-1 {
-    margin-right: -400px !important;
-    width: 380px !important;
-}
-#media-list {
-    min-height: 600px;
-}
-@media only screen and (max-width: 1060px) {
-    #poststuff {
-        min-width: 0 !important;
-    }
-    #wpbody-content #poststuff #post-body {
-        margin: 0 !important;
-    }
-    #wpbody-content #post-body.columns-2 #postbox-container-1 {
-        margin-right: 0 !important;
-        width: 100% !important;
-    }
-}
+
 .tp-search-form {
     margin: 10px 0;
 }
 .tp-search-form input, select {
     margin-right: 5px;
+    width: 120px;
 }
 .tp-header {
     float: left;
@@ -149,3 +129,4 @@ img.tp-media-object.tp-thumb-img {
     float: right;
     height: 100%;
 }
+

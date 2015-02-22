@@ -43,7 +43,7 @@ class ThePlatform_HTML {
 	}
 
 	function player_dropdown() {
-		$html = '<span id="selectpick-player-wrapper" class="media-button-insert"><label for="selectpick-player">Player:</label><select id="selectpick-player">';
+		$html = '<span id="selectpick-player-wrapper" class="tp-media-button-insert"><label for="selectpick-player">Player:</label><select id="selectpick-player">';
 		foreach ( $this->players as $player ) {
 			$html .= '<option value="' . esc_attr( $player['pid'] ) . '"' . selected( $player['pid'], $this->preferences['default_player_pid'], false ) . '>' . esc_html( $player['title'] ) . '</option>';
 		}
@@ -181,15 +181,15 @@ class ThePlatform_HTML {
 	}
 
 	function add_media_toolbar() { ?>
-		<div class="media-frame-toolbar">
-			<div class="media-toolbar">
-				<div class="media-toolbar-primary search-form">
+		<div class="tp-media-frame-toolbar">
+			<div class="tp-media-toolbar">
+				<div class="tp-media-toolbar-primary search-form">
 					<?php $this->player_dropdown(); ?>
 					<a href="#" id="btn-set-image"
-					   class="button media-button button-secondary button-large media-button-insert">Set Featured
+					   class="button tp-media-button button-secondary button-large tp-media-button-insert">Set Featured
 						Image</a>
 					<a href="#" id="btn-embed"
-					   class="button media-button button-primary button-large media-button-insert">Insert into post</a>
+					   class="button tp-media-button button-primary button-large tp-media-button-insert">Insert into post</a>
 				</div>
 			</div>
 		</div>        <?php
@@ -256,8 +256,6 @@ class ThePlatform_HTML {
 	}
 
 	function metadata_fields() {
-
-
 		$categoryHtml = '';
 		$write_fields = array();
 		// We need a count of the write enabled fields in order to display rows appropriately.
