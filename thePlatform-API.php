@@ -533,7 +533,7 @@ class ThePlatform_API {
 
 		$fields = theplatform_get_query_fields( $this->get_custom_metadata_fields() );
 
-		$url = TP_API_MEDIA_ENDPOINT . '&fields=id,guid,pid,title' . $fields . '&token=' . $token . '&range=' . $_POST['range'];
+		$url = TP_API_MEDIA_ENDPOINT . '&count=true&fields=id,guid,pid,title' . $fields . '&token=' . $token . '&range=' . $_POST['range'];
 
 		if ( $_POST['isEmbed'] === "1" ) {
 			$url .= '&byApproved=true&byContent=byReleases=byDelivery%253Dstreaming';
