@@ -21,19 +21,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 $tp_viewer_cap = apply_filters( TP_VIEWER_CAP, TP_VIEWER_DEFAULT_CAP );
 $tp_editor_cap = apply_filters( TP_EDITOR_CAP, TP_EDITOR_DEFAULT_CAP );
-define( 'TP_MEDIA_BROWSER', true );
+
+global $page_hook;
 
 if ( ! current_user_can( $tp_viewer_cap ) ) {
 	wp_die( '<p>You do not have sufficient permissions to browse MPX Media</p>' );
 }
 
+$IS_EMBED    = $page_hook != 'toplevel_page_theplatform' ;
 $tp_html     = new ThePlatform_HTML();
-$IS_EMBED    = false;
 $preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
 $account     = get_option( TP_ACCOUNT_OPTIONS_KEY );
-
-// TODO: 
-// Make this template work in the post editor
 
 ?>
 
