@@ -113,6 +113,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
     height: 60px;
     z-index: 100;
     background: white;
+    left: 0px;
 }
 .tp-media-button-insert {
     margin-left: 10px !important;
@@ -136,6 +137,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   z-index: 1031;
   top: 15px;
   right: 15px;
+}
+
+#media-upload #post-body-content {
+    margin-bottom: 80px;
 }
 
 #tp-load .spinner-icon {
