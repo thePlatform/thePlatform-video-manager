@@ -132,3 +132,6 @@ img.tp-media-object.tp-thumb-img {
 #media-upload {
     margin: 0px 15px;
 }
+.wp-filter {
+    margin-bottom: 0px !important;
+}
