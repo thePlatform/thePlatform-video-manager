@@ -93,6 +93,9 @@ img.media-object.thumb-img {
     margin-right: -400px !important;
     width: 380px !important;
 }
+#media-list {
+    min-height: 600px;
+}
 @media only screen and (max-width: 1060px) {
     #poststuff {
         min-width: 0 !important;
@@ -104,4 +107,23 @@ img.media-object.thumb-img {
         margin-right: 0 !important;
         width: 100% !important;
     }
+}
+.tp-search-form {
+    margin: 10px 0;
+}
+.tp-search-form input, select {
+    margin-right: 5px;
+}
+.tp-header {
+    float: left;
+}
+#btn-search {
+    margin-left: 5px;
+}
+#message-panel {
+    width: 99%;
+    padding: 5px;
+}
+#tp-edit-dialog {
+    display: none;
 }

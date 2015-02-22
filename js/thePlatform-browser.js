@@ -38,7 +38,7 @@ var theplatform_browser = (function($) {
             //TODO: If sorting clear search?
             var queryObject = {
                 search: $('#input-search').val(),
-                category: tpHelper.selectedCategory,
+                category: $('#selectpick-categories').val(),
                 sort: $('#selectpick-sort').val(),
                 order: $('#selectpick-order').val(),
                 myContent: $('#my-content-cb').prop('checked')
@@ -48,7 +48,8 @@ var theplatform_browser = (function($) {
 
             tpHelper.queryString = API.buildMediaQuery(queryObject);
             tpHelper.feedEndRange = 0;
-            $mediaList.empty();            
+            $mediaList.empty();     
+            Events.onGetMedia(1);       
         },
 
         buildCategoryAccordion: function(resp) {
@@ -68,15 +69,14 @@ var theplatform_browser = (function($) {
 
         notifyUser: function(type, msg) {
             var $msgPanel = $('#message-panel');
-            $msgPanel.attr('class', '');
+            
             if (type === 'clear') {
-                $msgPanel.attr('class', '');
+                $msgPanel.addClass('hidden');
                 msg = '';
             } else {
-                $msgPanel.addClass('alert alert-' + type);
-                $msgPanel.alert();
+                $msgPanel.removeClass('hidden');                
             }
-            $msgPanel.text(msg);
+            $msgPanel.children().text(msg);
         },
 
         updateContentPane: function(mediaItem) {
@@ -239,17 +239,7 @@ var theplatform_browser = (function($) {
                 $('.tpPlayer').css('visibility', 'hidden');
                 $('#modal-player-placeholder').show();
             }
-        },
-        onClickCategory: function(e) {
-            tpHelper.selectedCategory = $(this).text();
-            if (tpHelper.selectedCategory == "All Videos")
-                tpHelper.selectedCategory = '';
-            $('.category.selected').removeClass('selected');
-            $(this).addClass('selected');
-            $('#input-search').val(''); //Clear the current search value when we choose a category        
-
-            UI.refreshView();
-        },
+        },       
         onEmbed: function() {
             var player = $('#selectpick-player').val();
 
@@ -349,14 +339,25 @@ var theplatform_browser = (function($) {
         OnLoadReleaseUrl: function(release) {
             tpHelper.currentMediaTime = undefined;
         },
-        onMediaListBottom: function(callback) {
+        onGetMedia: function(page) {
             var MAX_RESULTS = 10;
-            NProgress.start(); // show loading before we call getVideos
-            API.getVideoCount();
+            NProgress.start(); // show loading before we call getVideos            
             var theRange = parseInt(tpHelper.feedEndRange);
-            theRange = (theRange + 1) + '-' + (theRange + MAX_RESULTS);
+            theRange = ((page - 1) * MAX_RESULTS + 1) + '-' + (page * MAX_RESULTS);
+
+            console.log(theRange);
             API.getVideos(theRange, function(resp) {
                 tpHelper.feedResultCount = resp['entryCount'];
+
+                // Update pagination
+                var totalResults = resp['totalResults'];
+                $('.displaying-num').text(totalResults + ' items');
+                if ( totalResults != 0 ) {
+                    var pages = Math.ceil(resp['totalResults'] / MAX_RESULTS)
+                    $('.total-pages').text(pages)    
+                }
+                
+
                 tpHelper.feedStartRange = resp['startIndex'];
                 tpHelper.feedEndRange = 0;
                 if (resp['entryCount'] > 0)
@@ -571,10 +572,9 @@ var theplatform_browser = (function($) {
         $('#btn-embed-close').click(Events.onEmbedAndClose);
         $('#btn-set-image').click(Events.onSetImage);
         $('#btn-edit').click(Events.onEditMetadata);
-        $('#btn-generate-thumbnail').click(Events.onGenerateThumbnail);
-
-        // Only allow scrolling on the current column were on
-        $('.scrollable').on('DOMMouseScroll mousewheel', Events.onMouseScroll);
+        $('.next-page').click(Events.onNextPage);
+        $('.next-page').click(Events.onNextPage);
+        $('#btn-generate-thumbnail').click(Events.onGenerateThumbnail);        
 
         /**
          * Search form event handlers
@@ -591,7 +591,7 @@ var theplatform_browser = (function($) {
         /**
          * Set up the infinite scrolling media list and load the first sets of media
          */
-        Events.onMediaListBottom();
+        Events.onGetMedia(1);
     });
 
     // Expose the updateMediaObject method outside this module
