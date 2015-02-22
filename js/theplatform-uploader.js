@@ -242,7 +242,7 @@ TheplatformUploader = (function() {
     };
 
     /**
-     @function finish Notify MPX that the upload has finished
+     @function finish Notify mpx that the upload has finished
      */
     TheplatformUploader.prototype.finish = function() {
         var me = this;
@@ -474,7 +474,7 @@ TheplatformUploader = (function() {
     };
 
     /**
-     @function constructor Inform the API proxy to create placeholder media assets in MPX and begin uploading
+     @function constructor Inform the API proxy to create placeholder media assets in mpx and begin uploading
      */
     function TheplatformUploader(files, fields, custom_fields, profile, server) {
         var me = this;

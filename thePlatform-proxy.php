@@ -61,7 +61,7 @@ class ThePlatform_Proxy {
 
 		$tp_uploader_cap = apply_filters( TP_UPLOADER_CAP, TP_UPLOADER_DEFAULT_CAP );
 		if ( ! current_user_can( $tp_uploader_cap ) ) {
-			wp_die( 'You do not have sufficient permissions to modify MPX Media' );
+			wp_die( 'You do not have sufficient permissions to modify mpx Media' );
 		}
 	}
 

@@ -27,7 +27,7 @@
 class ThePlatform_URLs {
 
 	/**
-	 * Define MPX endpoints and associated parameters
+	 * Define mpx endpoints and associated parameters
 	 */
 	function __construct( $preference_key ) {
 		$region = $this->getRegion( $preference_key );

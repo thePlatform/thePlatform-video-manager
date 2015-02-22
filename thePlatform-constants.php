@@ -125,7 +125,7 @@ function TP_PREFERENCES_OPTIONS_FIELDS() {
 			array( 'id' => 'filter_by_user_id', 'title' => 'Filter Users Own Videos', 'type' => 'boolean' ),
 			array( 'id' => 'user_id_customfield', 'title' => 'User ID Custom Field', 'type' => 'callback' ),
 			array( 'id' => 'transform_user_id_to', 'title' => 'Show User ID as', 'type' => 'select', 'values' => array( 'Email' => 'email', 'Full Name' => 'full_name', 'Nickname' => 'nickname', 'Username' => 'username' ) ),
-			array( 'id' => 'mpx_server_id', 'title' => 'MPX Upload Server', 'type' => 'callback' ),
+			array( 'id' => 'mpx_server_id', 'title' => 'mpx Upload Server', 'type' => 'callback' ),
 			array( 'id' => 'default_publish_id', 'title' => 'Default Publishing Profile', 'type' => 'callback' ),
 			array( 'id' => 'thumbnail_profile_id', 'title' => 'Thumbnail Encoding Profile', 'type' => 'callback' )
 		)
@@ -136,12 +136,12 @@ function TP_PREFERENCES_OPTIONS_FIELDS() {
 function TP_ACCOUNT_OPTIONS_FIELDS() {
 	return array(
 		array(
-			'id' => 'section_mpx_account_options', 'title' => 'MPX Account Options', 'callback' => 'section_mpx_account_desc', 'fields' => array(
-			array( 'id' => 'mpx_username', 'title' => 'MPX Username', 'type' => 'string' ),
-			array( 'id' => 'mpx_password', 'title' => 'MPX Password', 'type' => 'password' ),
-			array( 'id' => 'mpx_region', 'title' => 'MPX Region', 'type' => 'callback' ),
-			array( 'id' => 'mpx_account_id', 'title' => 'MPX Account', 'type' => 'callback' ),
-			array( 'id' => 'mpx_account_pid', 'title' => 'MPX Account PID', 'type' => 'hidden' )
+			'id' => 'section_mpx_account_options', 'title' => 'mpx Account Options', 'callback' => 'section_mpx_account_desc', 'fields' => array(
+			array( 'id' => 'mpx_username', 'title' => 'mpx Username', 'type' => 'string' ),
+			array( 'id' => 'mpx_password', 'title' => 'mpx Password', 'type' => 'password' ),
+			array( 'id' => 'mpx_region', 'title' => 'mpx Region', 'type' => 'callback' ),
+			array( 'id' => 'mpx_account_id', 'title' => 'mpx Account', 'type' => 'callback' ),
+			array( 'id' => 'mpx_account_pid', 'title' => 'mpx Account PID', 'type' => 'hidden' )
 		)
 		)
 	);

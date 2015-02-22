@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $account = get_option( TP_ACCOUNT_OPTIONS_KEY );
 if ( $account == false || empty( $account['mpx_account_id'] ) ) {
-	wp_die( 'MPX Account ID is not set, please configure the plugin before attempting to manage media' );
+	wp_die( 'mpx Account ID is not set, please configure the plugin before attempting to manage media' );
 }
 
 define( 'TP_MEDIA_BROWSER', true );
@@ -33,7 +33,7 @@ $tp_editor_cap = apply_filters( TP_EDITOR_CAP, TP_EDITOR_DEFAULT_CAP );
 global $page_hook;
 
 if ( ! current_user_can( $tp_viewer_cap ) ) {
-	wp_die( '<p>You do not have sufficient permissions to browse MPX Media</p>' );
+	wp_die( '<p>You do not have sufficient permissions to browse mpx Media</p>' );
 }
 
 require_once( dirname( __FILE__ ) . '/thePlatform-HTML.php' );

@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $account = get_option( TP_ACCOUNT_OPTIONS_KEY );
 if ( $account == false || empty( $account['mpx_account_id'] ) ) {
-	wp_die( 'MPX Account ID is not set, please configure the plugin before attempting to manage media' );
+	wp_die( 'mpx Account ID is not set, please configure the plugin before attempting to manage media' );
 }
 
 require_once( dirname( __FILE__ ) . '/thePlatform-HTML.php' );
@@ -57,13 +57,13 @@ if ( ! defined( 'TP_MEDIA_BROWSER' ) ) {
 	add_action( 'wp_enqueue_scripts', 'theplatform_upload_clear_styles_and_scripts', 100912 );
 
 	if ( ! current_user_can( $tp_uploader_cap ) ) {
-		wp_die( '<p>You do not have sufficient permissions to upload MPX Media</p>' );
+		wp_die( '<p>You do not have sufficient permissions to upload mpx Media</p>' );
 	}
 
 
 	?>
 	<div class="wrap">
-	<h2>Upload Media to MPX</h2>
+	<h2>Upload Media to mpx</h2>
 <?php
 } else {
 	// Edit Dialog has tabs, so we do all the necessary prefixing here

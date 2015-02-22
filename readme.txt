@@ -12,14 +12,14 @@ Manage your content hosted by thePlatform and embed media in WordPress posts.
 View your content hosted by thePlatform and easily embed videos from your library in WordPress posts, modify media metadata, and upload new media.
 
 == Installation ==
-Copy the folder "thePlatform-video-manager" with all included files into the "wp-content/plugins" folder of WordPress. Activate the plugin and set your MPX credentials in the plugin settings interface.
+Copy the folder "thePlatform-video-manager" with all included files into the "wp-content/plugins" folder of WordPress. Activate the plugin and set your mpx credentials in the plugin settings interface.
 
 == Screenshots ==
 thePlatform's Setting screen
 View your media library, search for videos, and sort the returned media set
 Modify video metadata
-Easily embed videos from MPX into your posts
-Upload media to your MPX account
+Easily embed videos from mpx into your posts
+Upload media to your mpx account
 
 == Changelog ==
 
@@ -84,12 +84,12 @@ Reworked plugin settings to match the new UI
 Verified up to WordPress 3.9
 Fixed Uploading issues
 Disabled unsupported Metadata fields
-Moved all MPX related functionality to it's own Menu slug
+Moved all mpx related functionality to it's own Menu slug
 Finer control over user capabilities:
-'tp_viewer_cap', 'edit_posts' - View the MPX Media Browser
-'tp_embedder_cap', 'edit_posts' - Embed MPX media into a post
-'tp_editor_cap', 'upload_files' - Edit MPX Media
-'tp_uploader_cap' - 'upload_files' - Upload MPX media
+'tp_viewer_cap', 'edit_posts' - View the mpx Media Browser
+'tp_embedder_cap', 'edit_posts' - Embed mpx media into a post
+'tp_editor_cap', 'upload_files' - Edit mpx Media
+'tp_uploader_cap' - 'upload_files' - Upload mpx media
 'tp_admin_cap', 'manage_options' - Manage thePlatform's plugin settings
 Moved the embedding button into a TinyMCE plugin
 
@@ -106,13 +106,13 @@ Added a filter for our embed output, tp_embed_code - The complete embed code
 Added a filter for our base embed URL, tp_base_embed_url - Just the player URL
 Added a filter for our full embed URL, tp_full_embed_url - The player URL with all parameters, applied after tp_base_embed_url
 Added filters for user capabilities:
-'tp_publisher_cap' - 'upload_files' - Upload MPX media
-'tp_editor_cap', 'upload_files' - Edit MPX Media and display the Media Manager
+'tp_publisher_cap' - 'upload_files' - Upload mpx media
+'tp_editor_cap', 'upload_files' - Edit mpx Media and display the Media Manager
 'tp_admin_cap', 'manage_options' - Manage thePlatform's plugin settings
-'tp_embedder_cap', 'edit_posts' - Embed MPX media into a post
+'tp_embedder_cap', 'edit_posts' - Embed mpx media into a post
 Embed shortcode now supports arbitary parameters
 Removed Query by custom fields
-Removed MPX Namespace option
+Removed mpx Namespace option
 Fixed over-zealous cap checks - This should fix the user invite workflow issues
 Fixed settings page being loaded on every adming page request
 Resized the media preview in edit mode
@@ -138,13 +138,13 @@ embedded - (optional) - true/false, if true the player will have /embed in the U
 params	 - (optional) - Custom string that will be appended to the embed URL
 
 == Configuration ==
-This plugin requires an account with thePlatform's MPX. Please contact your Account Manager for additional information.
+This plugin requires an account with thePlatform's mpx. Please contact your Account Manager for additional information.
 
-= MPX Account Options =
-MPX Username - The MPX username to use for all of the plugin capabilities
-MPX Password - The password for the entered MPX username
-MPX Region - The region for the MPX account
-MPX Account - The MPX account to upload and retrieve media from
+= mpx Account Options =
+mpx Username - The mpx username to use for all of the plugin capabilities
+mpx Password - The password for the entered mpx username
+mpx Region - The region for the mpx account
+mpx Account - The mpx account to upload and retrieve media from
 
 = Embedding Preferences =
 Default Player - The default player used for embedding and in the Media Browser
@@ -160,7 +160,7 @@ Filter Users Own Video - Filter by the User ID custom field, ignored if the User
 User ID Custom Field - Name of the Custom Field to store the WordPress User ID, (None) to disable
 Show User ID as - If the User ID Custom Field is visible to editors, we will substitute it by either the user Full Name, Email, Nickname or Username
 Plugin Embed button type - Determine if thePlatform button should appear as a media_button, a TinyMCE button or both
-MPX Upload Server - Default MPX server to upload new media to, Default Server will attempt to intelligently pick a server
+mpx Upload Server - Default mpx server to upload new media to, Default Server will attempt to intelligently pick a server
 Default Publish Profile - If set, uploaded media will automatically publish to the selected profile
 Thumbnail Encoding Profile - The Encoding Profile to use when generating new thumbnails via the plugin
 
@@ -169,8 +169,8 @@ tp_base_embed_url - Just the player URL
 tp_full_embed_url - The player URL with all parameters, applied after tp_base_embed_url
 tp_embed_code - The complete embed code, with surrounding HTML, applied after tp_full_embed_url
 tp_rss_embed_code - The full embed code used for a RSS feed
-tp_viewer_cap, default - 'edit_posts' - View the MPX Media Browser	
-tp_embedder_cap, default - 'edit_posts' - Embed MPX media into a post
-tp_editor_cap, default - 'upload_files' - Edit MPX Media
-tp_uploader_cap - default - 'upload_files' - Upload MPX media	
+tp_viewer_cap, default - 'edit_posts' - View the mpx Media Browser	
+tp_embedder_cap, default - 'edit_posts' - Embed mpx media into a post
+tp_editor_cap, default - 'upload_files' - Edit mpx Media
+tp_uploader_cap - default - 'upload_files' - Upload mpx media	
 tp_admin_cap, default - 'manage_options' - Manage thePlatform's plugin settings

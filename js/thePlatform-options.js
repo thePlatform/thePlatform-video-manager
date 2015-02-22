@@ -155,7 +155,7 @@
             $('#mpx_server_id').parent().parent().hide();
         }
 
-        //Set up the PID for the MPX account on change in the Settings page 
+        //Set up the PID for the mpx account on change in the Settings page 
         $('#mpx_account_id').change(function(e) {
             $('#mpx_account_pid').val($('#mpx_account_id option:selected').val().split('|')[1]);
         })
@@ -177,7 +177,7 @@
         if (TP_PAGE_KEY == 'TP_PREFERENCES') {
             configure_pid_fields()
 
-            // Validate account information in plugin settings fields by logging in to MPX
+            // Validate account information in plugin settings fields by logging in to mpx
             $("#verify-account-button").click(authenticate);
         }
     });

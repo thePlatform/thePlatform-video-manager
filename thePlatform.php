@@ -2,7 +2,7 @@
 /*
   Plugin Name: thePlatform Video Manager
   Plugin URI: http://theplatform.com/
-  Description: Manage video assets hosted in thePlatform MPX from within WordPress.
+  Description: Manage video assets hosted in thePlatform mpx from within WordPress.
   Version: 1.5.0
   Author: thePlatform
   Author URI: http://theplatform.com/
@@ -162,9 +162,9 @@ class ThePlatform_Plugin {
 	}
 
 	/**
-	 * Validate MPX Account Settings for invalid input
+	 * Validate mpx Account Settings for invalid input
 	 *
-	 * @param array $input Passed by Wordpress, an Array of MPX options
+	 * @param array $input Passed by Wordpress, an Array of mpx options
 	 *
 	 * @return array A cleaned up copy of the array, invalid values will be cleared.
 	 */
@@ -230,9 +230,9 @@ class ThePlatform_Plugin {
 	}
 
 	/**
-	 * Validate MPX Settings for invalid input
+	 * Validate mpx Settings for invalid input
 	 *
-	 * @param array $input Passed by Wordpress, an Array of MPX options
+	 * @param array $input Passed by Wordpress, an Array of mpx options
 	 *
 	 * @return array A cleaned up copy of the array, invalid values will be cleared.
 	 */
@@ -352,8 +352,8 @@ class ThePlatform_Plugin {
 		$tp_uploader_cap = apply_filters( TP_UPLOADER_CAP, TP_UPLOADER_DEFAULT_CAP );
 		$slug            = 'theplatform';
 		add_menu_page( 'thePlatform', 'thePlatform', $tp_viewer_cap, $slug, array( $this, 'media_page' ), 'dashicons-video-alt3', '10.0912' );
-		add_submenu_page( $slug, 'thePlatform Video Browser', 'Browse MPX Media', $tp_viewer_cap, $slug, array( $this, 'media_page' ) );
-		add_submenu_page( $slug, 'thePlatform Video Uploader', 'Upload Media to MPX', $tp_uploader_cap, 'theplatform-uploader', array( $this, 'upload_page' ) );
+		add_submenu_page( $slug, 'thePlatform Video Browser', 'Browse mpx Media', $tp_viewer_cap, $slug, array( $this, 'media_page' ) );
+		add_submenu_page( $slug, 'thePlatform Video Uploader', 'Upload Media to mpx', $tp_uploader_cap, 'theplatform-uploader', array( $this, 'upload_page' ) );
 		add_submenu_page( $slug, 'thePlatform Plugin Settings', 'Settings', $tp_admin_cap, 'theplatform-settings', array( $this, 'admin_page' ) );
 		add_submenu_page( $slug, 'thePlatform Plugin About', 'About', $tp_admin_cap, 'theplatform-about', array( $this, 'about_page' ) );
 		add_submenu_page( 'options.php', 'thePlatform Plugin Uploader', 'Uploader', $tp_uploader_cap, 'theplatform-upload-window', array( $this, 'upload_window' ) );

@@ -130,7 +130,7 @@ class ThePlatform_API_HTTP {
 }
 
 /**
- * Handle all calls to MPX API
+ * Handle all calls to mpx API
  */
 class ThePlatform_API {
 	/**
@@ -142,7 +142,7 @@ class ThePlatform_API {
 	}
 
 	/**
-	 * Gets the MPX account options from the database
+	 * Gets the mpx account options from the database
 	 */
 	private function get_account() {
 		if ( ! isset ( $this->account ) ) {
@@ -151,11 +151,11 @@ class ThePlatform_API {
 	}
 
 	/**
-	 * Checks if the MPX account ID is set and returns it if available
+	 * Checks if the mpx account ID is set and returns it if available
 	 *
-	 * @param boolean $urlEncoded Return the MPX account id in a url encoded format, TRUE by default
+	 * @param boolean $urlEncoded Return the mpx account id in a url encoded format, TRUE by default
 	 *
-	 * @return string|boolean MPX account ID or False if not found
+	 * @return string|boolean mpx account ID or False if not found
 	 */
 	private function get_mpx_account_id( $urlEncoded = true ) {
 		$this->get_account();
@@ -170,7 +170,7 @@ class ThePlatform_API {
 	}
 
 	/**
-	 * Gets the MPX preferences from the database
+	 * Gets the mpx preferences from the database
 	 */
 	private function get_preferences() {
 		if ( ! isset ( $this->preferences ) ) {
@@ -197,12 +197,12 @@ class ThePlatform_API {
 	}
 
 	/**
-	 * Convert a MIME type to an MPX-compliant format identifier
+	 * Convert a MIME type to an mpx-compliant format identifier
 	 *
 	 * @param string $mime A MIME-type string
 	 * @param string extension The file extension for fallback
 	 *
-	 * @return string MPX-compliant format string
+	 * @return string mpx-compliant format string
 	 */
 	function get_format( $mime, $extension ) {
 		$response = ThePlatform_API_HTTP::get( TP_API_FORMATS_XML_URL, null, true );
@@ -253,7 +253,7 @@ class ThePlatform_API {
 	 * @param  boolean $forceRefresh Always grab a new token, even if the old one is still valid
 	 * @param  boolean $updateOptions Update the existing token in the database. Use false for Uploads
 	 *
-	 * @return string                 Active MPX token
+	 * @return string                 Active mpx token
 	 */
 	function mpx_signin( $forceRefresh = false, $updateOptions = true ) {
 		$token = get_option( TP_TOKEN_OPTIONS_KEY );
@@ -292,7 +292,7 @@ class ThePlatform_API {
 	}
 
 	/**
-	 * Creates a placeholder Media object in MPX.
+	 * Creates a placeholder Media object in mpx.
 	 *
 	 * @param array $args URL arguments to pass to the Media data service
 	 * @param string $token The token for this upload session
@@ -434,7 +434,7 @@ class ThePlatform_API {
 		$format = $this->get_format( $args['filetype'], $extension );
 
 		if ( ! $format ) {
-			wp_send_json_error( 'Unable to get Formats.xml from MPX' );
+			wp_send_json_error( 'Unable to get Formats.xml from mpx' );
 		}
 		// Get the upload url based on the server id
 		// If no server id is supplied, get the default server for the Format
@@ -445,7 +445,7 @@ class ThePlatform_API {
 		}
 
 		if ( ! $upload_server_id ) {
-			wp_send_json_error( "Unable to determine MPX Server ID, please check your account configuration" );
+			wp_send_json_error( "Unable to determine mpx Server ID, please check your account configuration" );
 		}
 
 		$upload_server_base_url = $this->get_upload_urls( $upload_server_id, $token );
@@ -472,9 +472,9 @@ class ThePlatform_API {
 	/**
 	 * Returns a default server for the specific format
 	 *
-	 * @param string $formatTitle MPX Format title
+	 * @param string $formatTitle mpx Format title
 	 *
-	 * @return string|boolean MPX Server ID or FALSE
+	 * @return string|boolean mpx Server ID or FALSE
 	 */
 	function get_default_upload_server( $formatTitle ) {
 		$accountSettings = $this->get_account_settings();
@@ -501,9 +501,9 @@ class ThePlatform_API {
 	}
 
 	/**
-	 * Get the first Streaming Release form MPX based on a Media ID
+	 * Get the first Streaming Release form mpx based on a Media ID
 	 *
-	 * @param string $media_id the MPX Media ID
+	 * @param string $media_id the mpx Media ID
 	 *
 	 * @return string The Release PID
 	 */
@@ -524,7 +524,7 @@ class ThePlatform_API {
 	}
 
 	/**
-	 * Query MPX for videos
+	 * Query mpx for videos
 	 * @return array The Media data service response
 	 */
 	function get_videos_ajax() {
@@ -545,7 +545,7 @@ class ThePlatform_API {
 		if ( $this->get_mpx_account_id() ) {
 			$url .= '&account=' . $this->get_mpx_account_id();
 		} else {
-			wp_send_json_error( 'MPX Account is not set, unable to retrieve videos.' );
+			wp_send_json_error( 'mpx Account is not set, unable to retrieve videos.' );
 		}
 
 		if ( ! empty( $_POST['query'] ) ) {
@@ -569,7 +569,7 @@ class ThePlatform_API {
 	}
 
 	/**
-	 * Query MPX for videos
+	 * Query mpx for videos
 	 * @return array The Media data service response
 	 */
 	function get_video_count() {
@@ -587,7 +587,7 @@ class ThePlatform_API {
 		if ( $this->get_mpx_account_id() ) {
 			$url .= '&account=' . $this->get_mpx_account_id();
 		} else {
-			wp_send_json_error( 'MPX Account is not set, unable to retrieve videos.' );
+			wp_send_json_error( 'mpx Account is not set, unable to retrieve videos.' );
 		}
 
 		$response = ThePlatform_API_HTTP::get( $url, array( "timeout" => 120 ) );
@@ -602,7 +602,7 @@ class ThePlatform_API {
 	}
 
 	/**
-	 * Query MPX for a specific video
+	 * Query mpx for a specific video
 	 *
 	 * @param string $id The Media ID associated with the asset we are requesting
 	 *
@@ -636,7 +636,7 @@ class ThePlatform_API {
 	/**
 	 * Transforms a numerical WordPress User ID from a custom field to a human readable value
 	 *
-	 * @param object $media MPX Media Object
+	 * @param object $media mpx Media Object
 	 *
 	 * @return object Returns the same Media object back with the field transformed
 	 */
@@ -668,7 +668,7 @@ class ThePlatform_API {
 	}
 
 	/**
-	 * Query MPX for players
+	 * Query mpx for players
 	 *
 	 * @param array $fields Optional set of fields to request from the data service
 	 *
@@ -702,7 +702,7 @@ class ThePlatform_API {
 	}
 
 	/**
-	 * Filtering function to remove all disabled players from MPX results
+	 * Filtering function to remove all disabled players from mpx results
 	 *
 	 * @param  Object $var Player entry
 	 *
@@ -713,7 +713,7 @@ class ThePlatform_API {
 	}
 
 	/**
-	 * Query MPX for custom metadata fields
+	 * Query mpx for custom metadata fields
 	 *
 	 * @param array $fields Optional set of fields to request from the data service
 	 *
@@ -746,7 +746,7 @@ class ThePlatform_API {
 	}
 
 	/**
-	 * Query MPX for available servers
+	 * Query mpx for available servers
 	 *
 	 * @param array $fields Optional set of fields to request from the data service
 	 * @param String $query Query fields to append to the request URL
@@ -804,7 +804,7 @@ class ThePlatform_API {
 	}
 
 	/**
-	 * Query MPX for account categories
+	 * Query mpx for account categories
 	 *
 	 * @param array $query Query fields to append to the request URL
 	 * @param array $sort Sort parameters to pass to the data service
@@ -833,7 +833,7 @@ class ThePlatform_API {
 	}
 
 	/**
-	 * Query MPX for subaccounts associated with the configured account
+	 * Query mpx for subaccounts associated with the configured account
 	 *
 	 * @return array The Media data service response
 	 */
@@ -852,7 +852,7 @@ class ThePlatform_API {
 	}
 
 	/**
-	 * Query MPX for Publishing Profiles associated with the configured account
+	 * Query mpx for Publishing Profiles associated with the configured account
 	 *
 	 * @param array $fields Optional set of fields to request from the data service
 	 *
@@ -883,7 +883,7 @@ class ThePlatform_API {
 	}
 
 	/**
-	 * Query MPX for Task Templates for generating Thumbnails associated with the configured account
+	 * Query mpx for Task Templates for generating Thumbnails associated with the configured account
 	 *
 	 * @param array $fields Optional set of fields to request from the data service
 	 *
@@ -1130,7 +1130,7 @@ class ThePlatform_API {
 
 		$errorResponse = array(
 			'success' => false,
-			'data'    => 'There was an error getting data from MPX, if the error persists please contact thePlatform. '
+			'data'    => 'There was an error getting data from mpx, if the error persists please contact thePlatform. '
 		);
 
 		if ( is_null( $response ) && wp_remote_retrieve_response_code( $input ) != "200" ) {
@@ -1157,11 +1157,11 @@ class ThePlatform_API {
 	}
 
 	/**
-	 * Parse Custom Fileds and Upload Fields and returns a query string for MPX API calls
+	 * Parse Custom Fileds and Upload Fields and returns a query string for mpx API calls
 	 *
 	 * @param array $metadata Custom Fields
 	 *
-	 * @return string MPX fields in query form
+	 * @return string mpx fields in query form
 	 */
 	function get_query_fields( $metadata ) {
 		$custom_metadata_options = get_option( TP_CUSTOM_METADATA_OPTIONS_KEY );

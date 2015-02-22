@@ -198,15 +198,15 @@ class ThePlatform_Options {
 	}
 
 	/**
-	 * Provide a description to the MPX Account Settings Section
+	 * Provide a description to the mpx Account Settings Section
 	 */
 	function section_mpx_account_desc() {
-		echo 'Set your MPX credentials and Account. If you do not have an account, please reach out to thePlatform.';
+		echo 'Set your mpx credentials and Account. If you do not have an account, please reach out to thePlatform.';
 		echo '<div id="TP_PAGE_KEY" style="display: none;">TP_PREFERENCES</div>';
 	}
 
 	/**
-	 * Provide a description to the MPX Prefences Section
+	 * Provide a description to the mpx Prefences Section
 	 */
 	function section_preferences_desc() {
 		echo 'Configure general preferences below.';
@@ -214,14 +214,14 @@ class ThePlatform_Options {
 	}
 
 	/**
-	 * Provide a description to the MPX Embed Settings Section
+	 * Provide a description to the mpx Embed Settings Section
 	 */
 	function section_embed_desc() {
 		echo 'Configure embedding defaults.';
 	}
 
 	/**
-	 * Provide a description to the MPX Metadata Section
+	 * Provide a description to the mpx Metadata Section
 	 */
 	function section_custom_metadata_desc() {
 		echo 'Drag and drop the custom metadata fields that you would like to be readable, writable, or omitted when uploading and editing media.';
@@ -229,7 +229,7 @@ class ThePlatform_Options {
 	}
 
 	/**
-	 * Provide a description to the MPX Upload Fields Section
+	 * Provide a description to the mpx Upload Fields Section
 	 */
 	function section_basic_metadata_desc() {
 		echo 'Drag and drop the basic metadata fields that you would like to be readable, writable, or omitted when uploading and editing media.';
@@ -237,7 +237,7 @@ class ThePlatform_Options {
 	}
 
 	/**
-	 * MPX Preferences Option field callbacks.
+	 * mpx Preferences Option field callbacks.
 	 */
 	function field_select_option( $args ) {
 		$field   = $args['field'];
@@ -380,7 +380,7 @@ class ThePlatform_Options {
 		$html .= '</select>';
 
 		if ( ! $this->region_is_verified ) {
-			$html .= '<span style="color:red; font-weight:bold"> Please select the correct region the MPX account is located at</span>';
+			$html .= '<span style="color:red; font-weight:bold"> Please select the correct region the mpx account is located at</span>';
 		}
 		echo $html;
 	}
@@ -399,7 +399,7 @@ class ThePlatform_Options {
 		$html .= '</select>';
 
 		if ( $this->account_options['mpx_account_id'] === '' ) {
-			$html .= '<span style="color:red; font-weight:bold"> Please pick the MPX account to manage with Wordpress</span>';
+			$html .= '<span style="color:red; font-weight:bold"> Please pick the mpx account to manage with Wordpress</span>';
 		}
 		echo $html;
 	}
