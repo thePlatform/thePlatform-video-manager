@@ -78,7 +78,7 @@ img.media-object.thumb-img {
 .media {
     margin-top: 15px;
     height: 76px;
-    display: inline;
+    display: table;
 }
 .media-left, .media>.pull-left {
     padding-right: 10px;
