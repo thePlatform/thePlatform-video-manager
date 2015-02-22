@@ -72,7 +72,7 @@ var theplatform_browser = (function($) {
 
             var i, catArray, catList;
 
-            var $fields = $('.field')
+            var $fields = $('.tp-field')
 
             $fields.each(function(index, value) {
                 var $field = $(value);
@@ -180,7 +180,7 @@ var theplatform_browser = (function($) {
 
             //Select the first one on the page.
             if ($('#media-list').children().length < 2)
-                $('.media', '#media-list').click();
+                $('.tp-media', '#media-list').click();
         },
         updateMediaObject: function(mediaId) {
             API.getVideoById(mediaId, function(media) {
@@ -199,7 +199,7 @@ var theplatform_browser = (function($) {
     var Events = {
         onClickMedia: function(e) {
             UI.updateContentPane($(this).data('media'));
-            $('.media.selected').removeClass('selected');
+            $('.tp-media.selected').removeClass('selected');
             $(this).addClass('selected');
 
             if (tpHelper.mediaEmbedType == 'pid') {

@@ -42,10 +42,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
     bottom: 0;
     right: 0;
 }
-.media.selected {
+.tp-media.selected {
     background-color: #D8E8FF !important;
 }
-.media:hover {
+.tp-media:hover {
     background-color: #f5f5f5;
 }
 .list-group-item.active {
@@ -63,26 +63,26 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 .btn-group {} .tp-form-group {
     margin-left: 10px;
 }
-img.media-object.thumb-img {
+img.tp-media-object.tp-thumb-img {
     width: 128px;
     height: 72px;
 }
-.media-left, .media-right, .media-body {
+.tp-media-left, .tp-media-right, .tp-media-body {
     display: table-cell;
     vertical-align: top;
 }
-.media, .media-body {
+.tp-media, .tp-media-body {
     zoom: 1;
     overflow: hidden;
 }
-.media-body {
+.tp-media-body {
     width:100%;
 }
-.media {
+.tp-media {
     margin-top: 15px;    
     display: table;
 }
-.media-left, .media>.pull-left {
+.tp-media-left, .tp-media>.pull-left {
     padding-right: 10px;
 }
 .tp-post-body {
@@ -130,7 +130,7 @@ img.media-object.thumb-img {
     float: right;
     display: inline;
 }
-.media-toolbar {
+.tp-media-toolbar {
     position: fixed;
     bottom: 0px;
     border-top: 1px solid #ddd;
@@ -139,13 +139,13 @@ img.media-object.thumb-img {
     z-index: 100;
     background: white;
 }
-.media-button-insert {
+.tp-media-button-insert {
     margin-left: 10px !important;
     float: left !important;
     margin-top: 15px !important;
     margin-right: 10px !important;
 }
-.media-toolbar-primary {
+.tp-media-toolbar-primary {
     float: right;
     height: 100%;
 }

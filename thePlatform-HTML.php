@@ -110,11 +110,11 @@ class ThePlatform_HTML {
 
 	function content_pane() {
 		?>
-		<div id="panel-contentpane" class="panel panel-default">
-			<div class="panel-heading">
-				<h3 class="panel-title">Metadata</h3>
+		<div id="panel-contentpane">
+			<div>
+				<h3>Metadata</h3>
 			</div>
-			<div class="panel-body">
+			<div>
 				<?php
 				foreach ( $this->basic_metadata_options as $basic_field => $val ) {
 					if ( $val == 'hide' ) {
@@ -131,9 +131,9 @@ class ThePlatform_HTML {
 					if ( $field_title === 'link' ) {
 						$display_title = 'Related Link';
 					}
-					$html = '<div class="row row-no-margin">';
+					$html = '<div class="form-row">';
 					$html .= '<strong>' . esc_html( $display_title ) . ': </strong>';
-					$html .= '<span class="field" id="media-' . esc_attr( strtolower( $field_title ) ) . '" data-name="' . esc_attr( strtolower( $field_title ) ) . '"></span></div>';
+					$html .= '<span class="tp-field" id="media-' . esc_attr( strtolower( $field_title ) ) . '" data-name="' . esc_attr( strtolower( $field_title ) ) . '"></span></div>';
 					echo $html;
 				}
 
@@ -160,9 +160,9 @@ class ThePlatform_HTML {
 					$field_type      = $metadata_info['dataType'];
 					$field_structure = $metadata_info['dataStructure'];
 
-					$html = '<div class="row">';
+					$html = '<div class="form-row">';
 					$html .= '<strong>' . esc_html( mb_convert_case( $field_title, MB_CASE_TITLE ) ) . ': </strong>';
-					$html .= '<span class="field" id="media-' . esc_attr( $field_title ) . '" data-type="' . esc_attr( $field_type ) . '" data-structure="' . esc_attr( $field_structure ) . '" data-name="' . esc_attr( $field_title ) . '" data-prefix="' . esc_attr( $field_prefix ) . '" data-namespace="' . esc_attr( $field_namespace ) . '"></span></div>';
+					$html .= '<span class="tp-field" id="media-' . esc_attr( $field_title ) . '" data-type="' . esc_attr( $field_type ) . '" data-structure="' . esc_attr( $field_structure ) . '" data-name="' . esc_attr( $field_title ) . '" data-prefix="' . esc_attr( $field_prefix ) . '" data-namespace="' . esc_attr( $field_namespace ) . '"></span></div>';
 					echo $html;
 				}
 				?>

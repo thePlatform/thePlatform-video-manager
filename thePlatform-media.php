@@ -81,13 +81,8 @@ $account     = get_option( TP_ACCOUNT_OPTIONS_KEY );
 			<?php
 
 			?>
-
 		</form>
-
-
 	</div>
-
-
 	<div id="poststuff">
 		<div id="post-body" class="metabox-holder columns-2 tp-post-body">
 			<!-- main content -->
@@ -132,12 +127,12 @@ $account     = get_option( TP_ACCOUNT_OPTIONS_KEY );
 		</div>
 		<!-- #post-body .metabox-holder .columns-2 -->
 		<br class="clear">
+		<!-- #poststuff -->
+		<?php if ( $IS_EMBED ) {
+			$tp_html->add_media_toolbar();
+		} ?>
 	</div>
-	<!-- #poststuff -->
-	<?php if ( $IS_EMBED ) {
-		$tp_html->add_media_toolbar();
-	} ?>
-</div> <!-- .wrap -->
+</div><!-- .wrap -->
 
 <?php
 if ( ! $IS_EMBED && current_user_can( $tp_editor_cap )) {
@@ -159,13 +154,13 @@ if ( ! $IS_EMBED && current_user_can( $tp_editor_cap )) {
 
 
 	<script id="media-template" type="text/template">
-		<div class="media" id="<%= id %>">
-			<div class="media-left">
-				<img class="media-object thumb-img" data-src="<%= placeHolder %>" alt="128x72"
+		<div class="tp-media" id="<%= id %>">
+			<div class="tp-media-left">
+				<img class="tp-media-object tp-thumb-img" data-src="<%= placeHolder %>" alt="128x72"
 				     src="<%= defaultThumbnailUrl %>">
 			</div>
-			<div class="media-body">
-				<strong class="media-heading"><%= title %></strong>
+			<div class="tp-media-body">
+				<strong class="tp-media-heading"><%= title %></strong>
 
 				<div id="desc"><%= _ . template . formatDescription( description ) %></div>
 			</div>

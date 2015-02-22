@@ -88,9 +88,7 @@ class ThePlatform_Plugin {
 		require_once( dirname( __FILE__ ) . '/thePlatform-media.php' );
 	}
 
-	function admin_enqueue_scripts( $hook ) {
-		// echo $hook;
-		// wp_enqueue_style( 'tp_bootstrap_css', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css' );
+	function admin_enqueue_scripts( $hook ) {		
 		// Media Browser		
 		if ( $hook == 'toplevel_page_theplatform' || $hook == 'media-upload-popup' ) {
 			wp_enqueue_script( 'tp_edit_upload_js' );
