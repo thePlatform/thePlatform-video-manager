@@ -82,7 +82,9 @@ $account     = get_option( TP_ACCOUNT_OPTIONS_KEY );
 			<?php
 
 			?>
+			<div class="spinner"></div>
 		</form>
+
 	</div>
 	<div id="poststuff">
 		<div id="post-body" class="metabox-holder columns-2 tp-post-body">
@@ -90,7 +92,7 @@ $account     = get_option( TP_ACCOUNT_OPTIONS_KEY );
 			<div id="post-body-content">
 				<div class="meta-box-sortables ui-sortable">
 					<div class="postbox">
-						<div class="inside">
+						<div class="inside">						
 							<?php $tp_html->pagination( 'top' ) ?>
 							<div id="message-panel" class="error below-h2 hidden">
 								<p></p></div>

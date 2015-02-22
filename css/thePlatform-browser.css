@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-.thumb-img {
+.tp-thumb-img {
     width: 128px;
     height: 72px;
 }
@@ -58,14 +58,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
     line-height: 1.1;
 }
 .btn-metadata {
-    width: 49.5%;
+    margin-right: 5px !important;
 }
 .tp-form-group {
     margin-left: 10px;
-}
-img.tp-media-object.tp-thumb-img {
-    width: 128px;
-    height: 72px;
 }
 .tp-media-left, .tp-media-right, .tp-media-body {
     display: table-cell;
@@ -85,13 +81,12 @@ img.tp-media-object.tp-thumb-img {
 .tp-media-left, .tp-media>.pull-left {
     padding-right: 10px;
 }
-
 .tp-search-form {
     margin: 10px 0;
 }
 .tp-search-form input, select {
     margin-right: 5px;
-    width: 120px;
+    max-width: 140px;
 }
 .tp-header {
     float: left;
@@ -134,4 +129,25 @@ img.tp-media-object.tp-thumb-img {
 }
 .wp-filter {
     margin-bottom: 0px !important;
+}
+#tp-load .spinner {
+  display: block;
+  position: fixed;
+  z-index: 1031;
+  top: 15px;
+  right: 15px;
+}
+
+#tp-load .spinner-icon {
+  width: 18px;
+  height: 18px;
+  box-sizing: border-box;
+
+  border: solid 2px transparent;
+  border-top-color: #29d;
+  border-left-color: #29d;
+  border-radius: 50%;
+
+  -webkit-animation: nprogress-spinner 400ms linear infinite;
+          animation: nprogress-spinner 400ms linear infinite;
 }

@@ -53,6 +53,7 @@ class ThePlatform_Plugin {
 	 * Class constructor
 	 */
 	function __construct() {
+
 		require_once( dirname( __FILE__ ) . '/thePlatform-constants.php' );
 		require_once( dirname( __FILE__ ) . '/thePlatform-proxy.php' );
 
@@ -66,7 +67,6 @@ class ThePlatform_Plugin {
 
 		add_filter( 'media_upload_tabs', array( $this, 'tp_upload_tab' ) );
 		add_action( 'media_upload_mytabname', array( $this, 'add_tp_media_form' ) );
-
 
 		add_shortcode( 'theplatform', array( $this, 'shortcode' ) );
 	}
@@ -292,7 +292,7 @@ class ThePlatform_Plugin {
 		wp_register_script( 'tp_nprogress_js', plugins_url( '/js/nprogress.js', __FILE__ ) );
 		wp_register_script( 'tp_edit_upload_js', plugins_url( '/js/thePlatform-edit-upload.js', __FILE__ ), array( 'jquery' ) );
 		wp_register_script( 'tp_file_uploader_js', plugins_url( '/js/theplatform-uploader.js', __FILE__ ), array( 'jquery', 'tp_nprogress_js' ) );
-		wp_register_script( 'tp_browser_js', plugins_url( '/js/thePlatform-browser.js', __FILE__ ), array( 'jquery', 'underscore', 'backbone', 'jquery-ui-dialog', 'tp_holder_js', 'tp_pdk_js', 'tp_nprogress_js' ) );
+		wp_register_script( 'tp_browser_js', plugins_url( '/js/thePlatform-browser.js', __FILE__ ), array( 'jquery', 'underscore', 'jquery-ui-dialog', 'tp_holder_js', 'tp_pdk_js' ) );
 		wp_register_script( 'tp_options_js', plugins_url( '/js/thePlatform-options.js', __FILE__ ), array( 'jquery', 'jquery-ui-sortable' ) );
 
 
@@ -337,7 +337,7 @@ class ThePlatform_Plugin {
 		) );
 
 		wp_register_style( 'tp_edit_upload_css', plugins_url( '/css/thePlatform-edit-upload.css', __FILE__ ) );
-		wp_register_style( 'tp_browser_css', plugins_url( '/css/thePlatform-browser.css', __FILE__ ), array( 'tp_edit_upload_css', 'wp-jquery-ui-dialog', 'tp_nprogress_css' ) );
+		wp_register_style( 'tp_browser_css', plugins_url( '/css/thePlatform-browser.css', __FILE__ ), array( 'tp_edit_upload_css', 'wp-jquery-ui-dialog' ) );
 		wp_register_style( 'tp_options_css', plugins_url( '/css/thePlatform-options.css', __FILE__ ) );
 		wp_register_style( 'tp_nprogress_css', plugins_url( '/css/nprogress.css', __FILE__ ) );
 		wp_register_style( 'tp_file_uploader_css', plugins_url( '/css/thePlatform-file-uploader.css', __FILE__ ), array( 'tp_nprogress_css' ) );

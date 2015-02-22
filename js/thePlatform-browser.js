@@ -324,7 +324,7 @@ var theplatform_browser = (function($) {
         },
         onGetMedia: function(page) {
             var MAX_RESULTS = 10;
-            NProgress.start(); // show loading before we call getVideos            
+            $('.spinner').show(); // show loading before we call getVideos            
             var theRange = ((page - 1) * MAX_RESULTS + 1) + '-' + (page * MAX_RESULTS);
 
             console.log(theRange);
@@ -385,7 +385,7 @@ var theplatform_browser = (function($) {
                     UI.addMediaObject(entries[i]);
                 }
 
-                NProgress.done();
+                $('.spinner').hide()
                 Holder.run();
             });
         },
@@ -485,7 +485,7 @@ var theplatform_browser = (function($) {
                 viewLoading = false;
                 if (!resp.success) {
                     UI.notifyUser('danger', resp.data);
-                    NProgress.done();
+                    $('.spinner').hide();
                 } else {
                     callback(resp.data);
                 }
