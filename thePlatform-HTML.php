@@ -43,7 +43,7 @@ class ThePlatform_HTML {
 	}
 
 	function player_dropdown() {
-		$html = '<span id="selectpick-player-wrapper"><label for="selectpick-player">Player:</label><select id="selectpick-player">';
+		$html = '<span id="selectpick-player-wrapper" class="media-button-insert"><label for="selectpick-player">Player:</label><select id="selectpick-player">';
 		foreach ( $this->players as $player ) {
 			$html .= '<option value="' . esc_attr( $player['pid'] ) . '"' . selected( $player['pid'], $this->preferences['default_player_pid'], false ) . '>' . esc_html( $player['title'] ) . '</option>';
 		}
@@ -180,10 +180,11 @@ class ThePlatform_HTML {
 		echo '</div>';
 	}
 
-	function add_media_buttons() { ?>
+	function add_media_toolbar() { ?>
 		<div class="media-frame-toolbar">
 			<div class="media-toolbar">
 				<div class="media-toolbar-primary search-form">
+					<?php $this->player_dropdown(); ?>
 					<a href="#" id="btn-set-image"
 					   class="button media-button button-secondary button-large media-button-insert">Set Featured
 						Image</a>

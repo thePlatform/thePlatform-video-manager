@@ -55,7 +55,6 @@ class ThePlatform_Plugin {
 	function __construct() {
 		require_once( dirname( __FILE__ ) . '/thePlatform-constants.php' );
 		require_once( dirname( __FILE__ ) . '/thePlatform-proxy.php' );
-		require_once( dirname( __FILE__ ) . '/thePlatform-helper.php' );
 
 		$this->plugin_base_dir = plugin_dir_path( __FILE__ );
 		$this->plugin_base_url = plugins_url( '/', __FILE__ );
@@ -115,11 +114,174 @@ class ThePlatform_Plugin {
 	 * Registers initial plugin settings during initialization
 	 */
 	function theplatform_register_plugin_settings() {
-		register_setting( TP_ACCOUNT_OPTIONS_KEY, TP_ACCOUNT_OPTIONS_KEY, 'theplatform_account_options_validate' );
-		register_setting( TP_PREFERENCES_OPTIONS_KEY, TP_PREFERENCES_OPTIONS_KEY, 'theplatform_preferences_options_validate' );
-		register_setting( TP_CUSTOM_METADATA_OPTIONS_KEY, TP_CUSTOM_METADATA_OPTIONS_KEY, 'theplatform_dropdown_options_validate' );
-		register_setting( TP_BASIC_METADATA_OPTIONS_KEY, TP_BASIC_METADATA_OPTIONS_KEY, 'theplatform_dropdown_options_validate' );
+		register_setting( TP_ACCOUNT_OPTIONS_KEY, TP_ACCOUNT_OPTIONS_KEY, array( $this, 'theplatform_account_options_validate' ) );
+		register_setting( TP_PREFERENCES_OPTIONS_KEY, TP_PREFERENCES_OPTIONS_KEY, array( $this, 'theplatform_preferences_options_validate' ) );
+		register_setting( TP_CUSTOM_METADATA_OPTIONS_KEY, TP_CUSTOM_METADATA_OPTIONS_KEY, array( $this, 'theplatform_dropdown_options_validate' ) );
+		register_setting( TP_BASIC_METADATA_OPTIONS_KEY, TP_BASIC_METADATA_OPTIONS_KEY, array( $this, 'theplatform_dropdown_options_validate' ) );
 		register_setting( TP_TOKEN_OPTIONS_KEY, TP_TOKEN_OPTIONS_KEY, 'strval' );
+	}
+
+	/**
+	 * Compare a key between the old settings array and current settings array
+	 *
+	 * @param string $key The key of the setting to compare
+	 * @param array $oldArray Current option array
+	 * @param array $newArray New option array
+	 *
+	 * @return boolean False if the value is not set or unchanged, True if changed
+	 */
+	function theplatform_setting_changed( $key, $oldArray, $newArray ) {
+		if ( ! isset( $oldArray[ $key ] ) && ! isset( $newArray[ $key ] ) ) {
+			return false;
+		}
+
+		if ( empty( $oldArray[ $key ] ) && empty( $newArray[ $key ] ) ) {
+			return false;
+		}
+
+		if ( $oldArray[ $key ] !== $newArray[ $key ] ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Validate the allow/omit dropdown options
+	 *
+	 * @param array $input Passed by Wordpress, an Array of upload/metadata options
+	 *
+	 * @return array A clean copy of the array, invalid values will be returned as "omit"
+	 */
+	function theplatform_dropdown_options_validate( $input ) {
+		foreach ( $input as $key => $value ) {
+			if ( ! in_array( $value, array( 'read', 'write', 'hide' ) ) ) {
+				$input[ $key ] = "hide";
+			}
+		}
+
+		return $input;
+	}
+
+	/**
+	 * Validate MPX Account Settings for invalid input
+	 *
+	 * @param array $input Passed by Wordpress, an Array of MPX options
+	 *
+	 * @return array A cleaned up copy of the array, invalid values will be cleared.
+	 */
+	function theplatform_account_options_validate( $input ) {
+		require_once( dirname( __FILE__ ) . '/thePlatform-API.php' );
+		$tp_api   = new ThePlatform_API;
+		$defaults = TP_ACCOUNT_OPTIONS_DEFAULTS();
+
+		if ( ! is_array( $input ) || $input['mpx_username'] === 'mpx/' ) {
+			return $defaults;
+		}
+
+		$account_is_verified = $tp_api->internal_verify_account_settings();
+		if ( $account_is_verified ) {
+
+			if ( strpos( $input['mpx_account_id'], '|' ) !== false ) {
+				$ids                      = explode( '|', $input['mpx_account_id'] );
+				$input['mpx_account_id']  = $ids[0];
+				$input['mpx_account_pid'] = $ids[1];
+			}
+
+			if ( strpos( $input['mpx_region'], '|' ) !== false ) {
+				$ids                 = explode( '|', $input['mpx_region'] );
+				$input['mpx_region'] = $ids[0];
+			}
+		}
+
+		foreach ( $input as $key => $value ) {
+			$input[ $key ] = sanitize_text_field( $value );
+		}
+
+		// If username, account id, or region have changed, reset settings to default
+		$old_preferences = get_option( TP_ACCOUNT_OPTIONS_KEY );
+		if ( $old_preferences ) {
+			$updates = false;
+			// If the username changes, reset all preferences except user/pass
+			if ( $this->theplatform_setting_changed( 'mpx_username', $old_preferences, $input ) ) {
+				$input['mpx_region']      = $defaults['mpx_region'];
+				$input['mpx_account_pid'] = $defaults['mpx_account_pid'];
+				$input['mpx_account_id']  = $defaults['mpx_account_id'];
+				$updates                  = true;
+			}
+
+			// If the region changed, reset all preferences, but keep the new account settings
+			if ( $this->theplatform_setting_changed( 'mpx_region', $old_preferences, $input ) ) {
+				$updates = true;
+			}
+
+			// If the account changed, reset all preferences, but keep the new account settings
+			if ( $this->theplatform_setting_changed( 'mpx_account_id', $old_preferences, $input ) ) {
+				$updates = true;
+			}
+			// Clear old options
+			if ( $updates ) {
+				delete_option( TP_PREFERENCES_OPTIONS_KEY );
+				delete_option( TP_CUSTOM_METADATA_OPTIONS_KEY );
+				delete_option( TP_BASIC_METADATA_OPTIONS_KEY );
+				delete_option( TP_TOKEN_OPTIONS_KEY );
+			}
+		}
+
+		return $input;
+	}
+
+	/**
+	 * Validate MPX Settings for invalid input
+	 *
+	 * @param array $input Passed by Wordpress, an Array of MPX options
+	 *
+	 * @return array A cleaned up copy of the array, invalid values will be cleared.
+	 */
+	function theplatform_preferences_options_validate( $input ) {
+		require_once( dirname( __FILE__ ) . '/thePlatform-API.php' );
+		$tp_api = new ThePlatform_API;
+
+		$account_is_verified = $tp_api->internal_verify_account_settings();
+		if ( $account_is_verified ) {
+			$region_is_verified = $tp_api->internal_verify_account_region();
+
+			if ( isset( $input['default_player_name'] ) && strpos( $input['default_player_name'], '|' ) !== false ) {
+				$ids                          = explode( '|', $input['default_player_name'] );
+				$input['default_player_name'] = $ids[0];
+				$input['default_player_pid']  = $ids[1];
+			}
+
+			// If the account is selected, but no player has been set, use the first
+			// returned as the default.
+			if ( ! isset( $input['default_player_name'] ) || empty( $input['default_player_name'] ) ) {
+				if ( $region_is_verified ) {
+					$players                      = $tp_api->get_players();
+					$player                       = $players[0];
+					$input['default_player_name'] = $player['title'];
+					$input['default_player_pid']  = $player['pid'];
+				} else {
+					$input['default_player_name'] = '';
+					$input['default_player_pid']  = '';
+				}
+			}
+
+			// If the account is selected, but no upload server has been set, use the first
+			// returned as the default.
+			if ( ! isset( $input['mpx_server_id'] ) || empty ( $input['mpx_server_id'] ) ) {
+				$input['mpx_server_id'] = 'DEFAULT_SERVER';
+			}
+
+			foreach ( $input as $key => $value ) {
+				if ( $key == 'videos_per_page' || $key === 'default_width' || $key === 'default_height' ) {
+					$input[ $key ] = intval( $value );
+				} else {
+					$input[ $key ] = sanitize_text_field( $value );
+				}
+			}
+		}
+
+		return $input;
 	}
 
 	/**
@@ -203,7 +365,7 @@ class ThePlatform_Plugin {
 	 * Calls the plugin's options page template
 	 */
 	function admin_page() {
-		theplatform_check_plugin_update();
+		$this->check_plugin_update();
 		require_once( dirname( __FILE__ ) . '/thePlatform-options.php' );
 	}
 
@@ -211,7 +373,7 @@ class ThePlatform_Plugin {
 	 * Calls the Media Manager template
 	 */
 	function media_page() {
-		theplatform_check_plugin_update();
+		$this->check_plugin_update();
 		require_once( dirname( __FILE__ ) . '/thePlatform-media.php' );
 	}
 
@@ -219,7 +381,7 @@ class ThePlatform_Plugin {
 	 * Calls the Upload form template
 	 */
 	function upload_page() {
-		theplatform_check_plugin_update();
+		$this->check_plugin_update();
 		require_once( dirname( __FILE__ ) . '/thePlatform-edit-upload.php' );
 	}
 
@@ -415,11 +577,88 @@ class ThePlatform_Plugin {
 			return '<iframe class="tpEmbed" src="' . esc_url( $url ) . '" height="' . esc_attr( $player_height ) . '" width="' . esc_attr( $player_width ) . '" frameBorder="0" seamless="seamless" allowFullScreen></iframe>';
 		}
 	}
+
+	/**
+	 * Checks the current version against the last version stored in preferences to determine whether an update happened
+	 * @return boolean
+	 */
+	function plugin_version_changed() {
+		$preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
+
+		if ( ! $preferences ) {
+			return false; //New installation
+		}
+
+		if ( ! isset( $preferences['plugin_version'] ) ) {
+			return TP_PLUGIN_VERSION( '1.0.0' ); //Old versions didn't have plugin_version stored
+		}
+
+		$version        = TP_PLUGIN_VERSION( $preferences['plugin_version'] );
+		$currentVersion = TP_PLUGIN_VERSION();
+		if ( $version['major'] != $currentVersion['major'] ) {
+			return $version;
+		}
+
+		if ( $version['minor'] != $currentVersion['minor'] ) {
+			return $version;
+		}
+
+		if ( $version['patch'] != $currentVersion['patch'] ) {
+			return $version;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Checks if the plugin has been updated and performs any necessary updates.
+	 */
+	function check_plugin_update() {
+		$oldVersion = $this->plugin_version_changed();
+		if ( false === $oldVersion ) {
+			return;
+		}
+
+		$newVersion = TP_PLUGIN_VERSION();
+
+		// On any version, update defaults that didn't previously exist
+		$newPreferences                   = array_merge( TP_PREFERENCES_OPTIONS_DEFAULTS(), get_option( TP_PREFERENCES_OPTIONS_KEY, array() ) );
+		$newPreferences['plugin_version'] = TP_PLUGIN_VERSION;
+
+		update_option( TP_PREFERENCES_OPTIONS_KEY, $newPreferences );
+		update_option( TP_ACCOUNT_OPTIONS_KEY, array_merge( TP_ACCOUNT_OPTIONS_DEFAULTS(), get_option( TP_ACCOUNT_OPTIONS_KEY, array() ) ) );
+		update_option( TP_BASIC_METADATA_OPTIONS_KEY, array_merge( TP_BASIC_METADATA_OPTIONS_DEFAULTS(), get_option( TP_BASIC_METADATA_OPTIONS_KEY, array() ) ) );
+
+		// We had a messy update with 1.2.2/1.3.0, let's clean up
+		if ( ( $oldVersion['major'] == '1' && $oldVersion['minor'] == '2' && $oldVersion['patch'] == '2' ) ||
+		     ( $oldVersion['major'] == '1' && $oldVersion['minor'] == '3' && $oldVersion['patch'] == '0' )
+		) {
+			$basicMetadataFields  = get_option( TP_BASIC_METADATA_OPTIONS_KEY, array() );
+			$customMetadataFields = get_option( TP_CUSTOM_METADATA_OPTIONS_KEY, array() );
+			update_option( TP_BASIC_METADATA_OPTIONS_KEY, array_diff_assoc( $basicMetadataFields, $customMetadataFields ) );
+		}
+
+		// Move account settings from preferences (1.2.0)
+		if ( ( $oldVersion['major'] == '1' && $oldVersion['minor'] < '2' ) &&
+		     ( $newVersion['major'] > '1' || ( $newVersion['major'] >= '1' && $newVersion['minor'] >= '2' ) )
+		) {
+			$preferences = get_option( TP_PREFERENCES_OPTIONS_KEY, array() );
+			if ( array_key_exists( 'mpx_account_id', $preferences ) ) {
+				$accountSettings = TP_ACCOUNT_OPTIONS_DEFAULTS();
+				foreach ( $preferences as $key => $value ) {
+					if ( array_key_exists( $key, $accountSettings ) ) {
+						$accountSettings[ $key ] = $preferences[ $key ];
+					}
+				}
+				update_option( TP_ACCOUNT_OPTIONS_KEY, $accountSettings );
+			}
+		}
+	}
 }
 
 // Instantiate thePlatform plugin on WordPress init
 add_action( 'init', array( 'ThePlatform_Plugin', 'init' ) );
-add_action( 'wp_ajax_verify_account', 'theplatform_verify_account_settings' );
+
 
 // function wpa54064_inspect_scripts() {
 //     global $wp_styles;

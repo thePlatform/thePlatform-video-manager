@@ -19,6 +19,12 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+
+$account = get_option( TP_ACCOUNT_OPTIONS_KEY );
+if ( $account == false || empty( $account['mpx_account_id'] ) ) {
+	wp_die( 'MPX Account ID is not set, please configure the plugin before attempting to manage media' );
+}
+
 define( 'TP_MEDIA_BROWSER', true );
 
 $tp_viewer_cap = apply_filters( TP_VIEWER_CAP, TP_VIEWER_DEFAULT_CAP );
@@ -43,9 +49,6 @@ $account     = get_option( TP_ACCOUNT_OPTIONS_KEY );
 
 <div class="wrap">
 	<div class="wp-filter">
-		<div id="icon-options-general" class="icon32"></div>
-		<h2 class="tp-header">thePlatform</h2>
-
 		<form class="tp-search-form" role="search" onsubmit="return false;">
 			<input id="input-search" type="text" class="" placeholder="Keywords">
 
@@ -76,9 +79,7 @@ $account     = get_option( TP_ACCOUNT_OPTIONS_KEY );
 			<?php } ?>
 			<button id="btn-search" type="button" class="button-primary">Search</button>
 			<?php
-			if ( $IS_EMBED ) {
-				$tp_html->player_dropdown();
-			}
+
 			?>
 
 		</form>
@@ -134,7 +135,7 @@ $account     = get_option( TP_ACCOUNT_OPTIONS_KEY );
 	</div>
 	<!-- #poststuff -->
 	<?php if ( $IS_EMBED ) {
-		$tp_html->add_media_buttons();
+		$tp_html->add_media_toolbar();
 	} ?>
 </div> <!-- .wrap -->
 

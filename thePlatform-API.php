@@ -264,7 +264,7 @@ class ThePlatform_API {
 				return false;
 			}
 
-			$payload = theplatform_decode_json_from_server( $response );
+			$payload = $this->decode_json_from_server( $response );
 			$token   = $payload['signInResponse']['token'];
 
 			if ( $updateOptions == false ) {
@@ -334,7 +334,7 @@ class ThePlatform_API {
 
 		$response = ThePlatform_API_HTTP::post( $url, $data, true );
 
-		$data = theplatform_decode_json_from_server( $response );
+		$data = $this->decode_json_from_server( $response );
 		if ( array_key_exists( 'success', $data ) && $data['success'] == false ) {
 			wp_send_json( $data );
 		}
@@ -363,7 +363,7 @@ class ThePlatform_API {
 
 		$response = ThePlatform_API_HTTP::get( $url );
 
-		$data = theplatform_decode_json_from_server( $response );
+		$data = $this->decode_json_from_server( $response );
 
 		if ( array_key_exists( 'success', $data ) && $data['success'] == false ) {
 			return array( "entries" => [ ] );
@@ -388,7 +388,7 @@ class ThePlatform_API {
 
 		$response = ThePlatform_API_HTTP::get( $url );
 
-		$data = theplatform_decode_json_from_server( $response );
+		$data = $this->decode_json_from_server( $response );
 
 		if ( array_key_exists( 'success', $data ) && $data['success'] == false ) {
 			return false;
@@ -516,7 +516,7 @@ class ThePlatform_API {
 
 		$response = ThePlatform_API_HTTP::get( $url );
 
-		$payload    = theplatform_decode_json_from_server( $response );
+		$payload    = $this->decode_json_from_server( $response );
 		$releasePID = $payload['entries'][0]['plrelease$pid'];
 
 
@@ -530,7 +530,7 @@ class ThePlatform_API {
 	function get_videos_ajax() {
 		$token = $this->mpx_signin();
 
-		$fields = theplatform_get_query_fields( $this->get_custom_metadata_fields() );
+		$fields = $this->get_query_fields( $this->get_custom_metadata_fields() );
 
 		$url = TP_API_MEDIA_ENDPOINT . '&count=true&fields=id,guid,pid,title' . $fields . '&token=' . $token . '&range=' . $_POST['range'];
 
@@ -554,7 +554,7 @@ class ThePlatform_API {
 
 		$response = ThePlatform_API_HTTP::get( $url, array( "timeout" => 120 ) );
 
-		$data = theplatform_decode_json_from_server( $response );
+		$data = $this->decode_json_from_server( $response );
 
 		if ( array_key_exists( 'success', $data ) && $data['success'] == false ) {
 			wp_send_json( $data );
@@ -592,7 +592,7 @@ class ThePlatform_API {
 
 		$response = ThePlatform_API_HTTP::get( $url, array( "timeout" => 120 ) );
 
-		$data = theplatform_decode_json_from_server( $response );
+		$data = $this->decode_json_from_server( $response );
 
 		if ( array_key_exists( 'success', $data ) && $data['success'] == false ) {
 			wp_send_json( $data );
@@ -618,13 +618,13 @@ class ThePlatform_API {
 		$id = substr( $fullId, strrpos( $fullId, '/' ) + 1 );
 
 		$token  = $this->mpx_signin();
-		$fields = theplatform_get_query_fields( $this->get_custom_metadata_fields() );
+		$fields = $this->get_query_fields( $this->get_custom_metadata_fields() );
 
 		$url = TP_API_MEDIA_ENDPOINT . '&fields=id,guid,pid,title' . $fields . ' &token=' . $token . '&byId=' . $id;
 
 		$response = ThePlatform_API_HTTP::get( $url );
 
-		$data = theplatform_decode_json_from_server( $response );
+		$data = $this->decode_json_from_server( $response );
 
 		if ( array_key_exists( 'success', $data ) && $data['success'] == false ) {
 			wp_send_json( $data );
@@ -689,7 +689,7 @@ class ThePlatform_API {
 
 		$response = ThePlatform_API_HTTP::get( $url );
 
-		$data = theplatform_decode_json_from_server( $response );
+		$data = $this->decode_json_from_server( $response );
 
 		if ( array_key_exists( 'success', $data ) && $data['success'] == false ) {
 			return array();
@@ -736,7 +736,7 @@ class ThePlatform_API {
 
 		$response = ThePlatform_API_HTTP::get( $url );
 
-		$data = theplatform_decode_json_from_server( $response );
+		$data = $this->decode_json_from_server( $response );
 
 		if ( array_key_exists( 'success', $data ) && $data['success'] == false ) {
 			return array();
@@ -771,7 +771,7 @@ class ThePlatform_API {
 		}
 
 		$response = ThePlatform_API_HTTP::get( $url );
-		$data     = theplatform_decode_json_from_server( $response );
+		$data     = $this->decode_json_from_server( $response );
 
 		if ( array_key_exists( 'success', $data ) && $data['success'] == false ) {
 			return array();
@@ -794,7 +794,7 @@ class ThePlatform_API {
 		}
 
 		$response = ThePlatform_API_HTTP::get( $url );
-		$data     = theplatform_decode_json_from_server( $response, false );
+		$data     = $this->decode_json_from_server( $response, false );
 
 		if ( is_null( $data ) || ( array_key_exists( 'success', $data ) && $data['success'] == false ) ) {
 			return false;
@@ -823,7 +823,7 @@ class ThePlatform_API {
 
 		$response = ThePlatform_API_HTTP::get( $url );
 
-		$data = theplatform_decode_json_from_server( $response );
+		$data = $this->decode_json_from_server( $response );
 
 		if ( array_key_exists( 'success', $data ) && $data['success'] == false ) {
 			return array();
@@ -845,7 +845,7 @@ class ThePlatform_API {
 
 		$response = ThePlatform_API_HTTP::get( $url );
 
-		$data = theplatform_decode_json_from_server( $response );
+		$data = $this->decode_json_from_server( $response );
 
 
 		return $data['authorizeResponse']['accounts'];
@@ -873,7 +873,7 @@ class ThePlatform_API {
 
 		$response = ThePlatform_API_HTTP::get( $url );
 
-		$data = theplatform_decode_json_from_server( $response );
+		$data = $this->decode_json_from_server( $response );
 
 		if ( array_key_exists( 'success', $data ) && $data['success'] == false ) {
 			return array();
@@ -904,7 +904,7 @@ class ThePlatform_API {
 
 		$response = ThePlatform_API_HTTP::get( $url );
 
-		$data = theplatform_decode_json_from_server( $response );
+		$data = $this->decode_json_from_server( $response );
 
 		if ( array_key_exists( 'success', $data ) && $data['success'] == false ) {
 			return array();
@@ -1013,7 +1013,7 @@ class ThePlatform_API {
 
 		$response = ThePlatform_API_HTTP::get( $url );
 
-		return theplatform_decode_json_from_server( $response );
+		return $this->decode_json_from_server( $response );
 	}
 
 	/**
@@ -1033,7 +1033,7 @@ class ThePlatform_API {
 
 		$response = ThePlatform_API_HTTP::get( $url );
 
-		$data = theplatform_decode_json_from_server( $response );
+		$data = $this->decode_json_from_server( $response );
 
 		if ( count( $data['entries'] ) == 0 ) {
 			return false;
@@ -1057,7 +1057,7 @@ class ThePlatform_API {
 
 		$response = ThePlatform_API_HTTP::get( $url );
 
-		$data = theplatform_decode_json_from_server( $response );
+		$data = $this->decode_json_from_server( $response );
 
 		wp_send_json_success( $data['entries'] );
 	}
@@ -1080,7 +1080,7 @@ class ThePlatform_API {
 
 		$response = ThePlatform_API_HTTP::get( TP_API_SIGNIN_URL, array( 'headers' => array( 'Authorization' => 'Basic ' . $hash ) ) );
 
-		$payload = theplatform_decode_json_from_server( $response, false );
+		$payload = $this->decode_json_from_server( $response, false );
 
 		if ( is_null( $response ) || is_wp_error( $response ) ) {
 			return false;
@@ -1115,5 +1115,100 @@ class ThePlatform_API {
 		} else {
 			return false;
 		}
+	}
+
+	/**
+	 *    Catch JSON decode errors
+	 */
+	function decode_json_from_server( $input, $validateResponse = true ) {
+
+		$response = json_decode( wp_remote_retrieve_body( $input ), true );
+
+		if ( false === $validateResponse ) {
+			return $response;
+		}
+
+		$errorResponse = array(
+			'success' => false,
+			'data'    => 'There was an error getting data from MPX, if the error persists please contact thePlatform. '
+		);
+
+		if ( is_null( $response ) && wp_remote_retrieve_response_code( $input ) != "200" ) {
+			return $errorResponse;
+		}
+
+		if ( is_null( $response ) && wp_remote_retrieve_response_code( $input ) == "200" ) {
+			return $response;
+		}
+
+		if ( is_wp_error( $response ) ) {
+			$errorResponse['data'] .= $response->get_error_message();
+
+			return $errorResponse;
+		}
+
+		if ( is_array( $response ) && array_key_exists( 'isException', $response ) ) {
+			$errorResponse['data'] .= $response['description'];
+
+			return $errorResponse;
+		}
+
+		return $response;
+	}
+
+	/**
+	 * Parse Custom Fileds and Upload Fields and returns a query string for MPX API calls
+	 *
+	 * @param array $metadata Custom Fields
+	 *
+	 * @return string MPX fields in query form
+	 */
+	function get_query_fields( $metadata ) {
+		$custom_metadata_options = get_option( TP_CUSTOM_METADATA_OPTIONS_KEY );
+		$basic_metadata_options  = get_option( TP_BASIC_METADATA_OPTIONS_KEY );
+
+		$fields = 'id,defaultThumbnailUrl,content';
+
+		foreach ( $basic_metadata_options as $basic_field => $val ) {
+			if ( $val == 'hide' ) {
+				continue;
+			}
+
+			$field_title = ( strstr( $basic_field, '$' ) !== false ) ? substr( strstr( $basic_field, '$' ), 1 ) : $basic_field;
+			if ( ! empty( $fields ) ) {
+				$fields .= ',';
+			}
+			$fields .= $field_title;
+		}
+
+		foreach ( $custom_metadata_options as $custom_field => $val ) {
+			if ( $val == 'hide' ) {
+				continue;
+			}
+
+			$metadata_info = null;
+			foreach ( $metadata as $entry ) {
+				if ( array_search( $custom_field, $entry ) ) {
+					$metadata_info = $entry;
+					break;
+				}
+			}
+
+			if ( is_null( $metadata_info ) ) {
+				continue;
+			}
+
+			$field_title = $metadata_info['fieldName'];
+
+			if ( empty( $fields ) ) {
+				$fields .= ':';
+			} else {
+				$fields .= ',:';
+			}
+
+			$fields .= $field_title;
+		}
+
+		return $fields;
 	}
 }

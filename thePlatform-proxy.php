@@ -37,6 +37,8 @@ class ThePlatform_Proxy {
 		add_action( 'wp_ajax_generate_thumbnail', array( $this, 'generate_thumbnail' ) );
 		add_action( 'wp_ajax_initialize_media_upload', array( $this, 'initialize_media_upload' ) );
 		add_action( 'wp_ajax_set_thumbnail', array( $this, 'set_thumbnail_ajax' ) );
+
+		add_action( 'wp_ajax_verify_account', array( $this, 'verify_account_settings' ) );
 	}
 
 	private function get_api() {
@@ -78,10 +80,10 @@ class ThePlatform_Proxy {
 
 		// This AJAX call should not return a value, in this case we send a json error with the body to the UI
 		if ( ! $returnsValue && ! empty( $responseBody ) ) {
-			wp_send_json_error( theplatform_decode_json_from_server( $response, false ) );
+			wp_send_json_error( $this->get_api()->decode_json_from_server( $response, false ) );
 		}
 
-		$parsedResponse = theplatform_decode_json_from_server( $response, false );
+		$parsedResponse = $this->get_api()->decode_json_from_server( $response, false );
 
 		wp_send_json_success( $parsedResponse );
 	}
@@ -272,6 +274,26 @@ class ThePlatform_Proxy {
 		}
 
 		return $thumbnail_id;
+	}
+
+	/**
+	 *    AJAX callback for account verification button
+	 */
+	function verify_account_settings() {
+		//User capability check
+		check_admin_referer( 'theplatform-ajax-nonce-verify_account' );
+		$hash = $_POST['auth_hash'];
+
+		$this->get_api();
+		$response = ThePlatform_API_HTTP::get( TP_API_SIGNIN_URL, array( 'headers' => array( 'Authorization' => 'Basic ' . $hash ) ) );
+
+		$data = $this->get_api()->decode_json_from_server( $response );
+
+		if ( array_key_exists( 'success', $data ) && $data['success'] == false ) {
+			wp_send_json_error( "Unable to verify account" );
+		}
+
+		wp_send_json_success( "Account Verified" );
 	}
 }
 
