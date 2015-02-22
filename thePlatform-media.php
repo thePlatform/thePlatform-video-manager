@@ -33,9 +33,6 @@ $preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
 $account     = get_option( TP_ACCOUNT_OPTIONS_KEY );
 
 // TODO: 
-// Add pagination
-// Add styles for button feedback
-// Fix search
 // Make this template work in the post editor
 
 ?>
@@ -127,9 +124,9 @@ if ( ! $IS_EMBED && current_user_can( $tp_editor_cap )) {
 		tpHelper.accountPid = "<?php echo esc_js( $account['mpx_account_pid'] ); ?>";
 		tpHelper.isEmbed = "<?php echo esc_js( $IS_EMBED ); ?>";
 		tpHelper.mediaEmbedType = "<?php echo esc_js( $preferences['media_embed_type'] ); ?>";
-		tpHelper.selectedCategory = '';
-		tpHelper.feedEndRange = 0;
+		tpHelper.selectedCategory = '';		
 		tpHelper.queryString = '';
+		tpHelper.currentPage = 1;
 	</script>
 
 

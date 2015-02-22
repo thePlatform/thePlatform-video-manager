@@ -226,16 +226,16 @@ var theplatform_edit = (function($) {
     var UI = {
         onSuccess: function(response, button) {
             if (response.success && !_.has(response.data, 'isException')) {
-                jQuery(button).text('Success').val('Success').removeClass('button-primary button-success button-danger button-info').addClass('button-success');
+                jQuery(button).text('Success').val('Success').removeClass('button-success button-danger button-info').addClass('button-success');
             } else {
-                jQuery(button).text('Failed').val('Failed').removeClass('button-primary button-success button-danger button-info').addClass('button-danger');
+                jQuery(button).text('Failed').val('Failed').removeClass('button-success button-danger button-info').addClass('button-danger');
                 console.log(response.data.description);
             }
         },
 
         onComplete: function(button, value) {
             setTimeout(function() {
-                jQuery(button).text(value).val(value).removeClass('button-primary button-success button-danger button-info').addClass('button-primary');
+                jQuery(button).text(value).val(value).removeClass('button-success button-danger button-info').addClass('button-primary');
             }, 1500);
         },
 
@@ -274,7 +274,7 @@ var theplatform_edit = (function($) {
             var custom_params = Data.parseCustomParams();
             params.id = tpHelper.mediaId;
 
-            jQuery(this).text('Updating').removeClass('button-primary button-success button-danger button-info').addClass('button-info');
+            jQuery(this).text('Updating').removeClass('button-success button-danger button-info').addClass('button-info');
 
             var data = {
                 _wpnonce: tp_edit_upload_local.tp_nonce['theplatform_edit'],

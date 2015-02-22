@@ -45,11 +45,9 @@ var theplatform_browser = (function($) {
             };
 
             tpHelper.queryParams = queryObject;
-
             tpHelper.queryString = API.buildMediaQuery(queryObject);
-            tpHelper.feedEndRange = 0;
-            $mediaList.empty();     
-            Events.onGetMedia(1);       
+            tpHelper.currentPage = 1;
+            Events.onGetMedia(tpHelper.currentPage);       
         },
 
         buildCategoryAccordion: function(resp) {
@@ -342,8 +340,7 @@ var theplatform_browser = (function($) {
         onGetMedia: function(page) {
             var MAX_RESULTS = 10;
             NProgress.start(); // show loading before we call getVideos            
-            var theRange = parseInt(tpHelper.feedEndRange);
-            theRange = ((page - 1) * MAX_RESULTS + 1) + '-' + (page * MAX_RESULTS);
+            var theRange = ((page - 1) * MAX_RESULTS + 1) + '-' + (page * MAX_RESULTS);
 
             console.log(theRange);
             API.getVideos(theRange, function(resp) {
@@ -354,17 +351,35 @@ var theplatform_browser = (function($) {
                 $('.displaying-num').text(totalResults + ' items');
                 if ( totalResults != 0 ) {
                     var pages = Math.ceil(resp['totalResults'] / MAX_RESULTS)
-                    $('.total-pages').text(pages)    
+                    $('.total-pages').text(pages);
+                    $('.current-page').each(function() { $(this).attr('max', pages).val(page) });                    
+
+                    if (pages <= 1) {
+                        $('.pagination-links a').each(function() { $(this).addClass('disabled') } )
+                    }
+
+                    if (pages > 1) {
+                        $('.first-page,.prev-page,.last-page,.next-page').each(function() { $(this).removeClass('disabled') } )
+                    }
+
+                    if (page == pages) {
+                        $('.last-page,.next-page').each(function() { $(this).addClass('disabled') } )
+                    }
+
+                    if (page == 1) {
+                        $('.first-page,.prev-page').each(function() { $(this).addClass('disabled') } )   
+                    }
+                } else {
+                    $('.total-pages').text(1);
+                    $('.current-page').each(function() { $(this).attr('max', 1).val(1) });   
+                    $('.pagination-links a').each(function() { $(this).addClass('disabled') } )                 
                 }
                 
+                if (resp['entryCount'] == 0) {
+                    UI.notifyUser('info', 'No Results');                    
+                }                                    
 
-                tpHelper.feedStartRange = resp['startIndex'];
-                tpHelper.feedEndRange = 0;
-                if (resp['entryCount'] > 0)
-                    tpHelper.feedEndRange = resp['startIndex'] + resp['entryCount'] - 1;
-                else
-                    UI.notifyUser('info', 'No Results');
-
+                $('#media-list').empty();     
                 var entries = resp['entries'];
 
                 for (var i = 0; i < entries.length; i++) {
@@ -585,13 +600,45 @@ var theplatform_browser = (function($) {
                 UI.refreshView();
         });
 
+        $('#current-page-selector').keyup(function(event) {
+            if (event.keyCode == 13)
+                Events.onGetMedia($(this).val())
+        });
+
+        $('.pagination-links a').click(function(e) {
+            e.preventDefault();
+
+            if ($(this).hasClass('disabled')) {
+                return;
+            }
+            var buttonClass = $(this).attr('class');
+
+            switch(buttonClass) {
+                case 'next-page':
+                    tpHelper.currentPage++
+                    break;
+                case 'prev-page':
+                    tpHelper.currentPage--
+                    break;
+                case 'last-page':
+                    tpHelper.currentPage = parseInt( $('.total-pages')[0].innerText );
+                    break;
+                case 'first-page':
+                    tpHelper.currentPage = 1;
+                    break;
+            }
+            
+            Events.onGetMedia(tpHelper.currentPage)
+
+        })
+
         // Load Categories from mpx
         API.getCategoryList(UI.buildCategoryAccordion);
 
         /**
          * Set up the infinite scrolling media list and load the first sets of media
          */
-        Events.onGetMedia(1);
+        Events.onGetMedia(tpHelper.currentPage);
     });
 
     // Expose the updateMediaObject method outside this module

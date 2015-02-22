@@ -78,3 +78,15 @@
         width: 33.3333%;
     }
 }
+.button-success {
+    background-color: #5cb85c !important;
+    border-color: #4cae4c !important;
+}
+.button-danger {    
+    background-color: #d9534f !important;
+    border-color: #d43f3a !important;
+}
+.button-info {
+    background-color: #f0ad4e !important;
+    border-color: #eea236 !important;
+}
