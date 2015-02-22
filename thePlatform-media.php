@@ -107,12 +107,13 @@ $account     = get_option( TP_ACCOUNT_OPTIONS_KEY );
 						<div class="inside">
 							<div id="info-player-container" class="scrollable">
 								<?php $tp_html->preview_player() ?>
-								<?php $tp_html->content_pane( $IS_EMBED ) ?>
+								<?php $tp_html->content_pane() ?>
 							</div>
 						</div>
 						<!-- .inside -->
 					</div>
 					<!-- .postbox -->
+					<?php $tp_html->content_pane_buttons( $IS_EMBED ) ?>
 				</div>
 				<!-- .meta-box-sortables -->
 			</div>
