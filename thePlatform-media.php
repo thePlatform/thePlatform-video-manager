@@ -48,7 +48,9 @@ $account     = get_option( TP_ACCOUNT_OPTIONS_KEY );
 ?>
 
 <div class="wrap">
-<?php if ( !$IS_EMBED ) { echo '<h2>mpx Video Manager</h2>'; } ?>
+	<?php if ( ! $IS_EMBED ) {
+		echo '<h2>mpx Video Manager</h2>';
+	} ?>
 	<div class="wp-filter">
 		<form class="tp-search-form" role="search" onsubmit="return false;">
 			<input id="input-search" type="text" class="" placeholder="Keywords">
@@ -92,7 +94,7 @@ $account     = get_option( TP_ACCOUNT_OPTIONS_KEY );
 			<div id="post-body-content">
 				<div class="meta-box-sortables ui-sortable">
 					<div class="postbox">
-						<div class="inside">						
+						<div class="inside">
 							<?php $tp_html->pagination( 'top' ) ?>
 							<div id="message-panel" class="error below-h2 hidden">
 								<p></p></div>

@@ -71,7 +71,7 @@ class ThePlatform_URLs {
 		define( 'TP_API_FORMATS_XML_URL', 'http://web.theplatform.com/descriptors/enums/format.xml' );
 
 		// Identity Management Service URLs
-		define( 'TP_API_SIGNIN_URL', TP_API_ADMIN_IDENTITY_BASE_URL . 'signIn?schema=1.0&form=json&wpVersion=' . TP_PLUGIN_VERSION );		
+		define( 'TP_API_SIGNIN_URL', TP_API_ADMIN_IDENTITY_BASE_URL . 'signIn?schema=1.0&form=json&wpVersion=' . TP_PLUGIN_VERSION );
 
 		// Media Data Service URLs
 		define( 'TP_API_MEDIA_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Media?schema=1.7.0&searchSchema=1.0&form=cjson' );

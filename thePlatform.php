@@ -53,7 +53,6 @@ class ThePlatform_Plugin {
 	 * Class constructor
 	 */
 	function __construct() {
-
 		require_once( dirname( __FILE__ ) . '/thePlatform-constants.php' );
 		require_once( dirname( __FILE__ ) . '/thePlatform-proxy.php' );
 
@@ -66,32 +65,49 @@ class ThePlatform_Plugin {
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 
 		add_filter( 'media_upload_tabs', array( $this, 'tp_upload_tab' ) );
-		add_action( 'media_upload_mytabname', array( $this, 'add_tp_media_form' ) );
+		add_action( 'media_upload_theplatform', array( $this, 'add_tp_media_form' ) );
 
 		add_shortcode( 'theplatform', array( $this, 'shortcode' ) );
 	}
 
-	function tp_upload_tab( $tabs ) {
-		$tabs['mytabname'] = "mpx Video Manager";
+	/**
+	 * Media Browser Region
+	 */
 
+	/**
+	 * Add thePlatform the the Media tabs
+	 * @param  array $tabs Array of tabs in the Media dialog
+	 */
+	function tp_upload_tab( $tabs ) {
+		$tabs['theplatform'] = "mpx Video Manager";
 		return $tabs;
 	}
 
-// call the new tab with wp_iframe
-
+	/**
+	 * Callback to load thePlatform media template
+	 */
 	function add_tp_media_form() {
 		wp_iframe( array( $this, 'tp_media_form' ) );
 	}
 
-// the tab content
+	/**
+	 * Method to load thePlatform media browser from the Media Tab	 
+	 */
 	function tp_media_form() {
 		require_once( dirname( __FILE__ ) . '/thePlatform-media.php' );
 	}
 
+	/**
+	 * Script Region
+	 */
+
+	/**
+	 * Enqueue CSS and JS on thePlatform admin pages
+	 * @param  string $hook Page hook	 
+	 */
 	function admin_enqueue_scripts( $hook ) {		
 		// Media Browser		
-		if ( $hook == 'toplevel_page_theplatform' || $hook == 'media-upload-popup' ) {
-			wp_enqueue_script( 'tp_edit_upload_js' );
+		if ( $hook == 'toplevel_page_theplatform' || $hook == 'media-upload-popup' ) {			
 			wp_enqueue_script( 'tp_browser_js' );
 			wp_enqueue_style( 'tp_browser_css' );
 		}
@@ -105,8 +121,210 @@ class ThePlatform_Plugin {
 			wp_enqueue_script( 'tp_file_uploader_js' );
 			wp_enqueue_style( 'tp_file_uploader_css' );
 		}
-
 	}
+
+	/**
+	 * Registers javascripts and css used throughout the plugin
+	 */
+	function register_scripts() {
+		wp_register_script( 'tp_pdk_js', "//pdk.theplatform.com/next/pdk/tpPdk.js" );
+		wp_register_script( 'tp_holder_js', plugins_url( '/js/holder.js', __FILE__ ) );
+		wp_register_script( 'tp_nprogress_js', plugins_url( '/js/nprogress.js', __FILE__ ) );
+		wp_register_script( 'tp_edit_upload_js', plugins_url( '/js/thePlatform-edit-upload.js', __FILE__ ), array( 'jquery' ) );
+		wp_register_script( 'tp_file_uploader_js', plugins_url( '/js/theplatform-uploader.js', __FILE__ ), array( 'jquery', 'tp_nprogress_js' ) );
+		wp_register_script( 'tp_browser_js', plugins_url( '/js/thePlatform-browser.js', __FILE__ ), array( 'jquery', 'underscore', 'jquery-ui-dialog', 'tp_holder_js', 'tp_pdk_js', 'tp_edit_upload_js' ) );
+		wp_register_script( 'tp_options_js', plugins_url( '/js/thePlatform-options.js', __FILE__ ), array( 'jquery', 'jquery-ui-sortable' ) );
+
+
+		wp_localize_script( 'tp_edit_upload_js', 'tp_edit_upload_local', array(
+			'ajaxurl'             => admin_url( 'admin-ajax.php' ),
+			'uploader_window_url' => admin_url( 'admin.php?page=theplatform-upload-window' ),
+			'tp_nonce'            => array(
+				'theplatform_edit'    => wp_create_nonce( 'theplatform-ajax-nonce-theplatform_edit' ),
+				'theplatform_media'   => wp_create_nonce( 'theplatform-ajax-nonce-theplatform_media' ),
+				'theplatform_upload'  => wp_create_nonce( 'theplatform-ajax-nonce-theplatform_upload' ),
+				'theplatform_publish' => wp_create_nonce( 'theplatform-ajax-nonce-publish_media' ),
+				'theplatform_revoke'  => wp_create_nonce( 'theplatform-ajax-nonce-revoke_media' )
+			)
+		) );
+
+		wp_localize_script( 'tp_file_uploader_js', 'tp_file_uploader_local', array(
+			'ajaxurl'             => admin_url( 'admin-ajax.php' ),
+			'uploader_window_url' => $this->plugin_base_url . 'theplatform-upload-window.php',
+			'tp_nonce'            => array(
+				'initialize_media_upload' => wp_create_nonce( 'theplatform-ajax-nonce-initialize_media_upload' ),
+				'publish_media'           => wp_create_nonce( 'theplatform-ajax-nonce-publish_media' )
+			)
+		) );
+
+		wp_localize_script( 'tp_browser_js', 'tp_browser_local', array(
+			'ajaxurl'  => admin_url( 'admin-ajax.php' ),
+			'tp_nonce' => array(
+				'get_videos'          => wp_create_nonce( 'theplatform-ajax-nonce-get_videos' ),
+				'get_video_by_id'     => wp_create_nonce( 'theplatform-ajax-nonce-get_video_by_id' ),
+				'get_categories'      => wp_create_nonce( 'theplatform-ajax-nonce-get_categories' ),
+				'get_profile_results' => wp_create_nonce( 'theplatform-ajax-nonce-get_profile_results' ),
+				'set_thumbnail'       => wp_create_nonce( 'theplatform-ajax-nonce-set_thumbnail' ),
+				'generate_thumbnail'  => wp_create_nonce( 'theplatform-ajax-nonce-generate_thumbnail' )
+			)
+		) );
+
+		wp_localize_script( 'tp_options_js', 'tp_options_local', array(
+			'ajaxurl'  => admin_url( 'admin-ajax.php' ),
+			'tp_nonce' => array(
+				'verify_account' => wp_create_nonce( 'theplatform-ajax-nonce-verify_account' )
+			)
+		) );
+
+		wp_register_style( 'tp_edit_upload_css', plugins_url( '/css/thePlatform-edit-upload.css', __FILE__ ) );
+		wp_register_style( 'tp_browser_css', plugins_url( '/css/thePlatform-browser.css', __FILE__ ), array( 'tp_edit_upload_css', 'wp-jquery-ui-dialog' ) );
+		wp_register_style( 'tp_options_css', plugins_url( '/css/thePlatform-options.css', __FILE__ ) );
+		wp_register_style( 'tp_nprogress_css', plugins_url( '/css/nprogress.css', __FILE__ ) );
+		wp_register_style( 'tp_file_uploader_css', plugins_url( '/css/thePlatform-file-uploader.css', __FILE__ ), array( 'tp_nprogress_css' ) );
+	}
+
+	/**
+	 * Admin Menus Region
+	 */
+
+	/**
+	 * Add admin pages to Wordpress sidebar
+	 */
+	function add_admin_page() {
+		$tp_admin_cap    = apply_filters( TP_ADMIN_CAP, TP_ADMIN_DEFAULT_CAP );
+		$tp_viewer_cap   = apply_filters( TP_VIEWER_CAP, TP_VIEWER_DEFAULT_CAP );
+		$tp_uploader_cap = apply_filters( TP_UPLOADER_CAP, TP_UPLOADER_DEFAULT_CAP );
+		$slug            = 'theplatform';
+		add_menu_page( 'thePlatform', 'thePlatform', $tp_viewer_cap, $slug, array( $this, 'media_page' ), 'dashicons-video-alt3', '10.0912' );
+		add_submenu_page( $slug, 'thePlatform Video Browser', 'mpx Video Manager', $tp_viewer_cap, $slug, array( $this, 'media_page' ) );
+		add_submenu_page( $slug, 'thePlatform Video Uploader', 'Upload Video', $tp_uploader_cap, 'theplatform-uploader', array( $this, 'upload_page' ) );
+		add_submenu_page( $slug, 'thePlatform Plugin Settings', 'Settings', $tp_admin_cap, 'theplatform-settings', array( $this, 'admin_page' ) );
+		add_submenu_page( $slug, 'thePlatform Plugin About', 'About', $tp_admin_cap, 'theplatform-about', array( $this, 'about_page' ) );
+		add_submenu_page( 'options.php', 'thePlatform Plugin Uploader', 'Uploader', $tp_uploader_cap, 'theplatform-upload-window', array( $this, 'upload_window' ) );
+	}
+
+	/**
+	 * Calls the plugin's options page template
+	 */
+	function admin_page() {
+		$this->check_plugin_update();
+		require_once( dirname( __FILE__ ) . '/thePlatform-options.php' );
+	}
+
+	/**
+	 * Calls the Media Manager template
+	 */
+	function media_page() {
+		$this->check_plugin_update();
+		require_once( dirname( __FILE__ ) . '/thePlatform-media.php' );
+	}
+
+	/**
+	 * Calls the Upload form template
+	 */
+	function upload_page() {
+		$this->check_plugin_update();
+		require_once( dirname( __FILE__ ) . '/thePlatform-edit-upload.php' );
+	}
+
+	/**
+	 * Calls the About page template
+	 */
+	function about_page() {
+		require_once( dirname( __FILE__ ) . '/thePlatform-about.php' );
+	}
+
+	/**
+	 * Calls the Upload Window template	
+	 */
+	function upload_window() {
+		require_once( $this->plugin_base_dir . 'thePlatform-upload-window.php' );
+	}
+
+	/**
+	 * Plugin update Region
+	 */
+	
+	/**
+	 * Checks the current version against the last version stored in preferences to determine whether an update happened
+	 * @return boolean
+	 */
+	function plugin_version_changed() {
+		$preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
+
+		if ( ! $preferences ) {
+			return false; //New installation
+		}
+
+		if ( ! isset( $preferences['plugin_version'] ) ) {
+			return TP_PLUGIN_VERSION( '1.0.0' ); //Old versions didn't have plugin_version stored
+		}
+
+		$version        = TP_PLUGIN_VERSION( $preferences['plugin_version'] );
+		$currentVersion = TP_PLUGIN_VERSION();
+		if ( $version['major'] != $currentVersion['major'] ) {
+			return $version;
+		}
+
+		if ( $version['minor'] != $currentVersion['minor'] ) {
+			return $version;
+		}
+
+		if ( $version['patch'] != $currentVersion['patch'] ) {
+			return $version;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Checks if the plugin has been updated and performs any necessary updates.
+	 */
+	function check_plugin_update() {
+		$oldVersion = $this->plugin_version_changed();
+		if ( false === $oldVersion ) {
+			return;
+		}
+
+		$newVersion = TP_PLUGIN_VERSION();
+
+		// On any version, update defaults that didn't previously exist
+		$newPreferences                   = array_merge( TP_PREFERENCES_OPTIONS_DEFAULTS(), get_option( TP_PREFERENCES_OPTIONS_KEY, array() ) );
+		$newPreferences['plugin_version'] = TP_PLUGIN_VERSION;
+
+		update_option( TP_PREFERENCES_OPTIONS_KEY, $newPreferences );
+		update_option( TP_ACCOUNT_OPTIONS_KEY, array_merge( TP_ACCOUNT_OPTIONS_DEFAULTS(), get_option( TP_ACCOUNT_OPTIONS_KEY, array() ) ) );
+		update_option( TP_BASIC_METADATA_OPTIONS_KEY, array_merge( TP_BASIC_METADATA_OPTIONS_DEFAULTS(), get_option( TP_BASIC_METADATA_OPTIONS_KEY, array() ) ) );
+
+		// We had a messy update with 1.2.2/1.3.0, let's clean up
+		if ( ( $oldVersion['major'] == '1' && $oldVersion['minor'] == '2' && $oldVersion['patch'] == '2' ) ||
+		     ( $oldVersion['major'] == '1' && $oldVersion['minor'] == '3' && $oldVersion['patch'] == '0' )
+		) {
+			$basicMetadataFields  = get_option( TP_BASIC_METADATA_OPTIONS_KEY, array() );
+			$customMetadataFields = get_option( TP_CUSTOM_METADATA_OPTIONS_KEY, array() );
+			update_option( TP_BASIC_METADATA_OPTIONS_KEY, array_diff_assoc( $basicMetadataFields, $customMetadataFields ) );
+		}
+
+		// Move account settings from preferences (1.2.0)
+		if ( ( $oldVersion['major'] == '1' && $oldVersion['minor'] < '2' ) &&
+		     ( $newVersion['major'] > '1' || ( $newVersion['major'] >= '1' && $newVersion['minor'] >= '2' ) )
+		) {
+			$preferences = get_option( TP_PREFERENCES_OPTIONS_KEY, array() );
+			if ( array_key_exists( 'mpx_account_id', $preferences ) ) {
+				$accountSettings = TP_ACCOUNT_OPTIONS_DEFAULTS();
+				foreach ( $preferences as $key => $value ) {
+					if ( array_key_exists( $key, $accountSettings ) ) {
+						$accountSettings[ $key ] = $preferences[ $key ];
+					}
+				}
+				update_option( TP_ACCOUNT_OPTIONS_KEY, $accountSettings );
+			}
+		}
+	}
+
+	/**
+	 * Settings & Validation Region
+	 */
 
 	/**
 	 * Registers initial plugin settings during initialization
@@ -283,117 +501,9 @@ class ThePlatform_Plugin {
 	}
 
 	/**
-	 * Registers javascripts and css used throughout the plugin
+	 * Shortcode Region
 	 */
-	function register_scripts() {
-		wp_register_script( 'tp_pdk_js', "//pdk.theplatform.com/next/pdk/tpPdk.js" );
-		wp_register_script( 'tp_holder_js', plugins_url( '/js/holder.js', __FILE__ ) );
-		wp_register_script( 'tp_media_button_js', plugins_url( '/js/thePlatform-media-button.js', __FILE__ ), array( 'jquery-ui-dialog' ) );
-		wp_register_script( 'tp_nprogress_js', plugins_url( '/js/nprogress.js', __FILE__ ) );
-		wp_register_script( 'tp_edit_upload_js', plugins_url( '/js/thePlatform-edit-upload.js', __FILE__ ), array( 'jquery' ) );
-		wp_register_script( 'tp_file_uploader_js', plugins_url( '/js/theplatform-uploader.js', __FILE__ ), array( 'jquery', 'tp_nprogress_js' ) );
-		wp_register_script( 'tp_browser_js', plugins_url( '/js/thePlatform-browser.js', __FILE__ ), array( 'jquery', 'underscore', 'jquery-ui-dialog', 'tp_holder_js', 'tp_pdk_js' ) );
-		wp_register_script( 'tp_options_js', plugins_url( '/js/thePlatform-options.js', __FILE__ ), array( 'jquery', 'jquery-ui-sortable' ) );
-
-
-		wp_localize_script( 'tp_edit_upload_js', 'tp_edit_upload_local', array(
-			'ajaxurl'             => admin_url( 'admin-ajax.php' ),
-			'uploader_window_url' => admin_url( 'admin.php?page=theplatform-upload-window' ),
-			'tp_nonce'            => array(
-				'theplatform_edit'    => wp_create_nonce( 'theplatform-ajax-nonce-theplatform_edit' ),
-				'theplatform_media'   => wp_create_nonce( 'theplatform-ajax-nonce-theplatform_media' ),
-				'theplatform_upload'  => wp_create_nonce( 'theplatform-ajax-nonce-theplatform_upload' ),
-				'theplatform_publish' => wp_create_nonce( 'theplatform-ajax-nonce-publish_media' ),
-				'theplatform_revoke'  => wp_create_nonce( 'theplatform-ajax-nonce-revoke_media' )
-			)
-		) );
-
-		wp_localize_script( 'tp_file_uploader_js', 'tp_file_uploader_local', array(
-			'ajaxurl'             => admin_url( 'admin-ajax.php' ),
-			'uploader_window_url' => $this->plugin_base_url . 'theplatform-upload-window.php',
-			'tp_nonce'            => array(
-				'initialize_media_upload' => wp_create_nonce( 'theplatform-ajax-nonce-initialize_media_upload' ),
-				'publish_media'           => wp_create_nonce( 'theplatform-ajax-nonce-publish_media' )
-			)
-		) );
-
-		wp_localize_script( 'tp_browser_js', 'tp_browser_local', array(
-			'ajaxurl'  => admin_url( 'admin-ajax.php' ),
-			'tp_nonce' => array(
-				'get_videos'          => wp_create_nonce( 'theplatform-ajax-nonce-get_videos' ),
-				'get_video_by_id'     => wp_create_nonce( 'theplatform-ajax-nonce-get_video_by_id' ),
-				'get_categories'      => wp_create_nonce( 'theplatform-ajax-nonce-get_categories' ),
-				'get_profile_results' => wp_create_nonce( 'theplatform-ajax-nonce-get_profile_results' ),
-				'set_thumbnail'       => wp_create_nonce( 'theplatform-ajax-nonce-set_thumbnail' ),
-				'generate_thumbnail'  => wp_create_nonce( 'theplatform-ajax-nonce-generate_thumbnail' )
-			)
-		) );
-
-		wp_localize_script( 'tp_options_js', 'tp_options_local', array(
-			'ajaxurl'  => admin_url( 'admin-ajax.php' ),
-			'tp_nonce' => array(
-				'verify_account' => wp_create_nonce( 'theplatform-ajax-nonce-verify_account' )
-			)
-		) );
-
-		wp_register_style( 'tp_edit_upload_css', plugins_url( '/css/thePlatform-edit-upload.css', __FILE__ ) );
-		wp_register_style( 'tp_browser_css', plugins_url( '/css/thePlatform-browser.css', __FILE__ ), array( 'tp_edit_upload_css', 'wp-jquery-ui-dialog' ) );
-		wp_register_style( 'tp_options_css', plugins_url( '/css/thePlatform-options.css', __FILE__ ) );
-		wp_register_style( 'tp_nprogress_css', plugins_url( '/css/nprogress.css', __FILE__ ) );
-		wp_register_style( 'tp_file_uploader_css', plugins_url( '/css/thePlatform-file-uploader.css', __FILE__ ), array( 'tp_nprogress_css' ) );
-	}
-
-	/**
-	 * Add admin pages to Wordpress sidebar
-	 */
-	function add_admin_page() {
-		$tp_admin_cap    = apply_filters( TP_ADMIN_CAP, TP_ADMIN_DEFAULT_CAP );
-		$tp_viewer_cap   = apply_filters( TP_VIEWER_CAP, TP_VIEWER_DEFAULT_CAP );
-		$tp_uploader_cap = apply_filters( TP_UPLOADER_CAP, TP_UPLOADER_DEFAULT_CAP );
-		$slug            = 'theplatform';
-		add_menu_page( 'thePlatform', 'thePlatform', $tp_viewer_cap, $slug, array( $this, 'media_page' ), 'dashicons-video-alt3', '10.0912' );
-		add_submenu_page( $slug, 'thePlatform Video Browser', 'mpx Video Manager', $tp_viewer_cap, $slug, array( $this, 'media_page' ) );
-		add_submenu_page( $slug, 'thePlatform Video Uploader', 'Upload Video', $tp_uploader_cap, 'theplatform-uploader', array( $this, 'upload_page' ) );
-		add_submenu_page( $slug, 'thePlatform Plugin Settings', 'Settings', $tp_admin_cap, 'theplatform-settings', array( $this, 'admin_page' ) );
-		add_submenu_page( $slug, 'thePlatform Plugin About', 'About', $tp_admin_cap, 'theplatform-about', array( $this, 'about_page' ) );
-		add_submenu_page( 'options.php', 'thePlatform Plugin Uploader', 'Uploader', $tp_uploader_cap, 'theplatform-upload-window', array( $this, 'upload_window' ) );
-	}
-
-	/**
-	 * Calls the plugin's options page template
-	 */
-	function admin_page() {
-		$this->check_plugin_update();
-		require_once( dirname( __FILE__ ) . '/thePlatform-options.php' );
-	}
-
-	/**
-	 * Calls the Media Manager template
-	 */
-	function media_page() {
-		$this->check_plugin_update();
-		require_once( dirname( __FILE__ ) . '/thePlatform-media.php' );
-	}
-
-	/**
-	 * Calls the Upload form template
-	 */
-	function upload_page() {
-		$this->check_plugin_update();
-		require_once( dirname( __FILE__ ) . '/thePlatform-edit-upload.php' );
-	}
-
-	/**
-	 * Calls the About page template
-	 */
-	function about_page() {
-		require_once( dirname( __FILE__ ) . '/thePlatform-about.php' );
-	}
-
-	function upload_window() {
-		require_once( $this->plugin_base_dir . 'thePlatform-upload-window.php' );
-	}
-
+	
 	/**
 	 * Shortcode Callback
 	 *
@@ -575,96 +685,10 @@ class ThePlatform_Plugin {
 			return '<iframe class="tpEmbed" src="' . esc_url( $url ) . '" height="' . esc_attr( $player_height ) . '" width="' . esc_attr( $player_width ) . '" frameBorder="0" seamless="seamless" allowFullScreen></iframe>';
 		}
 	}
-
-	/**
-	 * Checks the current version against the last version stored in preferences to determine whether an update happened
-	 * @return boolean
-	 */
-	function plugin_version_changed() {
-		$preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
-
-		if ( ! $preferences ) {
-			return false; //New installation
-		}
-
-		if ( ! isset( $preferences['plugin_version'] ) ) {
-			return TP_PLUGIN_VERSION( '1.0.0' ); //Old versions didn't have plugin_version stored
-		}
-
-		$version        = TP_PLUGIN_VERSION( $preferences['plugin_version'] );
-		$currentVersion = TP_PLUGIN_VERSION();
-		if ( $version['major'] != $currentVersion['major'] ) {
-			return $version;
-		}
-
-		if ( $version['minor'] != $currentVersion['minor'] ) {
-			return $version;
-		}
-
-		if ( $version['patch'] != $currentVersion['patch'] ) {
-			return $version;
-		}
-
-		return false;
-	}
-
-	/**
-	 * Checks if the plugin has been updated and performs any necessary updates.
-	 */
-	function check_plugin_update() {
-		$oldVersion = $this->plugin_version_changed();
-		if ( false === $oldVersion ) {
-			return;
-		}
-
-		$newVersion = TP_PLUGIN_VERSION();
-
-		// On any version, update defaults that didn't previously exist
-		$newPreferences                   = array_merge( TP_PREFERENCES_OPTIONS_DEFAULTS(), get_option( TP_PREFERENCES_OPTIONS_KEY, array() ) );
-		$newPreferences['plugin_version'] = TP_PLUGIN_VERSION;
-
-		update_option( TP_PREFERENCES_OPTIONS_KEY, $newPreferences );
-		update_option( TP_ACCOUNT_OPTIONS_KEY, array_merge( TP_ACCOUNT_OPTIONS_DEFAULTS(), get_option( TP_ACCOUNT_OPTIONS_KEY, array() ) ) );
-		update_option( TP_BASIC_METADATA_OPTIONS_KEY, array_merge( TP_BASIC_METADATA_OPTIONS_DEFAULTS(), get_option( TP_BASIC_METADATA_OPTIONS_KEY, array() ) ) );
-
-		// We had a messy update with 1.2.2/1.3.0, let's clean up
-		if ( ( $oldVersion['major'] == '1' && $oldVersion['minor'] == '2' && $oldVersion['patch'] == '2' ) ||
-		     ( $oldVersion['major'] == '1' && $oldVersion['minor'] == '3' && $oldVersion['patch'] == '0' )
-		) {
-			$basicMetadataFields  = get_option( TP_BASIC_METADATA_OPTIONS_KEY, array() );
-			$customMetadataFields = get_option( TP_CUSTOM_METADATA_OPTIONS_KEY, array() );
-			update_option( TP_BASIC_METADATA_OPTIONS_KEY, array_diff_assoc( $basicMetadataFields, $customMetadataFields ) );
-		}
-
-		// Move account settings from preferences (1.2.0)
-		if ( ( $oldVersion['major'] == '1' && $oldVersion['minor'] < '2' ) &&
-		     ( $newVersion['major'] > '1' || ( $newVersion['major'] >= '1' && $newVersion['minor'] >= '2' ) )
-		) {
-			$preferences = get_option( TP_PREFERENCES_OPTIONS_KEY, array() );
-			if ( array_key_exists( 'mpx_account_id', $preferences ) ) {
-				$accountSettings = TP_ACCOUNT_OPTIONS_DEFAULTS();
-				foreach ( $preferences as $key => $value ) {
-					if ( array_key_exists( $key, $accountSettings ) ) {
-						$accountSettings[ $key ] = $preferences[ $key ];
-					}
-				}
-				update_option( TP_ACCOUNT_OPTIONS_KEY, $accountSettings );
-			}
-		}
-	}
 }
 
 // Instantiate thePlatform plugin on WordPress init
 add_action( 'init', array( 'ThePlatform_Plugin', 'init' ) );
-
-
-// function wpa54064_inspect_scripts() {
-//     global $wp_styles;
-//     foreach( $wp_styles->queue as $handle ) :
-//         echo $handle . ' | ';
-//     endforeach;
-// }
-// add_action( 'wp_print_scripts', 'wpa54064_inspect_scripts' );
 
 
 
