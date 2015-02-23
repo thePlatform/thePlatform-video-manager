@@ -72,7 +72,7 @@ class ThePlatform_Plugin {
 	}
 
 	function tp_upload_tab( $tabs ) {
-		$tabs['mytabname'] = "Insert From mpx";
+		$tabs['mytabname'] = "mpx Video Manager";
 
 		return $tabs;
 	}
