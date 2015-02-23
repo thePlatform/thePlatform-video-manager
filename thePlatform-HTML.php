@@ -352,7 +352,7 @@ class ThePlatform_HTML {
 				$html .= '<div class="form-row">';
 			}
 			$html .= '<div class="column-half">';
-			$html .= '<label class="tp-label" for="theplatform_upload_' . esc_attr( $field_name ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
+			$html .= '<div class="tp-form-group"><label class="tp-label" for="theplatform_upload_' . esc_attr( $field_name ) . '">' . esc_html( ucfirst( $field_title ) ) . '</label>';
 
 			$html .= '<input name="' . esc_attr( $field_title ) . '" id="theplatform_upload_' . esc_attr( $field_name ) . '" class="tp-input custom_field" type="text" data-type="' . esc_attr( $field_type ) . '" data-structure="' . esc_attr( $field_structure ) . '" data-name="' . esc_attr( strtolower( $field_title ) ) . '" data-prefix="' . esc_attr( strtolower( $field_prefix ) ) . '" data-namespace="' . esc_attr( strtolower( $field_namespace ) ) . '"/>';
 			if ( isset( TP_DATA_STRUCTURE_DESCRIPTIONS()[ $field_structure ] ) ) {
@@ -361,7 +361,7 @@ class ThePlatform_HTML {
 			if ( isset( TP_DATA_TYPE_DESCRIPTIONS()[ $field_type ] ) ) {
 				$html .= '<div class="dataTypeDesc"><strong>Format:</strong> ' . esc_html( TP_DATA_TYPE_DESCRIPTIONS()[ $field_type ] ) . '</div>';
 			}
-			$html .= '<br />';
+			$html .= '</div>';
 			$html .= '</div>';
 			if ( $i % 2 !== 0 || $i == $len ) {
 				$html .= '</div>';
