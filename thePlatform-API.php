@@ -413,9 +413,8 @@ class ThePlatform_API {
 			'custom_fields' => $_POST['custom_fields'],
 			'server_id'     => $_POST['server_id']
 		);
-
-		// Always create a new token when uploading
-		$token = $this->mpx_signin( true, false );
+		
+		$token = $this->mpx_signin();
 
 		if ( $args['filetype'] === "audio/mp3" ) {
 			$args['filetype'] = "audio/mpeg";
