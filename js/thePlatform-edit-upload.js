@@ -254,6 +254,7 @@ var theplatform_edit = (function($) {
                         option.value = data[i].profileId;
                         option.text = publishDropdown.find('option[value="' + data[i].profileId + '"]').text();
 
+                        // Don't show profiles that are disabled
                         if (!_.isEmpty(option.text)) {
                             revokeDropdown.append(option);
                         }

@@ -16,13 +16,17 @@
   with this program; if not, write to the Free Software Foundation, Inc.,
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
+
+// TODO:
+// Add Publish Update
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 $account = get_option( TP_ACCOUNT_OPTIONS_KEY );
 if ( $account == false || empty( $account['mpx_account_id'] ) ) {
-	wp_die( 'mpx Account ID is not set, please configure the plugin before attempting to manage media' );
+	wp_die( '<h2>mpx Account ID is not set, please configure the plugin before attempting to manage media</h2>' );
 }
 
 require_once( dirname( __FILE__ ) . '/thePlatform-HTML.php' );
@@ -49,21 +53,17 @@ if ( ! isset( $tp_api ) ) {
 }
 $preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
 
-
 $tp_uploader_cap = apply_filters( TP_UPLOADER_CAP, TP_UPLOADER_DEFAULT_CAP );
 $tp_revoke_cap   = apply_filters( TP_REVOKE_CAP, TP_REVOKE_DEFAULT_CAP );
 
-if ( ! defined( 'TP_MEDIA_BROWSER' ) ) {
-	add_action( 'wp_enqueue_scripts', 'theplatform_upload_clear_styles_and_scripts', 100912 );
-
+if ( ! defined( 'TP_MEDIA_BROWSER' ) ) {	
 	if ( ! current_user_can( $tp_uploader_cap ) ) {
-		wp_die( '<p>You do not have sufficient permissions to upload mpx Media</p>' );
+		wp_die( '<p>You do not have sufficient permissions to upload video to mpx</p>' );
 	}
-
 
 	?>
 	<div class="wrap">
-	<h2>Upload Media to mpx</h2>
+	<h2>Upload Video to mpx</h2>
 <?php
 } else {
 	// Edit Dialog has tabs, so we do all the necessary prefixing here

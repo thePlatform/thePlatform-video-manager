@@ -424,7 +424,7 @@ class ThePlatform_HTML {
                 <?php
 		$html = '<div class="tp-form-group"><label class="tp-label" for="edit_publishing_profile">Publishing Profile</label>';
 		$html .= '<select id="edit_publishing_profile" name="edit_publishing_profile" class="tp-input edit_profile">';
-		foreach ( $this->profiles as $entry ) {
+		foreach ( $this->profiles as $entry ) {			
 			$html .= '<option value="' . esc_attr( $entry['id'] ) . '"' . selected( $entry['title'], $this->preferences['default_publish_id'], false ) . '>' . esc_html( $entry['title'] ) . '</option>';
 		}
 		$html .= '</select></div>';

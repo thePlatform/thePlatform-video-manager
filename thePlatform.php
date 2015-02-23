@@ -72,7 +72,7 @@ class ThePlatform_Plugin {
 	}
 
 	function tp_upload_tab( $tabs ) {
-		$tabs['mytabname'] = "thePlatform";
+		$tabs['mytabname'] = "Insert From mpx";
 
 		return $tabs;
 	}
@@ -352,8 +352,8 @@ class ThePlatform_Plugin {
 		$tp_uploader_cap = apply_filters( TP_UPLOADER_CAP, TP_UPLOADER_DEFAULT_CAP );
 		$slug            = 'theplatform';
 		add_menu_page( 'thePlatform', 'thePlatform', $tp_viewer_cap, $slug, array( $this, 'media_page' ), 'dashicons-video-alt3', '10.0912' );
-		add_submenu_page( $slug, 'thePlatform Video Browser', 'Browse mpx Media', $tp_viewer_cap, $slug, array( $this, 'media_page' ) );
-		add_submenu_page( $slug, 'thePlatform Video Uploader', 'Upload Media to mpx', $tp_uploader_cap, 'theplatform-uploader', array( $this, 'upload_page' ) );
+		add_submenu_page( $slug, 'thePlatform Video Browser', 'mpx Video Manager', $tp_viewer_cap, $slug, array( $this, 'media_page' ) );
+		add_submenu_page( $slug, 'thePlatform Video Uploader', 'Upload Video', $tp_uploader_cap, 'theplatform-uploader', array( $this, 'upload_page' ) );
 		add_submenu_page( $slug, 'thePlatform Plugin Settings', 'Settings', $tp_admin_cap, 'theplatform-settings', array( $this, 'admin_page' ) );
 		add_submenu_page( $slug, 'thePlatform Plugin About', 'About', $tp_admin_cap, 'theplatform-about', array( $this, 'about_page' ) );
 		add_submenu_page( 'options.php', 'thePlatform Plugin Uploader', 'Uploader', $tp_uploader_cap, 'theplatform-upload-window', array( $this, 'upload_window' ) );
