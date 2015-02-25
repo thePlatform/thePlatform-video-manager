@@ -17,6 +17,10 @@
   with this program; if not, write to the Free Software Foundation, Inc.,
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 define( 'TP_PLUGIN_VERSION', '2.0.0' );
 define( 'TP_PREFERENCES_OPTIONS_KEY', 'theplatform_preferences_options' );
 define( 'TP_ACCOUNT_OPTIONS_KEY', 'theplatform_account_options' );
