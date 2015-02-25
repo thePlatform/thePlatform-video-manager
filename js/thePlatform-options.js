@@ -157,19 +157,18 @@
         }
 
         //Set up the PID for the mpx account on change in the Settings page 
-        $('#mpx_account_id').change(function (e) {
+        $('#mpx_account_id').change(function () {
             $('#mpx_account_pid').val($('#mpx_account_id option:selected').val().split('|')[1]);
         });
 
         //Set up the PID for the Player on change in the Settings page
-        $('#default_player_name').change(function (e) {
+        $('#default_player_name').change(function () {
             $('#default_player_pid').val($('#default_player_name option:selected').val().split('|')[1]);
         })
     }
 
     $(document).ready(function () {
         var TP_PAGE_KEY = $('#TP_PAGE_KEY').text();
-        var current_page_key = $('input[name=option_page]').val();
 
         if (TP_PAGE_KEY == 'TP_FIELDS') {
             configure_metadata_fields();

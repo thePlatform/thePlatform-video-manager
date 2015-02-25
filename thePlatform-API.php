@@ -31,8 +31,8 @@ class ThePlatform_API_HTTP {
 	/**
 	 * Checks API calls for authentication errors, and re-authenticates if needed
 	 *
-	 * @param $response The response from thePlatform's API
-	 * @param $url The URL used to make the initial call that failed
+	 * @param array $response The response from thePlatform's API
+	 * @param string $url The URL used to make the initial call that failed
 	 *
 	 * @return bool|string Returns the URL with a new authentication token if the call failed, or false if the call did not have an authentication error
 	 */
@@ -283,8 +283,7 @@ class ThePlatform_API {
 	/**
 	 * Update a Media Object's Metadata
 	 *
-	 * @param string $mediaID The ID of the media asset to update
-	 * @param array $payload JSON payload containing field-data pairs to update
+	 * @param array $args Media update information
 	 *
 	 * @return string A message indicating whether or not the update succeeded
 	 */
@@ -348,8 +347,7 @@ class ThePlatform_API {
 	/**
 	 * Gets custom fields namespaces and prefixes
 	 *
-	 * @param string $fields A pipe separated list of mediafields
-	 * @param string $token The token for this upload session
+	 * @param string $fields A pipe separated list of media fields
 	 *
 	 * @return string Default server returned from the Media Account Settings data service
 	 */
@@ -402,8 +400,6 @@ class ThePlatform_API {
 
 	/**
 	 * Initialize a media upload session.
-	 *
-	 * @param array $args URL arguments to pass to the Media data service
 	 *
 	 * @return array An array of parameters for the fragmented uploader service
 	 */
@@ -606,8 +602,6 @@ class ThePlatform_API {
 	/**
 	 * Query mpx for a specific video
 	 *
-	 * @param string $id The Media ID associated with the asset we are requesting
-	 *
 	 * @return array The Media data service response
 	 */
 	function get_video_by_id_ajax() {
@@ -807,10 +801,6 @@ class ThePlatform_API {
 
 	/**
 	 * Query mpx for account categories
-	 *
-	 * @param array $query Query fields to append to the request URL
-	 * @param array $sort Sort parameters to pass to the data service
-	 * @param array $fields Optional set of fields to request from the data service
 	 *
 	 * @return array The Media data service response
 	 */
@@ -1047,8 +1037,6 @@ class ThePlatform_API {
 	/**
 	 * Return publish profile results for the provided media
 	 *
-	 * @param  string $mediaId mpx Media ID
-	 *
 	 * @return array          ProfileResults response
 	 */
 	function get_profile_results_ajax() {
@@ -1120,7 +1108,11 @@ class ThePlatform_API {
 	}
 
 	/**
-	 *    Catch JSON decode errors
+	 * Catch JSON decode errors
+	 * @param wp_response $input a HTTP Response object
+	 * @param bool $validateResponse Determines if we should check the response or just return the response body
+	 *
+	 * @return array|mixed
 	 */
 	function decode_json_from_server( $input, $validateResponse = true ) {
 

@@ -243,6 +243,8 @@ class ThePlatform_Options {
 
 	/**
 	 * mpx Preferences Option field callbacks.
+	 *
+	 * @param array $args WP Options
 	 */
 	function field_select_option( $args ) {
 		$field   = $args['field'];
@@ -289,7 +291,7 @@ class ThePlatform_Options {
 		$name    = $args['key'] . '[' . $field['id'] . ']';
 		$html    = '<input class="tpOption" id="' . esc_attr( $field['id'] ) . '" type="password" name="' . esc_attr( $name ) . '" value="' . esc_attr( $options[ $field['id'] ] ) . '" autocomplete="off" />';
 		if ( $field['id'] === 'mpx_password' ) {
-			$html .= '<span id="verify-account"><button id="verify-account-button" type="button" name="verify-account-button">Verify Account Settings</button><div id="verify-account-dashicon" class="dashicons"></div></span>';
+			$html .= '<span id="verify-account"><button id="verify-account-button" type="button" name="verify-account-button">Verify Account Settings</button></span><div id="verify-account-dashicon" class="dashicons"></div>';
 		}
 		echo $html;
 	}

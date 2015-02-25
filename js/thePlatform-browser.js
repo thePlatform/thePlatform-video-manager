@@ -33,7 +33,7 @@ var theplatform_browser = (function ($) {
             UI.updateContentPane({
                 title: ''
             });
-            var $mediaList = $('#media-list');
+
             //TODO: If sorting clear search?
             var queryObject = {
                 search: $('#input-search').val(),
@@ -71,8 +71,8 @@ var theplatform_browser = (function ($) {
 
             var $fields = $('.tp-field');
 
-            $fields.each(function (index, value) {
-                var $field = $(value);
+            $fields.each(function (index, field) {
+                var $field = $(field);
                 var prefix = $field.data('prefix');
                 var dataType = $field.data('type');
                 var dataStructure = $field.data('structure');
@@ -194,7 +194,7 @@ var theplatform_browser = (function ($) {
      * @type {Object}
      */
     var Events = {
-        onClickMedia: function (e) {
+        onClickMedia: function () {
             UI.updateContentPane($(this).data('media'));
             $('.tp-media.selected').removeClass('selected');
             $(this).addClass('selected');
@@ -306,7 +306,7 @@ var theplatform_browser = (function ($) {
                 success: function (response) {
                     theplatform_edit.onSuccess(response, me)
                 },
-                complete: function (response) {
+                complete: function () {
                     theplatform_edit.onComplete(me, "Generate Thumbnail", "secondary")
                 }
 
@@ -315,7 +315,7 @@ var theplatform_browser = (function ($) {
         onMediaPlaying: function (media) {
             tpHelper.currentMediaTime = media.data.currentTimeAggregate;
         },
-        OnLoadReleaseUrl: function (release) {
+        OnLoadReleaseUrl: function () {
             tpHelper.currentMediaTime = undefined;
         },
         onGetMedia: function (page) {
@@ -520,7 +520,7 @@ var theplatform_browser = (function ($) {
 
             return queryParams;
         },
-        getCategoryList: function (callback) {
+        getCategoryList: function () {
             var data = {
                 _wpnonce: tp_browser_local.tp_nonce['get_categories'],
                 action: 'get_categories',
@@ -537,7 +537,7 @@ var theplatform_browser = (function ($) {
                         var option = document.createElement('option');
                         option.value = entryTitle;
                         option.text = entryTitle;
-                        $('#selectpick-categories').append(option);
+                        categoryPicker.append(option);
                     }
                 });
         },
@@ -588,8 +588,6 @@ var theplatform_browser = (function ($) {
         $('#btn-embed-close').click(Events.onEmbedAndClose);
         $('#btn-set-image').click(Events.onSetImage);
         $('#btn-edit').click(Events.onEditMetadata);
-        $('.next-page').click(Events.onNextPage);
-        $('.next-page').click(Events.onNextPage);
         $('#btn-generate-thumbnail').click(Events.onGenerateThumbnail);
 
         /**

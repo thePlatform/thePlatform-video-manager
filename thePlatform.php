@@ -28,14 +28,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-//var tp = wp.media({ frame:    'post' })
 /**
  * This is thePlatform's plugin entry class, all initalization and AJAX handlers are defined here.
  */
 class ThePlatform_Plugin {
 
-	private $plugin_base_dir;
-	private $plugin_base_url;
 	private static $instance;
 
 	/**
@@ -57,8 +54,6 @@ class ThePlatform_Plugin {
 		require_once( dirname( __FILE__ ) . '/thePlatform-constants.php' );
 		require_once( dirname( __FILE__ ) . '/thePlatform-proxy.php' );
 
-		$this->plugin_base_dir = plugin_dir_path( __FILE__ );
-		$this->plugin_base_url = plugins_url( '/', __FILE__ );
 		$this->tp_admin_cap    = apply_filters( TP_ADMIN_CAP, TP_ADMIN_DEFAULT_CAP );
 		$this->tp_viewer_cap   = apply_filters( TP_VIEWER_CAP, TP_VIEWER_DEFAULT_CAP );
 		$this->tp_uploader_cap = apply_filters( TP_UPLOADER_CAP, TP_UPLOADER_DEFAULT_CAP );
@@ -88,6 +83,8 @@ class ThePlatform_Plugin {
 	/**
 	 * Add thePlatform the the Media tabs
 	 * @param  array $tabs Array of tabs in the Media dialog
+	 *
+	 * @return array The updated array of tabs
 	 */
 	function tp_upload_tab( $tabs ) {
 		$tabs['theplatform'] = "mpx Video Manager";
@@ -161,7 +158,6 @@ class ThePlatform_Plugin {
 
 		wp_localize_script( 'tp_file_uploader_js', 'tp_file_uploader_local', array(
 			'ajaxurl'             => admin_url( 'admin-ajax.php' ),
-			'uploader_window_url' => $this->plugin_base_url . 'theplatform-upload-window.php',
 			'tp_nonce'            => array(
 				'initialize_media_upload' => wp_create_nonce( 'theplatform-ajax-nonce-initialize_media_upload' ),
 				'publish_media'           => wp_create_nonce( 'theplatform-ajax-nonce-publish_media' )
@@ -246,7 +242,7 @@ class ThePlatform_Plugin {
 	 * Calls the Upload Window template	
 	 */
 	function upload_window() {
-		require_once( $this->plugin_base_dir . '/thePlatform-upload-window.php' );
+		require_once( dirname( __FILE__ ) . '/thePlatform-upload-window.php' );
 	}
 
 	/**
@@ -531,6 +527,10 @@ class ThePlatform_Plugin {
 	}
 	/**
 	 * Register a new button in TinyMCE
+	 *
+	 * @param array $buttons A list of TinyMCE buttons
+	 *
+	 * @return array Updated array of buttons with out button
 	 */
 	function theplatform_register_buttons( $buttons ) {
 		array_push( $buttons, "|", "theplatform" );
@@ -715,6 +715,7 @@ class ThePlatform_Plugin {
 	 * @param string $player_height The height of the embedded player
 	 * @param boolean $autoplay Whether or not to loop the embedded media automatically
 	 * @param boolean $tag script or iframe embed tag style
+	 * @param boolean $embedded Whether the embed code will have /embed/ in the URI
 	 * @param boolean $loop Set the embedded media to loop, false by default
 	 * @param boolean $mute Whether or not to mute the audio channel of the embedded media asset, false by default
 	 * @param string $params Any additional parameters to add to the embed code

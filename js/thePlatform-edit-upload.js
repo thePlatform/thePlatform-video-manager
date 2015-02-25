@@ -23,7 +23,7 @@ var theplatform_edit = (function ($) {
          * @param  {Object} event click event
          * @return {boolean}       Did validation pass or not
          */
-        validateMedia: function (event) {
+        validateMedia: function () {
 
             //TODO: Validate that file has been selected for upload but not edit
             var validationError = false;
@@ -144,7 +144,7 @@ var theplatform_edit = (function ($) {
     var Data = {
         parseMediaParams: function () {
             var params = {};
-            $('.upload_field').each(function (i) {
+            $('.upload_field').each(function () {
                 if ($(this).val().length != 0)
                     params[$(this).attr('name')] = $(this).val();
             });
@@ -168,7 +168,7 @@ var theplatform_edit = (function ($) {
         parseCustomParams: function () {
             var custom_params = {};
 
-            $('.custom_field').each(function (i) {
+            $('.custom_field').each(function () {
                 if ($(this).val().length != 0) {
                     var $field = $(this);
                     var dataStructure = $field.data('structure');
@@ -226,9 +226,9 @@ var theplatform_edit = (function ($) {
     var UI = {
         onSuccess: function (response, button) {
             if (response.success && !_.has(response.data, 'isException')) {
-                jQuery(button).text('Success').val('Success').removeClass('button-success button-danger button-info').addClass('button-success');
+                $(button).text('Success').val('Success').removeClass('button-success button-danger button-info').addClass('button-success');
             } else {
-                jQuery(button).text('Failed').val('Failed').removeClass('button-success button-danger button-info').addClass('button-danger');
+                $(button).text('Failed').val('Failed').removeClass('button-success button-danger button-info').addClass('button-danger');
                 console.log(response.data.description);
             }
         },
@@ -238,15 +238,15 @@ var theplatform_edit = (function ($) {
                 if (_.isEmpty(type)) {
                     type = "primary"
                 }
-                jQuery(button).text(value).val(value).removeClass('button-success button-danger button-info').addClass('button-' + type);
+                $(button).text(value).val(value).removeClass('button-success button-danger button-info').addClass('button-' + type);
             }, 1500);
         },
 
         updatePublishProfiles: function (mediaId) {
             API.getProfileResults(mediaId, function (data) {
-                var revokeDropdown = jQuery('#publish_status');
+                var revokeDropdown = $('#publish_status');
                 revokeDropdown.empty();
-                var publishDropdown = jQuery('#edit_publishing_profile');
+                var publishDropdown = $('#edit_publishing_profile');
 
                 for (var i = 0; i < data.length; i++) {
                     if (data[i].status == 'Processed') {
@@ -280,7 +280,7 @@ var theplatform_edit = (function ($) {
             var custom_params = Data.parseCustomParams();
             params.id = tpHelper.mediaId;
 
-            jQuery(this).text('Updating').removeClass('button-success button-danger button-info').addClass('button-info');
+            $(this).text('Updating').removeClass('button-success button-danger button-info').addClass('button-info');
 
             var data = {
                 _wpnonce: tp_edit_upload_local.tp_nonce['theplatform_edit'],
@@ -300,7 +300,7 @@ var theplatform_edit = (function ($) {
                         theplatform_browser.updateMediaObject(tpHelper.mediaId);
                     }
                 },
-                complete: function (response) {
+                complete: function () {
                     UI.onComplete(me, "Submit")
                 }
             });
@@ -347,18 +347,18 @@ var theplatform_edit = (function ($) {
                 }
             }
         },
-        onAddFiles: function (event) {
+        onAddFiles: function () {
             var files = document.getElementById('theplatform_upload_file').files;
 
             if (files[0] === undefined) {
-                jQuery('#file-tp-form-group').addClass('has-error');
+                $('#file-tp-form-group').addClass('has-error');
                 return false;
             } else {
-                jQuery('#file-tp-form-group').removeClass('has-error');
+                $('#file-tp-form-group').removeClass('has-error');
             }
 
-            var profile = jQuery('.upload_profile');
-            var server = jQuery('.server_id');
+            var profile = $('.upload_profile');
+            var server = $('.server_id');
 
             var params = {
                 id: tpHelper.mediaId
@@ -385,13 +385,13 @@ var theplatform_edit = (function ($) {
                 }
             };
         },
-        onPublishMedia: function (event) {
-            var profile = jQuery('.edit_profile').val();
+        onPublishMedia: function () {
+            var profile = $('.edit_profile').val();
             if (profile === 'tp_wp_none')
                 return false;
 
             var me = this;
-            jQuery(this).text('Publishing').removeClass('button-primary button-success button-danger button-info').addClass('button-info');
+            $(this).text('Publishing').removeClass('button-primary button-success button-danger button-info').addClass('button-info');
 
             var params = {
                 mediaId: tpHelper.mediaId,
@@ -408,12 +408,12 @@ var theplatform_edit = (function ($) {
                 success: function (response) {
                     UI.onSuccess(response, me)
                 },
-                complete: function (response) {
+                complete: function () {
                     UI.onComplete(me, "Publish")
                 }
             });
         },
-        onRevokeMedia: function (event) {
+        onRevokeMedia: function () {
 
             var profile = jQuery('.revoke_profile option:selected');
 
@@ -421,7 +421,7 @@ var theplatform_edit = (function ($) {
                 return false;
 
             var me = this;
-            jQuery(this).text('Revoking').removeClass('button-primary button-success button-danger button-info').addClass('button-info');
+            $(this).text('Revoking').removeClass('button-primary button-success button-danger button-info').addClass('button-info');
 
             var params = {
                 mediaId: tpHelper.mediaId,
@@ -431,14 +431,14 @@ var theplatform_edit = (function ($) {
                 _wpnonce: tp_edit_upload_local.tp_nonce['theplatform_revoke']
             };
 
-            jQuery.ajax({
+            $.ajax({
                 url: tp_edit_upload_local.ajaxurl,
                 data: params,
                 type: "POST",
                 success: function (response) {
                     UI.onSuccess(response, me);
                 },
-                complete: function (response) {
+                complete: function () {
                     UI.onComplete(me, "Revoke");
                     setTimeout(function () {
                         UI.updatePublishProfiles(tpHelper.mediaId)
@@ -473,7 +473,7 @@ var theplatform_edit = (function ($) {
                 mediaId: mediaId
             };
 
-            jQuery.post(tp_browser_local.ajaxurl, data, function (resp) {
+            $.post(tp_browser_local.ajaxurl, data, function (resp) {
                 if (resp.success) {
                     callback(resp.data);
                 } else {
@@ -486,8 +486,7 @@ var theplatform_edit = (function ($) {
 
     $(document).ready(function () {
         // Handle the custom file browser button
-        $('.button-file :file').on('fileselect', Events.onFileSelect);
-        $('.button-file :file').on('change', Events.onChangeFile);
+        $('.button-file :file').on('fileselect', Events.onFileSelect).on('change', Events.onChangeFile);
         $("#theplatform_edit_button").click(Events.onEditMetadata);
         $("#theplatform_upload_button").click(Events.onUploadMedia);
         $("#theplatform_add_file_button").click(Events.onAddFiles);
