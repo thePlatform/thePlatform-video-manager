@@ -455,8 +455,6 @@ var theplatform_browser = (function ($) {
                     }
                 }
             }
-            ;
-
             return urls;
         }
 

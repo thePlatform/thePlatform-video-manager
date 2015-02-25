@@ -261,8 +261,6 @@ var theplatform_edit = (function ($) {
 
                     }
                 }
-                ;
-
                 if (revokeDropdown.children().length == 0) {
                     revokeDropdown.attr('disabled', 'true');
                 } else {
@@ -334,7 +332,6 @@ var theplatform_edit = (function ($) {
             for (var i = 0; i < files.length; i++) {
                 filesArray.push(files[i]);
             }
-            ;
             var uploaderData = {
                 files: filesArray,
                 params: JSON.stringify(params),
@@ -373,7 +370,6 @@ var theplatform_edit = (function ($) {
             for (var i = 0; i < files.length; i++) {
                 filesArray.push(files[i]);
             }
-            ;
             var uploaderData = {
                 files: filesArray,
                 params: JSON.stringify(params),

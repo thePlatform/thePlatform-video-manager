@@ -91,7 +91,7 @@
         };
 
         $.post(tp_options_local.ajaxurl, data, function (response) {
-            var $verificationImage = $("#verification_image")
+            var $verificationImage = $("#verification_image");
             if ($verificationImage.length > 0) {
                 $verificationImage.remove();
             }

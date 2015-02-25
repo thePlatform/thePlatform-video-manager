@@ -510,7 +510,6 @@ TheplatformUploader = (function () {
         this.current_uploads = 0;
 
         this.prepareForUpload();
-    };
-
+    }
     return TheplatformUploader;
 })();
