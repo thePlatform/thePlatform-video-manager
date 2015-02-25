@@ -30,11 +30,6 @@ if ( $account == false || empty( $account['mpx_account_id'] ) ) {
 }
 
 require_once( dirname( __FILE__ ) . '/thePlatform-HTML.php' );
-require_once( dirname( __FILE__ ) . '/thePlatform-API.php' );
-
-if ( ! isset( $tp_html ) ) {
-	$tp_html = new ThePlatform_HTML();
-}
 
 // Detect IE 9 and below which doesn't support HTML 5 File API
 preg_match( '/MSIE (.*?);/', $_SERVER['HTTP_USER_AGENT'], $matches );
@@ -48,9 +43,6 @@ if ( count( $matches ) > 1 ) {
 	}
 }
 
-if ( ! isset( $tp_api ) ) {
-	$tp_api = new ThePlatform_API;
-}
 $preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
 
 $tp_uploader_cap = apply_filters( TP_UPLOADER_CAP, TP_UPLOADER_DEFAULT_CAP );
