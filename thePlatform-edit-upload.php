@@ -26,10 +26,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $account = get_option( TP_ACCOUNT_OPTIONS_KEY );
 if ( $account == false || empty( $account['mpx_account_id'] ) ) {
-	wp_die( '<h2>mpx Account ID is not set, please configure the plugin before attempting to manage media</h2>' );
+	wp_die( '<div class="error"><p>mpx Account ID is not set, please configure the plugin before attempting to manage media</p></div>' );
 }
-
-require_once( dirname( __FILE__ ) . '/thePlatform-HTML.php' );
 
 // Detect IE 9 and below which doesn't support HTML 5 File API
 preg_match( '/MSIE (.*?);/', $_SERVER['HTTP_USER_AGENT'], $matches );
@@ -38,8 +36,7 @@ if ( count( $matches ) > 1 ) {
 	//Then we're using IE
 	$version = $matches[1];
 	if ( $version <= 9 ) {
-		echo "<h2>Internet Explorer " . $version . ' is not supported</h2>';
-		exit;
+		wp_die('<div class="error"><p>Internet Explorer ' . esc_html( $version ) . ' is not supported</p></div>');		
 	}
 }
 
@@ -48,20 +45,21 @@ $preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
 $tp_uploader_cap = apply_filters( TP_UPLOADER_CAP, TP_UPLOADER_DEFAULT_CAP );
 $tp_revoke_cap   = apply_filters( TP_REVOKE_CAP, TP_REVOKE_DEFAULT_CAP );
 
+require_once( dirname( __FILE__ ) . '/thePlatform-HTML.php' );
+$tp_html = new ThePlatform_HTML();
+
 if ( ! defined( 'TP_MEDIA_BROWSER' ) ) {	
 	if ( ! current_user_can( $tp_uploader_cap ) ) {
-		wp_die( '<p>You do not have sufficient permissions to upload video to mpx</p>' );
+		wp_die( '<div class="error"><p>You do not have sufficient permissions to upload video to mpx</p></div>' );
 	}
 
 	?>
 	<div class="wrap">
 	<h2>Upload Video to mpx</h2>
 <?php
-} else {
-	// Edit Dialog has tabs, so we do all the necessary prefixing here
+} else {	
 	$tp_html->edit_tabs_header();
 } ?>
-
 	<div id="responsive-form" class="clearfix">
 		<form role="form">
 			<?php

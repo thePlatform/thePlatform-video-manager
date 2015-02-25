@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $account = get_option( TP_ACCOUNT_OPTIONS_KEY );
 if ( $account == false || empty( $account['mpx_account_id'] ) ) {
-	wp_die( 'mpx Account ID is not set, please configure the plugin before attempting to manage media' );
+	wp_die( '<div class="error"><p>mpx Account ID is not set, please configure the plugin before attempting to manage media</p></div>' );
 }
 
 define( 'TP_MEDIA_BROWSER', true );
@@ -30,20 +30,18 @@ define( 'TP_MEDIA_BROWSER', true );
 $tp_viewer_cap = apply_filters( TP_VIEWER_CAP, TP_VIEWER_DEFAULT_CAP );
 $tp_editor_cap = apply_filters( TP_EDITOR_CAP, TP_EDITOR_DEFAULT_CAP );
 
-global $page_hook;
-
 if ( ! current_user_can( $tp_viewer_cap ) ) {
-	wp_die( '<p>You do not have sufficient permissions to browse mpx Media</p>' );
+	wp_die( '<div class="error"><p>You do not have sufficient permissions to browse mpx Media</p></div>' );
 }
 
 require_once( dirname( __FILE__ ) . '/thePlatform-HTML.php' );
-require_once( dirname( __FILE__ ) . '/thePlatform-API.php' );
-
-
-$IS_EMBED    = $page_hook != 'toplevel_page_theplatform';
 $tp_html     = new ThePlatform_HTML();
+
 $preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
 $account     = get_option( TP_ACCOUNT_OPTIONS_KEY );
+
+global $page_hook;
+$IS_EMBED    = $page_hook != 'toplevel_page_theplatform';
 
 ?>
 

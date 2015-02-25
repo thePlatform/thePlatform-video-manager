@@ -20,6 +20,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+$tp_admin_cap = apply_filters( TP_ADMIN_CAP, TP_ADMIN_DEFAULT_CAP );
+if ( ! current_user_can( $tp_admin_cap ) ) {
+	wp_die( '<div class="error"><p>You do not have sufficient permissions to manage this plugin</p></div>' );
+}
+
 /**
  * Handle WordPress Settings API
  */
@@ -39,11 +44,7 @@ class ThePlatform_Options {
 	private $plugin_settings_tabs = array();
 	private $tp_api;
 
-	function __construct() {
-		$tp_admin_cap = apply_filters( TP_ADMIN_CAP, TP_ADMIN_DEFAULT_CAP );
-		if ( ! current_user_can( $tp_admin_cap ) ) {
-			wp_die( '<p>You do not have sufficient permissions to manage this plugin</p>' );
-		}
+	function __construct() {		
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 
 		$this->tp_api = new ThePlatform_API;

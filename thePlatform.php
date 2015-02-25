@@ -689,6 +689,3 @@ class ThePlatform_Plugin {
 
 // Instantiate thePlatform plugin on WordPress init
 add_action( 'init', array( 'ThePlatform_Plugin', 'init' ) );
-
-
-
