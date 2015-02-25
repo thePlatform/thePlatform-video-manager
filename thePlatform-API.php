@@ -615,14 +615,14 @@ class ThePlatform_API {
 			wp_send_json_error( "No Media ID specificed in the request" );
 		}
 
-		$fullId = $_POST['mediaId'];
+		$fullId = strval( $_POST['mediaId'] );
 
 		$id = substr( $fullId, strrpos( $fullId, '/' ) + 1 );
 
 		$token  = $this->mpx_signin();
 		$fields = $this->get_query_fields( $this->get_custom_metadata_fields() );
 
-		$url = TP_API_MEDIA_ENDPOINT . '&fields=id,guid,pid,title' . $fields . ' &token=' . $token . '&byId=' . $id;
+		$url = TP_API_MEDIA_ENDPOINT . '&fields=id,guid,pid,title' . $fields . ' &token=' . $token . '&byId=' . urlencode( $id );
 
 		$response = ThePlatform_API_HTTP::get( $url );
 
@@ -974,7 +974,7 @@ class ThePlatform_API {
 
 		if ( isset( $time ) ) {
 			$url .= '&_transformArguments[0].name=startTime';
-			$url .= '&_transformArguments[0].value=' . $time;
+			$url .= '&_transformArguments[0].value=' . urlencode( $time );
 		}
 
 		if ( isset( $crop ) ) {

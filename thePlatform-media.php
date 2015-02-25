@@ -146,10 +146,10 @@ if ( ! $IS_EMBED && current_user_can( $tp_editor_cap )) {
 
 	<script type="text/javascript">
 		tpHelper = {};
-		tpHelper.account = "<?php echo esc_js( $account['mpx_account_id'] ); ?>";
-		tpHelper.accountPid = "<?php echo esc_js( $account['mpx_account_pid'] ); ?>";
-		tpHelper.isEmbed = "<?php echo esc_js( $IS_EMBED ); ?>";
-		tpHelper.mediaEmbedType = "<?php echo esc_js( $preferences['media_embed_type'] ); ?>";
+		tpHelper.account = <?php echo json_encode( $account['mpx_account_id'] ); ?>;
+		tpHelper.accountPid = <?php echo json_encode( $account['mpx_account_pid'] ); ?>;
+		tpHelper.isEmbed = <?php echo json_encode( $IS_EMBED ); ?>;
+		tpHelper.mediaEmbedType = <?php echo json_encode( $preferences['media_embed_type'] ); ?>;
 		tpHelper.selectedCategory = '';
 		tpHelper.queryString = '';
 		tpHelper.currentPage = 1;

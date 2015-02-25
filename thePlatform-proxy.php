@@ -98,7 +98,7 @@ class ThePlatform_Proxy {
 	public function publish_media() {
 		$this->check_nonce_and_permissions( $_POST['action'] );
 
-		if ( $_POST['profile'] == 'wp_tp_none' ) {
+		if ( $_POST['profile'] === 'wp_tp_none' ) {
 			wp_send_json_success( "No Publishing Profile Selected" );
 		}
 
@@ -113,7 +113,7 @@ class ThePlatform_Proxy {
 		$mediaId   = $_POST['mediaId'];
 
 		$publishUrl = TP_API_PUBLISH_BASE_URL;
-		$publishUrl .= '&token=' . $token;
+		$publishUrl .= '&token=' . urlencode( $token );
 		$publishUrl .= '&account=' . urlencode( $_POST['account'] );
 		$publishUrl .= '&_mediaId=' . urlencode( $mediaId );
 		$publishUrl .= '&_profileId=' . urlencode( $profileId );
@@ -141,7 +141,7 @@ class ThePlatform_Proxy {
 		$mediaId   = $_POST['mediaId'];
 
 		$publishUrl = TP_API_REVOKE_BASE_URL;
-		$publishUrl .= '&token=' . $token;
+		$publishUrl .= '&token=' . urlencode( $token );
 		$publishUrl .= '&account=' . urlencode( $_POST['account'] );
 		$publishUrl .= '&_mediaId=' . urlencode( $mediaId );
 		$publishUrl .= '&_profileId=' . urlencode( $profileId );
