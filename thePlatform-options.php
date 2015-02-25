@@ -484,8 +484,6 @@ class ThePlatform_Options {
 	 */
 	function plugin_options_tabs() {
 		$current_tab = isset( $_GET['tab'] ) ? $_GET['tab'] : TP_ACCOUNT_OPTIONS_KEY;
-
-		screen_icon( 'theplatform' );
 		echo '<h2 class="nav-tab-wrapper">';
 		foreach ( $this->plugin_settings_tabs as $tab_key => $tab_caption ) {
 			$active = $current_tab == $tab_key ? 'nav-tab-active' : '';

@@ -271,7 +271,6 @@ class ThePlatform_HTML {
 			}
 		}
 
-		$len = count( $write_fields ) - 1;
 		$i   = 0;
 		foreach ( $write_fields as $basic_field ) {
 			$field_title = ( strstr( $basic_field, '$' ) !== false ) ? substr( strstr( $basic_field, '$' ), 1 ) : $basic_field;
@@ -316,7 +315,6 @@ class ThePlatform_HTML {
 			echo '</div>';
 		}
 
-		$html         = '';
 		$write_fields = array();
 
 		foreach ( $this->custom_metadata_options as $custom_field => $val ) {
@@ -345,7 +343,6 @@ class ThePlatform_HTML {
 			$field_namespace = $metadata_info['namespace'];
 			$field_type      = $metadata_info['dataType'];
 			$field_structure = $metadata_info['dataStructure'];
-			$allowed_values  = $metadata_info['allowedValues'];
 
 			if ( $field_title === $this->preferences['user_id_customfield'] ) {
 				continue;

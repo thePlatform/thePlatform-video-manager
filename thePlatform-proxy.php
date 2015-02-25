@@ -91,28 +91,6 @@ class ThePlatform_Proxy {
 		wp_send_json_success( $parsedResponse );
 	}
 
-	private function proxy_http_request( $data = array() ) {
-		$method = strtolower( $_POST['method'] );
-		$url    = $_POST['url'];
-
-		switch ( $method ) {
-			case 'put':
-				$response = ThePlatform_API_HTTP::put( $url, $data );
-				break;
-			case 'get':
-				$response = ThePlatform_API_HTTP::get( $url );
-				break;
-			case 'post':
-				$response = ThePlatform_API_HTTP::post( $url, $data );
-				break;
-			default:
-				$response = array();
-				break;
-		}
-
-		return $response;
-	}
-
 	/**
 	 * Publish an uploaded media asset using the 'Wordpress' profile
 	 * @return mixed JSON response or instance of WP_Error

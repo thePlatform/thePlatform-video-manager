@@ -638,9 +638,9 @@ class ThePlatform_API {
 	/**
 	 * Transforms a numerical WordPress User ID from a custom field to a human readable value
 	 *
-	 * @param object $media mpx Media Object
+	 * @param array $media mpx Media Object
 	 *
-	 * @return object Returns the same Media object back with the field transformed
+	 * @return array Returns the same Media object back with the field transformed
 	 */
 	function transform_user_id( $media ) {
 		$customIdFieldName = $this->preferences['user_id_customfield'];

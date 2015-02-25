@@ -15,7 +15,7 @@
  with this program; if not, write to the Free Software Foundation, Inc.,
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-var theplatform_browser = (function($) {
+var theplatform_browser = (function ($) {
     /**
      * UI Methods
      * @type {Object}
@@ -25,11 +25,10 @@ var theplatform_browser = (function($) {
          * Refresh the infinite scrolling media list based on the selected category and search options
          * @return {void}
          */
-        refreshView: function() {
+        refreshView: function () {
             if (viewLoading) {
                 return;
             }
-            viewLoading = true;
             UI.notifyUser('clear'); //clear alert box.
             UI.updateContentPane({
                 title: ''
@@ -50,7 +49,7 @@ var theplatform_browser = (function($) {
             Events.onGetMedia(tpHelper.currentPage);
         },
 
-        notifyUser: function(type, msg) {
+        notifyUser: function (type, msg) {
             var $msgPanel = $('#message-panel');
 
             if (type === 'clear') {
@@ -62,7 +61,7 @@ var theplatform_browser = (function($) {
             $msgPanel.children().text(msg);
         },
 
-        updateContentPane: function(mediaItem) {
+        updateContentPane: function (mediaItem) {
             if (mediaItem.title == '') {
                 $('#info-container').css('visibility', 'hidden');
                 $('.tpPlayer').css('visibility', 'hidden');
@@ -70,18 +69,16 @@ var theplatform_browser = (function($) {
                 $('#info-container').css('visibility', 'visible');
             }
 
-            var i, catArray, catList;
+            var $fields = $('.tp-field');
 
-            var $fields = $('.tp-field')
-
-            $fields.each(function(index, value) {
+            $fields.each(function (index, value) {
                 var $field = $(value);
                 var prefix = $field.data('prefix');
                 var dataType = $field.data('type');
                 var dataStructure = $field.data('structure');
 
                 var name = $field.data('name');
-                var fullName = name
+                var fullName = name;
                 if (prefix !== undefined)
                     fullName = prefix + '$' + name;
                 var value = mediaItem[fullName];
@@ -129,14 +126,14 @@ var theplatform_browser = (function($) {
                 $('#media-' + name).html(value || '');
 
                 // Update content on the hidden Edit dialog
-                var upload_field = $('#theplatform_upload_' + fullName.replace('$', "\\$"))
+                var upload_field = $('#theplatform_upload_' + fullName.replace('$', "\\$"));
                 if (!upload_field.hasClass('userid')) {
-                    $('#theplatform_upload_' + fullName.replace('$', "\\$")).val(value || '');
+                    upload_field.val(value || '');
                 }
             });
         },
 
-        addMediaObject: function(media) {
+        addMediaObject: function (media) {
             var placeHolder = "";
             if (media.defaultThumbnailUrl === "")
                 placeHolder = "holder.js/128x72/text:No Thumbnail";
@@ -169,7 +166,7 @@ var theplatform_browser = (function($) {
             newMedia.data('release', previewUrl.pop());
 
             // Update or add new media to the UI
-            var existingMedia = document.getElementById(media.id)
+            var existingMedia = document.getElementById(media.id);
             if (existingMedia != null) {
                 $(existingMedia).replaceWith(newMedia);
             } else {
@@ -182,22 +179,22 @@ var theplatform_browser = (function($) {
             if ($('#media-list').children().length < 2)
                 $('.tp-media', '#media-list').click();
         },
-        updateMediaObject: function(mediaId) {
-            API.getVideoById(mediaId, function(media) {
+        updateMediaObject: function (mediaId) {
+            API.getVideoById(mediaId, function (media) {
                 if (_.has(media, 'id'))
                     UI.addMediaObject(media);
                 UI.updateContentPane(media);
                 Holder.run();
             });
         }
-    }
+    };
 
     /**
      * Event Handlers
      * @type {Object}
      */
     var Events = {
-        onClickMedia: function(e) {
+        onClickMedia: function (e) {
             UI.updateContentPane($(this).data('media'));
             $('.tp-media.selected').removeClass('selected');
             $(this).addClass('selected');
@@ -223,7 +220,7 @@ var theplatform_browser = (function($) {
                 $('#modal-player-placeholder').show();
             }
         },
-        onEmbed: function() {
+        onEmbed: function () {
             var player = $('#selectpick-player').val();
 
             var shortcodeSource = $("#shortcode-template").html();
@@ -236,15 +233,14 @@ var theplatform_browser = (function($) {
                 player: player
             });
 
-
             var win = window.dialogArguments || opener || parent || top;
 
             win.wp.media.editor.insert(shortcode.trim());
 
         },
-        onEmbedAndClose: function() {
+        onEmbedAndClose: function () {
             Events.onEmbed();
-            var win = opener || parent
+            var win = opener || parent;
             if (win.jQuery('#tp-embed-dialog').length != 0) {
                 win.jQuery('#tp-embed-dialog').dialog('close');
             }
@@ -252,7 +248,7 @@ var theplatform_browser = (function($) {
                 win.tinyMCE.activeEditor.windowManager.close();
             }
         },
-        onSetImage: function() {
+        onSetImage: function () {
             var post_id = window.parent.jQuery('#post_ID').val();
             if (!tpHelper.selectedThumb || !post_id)
                 return;
@@ -263,31 +259,31 @@ var theplatform_browser = (function($) {
                 _wpnonce: tp_browser_local.tp_nonce['set_thumbnail']
             };
 
-            $.post(tp_browser_local.ajaxurl, data, function(response) {
+            $.post(tp_browser_local.ajaxurl, data, function (response) {
                 if (response.success)
                     window.parent.jQuery('#postimagediv .inside').html(response.data);
             });
         },
-        onEditMetadata: function() {
+        onEditMetadata: function () {
             $("#tp-edit-dialog").dialog({
                 modal: true,
                 title: 'Edit Media',
                 resizable: true,
                 minWidth: 800,
                 width: 1024,
-                open: function() {
+                open: function () {
                     $('#tp-edit-dialog').data('refresh', 'false');
                     $('.ui-dialog-titlebar-close').addClass('ui-button');
                     theplatform_edit.updatePublishProfiles(tpHelper.mediaId);
                 },
-                close: function() {
+                close: function () {
                     // if ($('#tp-edit-dialog').data('refresh') == 'true')
 
                 }
             }).css("overflow", "hidden");
             return false;
         },
-        onGenerateThumbnail: function() {
+        onGenerateThumbnail: function () {
             if ($(this).val() == 'Generating') {
                 return;
             }
@@ -307,69 +303,69 @@ var theplatform_browser = (function($) {
                 url: tp_browser_local.ajaxurl,
                 method: 'post',
                 data: data,
-                success: function(response) {
+                success: function (response) {
                     theplatform_edit.onSuccess(response, me)
                 },
-                complete: function(response) {
+                complete: function (response) {
                     theplatform_edit.onComplete(me, "Generate Thumbnail", "secondary")
                 }
 
             });
         },
-        onMediaPlaying: function(media) {
+        onMediaPlaying: function (media) {
             tpHelper.currentMediaTime = media.data.currentTimeAggregate;
         },
-        OnLoadReleaseUrl: function(release) {
+        OnLoadReleaseUrl: function (release) {
             tpHelper.currentMediaTime = undefined;
         },
-        onGetMedia: function(page) {
+        onGetMedia: function (page) {
             var MAX_RESULTS = 10;
             $('.spinner').show(); // show loading before we call getVideos            
             var theRange = ((page - 1) * MAX_RESULTS + 1) + '-' + (page * MAX_RESULTS);
 
             console.log(theRange);
-            API.getVideos(theRange, function(resp) {
+            API.getVideos(theRange, function (resp) {
                 tpHelper.feedResultCount = resp['entryCount'];
 
                 // Update pagination
                 var totalResults = resp['totalResults'];
                 $('.displaying-num').text(totalResults + ' items');
                 if (totalResults != 0) {
-                    var pages = Math.ceil(resp['totalResults'] / MAX_RESULTS)
+                    var pages = Math.ceil(resp['totalResults'] / MAX_RESULTS);
                     $('.total-pages').text(pages);
-                    $('.current-page').each(function() {
+                    $('.current-page').each(function () {
                         $(this).attr('max', pages).val(page)
                     });
 
                     if (pages <= 1) {
-                        $('.pagination-links a').each(function() {
+                        $('.pagination-links a').each(function () {
                             $(this).addClass('disabled')
                         })
                     }
 
                     if (pages > 1) {
-                        $('.first-page,.prev-page,.last-page,.next-page').each(function() {
+                        $('.first-page,.prev-page,.last-page,.next-page').each(function () {
                             $(this).removeClass('disabled')
                         })
                     }
 
                     if (page == pages) {
-                        $('.last-page,.next-page').each(function() {
+                        $('.last-page,.next-page').each(function () {
                             $(this).addClass('disabled')
                         })
                     }
 
                     if (page == 1) {
-                        $('.first-page,.prev-page').each(function() {
+                        $('.first-page,.prev-page').each(function () {
                             $(this).addClass('disabled')
                         })
                     }
                 } else {
                     $('.total-pages').text(1);
-                    $('.current-page').each(function() {
+                    $('.current-page').each(function () {
                         $(this).attr('max', 1).val(1)
                     });
-                    $('.pagination-links a').each(function() {
+                    $('.pagination-links a').each(function () {
                         $(this).addClass('disabled')
                     })
                 }
@@ -385,11 +381,11 @@ var theplatform_browser = (function($) {
                     UI.addMediaObject(entries[i]);
                 }
 
-                $('.spinner').hide()
+                $('.spinner').hide();
                 Holder.run();
             });
         },
-        onMouseScroll: function(ev) {
+        onMouseScroll: function (ev) {
             var $this = $(this),
                 scrollTop = this.scrollTop,
                 scrollHeight = this.scrollHeight,
@@ -397,7 +393,7 @@ var theplatform_browser = (function($) {
                 delta = (ev.type == 'DOMMouseScroll' ? ev.originalEvent.detail * -40 : ev.originalEvent.wheelDelta),
                 up = delta > 0;
 
-            var prevent = function() {
+            var prevent = function () {
                 ev.stopPropagation();
                 ev.preventDefault();
                 ev.returnValue = false;
@@ -414,14 +410,14 @@ var theplatform_browser = (function($) {
                 return prevent();
             }
         }
-    }
+    };
 
     /**
      * Data Formatting Methods
      * @type {Object}
      */
     var Formatting = {
-        formatValue: function(value, dataType) {
+        formatValue: function (value, dataType) {
             switch (dataType) {
                 case 'DateTime':
                     value = new Date(value);
@@ -436,7 +432,7 @@ var theplatform_browser = (function($) {
             return value;
         },
 
-        secondsToDuration: function(secs) {
+        secondsToDuration: function (secs) {
             var t = new Date(1970, 0, 1);
             t.setSeconds(secs);
             var s = t.toTimeString().substr(0, 8);
@@ -445,32 +441,33 @@ var theplatform_browser = (function($) {
             return s;
         },
 
-        extractVideoUrlfromMedia: function(media) {
+        extractVideoUrlfromMedia: function (media) {
             var urls = [];
             if (!_.has(media, 'content'))
                 return urls;
 
             for (var i = 0; i < media.content.length; i++) {
-                var content = media.content[i]
+                var content = media.content[i];
                 if ((content.contentType == "video" || content.contentType == "audio") && content.releases) {
                     for (var releaseIndex in content.releases) {
                         if (content.releases[releaseIndex].delivery == "streaming")
                             urls.push(content.releases[releaseIndex].pid);
                     }
                 }
-            };
+            }
+            ;
 
             return urls;
         }
 
-    }
+    };
 
     /**
      * mpx API calls
      * @type {Object}
      */
     var API = {
-        getVideos: function(range, callback) {
+        getVideos: function (range, callback) {
 
             var data = {
                 _wpnonce: tp_browser_local.tp_nonce['get_videos'],
@@ -481,8 +478,7 @@ var theplatform_browser = (function($) {
                 myContent: $('#my-content-cb').prop('checked')
             };
 
-            $.post(tp_browser_local.ajaxurl, data, function(resp) {
-                viewLoading = false;
+            $.post(tp_browser_local.ajaxurl, data, function (resp) {
                 if (!resp.success) {
                     UI.notifyUser('danger', resp.data);
                     $('.spinner').hide();
@@ -491,19 +487,19 @@ var theplatform_browser = (function($) {
                 }
             });
         },
-        getVideoCount: function() {
+        getVideoCount: function () {
             var data = {
                 _wpnonce: tp_browser_local.tp_nonce['get_videos'],
                 action: 'get_video_count',
                 myContent: $('#my-content-cb').prop('checked')
             };
 
-            $.post(tp_browser_local.ajaxurl, data, function(resp) {
+            $.post(tp_browser_local.ajaxurl, data, function (resp) {
                 $('.displaying-num').text(resp.data + ' items');
                 console.log(resp);
             });
         },
-        buildMediaQuery: function(data) {
+        buildMediaQuery: function (data) {
 
             var queryParams = '';
             if (data.category)
@@ -526,7 +522,7 @@ var theplatform_browser = (function($) {
 
             return queryParams;
         },
-        getCategoryList: function(callback) {
+        getCategoryList: function (callback) {
             var data = {
                 _wpnonce: tp_browser_local.tp_nonce['get_categories'],
                 action: 'get_categories',
@@ -535,7 +531,7 @@ var theplatform_browser = (function($) {
             };
 
             $.post(tp_browser_local.ajaxurl, data,
-                function(entries) {
+                function (entries) {
                     var categoryPicker = $('#selectpick-categories');
                     // Add each category
                     for (var idx in entries) {
@@ -547,21 +543,21 @@ var theplatform_browser = (function($) {
                     }
                 });
         },
-        getVideoById: function(mediaId, callback) {
+        getVideoById: function (mediaId, callback) {
             var data = {
                 _wpnonce: tp_browser_local.tp_nonce['get_video_by_id'],
                 action: 'get_video_by_id',
                 mediaId: mediaId
             };
 
-            $.post(tp_browser_local.ajaxurl, data, function(resp) {
+            $.post(tp_browser_local.ajaxurl, data, function (resp) {
                 callback(resp.data)
             });
         }
     };
 
     //Make my life easier by prototyping this into the string.
-    String.prototype.appendParams = function(params) {
+    String.prototype.appendParams = function (params) {
         var updatedString = this;
         for (var key in params) {
             if (updatedString.indexOf(key + '=') > -1)
@@ -576,17 +572,17 @@ var theplatform_browser = (function($) {
     };
 
     // Set up our template helper method
-    _.template.formatDescription = function(description) {
+    _.template.formatDescription = function (description) {
         if (description && description.length > 300) {
             return description.substring(0, 297) + '...';
         }
         return description;
     };
 
-    $(document).ready(function() {
+    $(document).ready(function () {
         if (!_.isUndefined(window.$pdk)) {
             $pdk.initialize();
-            $pdk.controller.addEventListener('OnMediaPlaying', Events.onMediaPlaying)
+            $pdk.controller.addEventListener('OnMediaPlaying', Events.onMediaPlaying);
             $pdk.controller.addEventListener('OnLoadReleaseUrl', Events.onLoadReleaseUrl)
         }
 
@@ -602,17 +598,17 @@ var theplatform_browser = (function($) {
          * Search form event handlers
          */
         $('#btn-search').click(UI.refreshView);
-        $('#input-search').keyup(function(event) {
+        $('#input-search').keyup(function (event) {
             if (event.keyCode == 13)
                 UI.refreshView();
         });
 
-        $('#current-page-selector').keyup(function(event) {
+        $('#current-page-selector').keyup(function (event) {
             if (event.keyCode == 13)
                 Events.onGetMedia($(this).val())
         });
 
-        $('.pagination-links a').click(function(e) {
+        $('.pagination-links a').click(function (e) {
             e.preventDefault();
 
             if ($(this).hasClass('disabled')) {
@@ -622,11 +618,11 @@ var theplatform_browser = (function($) {
 
             switch (buttonClass) {
                 case 'next-page':
-                    tpHelper.currentPage++
-                        break;
+                    tpHelper.currentPage++;
+                    break;
                 case 'prev-page':
-                    tpHelper.currentPage--
-                        break;
+                    tpHelper.currentPage--;
+                    break;
                 case 'last-page':
                     tpHelper.currentPage = parseInt($('.total-pages')[0].innerText);
                     break;
@@ -637,7 +633,7 @@ var theplatform_browser = (function($) {
 
             Events.onGetMedia(tpHelper.currentPage)
 
-        })
+        });
 
         // Load Categories from mpx
         API.getCategoryList();

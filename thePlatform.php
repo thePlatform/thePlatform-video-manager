@@ -238,7 +238,7 @@ class ThePlatform_Plugin {
 	 * Calls the Upload Window template	
 	 */
 	function upload_window() {
-		require_once( $this->plugin_base_dir . 'thePlatform-upload-window.php' );
+		require_once( $this->plugin_base_dir . '/thePlatform-upload-window.php' );
 	}
 
 	/**

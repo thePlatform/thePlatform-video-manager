@@ -15,13 +15,13 @@
  with this program; if not, write to the Free Software Foundation, Inc.,
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-TheplatformUploader = (function() {
+TheplatformUploader = (function () {
 
     /**
      @function prepareForUpload Creates a placeholder media and gets all the required information
      to upload a new media file
      */
-    TheplatformUploader.prototype.prepareForUpload = function() {
+    TheplatformUploader.prototype.prepareForUpload = function () {
         var me = this;
 
         var file = this.files[this.currentFileIndex];
@@ -49,14 +49,14 @@ TheplatformUploader = (function() {
 
         me.message("Initializing Upload of file " + (me.currentFileIndex + 1) + ' out of ' + (me.lastFileIndex + 1));
 
-        jQuery.post(tp_file_uploader_local.ajaxurl, data, function(response) {
+        jQuery.post(tp_file_uploader_local.ajaxurl, data, function (response) {
             if (response.success) {
                 var data = response.data;
 
                 if (me._mediaId == undefined) {
                     me.message("Media created with id: " + data.mediaId);
                 }
-                me.uploadUrl = data.uploadUrl
+                me.uploadUrl = data.uploadUrl;
                 me.token = data.token;
                 me.account = data.account;
                 me._mediaId = data.mediaId;
@@ -76,7 +76,7 @@ TheplatformUploader = (function() {
      @function startUpload Inform FMS via the API proxy that we are starting an upload
      passed to the proxy
      */
-    TheplatformUploader.prototype.startUpload = function() {
+    TheplatformUploader.prototype.startUpload = function () {
         var me = this;
 
         var requestUrl = me.uploadUrl + '/web/Upload/startUpload';
@@ -98,7 +98,7 @@ TheplatformUploader = (function() {
             xhrFields: {
                 withCredentials: true
             },
-            success: function(response) {
+            success: function (response) {
                 me.waitForReady();
             }
         });
@@ -107,7 +107,7 @@ TheplatformUploader = (function() {
     /**
      @function waitForReady Wait for FMS to become ready for the upload
      */
-    TheplatformUploader.prototype.waitForReady = function() {
+    TheplatformUploader.prototype.waitForReady = function () {
         var me = this;
 
         var requestUrl = me.uploadUrl + '/data/UploadStatus';
@@ -124,7 +124,7 @@ TheplatformUploader = (function() {
             xhrFields: {
                 withCredentials: true
             },
-            success: function(data) {
+            success: function (data) {
                 if (data.entries.length !== 0) {
                     var state = data.entries[0].state;
 
@@ -138,29 +138,27 @@ TheplatformUploader = (function() {
 
                         me.message("Beginning upload of " + frags.length + " fragments");
 
-
-                        me.message('Uploading file ' + (me.currentFileIndex + 1) + ' out of ' + (me.lastFileIndex + 1), true)
-                        NProgress.set(0.00001)
+                        me.message('Uploading file ' + (me.currentFileIndex + 1) + ' out of ' + (me.lastFileIndex + 1), true);
+                        NProgress.set(0.00001);
                         NProgress.settings.trickle = true;
                         NProgress.settings.trickleRate = me.progressIncrements / 35;
                         NProgress.settings.trickleSpeed = 650;
                         NProgress.start();
 
-
                         me.uploadFragments(frags, 0);
                     } else {
-                        setTimeout(function() {
+                        setTimeout(function () {
                             me.waitForReady()
                         }, 1000);
                     }
                 } else {
-                    setTimeout(function() {
+                    setTimeout(function () {
                         me.waitForReady()
                     }, 1000);
                 }
             },
-            error: function(data) {
-                setTimeout(function() {
+            error: function (data) {
+                setTimeout(function () {
                     me.waitForReady()
                 }, 1000);
             }
@@ -173,7 +171,7 @@ TheplatformUploader = (function() {
      @param {Array} fragments - Array of file fragments
      @param {Integer} index - Index of current fragment to upload
      */
-    TheplatformUploader.prototype.uploadFragments = function(fragments, index) {
+    TheplatformUploader.prototype.uploadFragments = function (fragments, index) {
         var me = this;
 
         if (index >= this.num_fragments) {
@@ -189,8 +187,6 @@ TheplatformUploader = (function() {
         if (this.failed) {
             return;
         }
-
-
 
         NProgress.settings.incLimit = me.progressIncrements * (index + 1);
 
@@ -212,7 +208,7 @@ TheplatformUploader = (function() {
             xhrFields: {
                 withCredentials: true
             },
-            success: function(response) {
+            success: function (response) {
                 me.frags_uploaded++;
                 me.current_uploads--;
                 if (me.num_fragments == me.frags_uploaded) {
@@ -232,9 +228,9 @@ TheplatformUploader = (function() {
                     me.uploadFragments(fragments, me.frags_uploaded + me.current_uploads);
                 }
             },
-            error: function(data) {
+            error: function (data) {
                 me.message(response.data.description, true);
-                setTimeout(function() {
+                setTimeout(function () {
                     me.uploadFragments(fragments, index);
                 }, 1000);
             }
@@ -244,7 +240,7 @@ TheplatformUploader = (function() {
     /**
      @function finish Notify mpx that the upload has finished
      */
-    TheplatformUploader.prototype.finish = function() {
+    TheplatformUploader.prototype.finish = function () {
         var me = this;
 
         var requestUrl = me.uploadUrl + '/web/Upload/finishUpload';
@@ -255,7 +251,7 @@ TheplatformUploader = (function() {
 
         var data = "finished";
 
-        me.message('Finishing upload of file ' + (me.currentFileIndex + 1) + ' out of ' + (me.lastFileIndex + 1), true)
+        me.message('Finishing upload of file ' + (me.currentFileIndex + 1) + ' out of ' + (me.lastFileIndex + 1), true);
         jQuery.ajax({
             url: requestUrl,
             data: data,
@@ -263,10 +259,10 @@ TheplatformUploader = (function() {
             xhrFields: {
                 withCredentials: true
             },
-            success: function(response) {
+            success: function (response) {
                 me.waitForComplete();
             },
-            error: function(response) {
+            error: function (response) {
 
             }
         });
@@ -276,7 +272,7 @@ TheplatformUploader = (function() {
      @function waitForComplete Poll FMS via the API proxy until upload status is 'Complete'
      passed to the proxy
      */
-    TheplatformUploader.prototype.waitForComplete = function() {
+    TheplatformUploader.prototype.waitForComplete = function () {
         var me = this;
 
         var requestUrl = me.uploadUrl + '/data/UploadStatus';
@@ -294,19 +290,17 @@ TheplatformUploader = (function() {
             xhrFields: {
                 withCredentials: true
             },
-            error: function(data) {
-                setTimeout(function() {
+            error: function (data) {
+                setTimeout(function () {
                     me.waitForComplete();
                 }, 5000)
             },
-            success: function(data) {
+            success: function (data) {
                 if (data.entries.length != 0) {
                     var state = data.entries[0].state;
 
                     if (state === "Complete") {
-                        var fileID = data.entries[0].fileId;
-
-                        me.file_id = fileID;
+                        me.file_id = data.entries[0].fileId;
 
                         // On the last file, finish up.
                         if (me.currentFileIndex == me.lastFileIndex) {
@@ -323,12 +317,12 @@ TheplatformUploader = (function() {
                         me.error(data.entries[0].exception, true);
                     } else {
                         me.message(state);
-                        setTimeout(function() {
+                        setTimeout(function () {
                             me.waitForComplete();
                         }, 5000)
                     }
                 } else {
-                    setTimeout(function() {
+                    setTimeout(function () {
                         me.waitForComplete();
                     }, 5000)
                 }
@@ -340,7 +334,7 @@ TheplatformUploader = (function() {
      @function publishMedia Publishes the uploaded media via the API proxy
      passed to the proxy
      */
-    TheplatformUploader.prototype.publishMedia = function() {
+    TheplatformUploader.prototype.publishMedia = function () {
         var me = this;
         var params = {
             mediaId: me._mediaId,
@@ -363,7 +357,7 @@ TheplatformUploader = (function() {
             url: tp_file_uploader_local.ajaxurl,
             data: params,
             type: "POST",
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     me.message("Media published successfully", true);
                 } else {
@@ -377,7 +371,7 @@ TheplatformUploader = (function() {
      @function cancel Notify the API proxy to cancel the upload process
      passed to the proxy
      */
-    TheplatformUploader.prototype.cancel = function() {
+    TheplatformUploader.prototype.cancel = function () {
         var me = this;
 
         var requestUrl = me.uploadUrl + '/web/Upload/cancelUpload';
@@ -394,7 +388,7 @@ TheplatformUploader = (function() {
             xhrFields: {
                 withCredentials: true
             },
-            complete: function() {
+            complete: function () {
                 me.message('Upload canceled')
             }
         });
@@ -405,7 +399,7 @@ TheplatformUploader = (function() {
      @param {File} file - file to slice
      @return {Array} array of file fragments
      */
-    TheplatformUploader.prototype.fragFile = function(file) {
+    TheplatformUploader.prototype.fragFile = function (file) {
 
         var i, j, k;
         var ret = [];
@@ -425,7 +419,7 @@ TheplatformUploader = (function() {
         return ret;
     };
 
-    TheplatformUploader.prototype.createUUID = function() {
+    TheplatformUploader.prototype.createUUID = function () {
         // http://www.ietf.org/rfc/rfc4122.txt
         var s = [];
         var hexDigits = "0123456789abcdef";
@@ -436,8 +430,7 @@ TheplatformUploader = (function() {
         s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1); // bits 6-7 of the clock_seq_hi_and_reserved to 01
         s[8] = s[13] = s[18] = s[23] = "-";
 
-        var uuid = s.join("");
-        return uuid;
+        return  s.join("");
     };
 
     /**
@@ -445,7 +438,7 @@ TheplatformUploader = (function() {
      @param {String} msg - The message to display
      @param {Boolean} fade - Whether or not to fade the message div after some delay
      */
-    TheplatformUploader.prototype.message = function(msg, userFacing, isError) {
+    TheplatformUploader.prototype.message = function (msg, userFacing, isError) {
         console.log(msg);
 
         if (!userFacing) return;
@@ -457,7 +450,7 @@ TheplatformUploader = (function() {
 
         jQuery('.lead').animate({
             'opacity': 0
-        }, 500, function() {
+        }, 500, function () {
             jQuery(this).html(msg);
         }).animate({
             'opacity': 1
@@ -469,7 +462,7 @@ TheplatformUploader = (function() {
      @param {String} msg - The message to display
      @param {Boolean} fade - Whether or not to fade the message div after some delay
      */
-    TheplatformUploader.prototype.error = function(msg) {
+    TheplatformUploader.prototype.error = function (msg) {
         this.message(msg, true, true);
     };
 
@@ -501,7 +494,7 @@ TheplatformUploader = (function() {
 
         jQuery.ajaxSetup({
             dataType: 'json'
-        })
+        });
 
         this.files = files;
         this.lastFileIndex = files.length - 1;
