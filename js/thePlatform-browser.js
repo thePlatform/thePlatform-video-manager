@@ -319,7 +319,7 @@ var theplatform_browser = (function ($) {
             tpHelper.currentMediaTime = undefined;
         },
         onGetMedia: function (page) {
-            var MAX_RESULTS = 10;
+            var MAX_RESULTS = 20;
             $('.spinner').show(); // show loading before we call getVideos            
             var theRange = ((page - 1) * MAX_RESULTS + 1) + '-' + (page * MAX_RESULTS);
 
