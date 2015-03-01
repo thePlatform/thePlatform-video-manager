@@ -63,7 +63,7 @@
                 var receiver = $(e.target).data('col');
                 var itemId = $(ui.item).data('id');
 
-                if (receiver == "write" && ($(ui.item).data('userfield') == true || $(ui.item).data('id') == 'id')) {
+                if (receiver == "write" && ($(ui.item).data('userfield') === true || $(ui.item).data('id') == 'id')) {
                     $(ui.sender).sortable('cancel');
                 } else {
                     var $selectField = $('select[name="' + $optionsPageName.val() + '[' + itemId + ']"]');
@@ -86,7 +86,7 @@
 
         var data = {
             action: 'verify_account',
-            _wpnonce: tp_options_local.tp_nonce['verify_account'],
+            _wpnonce: tp_options_local.tp_nonce.verify_account,
             auth_hash: hash
         };
 
@@ -141,18 +141,18 @@
         $('#mpx_account_pid').parent().parent().hide();
         $('#default_player_pid').parent().parent().hide();
 
-        if ($('#mpx_account_id option:selected').length != 0) {
+        if ($('#mpx_account_id option:selected').length !== 0) {
 
             $('#mpx_account_pid').val($('#mpx_account_id option:selected').val().split('|')[1]);
         } else
             $('#mpx_account_id').parent().parent().hide();
 
-        if ($('#default_player_name option:selected').length != 0) {
+        if ($('#default_player_name option:selected').length !== 0) {
             $('#default_player_pid').val($('#default_player_name option:selected').val().split('|')[1]);
         } else
             $('#default_player_name').parent().parent().hide();
 
-        if ($('#mpx_server_id option:selected').length == 0) {
+        if ($('#mpx_server_id option:selected').length === 0) {
             $('#mpx_server_id').parent().parent().hide();
         }
 
@@ -164,7 +164,7 @@
         //Set up the PID for the Player on change in the Settings page
         $('#default_player_name').change(function () {
             $('#default_player_pid').val($('#default_player_name option:selected').val().split('|')[1]);
-        })
+        });
     }
 
     $(document).ready(function () {

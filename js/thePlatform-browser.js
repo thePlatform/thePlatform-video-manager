@@ -25,10 +25,7 @@ var theplatform_browser = (function ($) {
          * Refresh the infinite scrolling media list based on the selected category and search options
          * @return {void}
          */
-        refreshView: function () {
-            if (viewLoading) {
-                return;
-            }
+        refreshView: function () {            
             UI.notifyUser('clear'); //clear alert box.
             UI.updateContentPane({
                 title: ''
@@ -62,7 +59,7 @@ var theplatform_browser = (function ($) {
         },
 
         updateContentPane: function (mediaItem) {
-            if (mediaItem.title == '') {
+            if (mediaItem.title === '') {
                 $('#info-container').css('visibility', 'hidden');
                 $('.tpPlayer').css('visibility', 'hidden');
             } else {
@@ -83,7 +80,7 @@ var theplatform_browser = (function ($) {
                     fullName = prefix + '$' + name;
                 var value = mediaItem[fullName];
 
-                if (name == 'id' && value != undefined) {
+                if (name == 'id' && value !== undefined) {
                     value = value.substring(value.lastIndexOf('/') + 1);
                 }
 
@@ -96,7 +93,7 @@ var theplatform_browser = (function ($) {
                             catList += ', ';
                         catList += catArray[i].name;
                     }
-                    value = catList
+                    value = catList;
                 } else if (!_.isEmpty(value)) {
                     if (dataStructure == 'List' || dataStructure == 'Map') {
                         var valString = '';
@@ -160,14 +157,15 @@ var theplatform_browser = (function ($) {
 
             // For the Embed dialog, we don't media without a release in the list
             // TODO: Consider changing this because of OneURL
-            if (previewUrl.length == 0 && tpHelper.isEmbed == "1")
+            if (previewUrl.length === 0 && tpHelper.isEmbed == "1") {                
                 return;
+            }
 
             newMedia.data('release', previewUrl.pop());
 
             // Update or add new media to the UI
             var existingMedia = document.getElementById(media.id);
-            if (existingMedia != null) {
+            if (existingMedia !== null) {
                 $(existingMedia).replaceWith(newMedia);
             } else {
                 $('#media-list').append(newMedia);
@@ -209,7 +207,7 @@ var theplatform_browser = (function ($) {
             }
 
             tpHelper.mediaId = $(this).data('id');
-            tpHelper.selectedThumb = $(this).data('media')['defaultThumbnailUrl'];
+            tpHelper.selectedThumb = $(this).data('media').defaultThumbnailUrl;
             $pdk.controller.resetPlayer();
             if ($(this).data('release') !== undefined) {
                 $('#modal-player-placeholder').hide();
@@ -239,14 +237,7 @@ var theplatform_browser = (function ($) {
 
         },
         onEmbedAndClose: function () {
-            Events.onEmbed();
-            var win = opener || parent;
-            if (win.jQuery('#tp-embed-dialog').length != 0) {
-                win.jQuery('#tp-embed-dialog').dialog('close');
-            }
-            if (win.tinyMCE.activeEditor != null) {
-                win.tinyMCE.activeEditor.windowManager.close();
-            }
+            Events.onEmbed();           
         },
         onSetImage: function () {
             var post_id = window.parent.jQuery('#post_ID').val();
@@ -256,7 +247,7 @@ var theplatform_browser = (function ($) {
                 action: 'set_thumbnail',
                 img: tpHelper.selectedThumb,
                 id: post_id,
-                _wpnonce: tp_browser_local.tp_nonce['set_thumbnail']
+                _wpnonce: tp_browser_local.tp_nonce.set_thumbnail
             };
 
             $.post(tp_browser_local.ajaxurl, data, function (response) {
@@ -292,7 +283,7 @@ var theplatform_browser = (function ($) {
             var data = {
                 action: 'generate_thumbnail',
                 mediaId: tpHelper.mediaId,
-                _wpnonce: tp_browser_local.tp_nonce['generate_thumbnail']
+                _wpnonce: tp_browser_local.tp_nonce.generate_thumbnail
             };
 
             if (!_.isUndefined(tpHelper.currentMediaTime)) {
@@ -304,10 +295,10 @@ var theplatform_browser = (function ($) {
                 method: 'post',
                 data: data,
                 success: function (response) {
-                    theplatform_edit.onSuccess(response, me)
+                    theplatform_edit.onSuccess(response, me);
                 },
                 complete: function () {
-                    theplatform_edit.onComplete(me, "Generate Thumbnail", "secondary")
+                    theplatform_edit.onComplete(me, "Generate Thumbnail", "secondary");
                 }
 
             });
@@ -319,63 +310,67 @@ var theplatform_browser = (function ($) {
             tpHelper.currentMediaTime = undefined;
         },
         onGetMedia: function (page) {
+            var me = this;
+            if (me.viewLoading === true) {
+                return;
+            }
             var MAX_RESULTS = 20;
             $('.spinner').show(); // show loading before we call getVideos            
             var theRange = ((page - 1) * MAX_RESULTS + 1) + '-' + (page * MAX_RESULTS);
 
-            console.log(theRange);
-            API.getVideos(theRange, function (resp) {
-                tpHelper.feedResultCount = resp['entryCount'];
+            me.viewLoading = true;
+            API.getVideos(theRange, function (resp) {                
+                tpHelper.feedResultCount = resp.entryCount;
 
                 // Update pagination
-                var totalResults = resp['totalResults'];
+                var totalResults = resp.totalResults;
                 $('.displaying-num').text(totalResults + ' items');
-                if (totalResults != 0) {
-                    var pages = Math.ceil(resp['totalResults'] / MAX_RESULTS);
+                if (totalResults !== 0) {
+                    var pages = Math.ceil(totalResults / MAX_RESULTS);
                     $('.total-pages').text(pages);
                     $('.current-page').each(function () {
-                        $(this).attr('max', pages).val(page)
+                        $(this).attr('max', pages).val(page);
                     });
 
                     if (pages <= 1) {
                         $('.pagination-links a').each(function () {
-                            $(this).addClass('disabled')
-                        })
+                            $(this).addClass('disabled');
+                        });
                     }
 
                     if (pages > 1) {
                         $('.first-page,.prev-page,.last-page,.next-page').each(function () {
-                            $(this).removeClass('disabled')
-                        })
+                            $(this).removeClass('disabled');
+                        });
                     }
 
                     if (page == pages) {
                         $('.last-page,.next-page').each(function () {
-                            $(this).addClass('disabled')
-                        })
+                            $(this).addClass('disabled');
+                        });
                     }
 
                     if (page == 1) {
                         $('.first-page,.prev-page').each(function () {
-                            $(this).addClass('disabled')
-                        })
+                            $(this).addClass('disabled');
+                        });
                     }
                 } else {
                     $('.total-pages').text(1);
                     $('.current-page').each(function () {
-                        $(this).attr('max', 1).val(1)
+                        $(this).attr('max', 1).val(1);
                     });
                     $('.pagination-links a').each(function () {
-                        $(this).addClass('disabled')
-                    })
+                        $(this).addClass('disabled');
+                    });
                 }
 
-                if (resp['entryCount'] == 0) {
+                if (resp.entryCount === 0) {
                     UI.notifyUser('info', 'No Results');
                 }
 
                 $('#media-list').empty();
-                var entries = resp['entries'];
+                var entries = resp.entries;
 
                 for (var i = 0; i < entries.length; i++) {
                     UI.addMediaObject(entries[i]);
@@ -383,6 +378,7 @@ var theplatform_browser = (function ($) {
 
                 $('.spinner').hide();
                 Holder.run();
+                me.viewLoading = false;
             });
         },
         onMouseScroll: function (ev) {
@@ -468,7 +464,7 @@ var theplatform_browser = (function ($) {
         getVideos: function (range, callback) {
 
             var data = {
-                _wpnonce: tp_browser_local.tp_nonce['get_videos'],
+                _wpnonce: tp_browser_local.tp_nonce.get_videos,
                 action: 'get_videos',
                 range: range,
                 query: tpHelper.queryString,
@@ -487,7 +483,7 @@ var theplatform_browser = (function ($) {
         },
         getVideoCount: function () {
             var data = {
-                _wpnonce: tp_browser_local.tp_nonce['get_videos'],
+                _wpnonce: tp_browser_local.tp_nonce.get_videos,
                 action: 'get_video_count',
                 myContent: $('#my-content-cb').prop('checked')
             };
@@ -522,7 +518,7 @@ var theplatform_browser = (function ($) {
         },
         getCategoryList: function () {
             var data = {
-                _wpnonce: tp_browser_local.tp_nonce['get_categories'],
+                _wpnonce: tp_browser_local.tp_nonce.get_categories,
                 action: 'get_categories',
                 sort: 'order',
                 fields: 'title'
@@ -533,7 +529,7 @@ var theplatform_browser = (function ($) {
                     var categoryPicker = $('#selectpick-categories');
                     // Add each category
                     for (var idx in entries) {
-                        var entryTitle = entries[idx]['title'];
+                        var entryTitle = entries[idx].title;
                         var option = document.createElement('option');
                         option.value = entryTitle;
                         option.text = entryTitle;
@@ -543,13 +539,13 @@ var theplatform_browser = (function ($) {
         },
         getVideoById: function (mediaId, callback) {
             var data = {
-                _wpnonce: tp_browser_local.tp_nonce['get_video_by_id'],
+                _wpnonce: tp_browser_local.tp_nonce.get_video_by_id,
                 action: 'get_video_by_id',
                 mediaId: mediaId
             };
 
             $.post(tp_browser_local.ajaxurl, data, function (resp) {
-                callback(resp.data)
+                callback(resp.data);
             });
         }
     };
@@ -581,7 +577,7 @@ var theplatform_browser = (function ($) {
         if (!_.isUndefined(window.$pdk)) {
             $pdk.initialize();
             $pdk.controller.addEventListener('OnMediaPlaying', Events.onMediaPlaying);
-            $pdk.controller.addEventListener('OnLoadReleaseUrl', Events.onLoadReleaseUrl)
+            $pdk.controller.addEventListener('OnLoadReleaseUrl', Events.onLoadReleaseUrl);
         }
 
         $('#btn-embed').click(Events.onEmbed);
@@ -601,7 +597,7 @@ var theplatform_browser = (function ($) {
 
         $('#current-page-selector').keyup(function (event) {
             if (event.keyCode == 13)
-                Events.onGetMedia($(this).val())
+                Events.onGetMedia($(this).val());
         });
 
         $('.pagination-links a').click(function (e) {
@@ -627,7 +623,7 @@ var theplatform_browser = (function ($) {
                     break;
             }
 
-            Events.onGetMedia(tpHelper.currentPage)
+            Events.onGetMedia(tpHelper.currentPage);
 
         });
 
@@ -643,6 +639,6 @@ var theplatform_browser = (function ($) {
     // Expose the updateMediaObject method outside this module
     return {
         updateMediaObject: UI.updateMediaObject
-    }
+    };
 
 })(jQuery);

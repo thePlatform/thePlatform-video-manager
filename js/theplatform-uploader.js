@@ -31,13 +31,13 @@ TheplatformUploader = (function () {
         this._filePath = file.name;
 
         var jsonFields = JSON.parse(this.fields);
-        if (this._mediaId != undefined && jsonFields.id == undefined) {
+        if (this._mediaId !== undefined && jsonFields.id === undefined) {
             jsonFields.id = me._mediaId;
             this.fields = JSON.stringify(jsonFields);
         }
 
         var data = {
-            _wpnonce: tp_file_uploader_local.tp_nonce['initialize_media_upload'],
+            _wpnonce: tp_file_uploader_local.tp_nonce.initialize_media_upload,
             action: 'initialize_media_upload',
             filesize: file.size,
             filetype: file.type,
@@ -53,7 +53,7 @@ TheplatformUploader = (function () {
             if (response.success) {
                 var data = response.data;
 
-                if (me._mediaId == undefined) {
+                if (me._mediaId === undefined) {
                     me.message("Media created with id: " + data.mediaId);
                 }
                 me.uploadUrl = data.uploadUrl;
@@ -148,18 +148,18 @@ TheplatformUploader = (function () {
                         me.uploadFragments(frags, 0);
                     } else {
                         setTimeout(function () {
-                            me.waitForReady()
+                            me.waitForReady();
                         }, 1000);
                     }
                 } else {
                     setTimeout(function () {
-                        me.waitForReady()
+                        me.waitForReady();
                     }, 1000);
                 }
             },
             error: function (data) {
                 setTimeout(function () {
-                    me.waitForReady()
+                    me.waitForReady();
                 }, 1000);
             }
         });
@@ -221,7 +221,7 @@ TheplatformUploader = (function () {
                         NProgress.set(me.progressIncrements * me.frags_uploaded);
                         NProgress.configure({
                             trickleRate: me.progressIncrements / ((lastSegmentEnd - lastSegmentStart) / 1000)
-                        })
+                        });
                     }
                     me.message("Finished uploading fragment " + me.frags_uploaded + " of " + me.num_fragments);
                     me.attempts = 0;
@@ -293,10 +293,10 @@ TheplatformUploader = (function () {
             error: function (data) {
                 setTimeout(function () {
                     me.waitForComplete();
-                }, 5000)
+                }, 5000);
             },
             success: function (data) {
-                if (data.entries.length != 0) {
+                if (data.entries.length !== 0) {
                     var state = data.entries[0].state;
 
                     if (state === "Complete") {
@@ -319,12 +319,12 @@ TheplatformUploader = (function () {
                         me.message(state);
                         setTimeout(function () {
                             me.waitForComplete();
-                        }, 5000)
+                        }, 5000);
                     }
                 } else {
                     setTimeout(function () {
                         me.waitForComplete();
-                    }, 5000)
+                    }, 5000);
                 }
             }
         });
@@ -341,7 +341,7 @@ TheplatformUploader = (function () {
             account: me.account,
             profile: me.publishProfile,
             action: 'publish_media',
-            _wpnonce: tp_file_uploader_local.tp_nonce['publish_media'],
+            _wpnonce: tp_file_uploader_local.tp_nonce.publish_media,
             token: me.token
         };
 
@@ -389,7 +389,7 @@ TheplatformUploader = (function () {
                 withCredentials: true
             },
             complete: function () {
-                me.message('Upload canceled')
+                me.message('Upload canceled');
             }
         });
     };
@@ -444,7 +444,7 @@ TheplatformUploader = (function () {
         if (!userFacing) return;
         jQuery('.lead').removeClass('error');
 
-        if (isError == true) {
+        if (isError === true) {
             jQuery('.lead').addClass('error');
         }
 

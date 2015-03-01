@@ -49,7 +49,7 @@ var theplatform_edit = (function ($) {
                                 var index = values[i].indexOf(':');
                                 var key = values[i].substr(0, index).trim();
                                 var val = values[i].substr(index + 1).trim();
-                                if (index === -1 || key.length == 0 || val.length === 0 || Validation.validateFormat(val, dataType)) {
+                                if (index === -1 || key.length === 0 || val.length === 0 || Validation.validateFormat(val, dataType)) {
                                     fieldError = true;
                                     break;
                                 }
@@ -63,8 +63,7 @@ var theplatform_edit = (function ($) {
                                     break;
                                 }
                             }
-                            break;
-                        case 'Single':
+                            break;                        
                         default:
                             if (Validation.validateFormat(value, dataType)) {
                                 fieldError = true;
@@ -130,8 +129,7 @@ var theplatform_edit = (function ($) {
                     // @todo: this could do more, right now just checks that the structure is correct
                     var linkRegex = /^(((title:)(.*),(\s+)?(href:).*)|((href:)(.*),(\s+)?(title:).*))$/;
                     validationError = !linkRegex.test(value);
-                    break;
-                case 'String':
+                    break;                
                 default:
                     // nothing to do
                     break;
@@ -145,7 +143,7 @@ var theplatform_edit = (function ($) {
         parseMediaParams: function () {
             var params = {};
             $('.upload_field').each(function () {
-                if ($(this).val().length != 0)
+                if ($(this).val().length !== 0)
                     params[$(this).attr('name')] = $(this).val();
             });
 
@@ -154,13 +152,13 @@ var theplatform_edit = (function ($) {
             for (var i in categoryArray) {
                 var name = categoryArray[i];
                 if (name != '(None)') {
-                    var cat = {};
-                    cat['name'] = name;
-                    categories.push(cat);
+                    var category = {};
+                    category.name = name;
+                    categories.push(category);
                 }
             }
 
-            params['categories'] = categories;
+            params.categories = categories;
 
             return params;
         },
@@ -169,7 +167,7 @@ var theplatform_edit = (function ($) {
             var custom_params = {};
 
             $('.custom_field').each(function () {
-                if ($(this).val().length != 0) {
+                if ($(this).val().length !== 0) {
                     var $field = $(this);
                     var dataStructure = $field.data('structure');
                     var dataType = $field.data('type');
@@ -236,7 +234,7 @@ var theplatform_edit = (function ($) {
         onComplete: function (button, value, type) {
             setTimeout(function () {
                 if (_.isEmpty(type)) {
-                    type = "primary"
+                    type = "primary";
                 }
                 $(button).text(value).val(value).removeClass('button-success button-danger button-info').addClass('button-' + type);
             }, 1500);
@@ -261,12 +259,12 @@ var theplatform_edit = (function ($) {
 
                     }
                 }
-                if (revokeDropdown.children().length == 0) {
+                if (revokeDropdown.children().length === 0) {
                     revokeDropdown.attr('disabled', 'true');
                 } else {
                     revokeDropdown.removeAttr('disabled');
                 }
-            })
+            });
         }
     };
 
@@ -283,7 +281,7 @@ var theplatform_edit = (function ($) {
             $(this).text('Updating').removeClass('button-success button-danger button-info').addClass('button-info');
 
             var data = {
-                _wpnonce: tp_edit_upload_local.tp_nonce['theplatform_edit'],
+                _wpnonce: tp_edit_upload_local.tp_nonce.theplatform_edit,
                 action: 'theplatform_edit',
                 params: JSON.stringify(params),
                 custom_params: JSON.stringify(custom_params)
@@ -295,13 +293,13 @@ var theplatform_edit = (function ($) {
                 method: 'post',
                 success: function (response) {
                     UI.onSuccess(response, me);
-                    if (response.success == true) {
+                    if (response.success === true) {
                         $('#tp-edit-dialog').data('refresh', 'true');
                         theplatform_browser.updateMediaObject(tpHelper.mediaId);
                     }
                 },
                 complete: function () {
-                    UI.onComplete(me, "Submit")
+                    UI.onComplete(me, "Submit");
                 }
             });
         },
@@ -345,7 +343,7 @@ var theplatform_edit = (function ($) {
                 if (e.data == 'theplatform_uploader_ready') {
                     upload_window.postMessage(uploaderData, '*');
                 }
-            }
+            };
         },
         onAddFiles: function () {
             var files = document.getElementById('theplatform_upload_file').files;
@@ -398,7 +396,7 @@ var theplatform_edit = (function ($) {
                 account: tpHelper.account,
                 profile: profile,
                 action: 'publish_media',
-                _wpnonce: tp_edit_upload_local.tp_nonce['theplatform_publish']
+                _wpnonce: tp_edit_upload_local.tp_nonce.theplatform_publish
             };
 
             jQuery.ajax({
@@ -406,10 +404,10 @@ var theplatform_edit = (function ($) {
                 data: params,
                 type: "POST",
                 success: function (response) {
-                    UI.onSuccess(response, me)
+                    UI.onSuccess(response, me);
                 },
                 complete: function () {
-                    UI.onComplete(me, "Publish")
+                    UI.onComplete(me, "Publish");
                 }
             });
         },
@@ -417,7 +415,7 @@ var theplatform_edit = (function ($) {
 
             var profile = jQuery('.revoke_profile option:selected');
 
-            if (profile.length == 0)
+            if (profile.length === 0)
                 return false;
 
             var me = this;
@@ -428,7 +426,7 @@ var theplatform_edit = (function ($) {
                 account: tpHelper.account,
                 profile: profile.val(),
                 action: 'revoke_media',
-                _wpnonce: tp_edit_upload_local.tp_nonce['theplatform_revoke']
+                _wpnonce: tp_edit_upload_local.tp_nonce.theplatform_revoke
             };
 
             $.ajax({
@@ -441,7 +439,7 @@ var theplatform_edit = (function ($) {
                 complete: function () {
                     UI.onComplete(me, "Revoke");
                     setTimeout(function () {
-                        UI.updatePublishProfiles(tpHelper.mediaId)
+                        UI.updatePublishProfiles(tpHelper.mediaId);
                     }, 1500);
                 }
             });
@@ -468,7 +466,7 @@ var theplatform_edit = (function ($) {
     var API = {
         getProfileResults: function (mediaId, callback) {
             var data = {
-                _wpnonce: tp_browser_local.tp_nonce['get_profile_results'],
+                _wpnonce: tp_browser_local.tp_nonce.get_profile_results,
                 action: 'get_profile_results',
                 mediaId: mediaId
             };
@@ -502,12 +500,12 @@ var theplatform_edit = (function ($) {
             var tabId = $(this).attr('href');
             $(".tab-pane.active").removeClass('active');
             $(tabId).addClass('active');
-        })
+        });
     });
 
     return {
         updatePublishProfiles: UI.updatePublishProfiles,
         onSuccess: UI.onSuccess,
         onComplete: UI.onComplete
-    }
+    };
 })(jQuery);
