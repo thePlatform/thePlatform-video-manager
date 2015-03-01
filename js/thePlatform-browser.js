@@ -452,6 +452,30 @@ var theplatform_browser = (function ($) {
                 }
             }
             return urls;
+        },
+        onPageNavigation: function(e) {             
+            e.preventDefault();
+
+            if ($(this).hasClass('disabled')) {
+                return;
+            }
+            var buttonClass = $(this).attr('class');
+
+            switch (buttonClass) {
+                case 'next-page':
+                    tpHelper.currentPage++;
+                    break;
+                case 'prev-page':
+                    tpHelper.currentPage--;
+                    break;
+                case 'last-page':
+                    tpHelper.currentPage = parseInt($('.total-pages')[0].innerText);
+                    break;
+                case 'first-page':
+                    tpHelper.currentPage = 1;
+                    break;
+            }
+            Events.onGetMedia(tpHelper.currentPage);        
         }
 
     };
@@ -600,32 +624,7 @@ var theplatform_browser = (function ($) {
                 Events.onGetMedia($(this).val());
         });
 
-        $('.pagination-links a').click(function (e) {
-            e.preventDefault();
-
-            if ($(this).hasClass('disabled')) {
-                return;
-            }
-            var buttonClass = $(this).attr('class');
-
-            switch (buttonClass) {
-                case 'next-page':
-                    tpHelper.currentPage++;
-                    break;
-                case 'prev-page':
-                    tpHelper.currentPage--;
-                    break;
-                case 'last-page':
-                    tpHelper.currentPage = parseInt($('.total-pages')[0].innerText);
-                    break;
-                case 'first-page':
-                    tpHelper.currentPage = 1;
-                    break;
-            }
-
-            Events.onGetMedia(tpHelper.currentPage);
-
-        });
+        $('.pagination-links a').click(Events.onPageNavigation);
 
         // Load Categories from mpx
         API.getCategoryList();

@@ -460,6 +460,15 @@ var theplatform_edit = (function ($) {
         },
         onRevokeTabOpened: function () {
             UI.updatePublishProfiles(tpHelper.mediaId);
+        },
+        onTabClick: function (e) {         
+            e.preventDefault();
+
+            $(".nav-tab-active").removeClass('nav-tab-active');
+            $(this).addClass('nav-tab-active');
+            var tabId = $(this).attr('href');
+            $(".tab-pane.active").removeClass('active');
+            $(tabId).addClass('active');
         }
     };
 
@@ -491,16 +500,7 @@ var theplatform_edit = (function ($) {
         $("#theplatform_publish_button").click(Events.onPublishMedia);
         $("#theplatform_revoke_button").click(Events.onRevokeMedia);
         $(".nav-tab #revoke").click(Events.onRevokeTabOpened);
-        $(".nav-tab").click(function (e) {
-            // TODO: move this to a function
-            e.preventDefault();
-
-            $(".nav-tab-active").removeClass('nav-tab-active');
-            $(this).addClass('nav-tab-active');
-            var tabId = $(this).attr('href');
-            $(".tab-pane.active").removeClass('active');
-            $(tabId).addClass('active');
-        });
+        $(".nav-tab").click(Events.onTabClick);
     });
 
     return {
