@@ -21,28 +21,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+$tp_admin_cap = apply_filters( TP_ADMIN_CAP, TP_ADMIN_DEFAULT_CAP );
+
+if ( current_user_can( $tp_admin_cap ) ) {
+
+	if ( isset( $_POST['delete'] ) ) {
+		check_admin_referer( 'theplatform_delete_settings_nonce' );
+
+		delete_option( TP_ACCOUNT_OPTIONS_KEY );
+		delete_option( TP_PREFERENCES_OPTIONS_KEY );
+		delete_option( TP_CUSTOM_METADATA_OPTIONS_KEY );
+		delete_option( TP_BASIC_METADATA_OPTIONS_KEY );
+		delete_option( TP_TOKEN_OPTIONS_KEY );
+
+		echo '<div id="message" class="updated"><p>All plugin settings have been reset</p></div>';
+	}
+}
+
 ?>
 <div class="wrap">
-
 	<h2>thePlatform Video Manager</h2>
-	<?php
-	$tp_admin_cap = apply_filters( TP_ADMIN_CAP, TP_ADMIN_DEFAULT_CAP );
-
-	if ( current_user_can( $tp_admin_cap ) ) {
-
-		if ( isset( $_POST['delete'] ) ) {
-			check_admin_referer( 'theplatform_delete_settings_nonce' );
-
-			delete_option( TP_ACCOUNT_OPTIONS_KEY );
-			delete_option( TP_PREFERENCES_OPTIONS_KEY );
-			delete_option( TP_CUSTOM_METADATA_OPTIONS_KEY );
-			delete_option( TP_BASIC_METADATA_OPTIONS_KEY );
-			delete_option( TP_TOKEN_OPTIONS_KEY );
-
-			echo '<div id="message" class="updated"><p>All plugin settings have been reset</p></div>';
-		}
-	}
-	?>
+	
 	<p>Version <?php echo TP_PLUGIN_VERSION; ?><br>
 		Copyright (C) 2013-<?php echo date( "Y" ); ?> thePlatform LLC.<br>
 	</p>
@@ -82,6 +81,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 			} else {
 
 			}
-		})
+		});
 	</script>
 </div>

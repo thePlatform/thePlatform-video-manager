@@ -49,43 +49,10 @@ $IS_EMBED    = $page_hook != 'toplevel_page_theplatform';
 	<?php if ( ! $IS_EMBED ) {
 		echo '<h2>mpx Video Manager</h2>';
 	} ?>
-	<div class="wp-filter">
-		<form class="tp-search-form" role="search" onsubmit="return false;">
-			<input id="input-search" type="text" class="" placeholder="Keywords">
 
-			<label for="selectpick-sort">Sort By:</label>
-			<select id="selectpick-sort">
-				<option value="added">Added</option>
-				<option value="title">Title</option>
-				<option value="updated">Updated</option>
-			</select>
+	<!-- Write out the search bar -->
+	<?php $tp_html->media_search_bar(); ?>
 
-			<label for="selectpick-order">Order By:</label>
-			<select id="selectpick-order">
-				<option value="|desc">Descending</option>
-				<option value="">Ascending</option>
-			</select>
-
-			<label for="selectpick-categories">Category:</label>
-			<select id="selectpick-categories">
-				<option value="">All Videos</option>
-			</select>
-
-			<?php if ( $preferences['user_id_customfield'] !== '(None)' ) { ?>
-
-				<input type="checkbox"
-				       id="my-content-cb" <?php checked( $preferences['filter_by_user_id'] === 'true' ); ?> />
-				<label for="my-content-cb">My Content</label>
-
-			<?php } ?>
-			<button id="btn-search" type="button" class="button-primary">Search</button>
-			<?php
-
-			?>
-			<div class="spinner"></div>
-		</form>
-
-	</div>
 	<div id="poststuff">
 		<div id="post-body" class="metabox-holder columns-2 tp-post-body">
 			<!-- main content -->
@@ -165,7 +132,7 @@ if ( ! $IS_EMBED && current_user_can( $tp_editor_cap )) {
 			<div class="tp-media-body">
 				<strong class="tp-media-heading"><%= title %></strong>
 
-				<div id="desc"><%= _ . template . formatDescription( description ) %></div>
+				<div id="desc"><%= _.template.formatDescription( description ) %></div>
 			</div>
 		</div>
 	</script>

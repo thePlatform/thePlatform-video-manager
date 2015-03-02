@@ -40,26 +40,27 @@ if ( count( $matches ) > 1 ) {
 	}
 }
 
-$preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
-
 $tp_uploader_cap = apply_filters( TP_UPLOADER_CAP, TP_UPLOADER_DEFAULT_CAP );
+if ( ! defined( 'TP_MEDIA_BROWSER' ) && ! current_user_can( $tp_uploader_cap ) ) {
+	wp_die( '<div class="error"><p>You do not have sufficient permissions to upload video to mpx</p></div>' );
+}
+
+$preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
 $tp_revoke_cap   = apply_filters( TP_REVOKE_CAP, TP_REVOKE_DEFAULT_CAP );
 
 require_once( dirname( __FILE__ ) . '/thePlatform-HTML.php' );
 $tp_html = new ThePlatform_HTML();
 
-if ( ! defined( 'TP_MEDIA_BROWSER' ) ) {	
-	if ( ! current_user_can( $tp_uploader_cap ) ) {
-		wp_die( '<div class="error"><p>You do not have sufficient permissions to upload video to mpx</p></div>' );
-	}
-
-	?>
+if ( ! defined( 'TP_MEDIA_BROWSER' ) ) { ?>
 	<div class="wrap">
-	<h2>Upload Video to mpx</h2>
-<?php
+	<h2>Upload Video to mpx</h2> <?php
 } else {	
-	$tp_html->edit_tabs_header();
+	$tp_html->edit_tabs_header(); ?>
+
+	<div class="tab-content">
+	<div class="tab-pane active" id="edit_content"> <?php 
 } ?>
+
 	<div id="responsive-form" class="clearfix">
 		<form role="form">
 			<?php
@@ -70,7 +71,6 @@ if ( ! defined( 'TP_MEDIA_BROWSER' ) ) {
 
 			// Output rows of all our writable metadata
 			$tp_html->metadata_fields();
-
 
 			if ( ! defined( 'TP_MEDIA_BROWSER' ) ) {
 				$tp_html->profiles_and_servers( "upload" );
@@ -85,14 +85,11 @@ if ( ! defined( 'TP_MEDIA_BROWSER' ) ) {
 				</div>
 			<?php } ?>
 		</form>
-	</div>
+	</div> <!-- end of responsive-form div -->
 <?php
 if ( defined( 'TP_MEDIA_BROWSER' ) ) {
 	// Write all of our edit dialog tabs
 	$tp_html->edit_tabs_content();
-} else {
-	?>
-	</div> <!-- wrap -->
-<?php
+} else { ?>
+	</div> <!-- end of wrap div --> <?php
 }
-?>

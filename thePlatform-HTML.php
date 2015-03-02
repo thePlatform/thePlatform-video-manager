@@ -236,9 +236,7 @@ class ThePlatform_HTML {
 
 					<div class="input-group">
                     <span class="input-group-btn">
-                        <span class="button button-secondary button-file">
-                            Browse&hellip; <input type="file" id="theplatform_upload_file" multiple>
-                        </span>
+                        <span class="button button-secondary button-file">Browse...<input type="file" id="theplatform_upload_file" multiple></span>
                     </span>
 						<input type="text" class="tp-input" style="cursor: text; text-indent: 10px;"
 						       id="theplatform_upload_label" readonly value="No file chosen">
@@ -394,7 +392,6 @@ class ThePlatform_HTML {
 
 	function edit_tabs_header() {
 		?>
-
 		<h2 class="nav-tab-wrapper">
 			<a href="#edit_content" class="nav-tab-active nav-tab">Update Metadata</a>
 			<?php
@@ -408,9 +405,7 @@ class ThePlatform_HTML {
 				echo '<a href="#revoke_content" class="nav-tab">Revoke</a>';
 			} ?>
 		</h2>
-
-		<div class="tab-content">
-		<div class="tab-pane active" id="edit_content"> <?php
+		<?php
 	}
 
 	function edit_tabs_content() {
@@ -458,5 +453,44 @@ class ThePlatform_HTML {
         </div>
     </div>
   <?php
+	}
+
+	function media_search_bar() { ?>
+		<div class="wp-filter">
+			<form class="tp-search-form" role="search" onsubmit="return false;">
+				<input id="input-search" type="text" class="" placeholder="Keywords">
+
+				<label for="selectpick-sort">Sort By:</label>
+				<select id="selectpick-sort">
+					<option value="added">Added</option>
+					<option value="title">Title</option>
+					<option value="updated">Updated</option>
+				</select>
+
+				<label for="selectpick-order">Order By:</label>
+				<select id="selectpick-order">
+					<option value="|desc">Descending</option>
+					<option value="">Ascending</option>
+				</select>
+
+				<label for="selectpick-categories">Category:</label>
+				<select id="selectpick-categories">
+					<option value="">All Videos</option>
+				</select>
+
+				<?php if ( $this->preferences['user_id_customfield'] !== '(None)' ) { ?>
+
+					<input type="checkbox"
+					       id="my-content-cb" <?php checked( $this->preferences['filter_by_user_id'] === 'true' ); ?> />
+					<label for="my-content-cb">My Content</label>
+
+				<?php } ?>
+				<button id="btn-search" type="button" class="button-primary">Search</button>
+				<?php
+
+				?>
+				<div class="spinner"></div>
+			</form>
+		</div> <?php
 	}
 }

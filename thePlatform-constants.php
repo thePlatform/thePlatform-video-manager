@@ -87,6 +87,7 @@ function TP_ADVANCED_OPTIONS_DEFAULTS() {
 		'file_fragment_size'   => 5000000
 	);
 }
+
 function TP_BASIC_METADATA_OPTIONS_DEFAULTS() {
 	return array(
 		'title'       => "write",
