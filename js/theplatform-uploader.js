@@ -487,7 +487,8 @@ TheplatformUploader = (function () {
         NProgress.configure({
             template: splashHtml,
             trickle: false,
-            minimum: 0
+            minimum: 0,
+            showSpinner: false
         });
 
         NProgress.start();
