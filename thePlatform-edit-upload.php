@@ -45,7 +45,7 @@ if ( ! defined( 'TP_MEDIA_BROWSER' ) && ! current_user_can( $tp_uploader_cap ) )
 	wp_die( '<div class="error"><p>You do not have sufficient permissions to upload video to mpx</p></div>' );
 }
 
-$preferences   = get_option( TP_PREFERENCES_OPTIONS_KEY );
+$preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
 
 require_once( dirname( __FILE__ ) . '/thePlatform-HTML.php' );
 $tp_html = new ThePlatform_HTML();

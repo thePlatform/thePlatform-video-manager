@@ -80,7 +80,7 @@ function TP_ADVANCED_OPTIONS_DEFAULTS() {
 	return array(
 		'media_page_size'    => 20,
 		'file_fragment_size' => 5000000,
-		'append_instance'	 => false
+		'append_instance'    => false
 	);
 }
 

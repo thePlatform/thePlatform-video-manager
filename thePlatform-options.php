@@ -260,7 +260,7 @@ class ThePlatform_Options {
 	 * Provide a description to the Advanced Options Section
 	 */
 	function section_advanced_desc() {
-		echo 'Configure advanced plugin settings';		
+		echo 'Configure advanced plugin settings';
 		echo '<div id="TP_PAGE_KEY" style="display: none;">TP_PREFERENCES</div>';
 	}
 

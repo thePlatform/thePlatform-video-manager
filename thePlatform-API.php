@@ -289,7 +289,7 @@ class ThePlatform_API {
 	 */
 	function update_media_ajax() {
 		$token = $this->mpx_signin();
-		$args = array( 'fields' => $_POST['params'], 'custom_fields' => $_POST['custom_params'] );
+		$args  = array( 'fields' => $_POST['params'], 'custom_fields' => $_POST['custom_params'] );
 		$this->create_media_placeholder( $args, $token );
 		wp_send_json_success( "Media Updated" );
 	}

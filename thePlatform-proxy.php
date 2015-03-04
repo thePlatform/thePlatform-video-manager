@@ -66,10 +66,10 @@ class ThePlatform_Proxy {
 		switch ( $capability ) {
 			case TP_ADMIN_CAP:
 				$capability_default = TP_ADMIN_DEFAULT_CAP;
-				break;			
+				break;
 			case TP_EDITOR_CAP:
 				$capability_default = TP_EDITOR_DEFAULT_CAP;
-				break;		
+				break;
 			case TP_UPLOADER_CAP:
 				$capability_default = TP_UPLOADER_DEFAULT_CAP;
 				break;
@@ -152,7 +152,7 @@ class ThePlatform_Proxy {
 	}
 
 	public function edit_media() {
-		$this->check_nonce_and_permissions( $_POST['action'] );		
+		$this->check_nonce_and_permissions( $_POST['action'] );
 		$this->get_api()->update_media_ajax();
 	}
 
@@ -227,7 +227,7 @@ class ThePlatform_Proxy {
 		$this->check_nonce_and_permissions( $_POST['action'], TP_ADMIN_CAP );
 
 		$this->get_api();
-		
+
 		$hash = $_POST['auth_hash'];
 
 		$response = ThePlatform_API_HTTP::get( TP_API_SIGNIN_URL, array( 'headers' => array( 'Authorization' => 'Basic ' . $hash ) ) );

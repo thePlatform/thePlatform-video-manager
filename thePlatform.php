@@ -56,7 +56,7 @@ class ThePlatform_Plugin {
 
 		$this->tp_admin_cap    = apply_filters( TP_ADMIN_CAP, TP_ADMIN_DEFAULT_CAP );
 		$this->tp_uploader_cap = apply_filters( TP_UPLOADER_CAP, TP_UPLOADER_DEFAULT_CAP );
-		$this->tp_editor_cap = apply_filters( TP_EDITOR_CAP, TP_EDITOR_DEFAULT_CAP );
+		$this->tp_editor_cap   = apply_filters( TP_EDITOR_CAP, TP_EDITOR_DEFAULT_CAP );
 
 		add_action( 'admin_menu', array( $this, 'add_admin_page' ) );
 		add_action( 'admin_init', array( $this, 'register_scripts' ) );
