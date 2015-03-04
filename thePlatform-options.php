@@ -55,6 +55,7 @@ class ThePlatform_Options {
 		$this->register_preferences_options();
 		$this->register_basic_metadata_options();
 		$this->register_custom_metadata_options();
+		// $this->register_advanced_options();
 
 		//Render the page
 		$this->plugin_options_page();
@@ -80,6 +81,7 @@ class ThePlatform_Options {
 		$this->preferences_options = get_option( TP_PREFERENCES_OPTIONS_KEY, array() );
 		$this->metadata_options    = get_option( TP_CUSTOM_METADATA_OPTIONS_KEY, array() );
 		$this->upload_options      = get_option( TP_BASIC_METADATA_OPTIONS_KEY, array() );
+		$this->advanced_options    = get_option( TP_ADVANCED_OPTIONS_KEY, array() );
 
 		// Initialize option defaults				
 		$this->account_options = array_merge( TP_ACCOUNT_OPTIONS_DEFAULTS(), $this->account_options );
@@ -94,6 +96,10 @@ class ThePlatform_Options {
 
 		if ( empty( $this->preferences_options ) ) {
 			update_option( TP_PREFERENCES_OPTIONS_KEY, TP_PREFERENCES_OPTIONS_DEFAULTS() );
+		}
+
+		if ( empty( $this->advanced_options ) ) {
+			update_option( TP_ADVANCED_OPTIONS_KEY, TP_ADVANCED_OPTIONS_DEFAULTS() );
 		}
 
 		$this->account_is_verified = $this->tp_api->verify_account_settings();
@@ -118,6 +124,15 @@ class ThePlatform_Options {
 	function register_account_options() {
 		$this->plugin_settings_tabs[ TP_ACCOUNT_OPTIONS_KEY ] = 'Account Settings';
 		$this->parse_options_fields( TP_ACCOUNT_OPTIONS_FIELDS(), $this->account_options, TP_ACCOUNT_OPTIONS_KEY );
+	}
+
+	/*
+	 * Registers the advanced options via the Settings API,
+	 * appends the setting to the tabs array of the object.
+	 */
+	function register_advanced_options() {
+		$this->plugin_settings_tabs[ TP_ADVANCED_OPTIONS_KEY ] = 'Advanced Settings';
+		$this->parse_options_fields( TP_ADVANCED_OPTIONS_FIELDS(), $this->advanced_options, TP_ADVANCED_OPTIONS_KEY );
 	}
 
 	/*
@@ -239,6 +254,14 @@ class ThePlatform_Options {
 	function section_basic_metadata_desc() {
 		echo 'Drag and drop the basic metadata fields that you would like to be readable, writable, or omitted when uploading and editing media.';
 		echo '<div id="TP_PAGE_KEY" style="display: none;">TP_FIELDS</div>';
+	}
+
+	/**
+	 * Provide a description to the Advanced Options Section
+	 */
+	function section_advanced_desc() {
+		echo 'Configure advanced plugin settings';		
+		echo '<div id="TP_PAGE_KEY" style="display: none;">TP_PREFERENCES</div>';
 	}
 
 	/**

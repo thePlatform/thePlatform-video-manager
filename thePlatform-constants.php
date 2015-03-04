@@ -159,9 +159,10 @@ function TP_ACCOUNT_OPTIONS_FIELDS() {
 function TP_ADVANCED_OPTIONS_FIELDS() {
 	return array(
 		array(
-			'id' => 'section_advanced_options', 'title' => 'Advanced Options', 'callback' => 'section_advanced_options_desc', 'fields' => array(
+			'id' => 'section_advanced_options', 'title' => 'Advanced Options', 'callback' => 'section_advanced_desc', 'fields' => array(
 			array( 'id' => 'media_page_size', 'title' => 'Media per Page', 'type' => 'select', 'values' => array( '10' => 10, '20' => 20, '30' => 30 ) ),
-			array( 'id' => 'file_fragment_size', 'title' => 'Media per Page', 'type' => 'string' )
+			array( 'id' => 'file_fragment_size', 'title' => 'Upload Fragment Size', 'type' => 'string' ),
+			array( 'id' => 'append_instance', 'title' => 'Append Players with an Instance', 'type' => 'boolean' )
 		)
 		)
 	);

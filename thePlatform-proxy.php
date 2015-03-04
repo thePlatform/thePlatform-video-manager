@@ -226,6 +226,8 @@ class ThePlatform_Proxy {
 	function verify_account_settings_ajax() {
 		$this->check_nonce_and_permissions( $_POST['action'], TP_ADMIN_CAP );
 
+		$this->get_api();
+		
 		$hash = $_POST['auth_hash'];
 
 		$response = ThePlatform_API_HTTP::get( TP_API_SIGNIN_URL, array( 'headers' => array( 'Authorization' => 'Basic ' . $hash ) ) );
