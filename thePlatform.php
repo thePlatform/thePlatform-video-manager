@@ -403,7 +403,7 @@ class ThePlatform_Plugin {
 			return $defaults;
 		}
 
-		$account_is_verified = $tp_api->internal_verify_account_settings();
+		$account_is_verified = $tp_api->verify_account_settings();
 		if ( $account_is_verified ) {
 
 			if ( strpos( $input['mpx_account_id'], '|' ) !== false ) {
@@ -466,9 +466,9 @@ class ThePlatform_Plugin {
 		require_once( dirname( __FILE__ ) . '/thePlatform-API.php' );
 		$tp_api = new ThePlatform_API;
 
-		$account_is_verified = $tp_api->internal_verify_account_settings();
+		$account_is_verified = $tp_api->verify_account_settings();
 		if ( $account_is_verified ) {
-			$region_is_verified = $tp_api->internal_verify_account_region();
+			$region_is_verified = $tp_api->verify_account_region();
 
 			if ( isset( $input['default_player_name'] ) && strpos( $input['default_player_name'], '|' ) !== false ) {
 				$ids                          = explode( '|', $input['default_player_name'] );

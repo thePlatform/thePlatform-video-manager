@@ -96,10 +96,10 @@ class ThePlatform_Options {
 			update_option( TP_PREFERENCES_OPTIONS_KEY, TP_PREFERENCES_OPTIONS_DEFAULTS() );
 		}
 
-		$this->account_is_verified = $this->tp_api->internal_verify_account_settings();
+		$this->account_is_verified = $this->tp_api->verify_account_settings();
 
 		if ( $this->account_is_verified ) {
-			$this->region_is_verified = $this->tp_api->internal_verify_account_region();
+			$this->region_is_verified = $this->tp_api->verify_account_region();
 		} else {
 			$this->region_is_verified = false;
 

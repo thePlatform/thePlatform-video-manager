@@ -287,8 +287,9 @@ class ThePlatform_API {
 	 *
 	 * @return string A message indicating whether or not the update succeeded
 	 */
-	function update_media( $args ) {
+	function update_media_ajax( $args ) {
 		$token = $this->mpx_signin();
+		$args = array( 'fields' => $_POST['params'], 'custom_fields' => $_POST['custom_params'] );
 		$this->create_media_placeholder( $args, $token );
 		wp_send_json_success( "Media Updated" );
 	}
@@ -634,6 +635,48 @@ class ThePlatform_API {
 		wp_send_json_success( $this->transform_user_id( $data['entries'][0] ) );
 	}
 
+	function publish_media_ajax() {
+		if ( $_POST['profile'] === 'wp_tp_none' ) {
+			wp_send_json_success( "No Publishing Profile Selected" );
+		}
+
+		$token = $this->mpx_signin();
+
+		$profileId = $_POST['profile'];
+		$mediaId   = $_POST['mediaId'];
+
+		$publishUrl = TP_API_PUBLISH_BASE_URL;
+		$publishUrl .= '&token=' . urlencode( $token );
+		$publishUrl .= '&account=' . urlencode( $_POST['account'] );
+		$publishUrl .= '&_mediaId=' . urlencode( $mediaId );
+		$publishUrl .= '&_profileId=' . urlencode( $profileId );
+
+		$response = ThePlatform_API_HTTP::get( $publishUrl, array( "timeout" => 120 ) );
+
+		$data = $this->decode_json_from_server( $response, false );
+
+		wp_send_json_success( $data );
+	}
+
+	function revoke_media_ajax() {
+		$token = $this->mpx_signin();
+
+		$profileId = $_POST['profile'];
+		$mediaId   = $_POST['mediaId'];
+
+		$publishUrl = TP_API_REVOKE_BASE_URL;
+		$publishUrl .= '&token=' . urlencode( $token );
+		$publishUrl .= '&account=' . urlencode( $_POST['account'] );
+		$publishUrl .= '&_mediaId=' . urlencode( $mediaId );
+		$publishUrl .= '&_profileId=' . urlencode( $profileId );
+
+		$response = ThePlatform_API_HTTP::get( $publishUrl, array( "timeout" => 120 ) );
+
+		$data = $this->decode_json_from_server( $response, false );
+
+		wp_send_json_success( $data );
+	}
+
 	/**
 	 * Transforms a numerical WordPress User ID from a custom field to a human readable value
 	 *
@@ -697,7 +740,6 @@ class ThePlatform_API {
 		}
 
 		$ret = array_filter( $data['entries'], array( $this, "filter_disabled_players" ) );
-
 
 		return $ret;
 	}
@@ -827,6 +869,10 @@ class ThePlatform_API {
 		}
 
 		return $data['entries'];
+	}
+
+	function get_categories_ajax() {
+		wp_send_json_success( $this->get_categories() );
 	}
 
 	/**
@@ -1061,7 +1107,7 @@ class ThePlatform_API {
 	 * Used to verify the account server settings on the server side
 	 * @return type
 	 */
-	function internal_verify_account_settings() {
+	function verify_account_settings() {
 		$this->get_account();
 
 		$username = trim( $this->account['mpx_username'] );
@@ -1094,7 +1140,7 @@ class ThePlatform_API {
 	 * Verify that the account you've selected is within the region you've selected
 	 * @return bool True if the account is within the same region
 	 */
-	function internal_verify_account_region() {
+	function verify_account_region() {
 		if ( ! $this->get_mpx_account_id() ) {
 			return false;
 		}
