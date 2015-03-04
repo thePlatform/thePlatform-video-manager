@@ -52,7 +52,7 @@ var theplatform_browser = (function ($) {
             if (message === undefined) {
                 return;
             }
-            
+
             var errorSource = $("#error-template").html();
             var errorTemplate = _.template(errorSource);             
             var error = errorTemplate( {
@@ -213,12 +213,12 @@ var theplatform_browser = (function ($) {
             tpHelper.selectedThumb = $(this).data('media').defaultThumbnailUrl;
             $pdk.controller.resetPlayer();
             if ($(this).data('release') !== undefined) {
-                $('#modal-player-placeholder').hide();
+                $('#modal-player-placeholder').css('visibility', 'hideen');
                 $('.tpPlayer').css('visibility', 'visible');
                 $pdk.controller.loadReleaseURL("//link.theplatform.com/s/" + tpHelper.accountPid + "/" + tpHelper.currentRelease, true);
             } else {
                 $('.tpPlayer').css('visibility', 'hidden');
-                $('#modal-player-placeholder').show();
+                $('#modal-player-placeholder').css('visibility', 'visible');
             }
         },
         onEmbed: function () {
