@@ -27,10 +27,9 @@ if ( $account == false || empty( $account['mpx_account_id'] ) ) {
 
 define( 'TP_MEDIA_BROWSER', true );
 
-$tp_viewer_cap = apply_filters( TP_VIEWER_CAP, TP_VIEWER_DEFAULT_CAP );
 $tp_editor_cap = apply_filters( TP_EDITOR_CAP, TP_EDITOR_DEFAULT_CAP );
 
-if ( ! current_user_can( $tp_viewer_cap ) ) {
+if ( ! current_user_can( $tp_editor_cap ) ) {
 	wp_die( '<div class="error"><p>You do not have sufficient permissions to browse mpx Media</p></div>' );
 }
 

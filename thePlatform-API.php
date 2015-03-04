@@ -287,7 +287,7 @@ class ThePlatform_API {
 	 *
 	 * @return string A message indicating whether or not the update succeeded
 	 */
-	function update_media_ajax( $args ) {
+	function update_media_ajax() {
 		$token = $this->mpx_signin();
 		$args = array( 'fields' => $_POST['params'], 'custom_fields' => $_POST['custom_params'] );
 		$this->create_media_placeholder( $args, $token );

@@ -23,22 +23,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 define( 'TP_PLUGIN_VERSION', '2.0.0' );
 define( 'TP_PREFERENCES_OPTIONS_KEY', 'theplatform_preferences_options' );
+define( 'TP_ADVANCED_OPTIONS_KEY', 'theplatform_advanced_options' );
 define( 'TP_ACCOUNT_OPTIONS_KEY', 'theplatform_account_options' );
 define( 'TP_CUSTOM_METADATA_OPTIONS_KEY', 'theplatform_metadata_options' );
 define( 'TP_BASIC_METADATA_OPTIONS_KEY', 'theplatform_upload_options' );
 define( 'TP_TOKEN_OPTIONS_KEY', 'theplatform_token_options' );
 define( 'TP_ADMIN_CAP', 'tp_admin_cap' );
-define( 'TP_VIEWER_CAP', 'tp_viewer_cap' );
-define( 'TP_EMBEDDER_CAP', 'tp_embedder_cap' );
 define( 'TP_EDITOR_CAP', 'tp_editor_cap' );
-define( 'TP_REVOKE_CAP', 'tp_revoke_cap' );
 define( 'TP_UPLOADER_CAP', 'tp_uploader_cap' );
 define( 'TP_ADMIN_DEFAULT_CAP', 'manage_options' );
-define( 'TP_VIEWER_DEFAULT_CAP', 'edit_posts' );
-define( 'TP_EMBEDDER_DEFAULT_CAP', 'edit_posts' );
 define( 'TP_EDITOR_DEFAULT_CAP', 'edit_posts' );
 define( 'TP_UPLOADER_DEFAULT_CAP', 'upload_files' );
-define( 'TP_REVOKE_DEFAULT_CAP', 'upload_files' );
 
 function TP_MANIFEST_FORMATS() {
 	return array(
@@ -84,7 +79,8 @@ function TP_PREFERENCES_OPTIONS_DEFAULTS() {
 function TP_ADVANCED_OPTIONS_DEFAULTS() {
 	return array(
 		'media_page_size'    => 20,
-		'file_fragment_size' => 5000000
+		'file_fragment_size' => 5000000,
+		'append_instance'	 => false
 	);
 }
 

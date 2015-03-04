@@ -28,6 +28,7 @@ Copy the folder "thePlatform-video-manager" with all included files into the "wp
 ## = 2.0.0 =
 * Removed 3rd party libraries in favor of native Wordpress look and feel
 * Refactor the plugin to prevent incompatabilities with other Wordpress plugins
+* Simplified user capabilities
 
 ## = 1.4.0 = 
 * Added the ability to Publish, Revoke and Add Files to existing Media via the Edit dialog
@@ -175,8 +176,6 @@ This plugin requires an account with thePlatform's mpx. Please contact your Acco
 * tp_full_embed_url - The player URL with all parameters, applied after tp_base_embed_url
 * tp_embed_code - The complete embed code, with surrounding HTML, applied after tp_full_embed_url
 * tp_rss_embed_code - The full embed code used for a RSS feed
-* tp_viewer_cap, default - 'edit_posts' - View the mpx Media Browser	
-* tp_embedder_cap, default - 'edit_posts' - Embed mpx media into a post
-* tp_editor_cap, default - 'upload_files' - Edit mpx Media
+* tp_editor_cap, default - 'edit_posts' - Edit mpx Media
 * tp_uploader_cap - default - 'upload_files' - Upload mpx media	
 * tp_admin_cap, default - 'manage_options' - Manage thePlatform's plugin settings

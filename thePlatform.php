@@ -55,16 +55,15 @@ class ThePlatform_Plugin {
 		require_once( dirname( __FILE__ ) . '/thePlatform-proxy.php' );
 
 		$this->tp_admin_cap    = apply_filters( TP_ADMIN_CAP, TP_ADMIN_DEFAULT_CAP );
-		$this->tp_viewer_cap   = apply_filters( TP_VIEWER_CAP, TP_VIEWER_DEFAULT_CAP );
 		$this->tp_uploader_cap = apply_filters( TP_UPLOADER_CAP, TP_UPLOADER_DEFAULT_CAP );
-		$this->tp_embedder_cap = apply_filters( TP_EMBEDDER_CAP, TP_EMBEDDER_DEFAULT_CAP );
+		$this->tp_editor_cap = apply_filters( TP_EDITOR_CAP, TP_EDITOR_DEFAULT_CAP );
 
 		add_action( 'admin_menu', array( $this, 'add_admin_page' ) );
 		add_action( 'admin_init', array( $this, 'register_scripts' ) );
 		add_action( 'admin_init', array( $this, 'theplatform_register_plugin_settings' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 
-		if ( current_user_can( $this->tp_embedder_cap ) ) {
+		if ( current_user_can( $this->tp_editor_cap ) ) {
 			add_filter( 'media_upload_tabs', array( $this, 'tp_upload_tab' ) );
 			add_action( 'media_upload_theplatform', array( $this, 'add_tp_media_form' ) );
 
@@ -203,11 +202,11 @@ class ThePlatform_Plugin {
 	 */
 	function add_admin_page() {
 		$slug = 'theplatform';
-		add_menu_page( 'thePlatform', 'thePlatform', $this->tp_viewer_cap, $slug, array( $this, 'media_page' ), 'dashicons-video-alt3', '10.0912' );
-		add_submenu_page( $slug, 'thePlatform Video Browser', 'mpx Video Manager', $this->tp_viewer_cap, $slug, array( $this, 'media_page' ) );
+		add_menu_page( 'thePlatform', 'thePlatform', $this->tp_editor_cap, $slug, array( $this, 'media_page' ), 'dashicons-video-alt3', '10.0912' );
+		add_submenu_page( $slug, 'thePlatform Video Browser', 'mpx Video Manager', $this->tp_editor_cap, $slug, array( $this, 'media_page' ) );
 		add_submenu_page( $slug, 'thePlatform Video Uploader', 'Upload Video', $this->tp_uploader_cap, 'theplatform-uploader', array( $this, 'upload_page' ) );
 		add_submenu_page( $slug, 'thePlatform Plugin Settings', 'Settings', $this->tp_admin_cap, 'theplatform-settings', array( $this, 'admin_page' ) );
-		add_submenu_page( $slug, 'thePlatform Plugin About', 'About', $this->tp_admin_cap, 'theplatform-about', array( $this, 'about_page' ) );
+		add_submenu_page( $slug, 'thePlatform Plugin About', 'About', $this->tp_editor_cap, 'theplatform-about', array( $this, 'about_page' ) );
 		add_submenu_page( 'options.php', 'thePlatform Plugin Uploader', 'Uploader', $this->tp_uploader_cap, 'theplatform-upload-window', array( $this, 'upload_window' ) );
 	}
 

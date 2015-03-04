@@ -403,8 +403,8 @@ class ThePlatform_HTML {
 				echo '<a href="#add_files_content" class="nav-tab">Add New Files</a>';
 				echo '<a href="#publish_content" class="nav-tab">Publish</a>';
 			}
-			$tp_revoke_cap = apply_filters( TP_REVOKE_CAP, TP_REVOKE_DEFAULT_CAP );
-			if ( current_user_can( $tp_revoke_cap ) ) {
+			$tp_editor_cap = apply_filters( TP_EDITOR_CAP, TP_EDITOR_DEFAULT_CAP );
+			if ( current_user_can( $tp_editor_cap ) ) {
 				echo '<a href="#revoke_content" class="nav-tab">Revoke</a>';
 			} ?>
 		</h2>

@@ -46,7 +46,6 @@ if ( ! defined( 'TP_MEDIA_BROWSER' ) && ! current_user_can( $tp_uploader_cap ) )
 }
 
 $preferences   = get_option( TP_PREFERENCES_OPTIONS_KEY );
-$tp_revoke_cap = apply_filters( TP_REVOKE_CAP, TP_REVOKE_DEFAULT_CAP );
 
 require_once( dirname( __FILE__ ) . '/thePlatform-HTML.php' );
 $tp_html = new ThePlatform_HTML();

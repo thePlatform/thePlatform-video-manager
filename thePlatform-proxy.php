@@ -55,7 +55,7 @@ class ThePlatform_Proxy {
 		return $this->tp_api;
 	}
 
-	private function check_nonce_and_permissions( $action = "", $capability = TP_UPLOADER_CAP ) {
+	private function check_nonce_and_permissions( $action = "", $capability = TP_EDITOR_CAP ) {
 		if ( empty( $action ) ) {
 			check_admin_referer( 'theplatform-ajax-nonce' );
 		} else {
@@ -66,24 +66,15 @@ class ThePlatform_Proxy {
 		switch ( $capability ) {
 			case TP_ADMIN_CAP:
 				$capability_default = TP_ADMIN_DEFAULT_CAP;
-				break;
-			case TP_VIEWER_CAP:
-				$capability_default = TP_VIEWER_DEFAULT_CAP;
-				break;
-			case TP_EMBEDDER_CAP:
-				$capability_default = TP_EMBEDDER_DEFAULT_CAP;
-				break;
+				break;			
 			case TP_EDITOR_CAP:
 				$capability_default = TP_EDITOR_DEFAULT_CAP;
-				break;
-			case TP_REVOKE_CAP:
-				$capability_default = TP_REVOKE_DEFAUlT_CAP;
-				break;
+				break;		
 			case TP_UPLOADER_CAP:
 				$capability_default = TP_UPLOADER_DEFAULT_CAP;
 				break;
 			default:
-				$capability_default = TP_ADMIN_DEFAULT_CAP;
+				$capability_default = TP_EDITOR_CAP;
 				break;
 		}
 		$tp_capability = apply_filters( $capability, $capability_default );
@@ -156,7 +147,7 @@ class ThePlatform_Proxy {
 	}
 
 	public function initialize_media_upload() {
-		$this->check_nonce_and_permissions( $_POST['action'] );
+		$this->check_nonce_and_permissions( $_POST['action'], TP_UPLOADER_CAP );
 		$this->get_api()->initialize_media_upload_ajax();
 	}
 
@@ -171,11 +162,6 @@ class ThePlatform_Proxy {
 	 */
 	public function set_thumbnail_ajax() {
 		$this->check_nonce_and_permissions( $_POST['action'] );
-
-		$tp_embedder_cap = apply_filters( TP_EMBEDDER_CAP, TP_EMBEDDER_DEFAULT_CAP );
-		if ( ! current_user_can( $tp_embedder_cap ) ) {
-			wp_die( 'You do not have sufficient permissions to change the post thumbnail' );
-		}
 
 		global $post_ID;
 
@@ -238,8 +224,8 @@ class ThePlatform_Proxy {
 	 *    AJAX callback for account verification button
 	 */
 	function verify_account_settings_ajax() {
-		//User capability check
-		check_admin_referer( 'theplatform-ajax-nonce-verify_account' );
+		$this->check_nonce_and_permissions( $_POST['action'], TP_ADMIN_CAP );
+
 		$hash = $_POST['auth_hash'];
 
 		$response = ThePlatform_API_HTTP::get( TP_API_SIGNIN_URL, array( 'headers' => array( 'Authorization' => 'Basic ' . $hash ) ) );
