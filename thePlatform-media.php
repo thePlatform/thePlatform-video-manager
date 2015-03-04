@@ -35,13 +35,13 @@ if ( ! current_user_can( $tp_viewer_cap ) ) {
 }
 
 require_once( dirname( __FILE__ ) . '/thePlatform-HTML.php' );
-$tp_html     = new ThePlatform_HTML();
+$tp_html = new ThePlatform_HTML();
 
 $preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
 $account     = get_option( TP_ACCOUNT_OPTIONS_KEY );
 
 global $page_hook;
-$IS_EMBED    = $page_hook != 'toplevel_page_theplatform';
+$IS_EMBED = $page_hook != 'toplevel_page_theplatform';
 
 ?>
 
@@ -60,7 +60,7 @@ $IS_EMBED    = $page_hook != 'toplevel_page_theplatform';
 				<div class="meta-box-sortables ui-sortable">
 					<div class="postbox">
 						<div class="inside">
-							<?php $tp_html->pagination( 'top' ) ?>							
+							<?php $tp_html->pagination( 'top' ) ?>
 							<div id="media-list"></div>
 							<?php $tp_html->pagination( 'bottom' ) ?>
 						</div>

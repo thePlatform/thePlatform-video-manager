@@ -44,12 +44,12 @@ class ThePlatform_HTML {
 		$this->basic_metadata_options  = get_option( TP_BASIC_METADATA_OPTIONS_KEY );
 		$this->custom_metadata_options = get_option( TP_CUSTOM_METADATA_OPTIONS_KEY );
 		$this->profiles                = $this->tp_api->get_publish_profiles();
-		$this->servers                 = $this->tp_api->get_servers();		
+		$this->servers                 = $this->tp_api->get_servers();
 	}
 
 	function player_dropdown() {
 		$this->players = $this->tp_api->get_players();
-		$html = '<span id="selectpick-player-wrapper" class="tp-media-button-insert"><label for="selectpick-player">Player:</label><select id="selectpick-player">';
+		$html          = '<span id="selectpick-player-wrapper" class="tp-media-button-insert"><label for="selectpick-player">Player:</label><select id="selectpick-player">';
 		foreach ( $this->players as $player ) {
 			$html .= '<option value="' . esc_attr( $player['pid'] ) . '"' . selected( $player['pid'], $this->preferences['default_player_pid'], false ) . '>' . esc_html( $player['title'] ) . '</option>';
 		}
@@ -195,7 +195,8 @@ class ThePlatform_HTML {
 					   class="button tp-media-button button-secondary button-large tp-media-button-insert">Set Featured
 						Image</a>
 					<a href="#" id="btn-embed"
-					   class="button tp-media-button button-primary button-large tp-media-button-insert">Insert into post</a>
+					   class="button tp-media-button button-primary button-large tp-media-button-insert">Insert into
+						post</a>
 				</div>
 			</div>
 		</div>        <?php
@@ -236,7 +237,9 @@ class ThePlatform_HTML {
 
 					<div class="input-group">
                     <span class="input-group-btn">
-                        <span class="button button-secondary button-file">Browse...<input type="file" id="theplatform_upload_file" multiple></span>
+                        <span class="button button-secondary button-file">Browse...<input type="file"
+                                                                                          id="theplatform_upload_file"
+                                                                                          multiple></span>
                     </span>
 						<input type="text" class="tp-input" style="cursor: text; text-indent: 10px;"
 						       id="theplatform_upload_label" readonly value="No file chosen">
@@ -269,7 +272,7 @@ class ThePlatform_HTML {
 			}
 		}
 
-		$i   = 0;
+		$i = 0;
 		foreach ( $write_fields as $basic_field ) {
 			$field_title = ( strstr( $basic_field, '$' ) !== false ) ? substr( strstr( $basic_field, '$' ), 1 ) : $basic_field;
 			if ( $basic_field == 'categories' ) {
@@ -405,7 +408,7 @@ class ThePlatform_HTML {
 				echo '<a href="#revoke_content" class="nav-tab">Revoke</a>';
 			} ?>
 		</h2>
-		<?php
+	<?php
 	}
 
 	function edit_tabs_content() {
@@ -422,7 +425,7 @@ class ThePlatform_HTML {
                 <?php
 		$html = '<div class="tp-form-group"><label class="tp-label" for="edit_publishing_profile">Publishing Profile</label>';
 		$html .= '<select id="edit_publishing_profile" name="edit_publishing_profile" class="tp-input edit_profile">';
-		foreach ( $this->profiles as $entry ) {			
+		foreach ( $this->profiles as $entry ) {
 			$html .= '<option value="' . esc_attr( $entry['id'] ) . '"' . selected( $entry['title'], $this->preferences['default_publish_id'], false ) . '>' . esc_html( $entry['title'] ) . '</option>';
 		}
 		$html .= '</select></div>';

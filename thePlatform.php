@@ -67,12 +67,12 @@ class ThePlatform_Plugin {
 		if ( current_user_can( $this->tp_embedder_cap ) ) {
 			add_filter( 'media_upload_tabs', array( $this, 'tp_upload_tab' ) );
 			add_action( 'media_upload_theplatform', array( $this, 'add_tp_media_form' ) );
-			
+
 			add_action( 'admin_init', array( $this, 'theplatform_tinymce_button' ) );
 			add_action( 'media_buttons', array( $this, 'theplatform_media_button' ), 20 );
 			add_action( 'wp_enqueue_media', array( $this, 'theplatform_enqueue_media_button_scripts' ) );
 		}
-		
+
 		add_shortcode( 'theplatform', array( $this, 'shortcode' ) );
 	}
 
@@ -82,12 +82,14 @@ class ThePlatform_Plugin {
 
 	/**
 	 * Add thePlatform the the Media tabs
+	 *
 	 * @param  array $tabs Array of tabs in the Media dialog
 	 *
 	 * @return array The updated array of tabs
 	 */
 	function tp_upload_tab( $tabs ) {
 		$tabs['theplatform'] = "mpx Video Manager";
+
 		return $tabs;
 	}
 
@@ -99,7 +101,7 @@ class ThePlatform_Plugin {
 	}
 
 	/**
-	 * Method to load thePlatform media browser from the Media Tab	 
+	 * Method to load thePlatform media browser from the Media Tab
 	 */
 	function tp_media_form() {
 		require_once( dirname( __FILE__ ) . '/thePlatform-media.php' );
@@ -111,11 +113,12 @@ class ThePlatform_Plugin {
 
 	/**
 	 * Enqueue CSS and JS on thePlatform admin pages
-	 * @param  string $hook Page hook	 
+	 *
+	 * @param  string $hook Page hook
 	 */
-	function admin_enqueue_scripts( $hook ) {		
+	function admin_enqueue_scripts( $hook ) {
 		// Media Browser		
-		if ( $hook == 'toplevel_page_theplatform' || $hook == 'media-upload-popup' ) {			
+		if ( $hook == 'toplevel_page_theplatform' || $hook == 'media-upload-popup' ) {
 			wp_enqueue_script( 'tp_browser_js' );
 			wp_enqueue_style( 'tp_browser_css' );
 		}
@@ -157,8 +160,8 @@ class ThePlatform_Plugin {
 		) );
 
 		wp_localize_script( 'tp_file_uploader_js', 'tp_file_uploader_local', array(
-			'ajaxurl'             => admin_url( 'admin-ajax.php' ),
-			'tp_nonce'            => array(
+			'ajaxurl'  => admin_url( 'admin-ajax.php' ),
+			'tp_nonce' => array(
 				'initialize_media_upload' => wp_create_nonce( 'theplatform-ajax-nonce-initialize_media_upload' ),
 				'publish_media'           => wp_create_nonce( 'theplatform-ajax-nonce-publish_media' )
 			)
@@ -198,8 +201,8 @@ class ThePlatform_Plugin {
 	/**
 	 * Add admin pages to Wordpress sidebar
 	 */
-	function add_admin_page() {		
-		$slug            = 'theplatform';
+	function add_admin_page() {
+		$slug = 'theplatform';
 		add_menu_page( 'thePlatform', 'thePlatform', $this->tp_viewer_cap, $slug, array( $this, 'media_page' ), 'dashicons-video-alt3', '10.0912' );
 		add_submenu_page( $slug, 'thePlatform Video Browser', 'mpx Video Manager', $this->tp_viewer_cap, $slug, array( $this, 'media_page' ) );
 		add_submenu_page( $slug, 'thePlatform Video Uploader', 'Upload Video', $this->tp_uploader_cap, 'theplatform-uploader', array( $this, 'upload_page' ) );
@@ -240,7 +243,7 @@ class ThePlatform_Plugin {
 	}
 
 	/**
-	 * Calls the Upload Window template	
+	 * Calls the Upload Window template
 	 */
 	function upload_window() {
 		require_once( dirname( __FILE__ ) . '/thePlatform-upload-window.php' );
@@ -249,7 +252,7 @@ class ThePlatform_Plugin {
 	/**
 	 * Plugin update Region
 	 */
-	
+
 	/**
 	 * Checks the current version against the last version stored in preferences to determine whether an update happened
 	 * @return boolean
@@ -514,9 +517,9 @@ class ThePlatform_Plugin {
 	function theplatform_tinymce_button() {
 		if ( ! isset( $this->preferences ) ) {
 			$this->preferences = get_option( TP_PREFERENCES_OPTIONS_KEY, array() );
-		}		
+		}
 
-		if ( !array_key_exists( 'embed_hook', $this->preferences ) ) {
+		if ( ! array_key_exists( 'embed_hook', $this->preferences ) ) {
 			return;
 		}
 
@@ -526,6 +529,7 @@ class ThePlatform_Plugin {
 			add_filter( 'tiny_mce_before_init', array( $this, 'theplatform_tinymce_settings' ) );
 		}
 	}
+
 	/**
 	 * Register a new button in TinyMCE
 	 *
@@ -535,8 +539,10 @@ class ThePlatform_Plugin {
 	 */
 	function theplatform_register_buttons( $buttons ) {
 		array_push( $buttons, "|", "theplatform" );
+
 		return $buttons;
 	}
+
 	/**
 	 * Load the TinyMCE plugin
 	 *
@@ -546,8 +552,10 @@ class ThePlatform_Plugin {
 	 */
 	function theplatform_register_tinymce_javascript( $plugin_array ) {
 		$plugin_array['theplatform'] = plugins_url( '/js/theplatform.tinymce.plugin.js', __file__ );
+
 		return $plugin_array;
 	}
+
 	/**
 	 * Add our nonce to tinymce so we can call our templates
 	 *
@@ -557,8 +565,10 @@ class ThePlatform_Plugin {
 	 */
 	function theplatform_tinymce_settings( $settings ) {
 		$settings['theplatform_media_nonce'] = wp_create_nonce( 'theplatform-ajax-nonce-theplatform_media' );
+
 		return $settings;
 	}
+
 	/**
 	 * Outputs thePlatform's Media Button
 	 */
@@ -566,8 +576,8 @@ class ThePlatform_Plugin {
 		if ( ! isset( $this->preferences ) ) {
 			$this->preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
 		}
-		
-		if ( !array_key_exists( 'embed_hook', $this->preferences ) ) {
+
+		if ( ! array_key_exists( 'embed_hook', $this->preferences ) ) {
 			return;
 		}
 
@@ -576,17 +586,18 @@ class ThePlatform_Plugin {
 			echo '<a href="#" class="button" id="theplatform-media-button"><img src="' . esc_url( $image_url ) . '" alt="thePlatform" style="vertical-align: text-top; height: 18px; width: 18px;">thePlatform</a>';
 		}
 	}
+
 	/**
 	 * Enqueue thePlatform's media button callback
 	 */
 	function theplatform_enqueue_media_button_scripts() {
-		wp_enqueue_script( 'tp_media_button_js' );		
+		wp_enqueue_script( 'tp_media_button_js' );
 	}
 
 	/**
 	 * Shortcode Region
 	 */
-	
+
 	/**
 	 * Shortcode Callback
 	 *

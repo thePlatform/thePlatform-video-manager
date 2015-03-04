@@ -17,7 +17,7 @@
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 if ( ! defined( 'ABSPATH' ) ) {
-  exit;
+	exit;
 }
 
 require_once( dirname( __FILE__ ) . '/thePlatform-proxy.php' );

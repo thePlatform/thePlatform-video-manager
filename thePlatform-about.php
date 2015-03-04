@@ -41,7 +41,7 @@ if ( current_user_can( $tp_admin_cap ) ) {
 ?>
 <div class="wrap">
 	<h2>thePlatform Video Manager</h2>
-	
+
 	<p>Version <?php echo TP_PLUGIN_VERSION; ?><br>
 		Copyright (C) 2013-<?php echo date( "Y" ); ?> thePlatform LLC.<br>
 	</p>

@@ -44,7 +44,7 @@ class ThePlatform_Options {
 	private $plugin_settings_tabs = array();
 	private $tp_api;
 
-	function __construct() {		
+	function __construct() {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 
 		$this->tp_api = new ThePlatform_API;

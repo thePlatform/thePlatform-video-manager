@@ -77,14 +77,14 @@ function TP_PREFERENCES_OPTIONS_DEFAULTS() {
 		'default_height'       => intval( ( $GLOBALS['content_width'] / 16 ) * 9 ),
 		'player_embed_type'    => 'embed',
 		'embed_hook'           => 'tinymce',
-		'media_embed_type'     => 'release'		
+		'media_embed_type'     => 'release'
 	);
 }
 
 function TP_ADVANCED_OPTIONS_DEFAULTS() {
-	return array( 
-		'media_page_size'	   => 20,
-		'file_fragment_size'   => 5000000
+	return array(
+		'media_page_size'    => 20,
+		'file_fragment_size' => 5000000
 	);
 }
 
@@ -140,7 +140,7 @@ function TP_PREFERENCES_OPTIONS_FIELDS() {
 			array( 'id' => 'embed_hook', 'title' => 'Plugin Embed button type', 'type' => 'select', 'values' => array( 'Media Button' => 'mediabutton', 'Editor Button' => 'tinymce', 'Both' => 'both', 'None' => 'none' ) ),
 			array( 'id' => 'mpx_server_id', 'title' => 'mpx Upload Server', 'type' => 'callback' ),
 			array( 'id' => 'default_publish_id', 'title' => 'Default Publishing Profile', 'type' => 'callback' ),
-			array( 'id' => 'thumbnail_profile_id', 'title' => 'Thumbnail Encoding Profile', 'type' => 'callback' )			
+			array( 'id' => 'thumbnail_profile_id', 'title' => 'Thumbnail Encoding Profile', 'type' => 'callback' )
 		)
 		)
 	);

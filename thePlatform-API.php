@@ -412,7 +412,7 @@ class ThePlatform_API {
 			'custom_fields' => $_POST['custom_fields'],
 			'server_id'     => $_POST['server_id']
 		);
-		
+
 		$token = $this->mpx_signin();
 
 		if ( $args['filetype'] === "audio/mp3" ) {
@@ -570,7 +570,7 @@ class ThePlatform_API {
 	 * Query mpx for videos
 	 * @return array The Media data service response
 	 */
-	function get_video_count_ajax() {	
+	function get_video_count_ajax() {
 		$token = $this->mpx_signin();
 
 		$url = TP_API_MEDIA_ENDPOINT . '&entries=false&count=true&token=' . $token;
@@ -1114,6 +1114,7 @@ class ThePlatform_API {
 
 	/**
 	 * Catch JSON decode errors
+	 *
 	 * @param wp_response $input a HTTP Response object
 	 * @param bool $validateResponse Determines if we should check the response or just return the response body
 	 *

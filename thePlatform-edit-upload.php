@@ -36,7 +36,7 @@ if ( count( $matches ) > 1 ) {
 	//Then we're using IE
 	$version = $matches[1];
 	if ( $version <= 9 ) {
-		wp_die('<div class="error"><p>Internet Explorer ' . esc_html( $version ) . ' is not supported</p></div>');		
+		wp_die( '<div class="error"><p>Internet Explorer ' . esc_html( $version ) . ' is not supported</p></div>' );
 	}
 }
 
@@ -45,8 +45,8 @@ if ( ! defined( 'TP_MEDIA_BROWSER' ) && ! current_user_can( $tp_uploader_cap ) )
 	wp_die( '<div class="error"><p>You do not have sufficient permissions to upload video to mpx</p></div>' );
 }
 
-$preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
-$tp_revoke_cap   = apply_filters( TP_REVOKE_CAP, TP_REVOKE_DEFAULT_CAP );
+$preferences   = get_option( TP_PREFERENCES_OPTIONS_KEY );
+$tp_revoke_cap = apply_filters( TP_REVOKE_CAP, TP_REVOKE_DEFAULT_CAP );
 
 require_once( dirname( __FILE__ ) . '/thePlatform-HTML.php' );
 $tp_html = new ThePlatform_HTML();
@@ -54,11 +54,11 @@ $tp_html = new ThePlatform_HTML();
 if ( ! defined( 'TP_MEDIA_BROWSER' ) ) { ?>
 	<div class="wrap">
 	<h2>Upload Video to mpx</h2> <?php
-} else {	
+} else {
 	$tp_html->edit_tabs_header(); ?>
 
-	<div class="tab-content">	
-	<div class="tab-pane active" id="edit_content"> <?php 
+	<div class="tab-content">
+	<div class="tab-pane active" id="edit_content"> <?php
 } ?>
 
 	<div id="responsive-form" class="clearfix">
