@@ -140,3 +140,7 @@ if ( ! $IS_EMBED && current_user_can( $tp_editor_cap )) {
 	<script id="shortcode-template" type="text/template">
 		[theplatform account="<%= account %>" media="<%= release %>" player="<%= player %>"]
 	</script>
+
+	<script id="error-template" type="text/template">
+		<div class="error below-h2"><p><%= message %></p></div>
+	</script>

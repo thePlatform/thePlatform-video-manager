@@ -530,9 +530,9 @@ class ThePlatform_API {
 
 		$fields = $this->get_query_fields( $this->get_custom_metadata_fields() );
 
-		$url = TP_API_MEDIA_ENDPOINT . '&count=true&fields=id,guid,pid,title' . $fields . '&token=' . $token . '&range=' . $_POST['range'];
+		$url = TP_API_MEDIA_ENDPOINT . '&fields=id,guid,pid,title' . $fields . '&token=' . $token . '&range=' . $_POST['range'];
 
-		if ( $_POST['isEmbed'] === "1" ) {
+		if ( $_POST['isEmbed'] === "true" ) {
 			$url .= '&byApproved=true&byContent=byReleases=byDelivery%253Dstreaming';
 		}
 
@@ -570,10 +570,7 @@ class ThePlatform_API {
 	 * Query mpx for videos
 	 * @return array The Media data service response
 	 */
-	function get_video_count() {
-		// TODO: update nonce
-		check_admin_referer( 'theplatform-ajax-nonce-get_videos' );
-
+	function get_video_count_ajax() {	
 		$token = $this->mpx_signin();
 
 		$url = TP_API_MEDIA_ENDPOINT . '&entries=false&count=true&token=' . $token;
@@ -586,6 +583,14 @@ class ThePlatform_API {
 			$url .= '&account=' . $this->get_mpx_account_id();
 		} else {
 			wp_send_json_error( 'mpx Account is not set, unable to retrieve videos.' );
+		}
+
+		if ( ! empty( $_POST['query'] ) ) {
+			$url .= '&' . $_POST['query'];
+		}
+
+		if ( $_POST['isEmbed'] === "true" ) {
+			$url .= '&byApproved=true&byContent=byReleases=byDelivery%253Dstreaming';
 		}
 
 		$response = ThePlatform_API_HTTP::get( $url, array( "timeout" => 120 ) );

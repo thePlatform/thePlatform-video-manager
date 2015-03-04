@@ -57,8 +57,7 @@ if ( ! defined( 'TP_MEDIA_BROWSER' ) ) { ?>
 } else {	
 	$tp_html->edit_tabs_header(); ?>
 
-	<div class="tab-content">
-	<div class="error below-h2 hidden"><p>error</p></div>
+	<div class="tab-content">	
 	<div class="tab-pane active" id="edit_content"> <?php 
 } ?>
 

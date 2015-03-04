@@ -43,7 +43,7 @@ var theplatform_browser = (function ($) {
             tpHelper.queryParams = queryObject;
             tpHelper.queryString = API.buildMediaQuery(queryObject);
             tpHelper.currentPage = 1;
-            Events.onGetMedia(tpHelper.currentPage);
+            Events.onGetMedia(tpHelper.currentPage);            
         },
 
         notifyUser: function (type, msg) {
@@ -265,6 +265,7 @@ var theplatform_browser = (function ($) {
                 open: function () {
                     $('#tp-edit-dialog').data('refresh', 'false');
                     $('.ui-dialog-titlebar-close').addClass('ui-button');
+                    $('.tab-pane .error').remove();
                     theplatform_edit.updatePublishProfiles(tpHelper.mediaId);
                 },
                 close: function () {
@@ -317,53 +318,10 @@ var theplatform_browser = (function ($) {
             var MAX_RESULTS = 20;
             $('.spinner').show(); // show loading before we call getVideos            
             var theRange = ((page - 1) * MAX_RESULTS + 1) + '-' + (page * MAX_RESULTS);
-
+            API.getVideoCount(Events.onGetMediaCount, MAX_RESULTS);            
             me.viewLoading = true;
             API.getVideos(theRange, function (resp) {                
-                tpHelper.feedResultCount = resp.entryCount;
-
-                // Update pagination
-                var totalResults = resp.totalResults;
-                $('.displaying-num').text(totalResults + ' items');
-                if (totalResults !== 0) {
-                    var pages = Math.ceil(totalResults / MAX_RESULTS);
-                    $('.total-pages').text(pages);
-                    $('.current-page').each(function () {
-                        $(this).attr('max', pages).val(page);
-                    });
-
-                    if (pages <= 1) {
-                        $('.pagination-links a').each(function () {
-                            $(this).addClass('disabled');
-                        });
-                    }
-
-                    if (pages > 1) {
-                        $('.first-page,.prev-page,.last-page,.next-page').each(function () {
-                            $(this).removeClass('disabled');
-                        });
-                    }
-
-                    if (page == pages) {
-                        $('.last-page,.next-page').each(function () {
-                            $(this).addClass('disabled');
-                        });
-                    }
-
-                    if (page == 1) {
-                        $('.first-page,.prev-page').each(function () {
-                            $(this).addClass('disabled');
-                        });
-                    }
-                } else {
-                    $('.total-pages').text(1);
-                    $('.current-page').each(function () {
-                        $(this).attr('max', 1).val(1);
-                    });
-                    $('.pagination-links a').each(function () {
-                        $(this).addClass('disabled');
-                    });
-                }
+                tpHelper.feedResultCount = resp.entryCount;                
 
                 if (resp.entryCount === 0) {
                     UI.notifyUser('info', 'No Results');
@@ -381,30 +339,74 @@ var theplatform_browser = (function ($) {
                 me.viewLoading = false;
             });
         },
-        onMouseScroll: function (ev) {
-            var $this = $(this),
-                scrollTop = this.scrollTop,
-                scrollHeight = this.scrollHeight,
-                height = $this.height(),
-                delta = (ev.type == 'DOMMouseScroll' ? ev.originalEvent.detail * -40 : ev.originalEvent.wheelDelta),
-                up = delta > 0;
+        onGetMediaCount: function (resp, MAX_RESULTS) {
+            // Update pagination
+            var totalResults = resp;
+            var page = tpHelper.currentPage;
+            $('.displaying-num').text(totalResults + ' items');
+            if (totalResults !== 0) {
+                var pages = Math.ceil(totalResults / MAX_RESULTS);
+                $('.total-pages').text(pages);
+                $('.current-page').each(function () {
+                    $(this).attr('max', pages).val(page);
+                });
 
-            var prevent = function () {
-                ev.stopPropagation();
-                ev.preventDefault();
-                ev.returnValue = false;
-                return false;
-            };
+                if (pages <= 1) {
+                    $('.pagination-links a').each(function () {
+                        $(this).addClass('disabled');
+                    });
+                }
 
-            if (!up && -delta > scrollHeight - height - scrollTop) {
-                // Scrolling down, but this will take us past the bottom.
-                $this.scrollTop(scrollHeight);
-                return prevent();
-            } else if (up && delta > scrollTop) {
-                // Scrolling up, but this will take us past the top.
-                $this.scrollTop(0);
-                return prevent();
+                if (pages > 1) {
+                    $('.first-page,.prev-page,.last-page,.next-page').each(function () {
+                        $(this).removeClass('disabled');
+                    });
+                }
+
+                if (page == pages) {
+                    $('.last-page,.next-page').each(function () {
+                        $(this).addClass('disabled');
+                    });
+                }
+
+                if (page == 1) {
+                    $('.first-page,.prev-page').each(function () {
+                        $(this).addClass('disabled');
+                    });
+                }
+            } else {
+                $('.total-pages').text(1);
+                $('.current-page').each(function () {
+                    $(this).attr('max', 1).val(1);
+                });
+                $('.pagination-links a').each(function () {
+                    $(this).addClass('disabled');
+                });
             }
+        },
+        onPageNavigation: function(e) {             
+            e.preventDefault();
+
+            if ($(this).hasClass('disabled')) {
+                return;
+            }
+            var buttonClass = $(this).attr('class');
+
+            switch (buttonClass) {
+                case 'next-page':
+                    tpHelper.currentPage++;
+                    break;
+                case 'prev-page':
+                    tpHelper.currentPage--;
+                    break;
+                case 'last-page':
+                    tpHelper.currentPage = parseInt($('.total-pages')[0].innerText);
+                    break;
+                case 'first-page':
+                    tpHelper.currentPage = 1;
+                    break;
+            }
+            Events.onGetMedia(tpHelper.currentPage);        
         }
     };
 
@@ -452,32 +454,7 @@ var theplatform_browser = (function ($) {
                 }
             }
             return urls;
-        },
-        onPageNavigation: function(e) {             
-            e.preventDefault();
-
-            if ($(this).hasClass('disabled')) {
-                return;
-            }
-            var buttonClass = $(this).attr('class');
-
-            switch (buttonClass) {
-                case 'next-page':
-                    tpHelper.currentPage++;
-                    break;
-                case 'prev-page':
-                    tpHelper.currentPage--;
-                    break;
-                case 'last-page':
-                    tpHelper.currentPage = parseInt($('.total-pages')[0].innerText);
-                    break;
-                case 'first-page':
-                    tpHelper.currentPage = 1;
-                    break;
-            }
-            Events.onGetMedia(tpHelper.currentPage);        
         }
-
     };
 
     /**
@@ -505,16 +482,17 @@ var theplatform_browser = (function ($) {
                 }
             });
         },
-        getVideoCount: function () {
+        getVideoCount: function (callback, MAX_RESULTS) {
             var data = {
-                _wpnonce: tp_browser_local.tp_nonce.get_videos,
+                _wpnonce: tp_browser_local.tp_nonce.get_video_count,
                 action: 'get_video_count',
-                myContent: $('#my-content-cb').prop('checked')
+                myContent: $('#my-content-cb').prop('checked'),
+                isEmbed: tpHelper.isEmbed,
+                query: tpHelper.queryString,
             };
 
             $.post(tp_browser_local.ajaxurl, data, function (resp) {
-                $('.displaying-num').text(resp.data + ' items');
-                console.log(resp);
+                callback(resp.data, MAX_RESULTS);
             });
         },
         buildMediaQuery: function (data) {

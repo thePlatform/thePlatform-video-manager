@@ -159,3 +159,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 .tp-field {
     overflow-wrap: break-word;
 }
+label {
+    margin-right: 5px;
+}

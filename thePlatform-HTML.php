@@ -44,11 +44,11 @@ class ThePlatform_HTML {
 		$this->basic_metadata_options  = get_option( TP_BASIC_METADATA_OPTIONS_KEY );
 		$this->custom_metadata_options = get_option( TP_CUSTOM_METADATA_OPTIONS_KEY );
 		$this->profiles                = $this->tp_api->get_publish_profiles();
-		$this->servers                 = $this->tp_api->get_servers();
-		$this->players                 = $this->tp_api->get_players();
+		$this->servers                 = $this->tp_api->get_servers();		
 	}
 
 	function player_dropdown() {
+		$this->players = $this->tp_api->get_players();
 		$html = '<span id="selectpick-player-wrapper" class="tp-media-button-insert"><label for="selectpick-player">Player:</label><select id="selectpick-player">';
 		foreach ( $this->players as $player ) {
 			$html .= '<option value="' . esc_attr( $player['pid'] ) . '"' . selected( $player['pid'], $this->preferences['default_player_pid'], false ) . '>' . esc_html( $player['title'] ) . '</option>';

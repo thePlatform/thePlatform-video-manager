@@ -168,6 +168,7 @@ class ThePlatform_Plugin {
 			'ajaxurl'  => admin_url( 'admin-ajax.php' ),
 			'tp_nonce' => array(
 				'get_videos'          => wp_create_nonce( 'theplatform-ajax-nonce-get_videos' ),
+				'get_video_count'     => wp_create_nonce( 'theplatform-ajax-nonce-get_video_count' ),
 				'get_video_by_id'     => wp_create_nonce( 'theplatform-ajax-nonce-get_video_by_id' ),
 				'get_categories'      => wp_create_nonce( 'theplatform-ajax-nonce-get_categories' ),
 				'get_profile_results' => wp_create_nonce( 'theplatform-ajax-nonce-get_profile_results' ),

@@ -35,6 +35,7 @@ class ThePlatform_Proxy {
 
 		add_action( 'wp_ajax_get_categories', array( $this, 'get_categories' ) );
 		add_action( 'wp_ajax_get_videos', array( $this, 'get_videos' ) );
+		add_action( 'wp_ajax_get_video_count', array( $this, 'get_video_count' ) );
 		add_action( 'wp_ajax_get_video_by_id', array( $this, 'get_video_by_id' ) );
 		add_action( 'wp_ajax_get_profile_results', array( $this, 'get_profile_results' ) );
 		add_action( 'wp_ajax_generate_thumbnail', array( $this, 'generate_thumbnail' ) );
@@ -161,6 +162,11 @@ class ThePlatform_Proxy {
 	public function get_videos() {
 		$this->check_nonce_and_permissions( $_POST['action'] );
 		$this->get_api()->get_videos_ajax();
+	}
+
+	public function get_video_count() {
+		$this->check_nonce_and_permissions( $_POST['action'] );
+		$this->get_api()->get_video_count_ajax();
 	}
 
 	public function get_video_by_id() {
