@@ -60,9 +60,7 @@ $IS_EMBED    = $page_hook != 'toplevel_page_theplatform';
 				<div class="meta-box-sortables ui-sortable">
 					<div class="postbox">
 						<div class="inside">
-							<?php $tp_html->pagination( 'top' ) ?>
-							<div id="message-panel" class="error below-h2 hidden">
-								<p></p></div>
+							<?php $tp_html->pagination( 'top' ) ?>							
 							<div id="media-list"></div>
 							<?php $tp_html->pagination( 'bottom' ) ?>
 						</div>

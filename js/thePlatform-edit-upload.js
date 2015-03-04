@@ -222,19 +222,29 @@ var theplatform_edit = (function ($) {
     };
 
     var UI = {
-        onSuccess: function (response, button) {            
-            if (response.success && !_.has(response.data, 'isException')) {
-                $(button).text('Success').val('Success').removeClass('button-success button-danger button-info').addClass('button-success');
+        onSuccess: function (response, button) {                        
+            if (button.id === "btn-generate-thumbnail") {
+                theplatform_browser.notifyUser();
+            } else {
                 $('.tab-pane.active .error').remove();
+            }
+
+            if (response.success && !_.has(response.data, 'isException')) {
+                $(button).text('Success').val('Success').removeClass('button-success button-danger button-info').addClass('button-success');                
             } else {
                 $(button).text('Failed').val('Failed').removeClass('button-success button-danger button-info').addClass('button-danger');   
-                var errorSource = $("#error-template").html();
-                var errorTemplate = _.template(errorSource);             
-                var error = errorTemplate( {
-                    message: response.data.description
-                }); 
-                $('.tab-pane.active .error').remove();
-                $('.tab-pane.active').prepend(error.trim());
+
+                 if (button.id === "btn-generate-thumbnail") {
+                    theplatform_browser.notifyUser(response.data.description);
+                } else {
+                    var errorSource = $("#error-template").html();
+                    var errorTemplate = _.template(errorSource);
+                    var error = errorTemplate( {
+                        message: response.data.description
+                    }); 
+                    
+                    $('.tab-pane.active').prepend(error.trim());
+                }
             }
         },
 

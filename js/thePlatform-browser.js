@@ -26,7 +26,7 @@ var theplatform_browser = (function ($) {
          * @return {void}
          */
         refreshView: function () {            
-            UI.notifyUser('clear'); //clear alert box.
+            UI.notifyUser(); //clear alert box.
             UI.updateContentPane({
                 title: ''
             });
@@ -46,16 +46,19 @@ var theplatform_browser = (function ($) {
             Events.onGetMedia(tpHelper.currentPage);            
         },
 
-        notifyUser: function (type, msg) {
-            var $msgPanel = $('#message-panel');
+        notifyUser: function (message) {
+            jQuery('div.error').remove();
 
-            if (type === 'clear') {
-                $msgPanel.addClass('hidden');
-                msg = '';
-            } else {
-                $msgPanel.removeClass('hidden');
+            if (message === undefined) {
+                return;
             }
-            $msgPanel.children().text(msg);
+            
+            var errorSource = $("#error-template").html();
+            var errorTemplate = _.template(errorSource);             
+            var error = errorTemplate( {
+                message: message
+            });
+            jQuery('#poststuff').prepend(error);
         },
 
         updateContentPane: function (mediaItem) {
@@ -269,8 +272,7 @@ var theplatform_browser = (function ($) {
                     theplatform_edit.updatePublishProfiles(tpHelper.mediaId);
                 },
                 close: function () {
-                    // if ($('#tp-edit-dialog').data('refresh') == 'true')
-
+                    
                 }
             }).css("overflow", "hidden");
             return false;
@@ -324,7 +326,7 @@ var theplatform_browser = (function ($) {
                 tpHelper.feedResultCount = resp.entryCount;                
 
                 if (resp.entryCount === 0) {
-                    UI.notifyUser('info', 'No Results');
+                    UI.notifyUser('No Results');
                 }
 
                 $('#media-list').empty();
@@ -475,7 +477,7 @@ var theplatform_browser = (function ($) {
 
             $.post(tp_browser_local.ajaxurl, data, function (resp) {
                 if (!resp.success) {
-                    UI.notifyUser('danger', resp.data);
+                    UI.notifyUser(resp.data);
                     $('.spinner').hide();
                 } else {
                     callback(resp.data);
@@ -615,7 +617,8 @@ var theplatform_browser = (function ($) {
 
     // Expose the updateMediaObject method outside this module
     return {
-        updateMediaObject: UI.updateMediaObject
+        updateMediaObject: UI.updateMediaObject,
+        notifyUser: UI.notifyUser
     };
 
 })(jQuery);
