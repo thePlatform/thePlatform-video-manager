@@ -349,7 +349,7 @@ var theplatform_browser = (function ($) {
         onGetMediaCount: function (totalResults, MAX_RESULTS) {
             tpHelper.totalResults = totalResults;
             var page = tpHelper.currentPage;
-            var postfix = totalResults == 1 ? ' item' : ' items'
+            var postfix = totalResults == 1 ? ' item' : ' items';
             $('.displaying-num').text(totalResults + postfix);
             if (totalResults !== 0) {
                 var pages = Math.ceil(totalResults / MAX_RESULTS);

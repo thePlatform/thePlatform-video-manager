@@ -307,7 +307,7 @@ TheplatformUploader = (function () {
                             if (me.publishProfile != "tp_wp_none") {
                                 me.publishMedia();
                             } else {
-                                me.message("Upload completed.", true);
+                                me.message("Upload complete", true);
                             }
                         } else { // We have more files, upload the next file
                             me.currentFileIndex++;
