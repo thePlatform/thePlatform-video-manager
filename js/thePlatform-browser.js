@@ -502,7 +502,6 @@ var theplatform_browser = (function ($) {
             });
         },
         buildMediaQuery: function (data) {
-
             var queryParams = '';
             if (data.category)
                 queryParams = queryParams.appendParams({
@@ -536,8 +535,8 @@ var theplatform_browser = (function ($) {
                 function (entries) {
                     var categoryPicker = $('#selectpick-categories');
                     // Add each category
-                    for (var idx in entries) {
-                        var entryTitle = entries[idx].title;
+                    for (var idx in entries.data) {
+                        var entryTitle = entries.data[idx].fullTitle;
                         var option = document.createElement('option');
                         option.value = entryTitle;
                         option.text = entryTitle;
@@ -563,12 +562,8 @@ var theplatform_browser = (function ($) {
         var updatedString = this;
         for (var key in params) {
             if (updatedString.indexOf(key + '=') > -1)
-                continue;
-
-            // if (updatedString.indexOf('?') > -1)
-            updatedString += '&' + key + '=' + params[key];
-            // else
-            //     updatedString += '?'+key+'='+params[key];
+                continue;            
+            updatedString += '&' + key + '=' + encodeURIComponent(params[key]);
         }
         return updatedString;
     };
