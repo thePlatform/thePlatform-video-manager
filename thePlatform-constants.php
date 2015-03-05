@@ -28,6 +28,7 @@ define( 'TP_ACCOUNT_OPTIONS_KEY', 'theplatform_account_options' );
 define( 'TP_CUSTOM_METADATA_OPTIONS_KEY', 'theplatform_metadata_options' );
 define( 'TP_BASIC_METADATA_OPTIONS_KEY', 'theplatform_upload_options' );
 define( 'TP_TOKEN_OPTIONS_KEY', 'theplatform_token_options' );
+define( 'TP_TRANSIENT_CUSTOM_METADATA_FIELDS', 'tp_custom_metadata_fields' );
 define( 'TP_ADMIN_CAP', 'tp_admin_cap' );
 define( 'TP_EDITOR_CAP', 'tp_editor_cap' );
 define( 'TP_UPLOADER_CAP', 'tp_uploader_cap' );

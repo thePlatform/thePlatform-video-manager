@@ -39,7 +39,7 @@ class ThePlatform_HTML {
 	function __construct() {
 		$this->tp_api                  = new ThePlatform_API();
 		$this->preferences             = get_option( TP_PREFERENCES_OPTIONS_KEY );
-		$this->metadata                = $this->tp_api->get_custom_metadata_fields();
+		$this->metadata                = $this->tp_api->get_custom_metadata_fields( true );
 		$this->preferences             = get_option( TP_PREFERENCES_OPTIONS_KEY );
 		$this->basic_metadata_options  = get_option( TP_BASIC_METADATA_OPTIONS_KEY );
 		$this->custom_metadata_options = get_option( TP_CUSTOM_METADATA_OPTIONS_KEY );
@@ -465,9 +465,9 @@ class ThePlatform_HTML {
 
 				<label for="selectpick-sort">Sort By:</label>
 				<select id="selectpick-sort">
-					<option value="added">Added</option>
-					<option value="title">Title</option>
 					<option value="updated">Updated</option>
+					<option value="added">Added</option>
+					<option value="title">Title</option>					
 				</select>
 
 				<label for="selectpick-order">Order By:</label>

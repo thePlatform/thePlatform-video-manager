@@ -757,35 +757,39 @@ class ThePlatform_API {
 
 	/**
 	 * Query mpx for custom metadata fields
-	 *
-	 * @param array $fields Optional set of fields to request from the data service
-	 *
+	 *	 
+	 * @param boolean $forceRefresh If true, get content from our dataservices, otherwise load it from tranisent storage
 	 * @return array The Media Field data service response
 	 */
-	function get_custom_metadata_fields( $fields = array() ) {
-		$default_fields = array( 'id', 'title', 'description', 'added', 'allowedValues', 'dataStructure', 'dataType', 'fieldName', 'defaultValue', 'namespace', 'namespacePrefix' );
+	function get_custom_metadata_fields( $forceRefresh = false ) {
+		if ( $forceRefresh === true || ( false === ( $value = get_transient( TP_TRANSIENT_CUSTOM_METADATA_FIELDS ) ) ) ) {
+			$default_fields = array( 'id', 'title', 'description', 'added', 'allowedValues', 'dataStructure', 'dataType', 'fieldName', 'defaultValue', 'namespace', 'namespacePrefix' );
 
-		$fieldsString = implode( ',', array_merge( $default_fields, $fields ) );
+			$fieldsString = implode( ',', $default_fields );
 
-		$this->get_preferences();
+			$this->get_preferences();
 
-		$token = $this->mpx_signin();
+			$token = $this->mpx_signin();
 
-		$url = TP_API_MEDIA_FIELD_ENDPOINT . '&fields=' . $fieldsString . '&token=' . $token;
+			$url = TP_API_MEDIA_FIELD_ENDPOINT . '&fields=' . $fieldsString . '&token=' . $token;
 
-		if ( $this->get_mpx_account_id() ) {
-			$url .= '&account=' . $this->get_mpx_account_id();
+			if ( $this->get_mpx_account_id() ) {
+				$url .= '&account=' . $this->get_mpx_account_id();
+			}
+
+			$response = ThePlatform_API_HTTP::get( $url );
+
+			$data = $this->decode_json_from_server( $response );
+
+			if ( array_key_exists( 'success', $data ) && $data['success'] == false ) {
+				return array();
+			}
+			set_transient( TP_TRANSIENT_CUSTOM_METADATA_FIELDS, $data['entries'], 24 * HOUR_IN_SECONDS );
+
+			return $data['entries'];
+		} else {			
+			return $value;
 		}
-
-		$response = ThePlatform_API_HTTP::get( $url );
-
-		$data = $this->decode_json_from_server( $response );
-
-		if ( array_key_exists( 'success', $data ) && $data['success'] == false ) {
-			return array();
-		}
-
-		return $data['entries'];
 	}
 
 	/**
