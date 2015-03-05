@@ -19,7 +19,7 @@ var theplatform_browser = (function ($) {
     /**
      * UI Methods
      * @type {Object}
-     */
+     */    
     var UI = {
         /**
          * Refresh the infinite scrolling media list based on the selected category and search options
@@ -312,7 +312,7 @@ var theplatform_browser = (function ($) {
         OnLoadReleaseUrl: function () {
             tpHelper.currentMediaTime = undefined;
         },
-        onGetMedia: function (page) {
+        onGetMedia: function (page, performCount) {
             var me = this;
             if (me.viewLoading === true) {
                 return;
@@ -320,8 +320,13 @@ var theplatform_browser = (function ($) {
             var MAX_RESULTS = 20;
             $('.spinner').show(); // show loading before we call getVideos            
             var theRange = ((page - 1) * MAX_RESULTS + 1) + '-' + (page * MAX_RESULTS);
-            API.getVideoCount(Events.onGetMediaCount, MAX_RESULTS);            
+            if (performCount !== false) {
+                API.getVideoCount(Events.onGetMediaCount, MAX_RESULTS);    
+            } else {
+                Events.onGetMediaCount(parseInt($('.displaying-num').text()), MAX_RESULTS);
+            }
             me.viewLoading = true;
+
             API.getVideos(theRange, function (resp) {                
                 tpHelper.feedResultCount = resp.entryCount;                
 
@@ -341,8 +346,7 @@ var theplatform_browser = (function ($) {
                 me.viewLoading = false;
             });
         },
-        onGetMediaCount: function (resp, MAX_RESULTS) {
-            // Update pagination
+        onGetMediaCount: function (resp, MAX_RESULTS) {            
             var totalResults = resp;
             var page = tpHelper.currentPage;
             $('.displaying-num').text(totalResults + ' items');
@@ -387,7 +391,7 @@ var theplatform_browser = (function ($) {
             }
         },
         onPageNavigation: function(e) {             
-            e.preventDefault();
+            e.preventDefault();            
 
             if ($(this).hasClass('disabled')) {
                 return;
@@ -408,7 +412,7 @@ var theplatform_browser = (function ($) {
                     tpHelper.currentPage = 1;
                     break;
             }
-            Events.onGetMedia(tpHelper.currentPage);        
+            Events.onGetMedia(tpHelper.currentPage, false);        
         }
     };
 
@@ -599,9 +603,9 @@ var theplatform_browser = (function ($) {
                 UI.refreshView();
         });
 
-        $('#current-page-selector').keyup(function (event) {
+        $('#current-page-selector').keyup(function (event) {            
             if (event.keyCode == 13)
-                Events.onGetMedia($(this).val());
+                Events.onGetMedia($(this).val(), false);
         });
 
         $('.pagination-links a').click(Events.onPageNavigation);
