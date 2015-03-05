@@ -103,7 +103,7 @@ class ThePlatform_Plugin {
 	 * Method to load thePlatform media browser from the Media Tab
 	 */
 	function tp_media_form() {
-		require_once( dirname( __FILE__ ) . '/thePlatform-media.php' );
+		require_once( dirname( __FILE__ ) . '/thePlatform-browser.php' );
 	}
 
 	/**
@@ -223,7 +223,7 @@ class ThePlatform_Plugin {
 	 */
 	function media_page() {
 		$this->check_plugin_update();
-		require_once( dirname( __FILE__ ) . '/thePlatform-media.php' );
+		require_once( dirname( __FILE__ ) . '/thePlatform-browser.php' );
 	}
 
 	/**
