@@ -63,7 +63,7 @@ var theplatform_edit = (function ($) {
                                     break;
                                 }
                             }
-                            break;                        
+                            break;
                         default:
                             if (Validation.validateFormat(value, dataType)) {
                                 fieldError = true;
@@ -129,7 +129,7 @@ var theplatform_edit = (function ($) {
                     // @todo: this could do more, right now just checks that the structure is correct
                     var linkRegex = /^(((title:)(.*),(\s+)?(href:).*)|((href:)(.*),(\s+)?(title:).*))$/;
                     validationError = !linkRegex.test(value);
-                    break;                
+                    break;
                 default:
                     // nothing to do
                     break;
@@ -222,7 +222,7 @@ var theplatform_edit = (function ($) {
     };
 
     var UI = {
-        onSuccess: function (response, button) {                        
+        onSuccess: function (response, button) {
             if (button.id === "btn-generate-thumbnail") {
                 theplatform_browser.notifyUser();
             } else {
@@ -230,19 +230,19 @@ var theplatform_edit = (function ($) {
             }
 
             if (response.success && !_.has(response.data, 'isException')) {
-                $(button).text('Success').val('Success').removeClass('button-success button-danger button-info').addClass('button-success');                
+                $(button).text('Success').val('Success').removeClass('button-success button-danger button-info').addClass('button-success');
             } else {
-                $(button).text('Failed').val('Failed').removeClass('button-success button-danger button-info').addClass('button-danger');   
+                $(button).text('Failed').val('Failed').removeClass('button-success button-danger button-info').addClass('button-danger');
 
-                 if (button.id === "btn-generate-thumbnail") {
+                if (button.id === "btn-generate-thumbnail") {
                     theplatform_browser.notifyUser(response.data.description);
                 } else {
                     var errorSource = $("#error-template").html();
                     var errorTemplate = _.template(errorSource);
-                    var error = errorTemplate( {
+                    var error = errorTemplate({
                         message: response.data.description
-                    }); 
-                    
+                    });
+
                     $('.tab-pane.active').prepend(error.trim());
                 }
             }
@@ -478,7 +478,7 @@ var theplatform_edit = (function ($) {
         onRevokeTabOpened: function () {
             UI.updatePublishProfiles(tpHelper.mediaId);
         },
-        onTabClick: function (e) {         
+        onTabClick: function (e) {
             e.preventDefault();
 
             $(".nav-tab-active").removeClass('nav-tab-active');

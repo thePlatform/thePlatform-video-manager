@@ -19,13 +19,13 @@ var theplatform_browser = (function ($) {
     /**
      * UI Methods
      * @type {Object}
-     */    
+     */
     var UI = {
         /**
          * Refresh the infinite scrolling media list based on the selected category and search options
          * @return {void}
          */
-        refreshView: function () {            
+        refreshView: function () {
             UI.notifyUser(); //clear alert box.
             UI.updateContentPane({
                 title: ''
@@ -43,7 +43,7 @@ var theplatform_browser = (function ($) {
             tpHelper.queryParams = queryObject;
             tpHelper.queryString = API.buildMediaQuery(queryObject);
             tpHelper.currentPage = 1;
-            Events.onGetMedia(tpHelper.currentPage);            
+            Events.onGetMedia(tpHelper.currentPage);
         },
 
         notifyUser: function (message) {
@@ -54,8 +54,8 @@ var theplatform_browser = (function ($) {
             }
 
             var errorSource = $("#error-template").html();
-            var errorTemplate = _.template(errorSource);             
-            var error = errorTemplate( {
+            var errorTemplate = _.template(errorSource);
+            var error = errorTemplate({
                 message: message
             });
             jQuery('#poststuff').prepend(error);
@@ -160,7 +160,7 @@ var theplatform_browser = (function ($) {
 
             // For the Embed dialog, we don't media without a release in the list
             // TODO: Consider changing this because of OneURL
-            if (previewUrl.length === 0 && tpHelper.isEmbed == "1") {                
+            if (previewUrl.length === 0 && tpHelper.isEmbed == "1") {
                 return;
             }
 
@@ -240,7 +240,7 @@ var theplatform_browser = (function ($) {
 
         },
         onEmbedAndClose: function () {
-            Events.onEmbed();           
+            Events.onEmbed();
         },
         onSetImage: function () {
             var post_id = window.parent.jQuery('#post_ID').val();
@@ -272,7 +272,7 @@ var theplatform_browser = (function ($) {
                     theplatform_edit.updatePublishProfiles(tpHelper.mediaId);
                 },
                 close: function () {
-                    
+
                 }
             }).css("overflow", "hidden");
             return false;
@@ -321,14 +321,14 @@ var theplatform_browser = (function ($) {
             $('.spinner').show(); // show loading before we call getVideos            
             var theRange = ((page - 1) * MAX_RESULTS + 1) + '-' + (page * MAX_RESULTS);
             if (performCount !== false) {
-                API.getVideoCount(Events.onGetMediaCount, MAX_RESULTS);    
+                API.getVideoCount(Events.onGetMediaCount, MAX_RESULTS);
             } else {
-                Events.onGetMediaCount(parseInt($('.displaying-num').text()), MAX_RESULTS);
+                Events.onGetMediaCount(tpHelper.totalResults, MAX_RESULTS);
             }
             me.viewLoading = true;
 
-            API.getVideos(theRange, function (resp) {                
-                tpHelper.feedResultCount = resp.entryCount;                
+            API.getVideos(theRange, function (resp) {
+                tpHelper.feedResultCount = resp.entryCount;
 
                 if (resp.entryCount === 0) {
                     UI.notifyUser('No Results');
@@ -346,8 +346,8 @@ var theplatform_browser = (function ($) {
                 me.viewLoading = false;
             });
         },
-        onGetMediaCount: function (resp, MAX_RESULTS) {            
-            var totalResults = resp;
+        onGetMediaCount: function (totalResults, MAX_RESULTS) {
+            tpHelper.totalResults = totalResults;
             var page = tpHelper.currentPage;
             $('.displaying-num').text(totalResults + ' items');
             if (totalResults !== 0) {
@@ -390,8 +390,8 @@ var theplatform_browser = (function ($) {
                 });
             }
         },
-        onPageNavigation: function(e) {             
-            e.preventDefault();            
+        onPageNavigation: function (e) {
+            e.preventDefault();
 
             if ($(this).hasClass('disabled')) {
                 return;
@@ -412,7 +412,7 @@ var theplatform_browser = (function ($) {
                     tpHelper.currentPage = 1;
                     break;
             }
-            Events.onGetMedia(tpHelper.currentPage, false);        
+            Events.onGetMedia(tpHelper.currentPage, false);
         }
     };
 
@@ -603,7 +603,7 @@ var theplatform_browser = (function ($) {
                 UI.refreshView();
         });
 
-        $('#current-page-selector').keyup(function (event) {            
+        $('#current-page-selector').keyup(function (event) {
             if (event.keyCode == 13)
                 Events.onGetMedia($(this).val(), false);
         });
