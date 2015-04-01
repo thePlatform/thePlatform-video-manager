@@ -318,28 +318,28 @@ var theplatform_browser = (function ($) {
                 return;
             }
             var MAX_RESULTS = 20;
-            $('.spinner').show(); // show loading before we call getVideos            
+            $('.spinner').show(); // show loading before we call getVideos
             var theRange = ((page - 1) * MAX_RESULTS + 1) + '-' + (page * MAX_RESULTS);
-            if (performCount !== false) {
-                API.getVideoCount(Events.onGetMediaCount, MAX_RESULTS);
-            } else {
-                Events.onGetMediaCount(tpHelper.totalResults, MAX_RESULTS);
-            }
+
             me.viewLoading = true;
 
-            API.getVideos(theRange, function (resp) {
-                tpHelper.feedResultCount = resp.entryCount;
+            var videosPromise = $.when(API.getVideos(theRange), API.getVideoCount(performCount));
 
-                if (resp.entryCount === 0) {
+            videosPromise.done(function(videos, count) {
+                tpHelper.feedResultCount = videos.entryCount;
+
+                if (videos.entryCount === 0) {
                     UI.notifyUser('No Results');
                 }
 
                 $('#media-list').empty();
-                var entries = resp.entries;
+                var entries = videos.entries;
 
                 for (var i = 0; i < entries.length; i++) {
                     UI.addMediaObject(entries[i]);
                 }
+
+                Events.onGetMediaCount(count, MAX_RESULTS);
 
                 $('.spinner').hide();
                 Holder.run();
@@ -469,7 +469,8 @@ var theplatform_browser = (function ($) {
      * @type {Object}
      */
     var API = {
-        getVideos: function (range, callback) {
+        getVideos: function (range) {
+            var deferred = $.Deferred();
 
             var data = {
                 _wpnonce: tp_browser_local.tp_nonce.get_videos,
@@ -484,12 +485,23 @@ var theplatform_browser = (function ($) {
                 if (!resp.success) {
                     UI.notifyUser(resp.data);
                     $('.spinner').hide();
+
+                    deferred.reject(resp.data);
                 } else {
-                    callback(resp.data);
+                    deferred.resolve(resp.data);
                 }
             });
+
+            return deferred.promise();
         },
-        getVideoCount: function (callback, MAX_RESULTS) {
+        getVideoCount: function (performCount) {
+            var deferred = $.Deferred();
+
+            if (performCount === false) {
+                deferred.resolve(tpHelper.totalResults);
+                return deferred.promise();
+            }
+
             var data = {
                 _wpnonce: tp_browser_local.tp_nonce.get_video_count,
                 action: 'get_video_count',
@@ -499,8 +511,10 @@ var theplatform_browser = (function ($) {
             };
 
             $.post(tp_browser_local.ajaxurl, data, function (resp) {
-                callback(resp.data, MAX_RESULTS);
+                deferred.resolve(resp.data);
             });
+
+            return deferred.promise();
         },
         buildMediaQuery: function (data) {
             var queryParams = '';
@@ -563,7 +577,7 @@ var theplatform_browser = (function ($) {
         var updatedString = this;
         for (var key in params) {
             if (updatedString.indexOf(key + '=') > -1)
-                continue;            
+                continue;
             updatedString += '&' + key + '=' + encodeURIComponent(params[key]);
         }
         return updatedString;
