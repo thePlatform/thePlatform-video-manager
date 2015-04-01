@@ -306,7 +306,7 @@ class ThePlatform_Plugin {
 		} else if ( $region === 'eu' ) {
 			$newPreferences['mpx_region'] = 'EU3';
 		}
-		
+
 		update_option( TP_PREFERENCES_OPTIONS_KEY, $newPreferences );
 		update_option( TP_ACCOUNT_OPTIONS_KEY, array_merge( TP_ACCOUNT_OPTIONS_DEFAULTS(), get_option( TP_ACCOUNT_OPTIONS_KEY, array() ) ) );
 		update_option( TP_BASIC_METADATA_OPTIONS_KEY, array_merge( TP_BASIC_METADATA_OPTIONS_DEFAULTS(), get_option( TP_BASIC_METADATA_OPTIONS_KEY, array() ) ) );
@@ -417,11 +417,8 @@ class ThePlatform_Plugin {
 				$ids                      = explode( '|', $input['mpx_account_id'] );
 				$input['mpx_account_id']  = $ids[0];
 				$input['mpx_account_pid'] = $ids[1];
-			}
-
-			if ( strpos( $input['mpx_region'], '|' ) !== false ) {
-				$ids                 = explode( '|', $input['mpx_region'] );
-				$input['mpx_region'] = $ids[0];
+				$region = $tp_api->get_account_region( $input['mpx_account_id'] );
+				$input['mpx_region'] = $region;
 			}
 		}
 

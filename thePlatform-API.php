@@ -1153,14 +1153,14 @@ class ThePlatform_API {
 	 * Get the selected account region
 	 * @return bool True if the account is within the same region
 	 */
-	function get_account_region() {
-		if ( ! $this->get_mpx_account_id() ) {
+	function get_account_region( $accountId = FALSE ) {
+		if ( ! $accountId  ) {
 			return false;
 		}
 
 		$token = $this->mpx_signin();
-
-		$url = TP_API_ACCESS_ACCOUNT_LOOKUP_ENDPOINT . '&token=' . $token . '&_accountIds[0]=' . $this->get_mpx_account_id();
+		
+		$url = TP_API_ACCESS_ACCOUNT_LOOKUP_ENDPOINT . '&token=' . $token . '&_accountIds[0]=' . urlencode( $accountId );
 
 		$response = ThePlatform_API_HTTP::get( $url );
 		$data     = $this->decode_json_from_server( $response, false );
