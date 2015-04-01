@@ -370,6 +370,10 @@ class ThePlatform_Options {
 		echo $html;
 	}
 
+	function field_mpx_region_option( $args ) {
+		var_dump( $this->tp_api->get_account_region());
+	}
+
 	function field_default_player_name_option( $args ) {
 		$field   = $args['field'];
 		$options = $args['options'];

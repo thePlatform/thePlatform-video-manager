@@ -91,6 +91,7 @@ class ThePlatform_URLs {
 
 		// Access Data Service URLs
 		define( 'TP_API_ACCESS_ACCOUNT_ENDPOINT', TP_API_ACCESS_BASE_URL . 'data/Account?schema=1.3.0&form=cjson' );
+		define( 'TP_API_ACCESS_ACCOUNT_LOOKUP_ENDPOINT', TP_API_ACCESS_BASE_URL . 'web/Lookup/getAccountInfoByIds?schema=1.0&form=json' );
 
 		// Authorization Service URLs
 		define( 'TP_API_ACCESS_AUTH_ENDPOINT', TP_API_ACCESS_BASE_URL . 'web/Authorization/authorize?schema=1.3&form=json' );

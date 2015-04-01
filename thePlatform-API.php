@@ -1150,25 +1150,26 @@ class ThePlatform_API {
 	}
 
 	/**
-	 * Verify that the account you've selected is within the region you've selected
+	 * Get the selected account region
 	 * @return bool True if the account is within the same region
 	 */
-	function verify_account_region() {
+	function get_account_region() {
 		if ( ! $this->get_mpx_account_id() ) {
 			return false;
 		}
 
-		$response = $this->get_account_settings();
+		$token = $this->mpx_signin();
 
-		if ( is_null( $response ) && ! is_array( $response ) ) {
+		$url = TP_API_ACCESS_ACCOUNT_LOOKUP_ENDPOINT . '&token=' . $token . '&_accountIds[0]=' . $this->get_mpx_account_id();
+
+		$response = ThePlatform_API_HTTP::get( $url );
+		$data     = $this->decode_json_from_server( $response, false );
+
+		if ( is_null( $data ) || ( array_key_exists( 'success', $data ) && $data['success'] == false ) ) {
 			return false;
 		}
 
-		if ( ! array_key_exists( 'isException', $response ) ) {
-			return true;
-		} else {
-			return false;
-		}
+		return $data['getAccountInfoByIdsResponse'][0]['region'];
 	}
 
 	/**
