@@ -299,6 +299,14 @@ class ThePlatform_Plugin {
 		$newPreferences                   = array_merge( TP_PREFERENCES_OPTIONS_DEFAULTS(), get_option( TP_PREFERENCES_OPTIONS_KEY, array() ) );
 		$newPreferences['plugin_version'] = TP_PLUGIN_VERSION;
 
+		// Update the region value
+		$region = $newPreferences['mpx_region'];
+		if ( $region === 'us' ) {
+			$newPreferences['mpx_region'] = 'US1';
+		} else if ( $region === 'eu' ) {
+			$newPreferences['mpx_region'] = 'EU3';
+		}
+		
 		update_option( TP_PREFERENCES_OPTIONS_KEY, $newPreferences );
 		update_option( TP_ACCOUNT_OPTIONS_KEY, array_merge( TP_ACCOUNT_OPTIONS_DEFAULTS(), get_option( TP_ACCOUNT_OPTIONS_KEY, array() ) ) );
 		update_option( TP_BASIC_METADATA_OPTIONS_KEY, array_merge( TP_BASIC_METADATA_OPTIONS_DEFAULTS(), get_option( TP_BASIC_METADATA_OPTIONS_KEY, array() ) ) );

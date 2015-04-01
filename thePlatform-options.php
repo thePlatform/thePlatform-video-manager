@@ -371,7 +371,12 @@ class ThePlatform_Options {
 	}
 
 	function field_mpx_region_option( $args ) {
-		var_dump( $this->tp_api->get_account_region());
+		$region = $this->tp_api->get_account_region();
+		$field   = $args['field'];
+		$options = $args['options'];
+		$name    = $args['key'] . '[' . $field['id'] . ']';
+		$html    = '<input class="tpOption" type="text" id="' . esc_attr( $field['id'] ) . '" name="' . esc_attr( $name ) . '" value="' . esc_attr( $region ) . '" />';
+		echo $html;
 	}
 
 	function field_default_player_name_option( $args ) {

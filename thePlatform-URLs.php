@@ -36,11 +36,11 @@ class ThePlatform_URLs {
 	function __construct( $preference_key ) {
 		$region = $this->getRegion( $preference_key );
 		if ( ! in_array( $region, TP_REGIONS(), true ) ) {
-			$region = 'us';
+			$region = 'US1';
 		}
 		// Set the base URLs based on the region
 		switch ( $region ) {
-			case 'us':
+			case 'US1':
 				define( 'TP_API_ADMIN_IDENTITY_BASE_URL', 'https://identity.auth.theplatform.com/idm/web/Authentication/' );
 				define( 'TP_API_MEDIA_DATA_BASE_URL', 'http://data.media.theplatform.com/media/data/' );
 				define( 'TP_API_PLAYER_BASE_URL', 'http://data.player.theplatform.com/player/data/' );
@@ -53,7 +53,7 @@ class ThePlatform_URLs {
 				define( 'TP_API_PLAYER_EMBED_BASE_URL', '//player.theplatform.com/p/' );
 				define( 'TP_API_TASK_BASE_URL', 'http://data.task.theplatform.com/task/data/' );
 				break;
-			case 'eu':
+			case 'EU3':
 				define( 'TP_API_ADMIN_IDENTITY_BASE_URL', 'https://identity.auth.theplatform.eu/idm/web/Authentication/' );
 				define( 'TP_API_MEDIA_DATA_BASE_URL', 'http://data.media.theplatform.eu/media/data/' );
 				define( 'TP_API_PLAYER_BASE_URL', 'http://data.player.theplatform.eu/player/data/' );
@@ -122,10 +122,8 @@ class ThePlatform_URLs {
 		$preferences = get_option( $preference_key );
 		if ( $preferences && isset( $preferences['mpx_region'] ) && strlen( $preferences['mpx_region'] ) ) {
 			$region = $preferences['mpx_region'];
-			$region = explode( '|', $region );
-			$region = $region[0];
 		} else {
-			$region = 'us';
+			$region = 'US1';
 		}
 
 		return $region;

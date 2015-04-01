@@ -174,7 +174,7 @@ function TP_PLUGIN_VERSION( $version = TP_PLUGIN_VERSION ) {
 }
 
 function TP_REGIONS() {
-	return array( 'us', 'eu' );
+	return array( 'US1', 'EU3' );
 }
 
 function TP_DATA_TYPE_DESCRIPTIONS() {
