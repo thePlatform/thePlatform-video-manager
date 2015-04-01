@@ -82,6 +82,9 @@
         var usr = $("#mpx_username").val();
         var pwd = $("#mpx_password").val();
 
+        if ( usr.indexOf('mpx/') === -1 ) {
+          usr = 'mpx/' + usr;
+    		}
         var hash = base64Encode(usr + ":" + pwd);
 
         var data = {
@@ -156,7 +159,7 @@
             $('#mpx_server_id').parent().parent().hide();
         }
 
-        //Set up the PID for the mpx account on change in the Settings page 
+        //Set up the PID for the mpx account on change in the Settings page
         $('#mpx_account_id').change(function () {
             $('#mpx_account_pid').val($('#mpx_account_id option:selected').val().split('|')[1]);
         });

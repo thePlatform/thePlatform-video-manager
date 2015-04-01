@@ -31,8 +31,6 @@ if ( ! current_user_can( $tp_admin_cap ) ) {
 class ThePlatform_Options {
 
 	private $account_is_verified;
-	private $region_is_verified;
-	private $regions = array( 'us', 'eu' );
 	/*
 	 * WP Option key
 	 */
@@ -83,7 +81,7 @@ class ThePlatform_Options {
 		$this->upload_options      = get_option( TP_BASIC_METADATA_OPTIONS_KEY, array() );
 		$this->advanced_options    = get_option( TP_ADVANCED_OPTIONS_KEY, array() );
 
-		// Initialize option defaults				
+		// Initialize option defaults
 		$this->account_options = array_merge( TP_ACCOUNT_OPTIONS_DEFAULTS(), $this->account_options );
 
 		if ( empty( $this->upload_options ) ) {
@@ -104,17 +102,6 @@ class ThePlatform_Options {
 
 		$this->account_is_verified = $this->tp_api->verify_account_settings();
 
-		if ( $this->account_is_verified ) {
-			$this->region_is_verified = $this->tp_api->verify_account_region();
-		} else {
-			$this->region_is_verified = false;
-
-			if ( $this->account_options['mpx_username'] != 'mpx/' ) {
-				echo '<div id="message" class="error">';
-				echo '<p><strong>Sign in to thePlatform failed, please check your account settings.</strong></p>';
-				echo '</div>';
-			}
-		}
 	}
 
 	/*
@@ -140,7 +127,7 @@ class ThePlatform_Options {
 	 * appends the setting to the tabs array of the object.
 	 */
 	function register_preferences_options() {
-		if ( ! $this->account_is_verified || ! $this->region_is_verified ) {
+		if ( ! $this->account_is_verified ) {
 			return;
 		}
 
@@ -172,8 +159,8 @@ class ThePlatform_Options {
 	 */
 	function register_custom_metadata_options() {
 
-		//Check for uninitialized options	
-		if ( ! $this->account_is_verified || ! $this->region_is_verified ) {
+		//Check for uninitialized options
+		if ( ! $this->account_is_verified ) {
 			return;
 		}
 
@@ -196,7 +183,7 @@ class ThePlatform_Options {
 	 */
 	function register_basic_metadata_options() {
 
-		if ( ! $this->account_is_verified || ! $this->region_is_verified ) {
+		if ( ! $this->account_is_verified ) {
 			return;
 		}
 
@@ -398,23 +385,6 @@ class ThePlatform_Options {
 		echo $html;
 	}
 
-	function field_mpx_region_option( $args ) {
-		$field   = $args['field'];
-		$options = $args['options'];
-		$name    = $args['key'] . '[' . $field['id'] . ']';
-		$html    = '<select class="tpOption" id="' . esc_attr( $field['id'] ) . '" name="' . esc_attr( $name ) . '">';
-		$regions = $this->regions;
-		foreach ( $regions as $region ) {
-			$html .= '<option value="' . esc_attr( $region ) . '|' . esc_attr( $region ) . '"' . selected( $options[ $field['id'] ], $region, false ) . '>' . esc_html( strtoupper( $region ) ) . '</option>';
-		}
-		$html .= '</select>';
-
-		if ( ! $this->region_is_verified ) {
-			$html .= '<span style="color:red; font-weight:bold"> Please select the correct region the mpx account is located at</span>';
-		}
-		echo $html;
-	}
-
 	function field_mpx_account_id_option( $args ) {
 		$field   = $args['field'];
 		$options = $args['options'];
@@ -524,4 +494,3 @@ if ( ! class_exists( 'ThePlatform_API' ) ) {
 }
 
 new ThePlatform_Options;
-		

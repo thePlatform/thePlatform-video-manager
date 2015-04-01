@@ -188,7 +188,12 @@ class ThePlatform_API {
 	private function basicAuthHeader() {
 		$this->get_account();
 
-		$encoded = base64_encode( $this->account['mpx_username'] . ':' . $this->account['mpx_password'] );
+		$username = $this->account['mpx_username'];
+		if ( strpos( $account, 'mpx/') === FALSE ) {
+			$username = 'mpx/' . $account;
+		}
+
+		$encoded = base64_encode( $username . ':' . $this->account['mpx_password'] );
 
 		$args = array(
 			'headers' => array(
@@ -757,7 +762,7 @@ class ThePlatform_API {
 
 	/**
 	 * Query mpx for custom metadata fields
-	 *	 
+	 *
 	 * @param boolean $forceRefresh If true, get content from our dataservices, otherwise load it from tranisent storage
 	 * @return array The Media Field data service response
 	 */
@@ -787,7 +792,7 @@ class ThePlatform_API {
 			set_transient( TP_TRANSIENT_CUSTOM_METADATA_FIELDS, $data['entries'], 24 * HOUR_IN_SECONDS );
 
 			return $data['entries'];
-		} else {			
+		} else {
 			return $value;
 		}
 	}
@@ -1116,6 +1121,10 @@ class ThePlatform_API {
 
 		$username = trim( $this->account['mpx_username'] );
 		$password = trim( $this->account['mpx_password'] );
+
+		if ( strpos( $username, 'mpx/') === FALSE ) {
+			$username = 'mpx/' . $username;
+		}
 
 		if ( $username === "mpx/" || $username === "" || $password === "" ) {
 			return false;
