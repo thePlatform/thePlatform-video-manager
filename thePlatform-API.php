@@ -189,8 +189,9 @@ class ThePlatform_API {
 		$this->get_account();
 
 		$username = $this->account['mpx_username'];
+
 		if ( strpos( $account, 'mpx/') === FALSE ) {
-			$username = 'mpx/' . $account;
+			$username = 'mpx/' . $username;
 		}
 
 		$encoded = base64_encode( $username . ':' . $this->account['mpx_password'] );
@@ -1119,23 +1120,14 @@ class ThePlatform_API {
 	function verify_account_settings() {
 		$this->get_account();
 
-		$username = trim( $this->account['mpx_username'] );
-		$password = trim( $this->account['mpx_password'] );
-
-		if ( strpos( $username, 'mpx/') === FALSE ) {
-			$username = 'mpx/' . $username;
-		}
-
-		if ( $username === "mpx/" || $username === "" || $password === "" ) {
+		if ( ! $this->account) {
 			return false;
 		}
 
-		$hash = base64_encode( $username . ':' . $password );
-
-		$response = ThePlatform_API_HTTP::get( TP_API_SIGNIN_URL, array( 'headers' => array( 'Authorization' => 'Basic ' . $hash ) ) );
+		$response = ThePlatform_API_HTTP::get( TP_API_SIGNIN_URL, $this->basicAuthHeader() );
 
 		$payload = $this->decode_json_from_server( $response, false );
-
+		
 		if ( is_null( $response ) || is_wp_error( $response ) ) {
 			return false;
 		}

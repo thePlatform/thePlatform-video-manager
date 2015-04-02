@@ -127,11 +127,7 @@ class ThePlatform_Options {
 	 * appends the setting to the tabs array of the object.
 	 */
 	function register_preferences_options() {
-		if ( ! $this->account_is_verified ) {
-			return;
-		}
-
-		if ( empty ( $this->account_options['mpx_account_id'] ) ) {
+		if ( ! $this->account_is_verified || empty ( $this->account_options['mpx_account_id'] ) ) {
 			return;
 		}
 
@@ -160,7 +156,7 @@ class ThePlatform_Options {
 	function register_custom_metadata_options() {
 
 		//Check for uninitialized options
-		if ( ! $this->account_is_verified ) {
+		if ( ! $this->account_is_verified || empty ( $this->account_options['mpx_account_id'] ) ) {
 			return;
 		}
 
@@ -183,7 +179,7 @@ class ThePlatform_Options {
 	 */
 	function register_basic_metadata_options() {
 
-		if ( ! $this->account_is_verified ) {
+		if ( ! $this->account_is_verified || empty ( $this->account_options['mpx_account_id'] ) ) {
 			return;
 		}
 
