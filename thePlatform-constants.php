@@ -149,7 +149,7 @@ function TP_ACCOUNT_OPTIONS_FIELDS() {
 			'id' => 'section_mpx_account_options', 'title' => 'mpx Account Options', 'callback' => 'section_mpx_account_desc', 'fields' => array(
 			array( 'id' => 'mpx_username', 'title' => 'mpx Username', 'type' => 'string' ),
 			array( 'id' => 'mpx_password', 'title' => 'mpx Password', 'type' => 'password' ),
-			array( 'id' => 'mpx_region', 'title' => 'mpx Region', 'type' => 'callback' ),
+			array( 'id' => 'mpx_region', 'title' => 'mpx Region', 'type' => 'hidden' ),
 			array( 'id' => 'mpx_account_id', 'title' => 'mpx Account', 'type' => 'callback' ),
 			array( 'id' => 'mpx_account_pid', 'title' => 'mpx Account PID', 'type' => 'hidden' )
 		)

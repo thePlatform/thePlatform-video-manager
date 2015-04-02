@@ -431,16 +431,16 @@ class ThePlatform_HTML {
 		$html .= '</select></div>';
 		echo $html;
 		?>
-            </div>          
+            </div>
         </div>
         <div class="form-row" style="margin-top: 10px;">
             <div class="column-third">
                 <button id="theplatform_publish_button" class="tp-input button button-primary" type="button" name="theplatform-publish-button">Publish</button>
-            </div>                      
+            </div>
         </div>
     </div>
      <div class="tab-pane" id="revoke_content">
-        <div class="form-row">           
+        <div class="form-row">
             <div class="column-third">
                 <div class="tp-form-group">
                     <label class="tp-label" for="publish_status">Currently Published Profiles</label>
@@ -449,10 +449,10 @@ class ThePlatform_HTML {
                 </div>
             </div>
         </div>
-        <div class="form-row" style="margin-top: 10px;">         
+        <div class="form-row" style="margin-top: 10px;">
             <div class="column-third">
                 <button id="theplatform_revoke_button" class="tp-input button button-primary" type="button" name="theplatform-revoke-button">Revoke</button>
-            </div>          
+            </div>
         </div>
     </div>
   <?php
@@ -467,7 +467,7 @@ class ThePlatform_HTML {
 				<select id="selectpick-sort">
 					<option value="updated">Updated</option>
 					<option value="added">Added</option>
-					<option value="title">Title</option>					
+					<option value="title">Title</option>
 				</select>
 
 				<label for="selectpick-order">Order By:</label>

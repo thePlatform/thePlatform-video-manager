@@ -143,6 +143,7 @@
     function configure_pid_fields() {
         $('#mpx_account_pid').parent().parent().hide();
         $('#default_player_pid').parent().parent().hide();
+        $('#mpx_region').parent().parent().hide();
 
         if ($('#mpx_account_id option:selected').length !== 0) {
 
