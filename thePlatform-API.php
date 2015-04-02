@@ -190,7 +190,7 @@ class ThePlatform_API {
 
 		$username = $this->account['mpx_username'];
 
-		if ( strpos( $account, 'mpx/' ) === false ) {
+		if ( strpos( $username, 'mpx/' ) === false ) {
 			$username = 'mpx/' . $username;
 		}
 

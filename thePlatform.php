@@ -479,11 +479,6 @@ class ThePlatform_Plugin {
 				$updates                  = true;
 			}
 
-			// If the region changed, reset all preferences, but keep the new account settings
-			if ( $this->theplatform_setting_changed( 'mpx_region', $old_preferences, $input ) ) {
-				$updates = true;
-			}
-
 			// If the account changed, reset all preferences, but keep the new account settings
 			if ( $this->theplatform_setting_changed( 'mpx_account_id', $old_preferences, $input ) ) {
 				$updates = true;
