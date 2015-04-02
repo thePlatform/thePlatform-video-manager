@@ -101,6 +101,19 @@
 
             if (response.success) {
                 $('#verify-account-dashicon').removeClass('dashicons-no').addClass('dashicons-yes');
+
+                // Show the account field and set the values from the ajax resposne
+                var accounts = response.data;
+                $accountIdField = $('#mpx_account_id');
+                for (var i=0; i < accounts.length; i++) {
+                  var option = document.createElement('option');
+                  option.setAttribute('data-pid', accounts[i].pid);
+                  option.text = accounts[i].title;
+                  option.value = accounts[i].id;
+                  $accountIdField.append(option);
+                }
+
+                $accountIdField.parent().parent().show();
             } else {
                 $('#verify-account-dashicon').removeClass('dashicons-yes').addClass('dashicons-no');
             }

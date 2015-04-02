@@ -890,16 +890,17 @@ class ThePlatform_API {
 	 *
 	 * @return array The Media data service response
 	 */
-	function get_accounts() {
-
-		$token = $this->mpx_signin();
+	function get_accounts( $token = false ) {
+		if ( ! $token ) {
+			$token = $this->mpx_signin();
+		}	
 
 		$url = TP_API_ACCESS_ACCOUNT_ENDPOINT . '&token=' . $token . '&byDisabled=false&fields=title,pid,id&sort=title&range=1-1000';
 
 		$response = ThePlatform_API_HTTP::get( $url );
 
 		$data = $this->decode_json_from_server( $response );
-		
+
 		return $data['entries'];
 	}
 

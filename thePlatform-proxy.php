@@ -226,10 +226,10 @@ class ThePlatform_Proxy {
 	function verify_account_settings_ajax() {
 		$this->check_nonce_and_permissions( $_POST['action'], TP_ADMIN_CAP );
 
-		$this->get_api();
-
 		$hash = $_POST['auth_hash'];
 
+		$this->get_api();
+		
 		$response = ThePlatform_API_HTTP::get( TP_API_SIGNIN_URL, array( 'headers' => array( 'Authorization' => 'Basic ' . $hash ) ) );
 
 		$data = $this->get_api()->decode_json_from_server( $response );
@@ -238,7 +238,10 @@ class ThePlatform_Proxy {
 			wp_send_json_error( "Unable to verify account" );
 		}
 
-		wp_send_json_success( "Account Verified" );
+		$token = $data['signInResponse']['token'];
+
+		$accounts = $this->get_api()->get_accounts( $token );
+		wp_send_json_success( $accounts );
 	}
 }
 

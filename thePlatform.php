@@ -468,15 +468,6 @@ class ThePlatform_Plugin {
 		$account_is_verified = $tp_api->verify_account_settings();
 		if ( $account_is_verified ) {
 
-			// If the account is selected, but no player has been set, use the first
-			// returned as the default.
-			// if ( ! isset( $input['default_player_name'] ) || empty( $input['default_player_name'] ) ) {
-			// 		$players                      = $tp_api->get_players();
-			// 		$player                       = $players[0];
-			// 		$input['default_player_name'] = $player['title'];
-			// 		$input['default_player_pid']  = $player['pid'];
-			// }
-
 			// If the account is selected, but no upload server has been set, use the first
 			// returned as the default.
 			if ( ! isset( $input['mpx_server_id'] ) || empty ( $input['mpx_server_id'] ) ) {
