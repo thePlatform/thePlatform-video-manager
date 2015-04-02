@@ -83,29 +83,6 @@ class ThePlatform_Proxy {
 		}
 	}
 
-	private function check_theplatform_proxy_response( $response, $returnsValue = false ) {
-
-		// Check if we got an error back and return it
-		if ( is_wp_error( $response ) ) {
-			wp_send_json_error( $response->get_error_message() );
-		}
-
-		if ( isset( $response['data'] ) && $response['data'] === false ) {
-			wp_send_json_error( $response['status']['http_code'] );
-		}
-
-		$responseBody = wp_remote_retrieve_body( $response );
-
-		// This AJAX call should not return a value, in this case we send a json error with the body to the UI
-		if ( ! $returnsValue && ! empty( $responseBody ) ) {
-			wp_send_json_error( $this->get_api()->decode_json_from_server( $response, false ) );
-		}
-
-		$parsedResponse = $this->get_api()->decode_json_from_server( $response, false );
-
-		wp_send_json_success( $parsedResponse );
-	}
-
 	public function publish_media() {
 		$this->check_nonce_and_permissions( $_POST['action'] );
 		$this->get_api()->publish_media_ajax();
