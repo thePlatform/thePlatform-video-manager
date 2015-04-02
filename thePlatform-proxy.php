@@ -229,7 +229,7 @@ class ThePlatform_Proxy {
 		$hash = $_POST['auth_hash'];
 
 		$this->get_api();
-		
+
 		$response = ThePlatform_API_HTTP::get( TP_API_SIGNIN_URL, array( 'headers' => array( 'Authorization' => 'Basic ' . $hash ) ) );
 
 		$data = $this->get_api()->decode_json_from_server( $response );

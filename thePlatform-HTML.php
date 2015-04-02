@@ -408,7 +408,7 @@ class ThePlatform_HTML {
 				echo '<a href="#revoke_content" class="nav-tab">Revoke</a>';
 			} ?>
 		</h2>
-	<?php
+		<?php
 	}
 
 	function edit_tabs_content() {

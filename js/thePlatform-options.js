@@ -82,9 +82,9 @@
         var usr = $("#mpx_username").val();
         var pwd = $("#mpx_password").val();
 
-        if ( usr.indexOf('mpx/') === -1 ) {
-          usr = 'mpx/' + usr;
-    		}
+        if (usr.indexOf('mpx/') === -1) {
+            usr = 'mpx/' + usr;
+        }
         var hash = base64Encode(usr + ":" + pwd);
 
         var data = {
@@ -105,12 +105,12 @@
                 // Show the account field and set the values from the ajax resposne
                 var accounts = response.data;
                 $accountIdField = $('#mpx_account_id');
-                for (var i=0; i < accounts.length; i++) {
-                  var option = document.createElement('option');
-                  option.setAttribute('data-pid', accounts[i].pid);
-                  option.text = accounts[i].title;
-                  option.value = accounts[i].id;
-                  $accountIdField.append(option);
+                for (var i = 0; i < accounts.length; i++) {
+                    var option = document.createElement('option');
+                    option.setAttribute('data-pid', accounts[i].pid);
+                    option.text = accounts[i].title;
+                    option.value = accounts[i].id;
+                    $accountIdField.append(option);
                 }
 
                 $accountIdField.parent().parent().show();
@@ -154,8 +154,8 @@
     }
 
     function configure_pid_fields() {
-        $('.hidden-option').each(function() {
-          $(this).parent().parent().hide();
+        $('.hidden-option').each(function () {
+            $(this).parent().parent().hide();
         });
 
         if ($('#mpx_account_id option:selected').length !== 0) {

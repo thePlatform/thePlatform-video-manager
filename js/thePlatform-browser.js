@@ -325,7 +325,7 @@ var theplatform_browser = (function ($) {
 
             var videosPromise = $.when(API.getVideos(theRange), API.getVideoCount(performCount));
 
-            videosPromise.done(function(videos, count) {
+            videosPromise.done(function (videos, count) {
                 tpHelper.feedResultCount = videos.entryCount;
 
                 if (videos.entryCount === 0) {

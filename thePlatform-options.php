@@ -137,14 +137,24 @@ class ThePlatform_Options {
 
 	function parse_options_fields( $settings, $options, $options_key ) {
 		foreach ( $settings as $section ) {
-			add_settings_section( $section['id'], $section['title'], array( $this, $section['callback'] ), $options_key );
+			add_settings_section( $section['id'], $section['title'], array(
+				$this,
+				$section['callback']
+			), $options_key );
 			foreach ( $section['fields'] as $field ) {
 				if ( $field['type'] === 'callback' ) {
 					$callback = 'field_' . $field['id'] . '_option';
 				} else {
 					$callback = 'field_' . $field['type'] . '_option';
 				}
-				add_settings_field( $field['id'], $field['title'], array( $this, $callback ), $options_key, $section['id'], array( 'field' => $field, 'options' => $options, 'key' => $options_key ) );
+				add_settings_field( $field['id'], $field['title'], array(
+					$this,
+					$callback
+				), $options_key, $section['id'], array(
+					'field'   => $field,
+					'options' => $options,
+					'key'     => $options_key
+				) );
 			}
 		}
 	}
@@ -162,14 +172,20 @@ class ThePlatform_Options {
 
 		$this->plugin_settings_tabs[ TP_CUSTOM_METADATA_OPTIONS_KEY ] = 'Custom Metadata';
 		$this->metadata_fields                                        = $this->tp_api->get_custom_metadata_fields( true );
-		add_settings_section( 'section_metadata_options', 'Custom Metadata Settings', array( $this, 'section_custom_metadata_desc' ), TP_CUSTOM_METADATA_OPTIONS_KEY );
+		add_settings_section( 'section_metadata_options', 'Custom Metadata Settings', array(
+			$this,
+			'section_custom_metadata_desc'
+		), TP_CUSTOM_METADATA_OPTIONS_KEY );
 
 		foreach ( $this->metadata_fields as $field ) {
 			if ( ! array_key_exists( $field['id'], $this->metadata_options ) ) {
 				$this->metadata_options[ $field['id'] ] = 'hide';
 			}
 
-			add_settings_field( $field['id'], $field['title'], array( $this, 'field_custom_metadata_option' ), TP_CUSTOM_METADATA_OPTIONS_KEY, 'section_metadata_options', $field );
+			add_settings_field( $field['id'], $field['title'], array(
+				$this,
+				'field_custom_metadata_option'
+			), TP_CUSTOM_METADATA_OPTIONS_KEY, 'section_metadata_options', $field );
 		}
 	}
 
@@ -187,7 +203,10 @@ class ThePlatform_Options {
 
 		$basic_fields = TP_BASIC_METADATA_OPTIONS_DEFAULTS();
 
-		add_settings_section( 'section_upload_options', 'Basic Metadata Settings', array( $this, 'section_basic_metadata_desc' ), TP_BASIC_METADATA_OPTIONS_KEY );
+		add_settings_section( 'section_upload_options', 'Basic Metadata Settings', array(
+			$this,
+			'section_basic_metadata_desc'
+		), TP_BASIC_METADATA_OPTIONS_KEY );
 
 		foreach ( $basic_fields as $field => $value ) {
 			if ( ! array_key_exists( $field, $this->upload_options ) ) {
@@ -196,7 +215,10 @@ class ThePlatform_Options {
 
 			$field_title = ( strstr( $field, '$' ) !== false ) ? substr( strstr( $field, '$' ), 1 ) : $field;
 
-			add_settings_field( $field, ucfirst( $field_title ), array( $this, 'field_basic_metadata_option' ), TP_BASIC_METADATA_OPTIONS_KEY, 'section_upload_options', array( 'field' => $field ) );
+			add_settings_field( $field, ucfirst( $field_title ), array(
+				$this,
+				'field_basic_metadata_option'
+			), TP_BASIC_METADATA_OPTIONS_KEY, 'section_upload_options', array( 'field' => $field ) );
 		}
 	}
 
@@ -441,7 +463,10 @@ class ThePlatform_Options {
 	 * using the plugin_options_page method.
 	 */
 	function add_admin_menus() {
-		add_options_page( 'thePlatform Plugin Settings', 'thePlatform', 'manage_options', $this->plugin_options_key, array( $this, 'plugin_options_page' ) );
+		add_options_page( 'thePlatform Plugin Settings', 'thePlatform', 'manage_options', $this->plugin_options_key, array(
+			$this,
+			'plugin_options_page'
+		) );
 	}
 
 	/**
@@ -464,7 +489,7 @@ class ThePlatform_Options {
 				?>
 			</form>
 		</div>
-	<?php
+		<?php
 	}
 
 	/**

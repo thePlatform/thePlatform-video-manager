@@ -141,9 +141,22 @@ class ThePlatform_Plugin {
 		wp_register_script( 'tp_holder_js', plugins_url( '/js/holder.js', __FILE__ ) );
 		wp_register_script( 'tp_nprogress_js', plugins_url( '/js/nprogress.js', __FILE__ ) );
 		wp_register_script( 'tp_edit_upload_js', plugins_url( '/js/thePlatform-edit-upload.js', __FILE__ ), array( 'jquery' ) );
-		wp_register_script( 'tp_file_uploader_js', plugins_url( '/js/theplatform-uploader.js', __FILE__ ), array( 'jquery', 'tp_nprogress_js' ) );
-		wp_register_script( 'tp_browser_js', plugins_url( '/js/thePlatform-browser.js', __FILE__ ), array( 'jquery', 'underscore', 'jquery-ui-dialog', 'tp_holder_js', 'tp_pdk_js', 'tp_edit_upload_js' ) );
-		wp_register_script( 'tp_options_js', plugins_url( '/js/thePlatform-options.js', __FILE__ ), array( 'jquery', 'jquery-ui-sortable' ) );
+		wp_register_script( 'tp_file_uploader_js', plugins_url( '/js/theplatform-uploader.js', __FILE__ ), array(
+			'jquery',
+			'tp_nprogress_js'
+		) );
+		wp_register_script( 'tp_browser_js', plugins_url( '/js/thePlatform-browser.js', __FILE__ ), array(
+			'jquery',
+			'underscore',
+			'jquery-ui-dialog',
+			'tp_holder_js',
+			'tp_pdk_js',
+			'tp_edit_upload_js'
+		) );
+		wp_register_script( 'tp_options_js', plugins_url( '/js/thePlatform-options.js', __FILE__ ), array(
+			'jquery',
+			'jquery-ui-sortable'
+		) );
 		wp_register_script( 'tp_media_button_js', plugins_url( '/js/thePlatform-media-button.js', __FILE__ ) );
 
 		wp_localize_script( 'tp_edit_upload_js', 'tp_edit_upload_local', array(
@@ -187,7 +200,10 @@ class ThePlatform_Plugin {
 		) );
 
 		wp_register_style( 'tp_edit_upload_css', plugins_url( '/css/thePlatform-edit-upload.css', __FILE__ ) );
-		wp_register_style( 'tp_browser_css', plugins_url( '/css/thePlatform-browser.css', __FILE__ ), array( 'tp_edit_upload_css', 'wp-jquery-ui-dialog' ) );
+		wp_register_style( 'tp_browser_css', plugins_url( '/css/thePlatform-browser.css', __FILE__ ), array(
+			'tp_edit_upload_css',
+			'wp-jquery-ui-dialog'
+		) );
 		wp_register_style( 'tp_options_css', plugins_url( '/css/thePlatform-options.css', __FILE__ ) );
 		wp_register_style( 'tp_nprogress_css', plugins_url( '/css/nprogress.css', __FILE__ ) );
 		wp_register_style( 'tp_file_uploader_css', plugins_url( '/css/thePlatform-file-uploader.css', __FILE__ ), array( 'tp_nprogress_css' ) );
@@ -202,12 +218,30 @@ class ThePlatform_Plugin {
 	 */
 	function add_admin_page() {
 		$slug = 'theplatform';
-		add_menu_page( 'thePlatform', 'thePlatform', $this->tp_editor_cap, $slug, array( $this, 'media_page' ), 'dashicons-video-alt3', '10.0912' );
-		add_submenu_page( $slug, 'thePlatform Video Browser', 'mpx Video Manager', $this->tp_editor_cap, $slug, array( $this, 'media_page' ) );
-		add_submenu_page( $slug, 'thePlatform Video Uploader', 'Upload Video', $this->tp_uploader_cap, 'theplatform-uploader', array( $this, 'upload_page' ) );
-		add_submenu_page( $slug, 'thePlatform Plugin Settings', 'Settings', $this->tp_admin_cap, 'theplatform-settings', array( $this, 'admin_page' ) );
-		add_submenu_page( $slug, 'thePlatform Plugin About', 'About', $this->tp_editor_cap, 'theplatform-about', array( $this, 'about_page' ) );
-		add_submenu_page( 'options.php', 'thePlatform Plugin Uploader', 'Uploader', $this->tp_uploader_cap, 'theplatform-upload-window', array( $this, 'upload_window' ) );
+		add_menu_page( 'thePlatform', 'thePlatform', $this->tp_editor_cap, $slug, array(
+			$this,
+			'media_page'
+		), 'dashicons-video-alt3', '10.0912' );
+		add_submenu_page( $slug, 'thePlatform Video Browser', 'mpx Video Manager', $this->tp_editor_cap, $slug, array(
+			$this,
+			'media_page'
+		) );
+		add_submenu_page( $slug, 'thePlatform Video Uploader', 'Upload Video', $this->tp_uploader_cap, 'theplatform-uploader', array(
+			$this,
+			'upload_page'
+		) );
+		add_submenu_page( $slug, 'thePlatform Plugin Settings', 'Settings', $this->tp_admin_cap, 'theplatform-settings', array(
+			$this,
+			'admin_page'
+		) );
+		add_submenu_page( $slug, 'thePlatform Plugin About', 'About', $this->tp_editor_cap, 'theplatform-about', array(
+			$this,
+			'about_page'
+		) );
+		add_submenu_page( 'options.php', 'thePlatform Plugin Uploader', 'Uploader', $this->tp_uploader_cap, 'theplatform-upload-window', array(
+			$this,
+			'upload_window'
+		) );
 	}
 
 	/**
@@ -300,8 +334,8 @@ class ThePlatform_Plugin {
 		$newPreferences['plugin_version'] = TP_PLUGIN_VERSION;
 
 		// Update the region value
-		$newAccount                   = array_merge( TP_ACCOUNT_OPTIONS_DEFAULTS(), get_option( TP_ACCOUNT_OPTIONS_KEY, array() ) );
-		$region = $newAccount['mpx_region'];
+		$newAccount = array_merge( TP_ACCOUNT_OPTIONS_DEFAULTS(), get_option( TP_ACCOUNT_OPTIONS_KEY, array() ) );
+		$region     = $newAccount['mpx_region'];
 		if ( $region === 'us|us' || $region === 'us' ) {
 			$newAccount['mpx_region'] = 'US1';
 		} else if ( $region === 'eu|eu' || $region === 'eu' ) {
@@ -346,10 +380,22 @@ class ThePlatform_Plugin {
 	 * Registers initial plugin settings during initialization
 	 */
 	function theplatform_register_plugin_settings() {
-		register_setting( TP_ACCOUNT_OPTIONS_KEY, TP_ACCOUNT_OPTIONS_KEY, array( $this, 'theplatform_account_options_validate' ) );
-		register_setting( TP_PREFERENCES_OPTIONS_KEY, TP_PREFERENCES_OPTIONS_KEY, array( $this, 'theplatform_preferences_options_validate' ) );
-		register_setting( TP_CUSTOM_METADATA_OPTIONS_KEY, TP_CUSTOM_METADATA_OPTIONS_KEY, array( $this, 'theplatform_dropdown_options_validate' ) );
-		register_setting( TP_BASIC_METADATA_OPTIONS_KEY, TP_BASIC_METADATA_OPTIONS_KEY, array( $this, 'theplatform_dropdown_options_validate' ) );
+		register_setting( TP_ACCOUNT_OPTIONS_KEY, TP_ACCOUNT_OPTIONS_KEY, array(
+			$this,
+			'theplatform_account_options_validate'
+		) );
+		register_setting( TP_PREFERENCES_OPTIONS_KEY, TP_PREFERENCES_OPTIONS_KEY, array(
+			$this,
+			'theplatform_preferences_options_validate'
+		) );
+		register_setting( TP_CUSTOM_METADATA_OPTIONS_KEY, TP_CUSTOM_METADATA_OPTIONS_KEY, array(
+			$this,
+			'theplatform_dropdown_options_validate'
+		) );
+		register_setting( TP_BASIC_METADATA_OPTIONS_KEY, TP_BASIC_METADATA_OPTIONS_KEY, array(
+			$this,
+			'theplatform_dropdown_options_validate'
+		) );
 		register_setting( TP_TOKEN_OPTIONS_KEY, TP_TOKEN_OPTIONS_KEY, 'strval' );
 	}
 
@@ -413,8 +459,8 @@ class ThePlatform_Plugin {
 
 		$account_is_verified = $tp_api->verify_account_settings();
 		if ( $account_is_verified ) {
-				$region = $tp_api->get_account_region( $input['mpx_account_id'] );
-				$input['mpx_region'] = $region;
+			$region              = $tp_api->get_account_region( $input['mpx_account_id'] );
+			$input['mpx_region'] = $region;
 		}
 
 		foreach ( $input as $key => $value ) {
@@ -628,9 +674,18 @@ class ThePlatform_Plugin {
 
 		$mute     = $this->check_shortcode_parameter( $mute, 'false', array( 'true', 'false' ) );
 		$loop     = $this->check_shortcode_parameter( $loop, 'false', array( 'true', 'false' ) );
-		$autoplay = $this->check_shortcode_parameter( $autoplay, $this->preferences['autoplay'], array( 'false', 'true' ) );
-		$embedded = $this->check_shortcode_parameter( $embedded, $this->preferences['player_embed_type'], array( 'true', 'false' ) );
-		$tag      = $this->check_shortcode_parameter( $tag, $this->preferences['embed_tag_type'], array( 'iframe', 'script' ) );
+		$autoplay = $this->check_shortcode_parameter( $autoplay, $this->preferences['autoplay'], array(
+			'false',
+			'true'
+		) );
+		$embedded = $this->check_shortcode_parameter( $embedded, $this->preferences['player_embed_type'], array(
+			'true',
+			'false'
+		) );
+		$tag      = $this->check_shortcode_parameter( $tag, $this->preferences['embed_tag_type'], array(
+			'iframe',
+			'script'
+		) );
 
 		if ( empty( $media ) ) {
 			return '<!--Syntax Error: Required Media parameter missing. -->';

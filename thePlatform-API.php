@@ -190,7 +190,7 @@ class ThePlatform_API {
 
 		$username = $this->account['mpx_username'];
 
-		if ( strpos( $account, 'mpx/') === FALSE ) {
+		if ( strpos( $account, 'mpx/' ) === false ) {
 			$username = 'mpx/' . $username;
 		}
 
@@ -765,11 +765,24 @@ class ThePlatform_API {
 	 * Query mpx for custom metadata fields
 	 *
 	 * @param boolean $forceRefresh If true, get content from our dataservices, otherwise load it from tranisent storage
+	 *
 	 * @return array The Media Field data service response
 	 */
 	function get_custom_metadata_fields( $forceRefresh = false ) {
 		if ( $forceRefresh === true || ( false === ( $value = get_transient( TP_TRANSIENT_CUSTOM_METADATA_FIELDS ) ) ) ) {
-			$default_fields = array( 'id', 'title', 'description', 'added', 'allowedValues', 'dataStructure', 'dataType', 'fieldName', 'defaultValue', 'namespace', 'namespacePrefix' );
+			$default_fields = array(
+				'id',
+				'title',
+				'description',
+				'added',
+				'allowedValues',
+				'dataStructure',
+				'dataType',
+				'fieldName',
+				'defaultValue',
+				'namespace',
+				'namespacePrefix'
+			);
 
 			$fieldsString = implode( ',', $default_fields );
 
@@ -893,7 +906,7 @@ class ThePlatform_API {
 	function get_accounts( $token = false ) {
 		if ( ! $token ) {
 			$token = $this->mpx_signin();
-		}	
+		}
 
 		$url = TP_API_ACCESS_ACCOUNT_ENDPOINT . '&token=' . $token . '&byDisabled=false&fields=title,pid,id&sort=title&range=1-1000';
 
@@ -1120,7 +1133,7 @@ class ThePlatform_API {
 	function verify_account_settings() {
 		$this->get_account();
 
-		if ( ! $this->account) {
+		if ( ! $this->account ) {
 			return false;
 		}
 
@@ -1145,9 +1158,9 @@ class ThePlatform_API {
 	 * Get the selected account region
 	 * @return bool True if the account is within the same region
 	 */
-	function get_account_region( $accountId = FALSE ) {
+	function get_account_region( $accountId = false ) {
 		if ( ! $accountId || empty( $accountId ) ) {
-			return FALSE;
+			return false;
 		}
 
 		$token = $this->mpx_signin();

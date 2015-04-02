@@ -117,28 +117,66 @@ function TP_CUSTOM_FIELDS_TYPES() {
 function TP_PREFERENCES_OPTIONS_FIELDS() {
 	return array(
 		array(
-			'id' => 'section_embed_options', 'title' => 'Embedding Preferences', 'callback' => 'section_embed_desc', 'fields' => array(
-			array( 'id' => 'default_player_name', 'title' => 'Default Player', 'type' => 'callback' ),
-			array( 'id' => 'default_player_pid', 'title' => 'Default Player PID', 'type' => 'hidden' ),
-			array( 'id' => 'embed_tag_type', 'title' => 'Embed Tag Type', 'type' => 'select', 'values' => array( 'IFrame' => 'iframe', 'Script' => 'script' ), ),
-			array( 'id' => 'media_embed_type', 'title' => 'Media Embed Type', 'type' => 'select', 'values' => array( 'Release' => 'release', 'Media PID' => 'pid', 'Media GUID' => 'guid' ) ),
-			array( 'id' => 'player_embed_type', 'title' => 'Player Embed Type', 'type' => 'select', 'values' => array( 'Video Only' => 'true', 'Full Player' => 'false' ) ),
-			array( 'id' => 'rss_embed_type', 'title' => 'RSS Embed Type', 'type' => 'select', 'values' => array( 'IFrame' => 'iframe', 'Script' => 'script', 'Article' => 'article' ) ),
-			array( 'id' => 'autoplay', 'title' => 'Force Autoplay', 'type' => 'boolean' ),
-			array( 'id' => 'default_width', 'title' => 'Default Player Width', 'type' => 'string' ),
-			array( 'id' => 'default_height', 'title' => 'Default Player Height', 'type' => 'string' )
-		)
+			'id'       => 'section_embed_options',
+			'title'    => 'Embedding Preferences',
+			'callback' => 'section_embed_desc',
+			'fields'   => array(
+				array( 'id' => 'default_player_name', 'title' => 'Default Player', 'type' => 'callback' ),
+				array( 'id' => 'default_player_pid', 'title' => 'Default Player PID', 'type' => 'hidden' ),
+				array( 'id'     => 'embed_tag_type',
+				       'title'  => 'Embed Tag Type',
+				       'type'   => 'select',
+				       'values' => array( 'IFrame' => 'iframe', 'Script' => 'script' ),
+				),
+				array( 'id'     => 'media_embed_type',
+				       'title'  => 'Media Embed Type',
+				       'type'   => 'select',
+				       'values' => array( 'Release' => 'release', 'Media PID' => 'pid', 'Media GUID' => 'guid' )
+				),
+				array( 'id'     => 'player_embed_type',
+				       'title'  => 'Player Embed Type',
+				       'type'   => 'select',
+				       'values' => array( 'Video Only' => 'true', 'Full Player' => 'false' )
+				),
+				array( 'id'     => 'rss_embed_type',
+				       'title'  => 'RSS Embed Type',
+				       'type'   => 'select',
+				       'values' => array( 'IFrame' => 'iframe', 'Script' => 'script', 'Article' => 'article' )
+				),
+				array( 'id' => 'autoplay', 'title' => 'Force Autoplay', 'type' => 'boolean' ),
+				array( 'id' => 'default_width', 'title' => 'Default Player Width', 'type' => 'string' ),
+				array( 'id' => 'default_height', 'title' => 'Default Player Height', 'type' => 'string' )
+			)
 		),
 		array(
-			'id' => 'section_preferences_options', 'title' => 'General Preferences', 'callback' => 'section_preferences_desc', 'fields' => array(
-			array( 'id' => 'filter_by_user_id', 'title' => 'Filter Users Own Videos', 'type' => 'boolean' ),
-			array( 'id' => 'user_id_customfield', 'title' => 'User ID Custom Field', 'type' => 'callback' ),
-			array( 'id' => 'transform_user_id_to', 'title' => 'Show User ID as', 'type' => 'select', 'values' => array( 'Email' => 'email', 'Full Name' => 'full_name', 'Nickname' => 'nickname', 'Username' => 'username' ) ),
-			array( 'id' => 'embed_hook', 'title' => 'Plugin Embed button type', 'type' => 'select', 'values' => array( 'Media Button' => 'mediabutton', 'Editor Button' => 'tinymce', 'Both' => 'both', 'None' => 'none' ) ),
-			array( 'id' => 'mpx_server_id', 'title' => 'mpx Upload Server', 'type' => 'callback' ),
-			array( 'id' => 'default_publish_id', 'title' => 'Default Publishing Profile', 'type' => 'callback' ),
-			array( 'id' => 'thumbnail_profile_id', 'title' => 'Thumbnail Encoding Profile', 'type' => 'callback' )
-		)
+			'id'       => 'section_preferences_options',
+			'title'    => 'General Preferences',
+			'callback' => 'section_preferences_desc',
+			'fields'   => array(
+				array( 'id' => 'filter_by_user_id', 'title' => 'Filter Users Own Videos', 'type' => 'boolean' ),
+				array( 'id' => 'user_id_customfield', 'title' => 'User ID Custom Field', 'type' => 'callback' ),
+				array( 'id'     => 'transform_user_id_to',
+				       'title'  => 'Show User ID as',
+				       'type'   => 'select',
+				       'values' => array( 'Email'     => 'email',
+				                          'Full Name' => 'full_name',
+				                          'Nickname'  => 'nickname',
+				                          'Username'  => 'username'
+				       )
+				),
+				array( 'id'     => 'embed_hook',
+				       'title'  => 'Plugin Embed button type',
+				       'type'   => 'select',
+				       'values' => array( 'Media Button'  => 'mediabutton',
+				                          'Editor Button' => 'tinymce',
+				                          'Both'          => 'both',
+				                          'None'          => 'none'
+				       )
+				),
+				array( 'id' => 'mpx_server_id', 'title' => 'mpx Upload Server', 'type' => 'callback' ),
+				array( 'id' => 'default_publish_id', 'title' => 'Default Publishing Profile', 'type' => 'callback' ),
+				array( 'id' => 'thumbnail_profile_id', 'title' => 'Thumbnail Encoding Profile', 'type' => 'callback' )
+			)
 		)
 	);
 }
@@ -146,13 +184,16 @@ function TP_PREFERENCES_OPTIONS_FIELDS() {
 function TP_ACCOUNT_OPTIONS_FIELDS() {
 	return array(
 		array(
-			'id' => 'section_mpx_account_options', 'title' => 'mpx Account Options', 'callback' => 'section_mpx_account_desc', 'fields' => array(
-			array( 'id' => 'mpx_username', 'title' => 'mpx Username', 'type' => 'string' ),
-			array( 'id' => 'mpx_password', 'title' => 'mpx Password', 'type' => 'password' ),
-			array( 'id' => 'mpx_region', 'title' => 'mpx Region', 'type' => 'hidden' ),
-			array( 'id' => 'mpx_account_id', 'title' => 'mpx Account', 'type' => 'callback' ),
-			array( 'id' => 'mpx_account_pid', 'title' => 'mpx Account PID', 'type' => 'hidden' )
-		)
+			'id'       => 'section_mpx_account_options',
+			'title'    => 'mpx Account Options',
+			'callback' => 'section_mpx_account_desc',
+			'fields'   => array(
+				array( 'id' => 'mpx_username', 'title' => 'mpx Username', 'type' => 'string' ),
+				array( 'id' => 'mpx_password', 'title' => 'mpx Password', 'type' => 'password' ),
+				array( 'id' => 'mpx_region', 'title' => 'mpx Region', 'type' => 'hidden' ),
+				array( 'id' => 'mpx_account_id', 'title' => 'mpx Account', 'type' => 'callback' ),
+				array( 'id' => 'mpx_account_pid', 'title' => 'mpx Account PID', 'type' => 'hidden' )
+			)
 		)
 	);
 }
@@ -160,11 +201,18 @@ function TP_ACCOUNT_OPTIONS_FIELDS() {
 function TP_ADVANCED_OPTIONS_FIELDS() {
 	return array(
 		array(
-			'id' => 'section_advanced_options', 'title' => 'Advanced Options', 'callback' => 'section_advanced_desc', 'fields' => array(
-			array( 'id' => 'media_page_size', 'title' => 'Media per Page', 'type' => 'select', 'values' => array( '10' => 10, '20' => 20, '30' => 30 ) ),
-			array( 'id' => 'file_fragment_size', 'title' => 'Upload Fragment Size', 'type' => 'string' ),
-			array( 'id' => 'append_instance', 'title' => 'Append Players with an Instance', 'type' => 'boolean' )
-		)
+			'id'       => 'section_advanced_options',
+			'title'    => 'Advanced Options',
+			'callback' => 'section_advanced_desc',
+			'fields'   => array(
+				array( 'id'     => 'media_page_size',
+				       'title'  => 'Media per Page',
+				       'type'   => 'select',
+				       'values' => array( '10' => 10, '20' => 20, '30' => 30 )
+				),
+				array( 'id' => 'file_fragment_size', 'title' => 'Upload Fragment Size', 'type' => 'string' ),
+				array( 'id' => 'append_instance', 'title' => 'Append Players with an Instance', 'type' => 'boolean' )
+			)
 		)
 	);
 }
