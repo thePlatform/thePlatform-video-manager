@@ -387,8 +387,8 @@ class ThePlatform_Options {
 		$name    = $args['key'] . '[' . $field['id'] . ']';
 		$html    = '<select class="tpOption" id="' . esc_attr( $field['id'] ) . '" name="' . esc_attr( $name ) . '">';
 		if ( $this->account_is_verified ) {
-			$subaccounts = $this->tp_api->get_subaccounts();
-			foreach ( $subaccounts as $account ) {
+			$accounts = $this->tp_api->get_accounts();
+			foreach ( $accounts as $account ) {
 				$html .= '<option data-pid="' . esc_attr( $account['pid'] ) . '" value="' . esc_attr( $account['id'] ) . '"' . selected( $options[ $field['id'] ], $account['id'], false ) . '>' . esc_html( $account['title'] ) . '</option>';
 			}
 		}

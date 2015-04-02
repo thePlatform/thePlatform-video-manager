@@ -886,22 +886,21 @@ class ThePlatform_API {
 	}
 
 	/**
-	 * Query mpx for subaccounts associated with the configured account
+	 * Get all accounts from mpx
 	 *
 	 * @return array The Media data service response
 	 */
-	function get_subaccounts() {
+	function get_accounts() {
 
 		$token = $this->mpx_signin();
 
-		$url = TP_API_ACCESS_AUTH_ENDPOINT . '&_operations[0].service=Media%20Data%20Service&_operations[0].method=GET&_operations[0].endpoint=Media&token=' . $token . '&sort=title&range=1-1000';
+		$url = TP_API_ACCESS_ACCOUNT_ENDPOINT . '&token=' . $token . '&byDisabled=false&fields=title,pid,id&sort=title&range=1-1000';
 
 		$response = ThePlatform_API_HTTP::get( $url );
 
 		$data = $this->decode_json_from_server( $response );
-
-
-		return $data['authorizeResponse']['accounts'];
+		
+		return $data['entries'];
 	}
 
 	/**
@@ -1127,7 +1126,7 @@ class ThePlatform_API {
 		$response = ThePlatform_API_HTTP::get( TP_API_SIGNIN_URL, $this->basicAuthHeader() );
 
 		$payload = $this->decode_json_from_server( $response, false );
-		
+
 		if ( is_null( $response ) || is_wp_error( $response ) ) {
 			return false;
 		}
