@@ -141,18 +141,18 @@
     }
 
     function configure_pid_fields() {
-        $('#mpx_account_pid').parent().parent().hide();
-        $('#default_player_pid').parent().parent().hide();
-        $('#mpx_region').parent().parent().hide();
+        $('.hidden-option').each(function() {
+          $(this).parent().parent().hide();
+        });
 
         if ($('#mpx_account_id option:selected').length !== 0) {
 
-            $('#mpx_account_pid').val($('#mpx_account_id option:selected').val().split('|')[1]);
+            $('#mpx_account_pid').attr('value', $('#mpx_account_id option:selected').data('pid'));
         } else
             $('#mpx_account_id').parent().parent().hide();
 
         if ($('#default_player_name option:selected').length !== 0) {
-            $('#default_player_pid').val($('#default_player_name option:selected').val().split('|')[1]);
+            $('#default_player_pid').attr('value', $('#default_player_name option:selected').data('pid'));
         } else
             $('#default_player_name').parent().parent().hide();
 
@@ -162,12 +162,12 @@
 
         //Set up the PID for the mpx account on change in the Settings page
         $('#mpx_account_id').change(function () {
-            $('#mpx_account_pid').val($('#mpx_account_id option:selected').val().split('|')[1]);
+            $('#mpx_account_pid').attr('value', $('#mpx_account_id option:selected').data('pid'));
         });
 
         //Set up the PID for the Player on change in the Settings page
         $('#default_player_name').change(function () {
-            $('#default_player_pid').val($('#default_player_name option:selected').val().split('|')[1]);
+            $('#default_player_pid').attr('value', $('#default_player_name option:selected').data('pid'));
         });
     }
 

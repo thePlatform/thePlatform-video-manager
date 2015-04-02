@@ -291,7 +291,7 @@ class ThePlatform_Options {
 		$field   = $args['field'];
 		$options = $args['options'];
 		$name    = $args['key'] . '[' . $field['id'] . ']';
-		$html    = '<input disabled style="background-color: lightgray" id="' . esc_attr( $field['id'] ) . '" type="text" name="' . esc_attr( $name ) . '" value="' . esc_attr( $options[ $field['id'] ] ) . '" />';
+		$html    = '<input readonly class="hidden-option" id="' . esc_attr( $field['id'] ) . '" type="text" name="' . esc_attr( $name ) . '" value="' . esc_attr( $options[ $field['id'] ] ) . '" />';
 		echo $html;
 	}
 
@@ -370,14 +370,6 @@ class ThePlatform_Options {
 		echo $html;
 	}
 
-	function field_mpx_region_option( $args ) {
-		$field   = $args['field'];
-		$options = $args['options'];
-		$name    = $args['key'] . '[' . $field['id'] . ']';
-		$html    = '<input class="tpOption" type="text" id="' . esc_attr( $field['id'] ) . '" name="' . esc_attr( $name ) . '" value="' . esc_attr( $options[ $field['id'] ] ) . '" />';
-		echo $html;
-	}
-
 	function field_default_player_name_option( $args ) {
 		$field   = $args['field'];
 		$options = $args['options'];
@@ -386,7 +378,7 @@ class ThePlatform_Options {
 		if ( $this->account_options['mpx_account_id'] !== '' ) {
 			$players = $this->tp_api->get_players();
 			foreach ( $players as $player ) {
-				$html .= '<option value="' . esc_attr( $player['id'] ) . '|' . esc_attr( $player['pid'] ) . '"' . selected( $options[ $field['id'] ], $player['id'], false ) . '>' . esc_html( $player['title'] ) . '</option>';
+				$html .= '<option data-pid="' . esc_attr( $player['pid'] ) . '" value="' . esc_attr( $player['id'] ) . '"' . selected( $options[ $field['id'] ], $player['id'], false ) . '>' . esc_html( $player['title'] ) . '</option>';
 			}
 		}
 		$html .= '</select>';
@@ -401,7 +393,7 @@ class ThePlatform_Options {
 		if ( $this->account_is_verified ) {
 			$subaccounts = $this->tp_api->get_subaccounts();
 			foreach ( $subaccounts as $account ) {
-				$html .= '<option value="' . esc_attr( $account['id'] ) . '|' . esc_attr( $account['pid'] ) . '"' . selected( $options[ $field['id'] ], $account['id'], false ) . '>' . esc_html( $account['title'] ) . '</option>';
+				$html .= '<option data-pid="' . esc_attr( $account['pid'] ) . '" value="' . esc_attr( $account['id'] ) . '"' . selected( $options[ $field['id'] ], $account['id'], false ) . '>' . esc_html( $account['title'] ) . '</option>';
 			}
 		}
 		$html .= '</select>';

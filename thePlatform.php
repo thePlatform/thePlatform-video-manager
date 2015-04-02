@@ -413,14 +413,8 @@ class ThePlatform_Plugin {
 
 		$account_is_verified = $tp_api->verify_account_settings();
 		if ( $account_is_verified ) {
-
-			if ( strpos( $input['mpx_account_id'], '|' ) !== false ) {
-				$ids                      = explode( '|', $input['mpx_account_id'] );
-				$input['mpx_account_id']  = $ids[0];
-				$input['mpx_account_pid'] = $ids[1];
 				$region = $tp_api->get_account_region( $input['mpx_account_id'] );
 				$input['mpx_region'] = $region;
-			}
 		}
 
 		foreach ( $input as $key => $value ) {
@@ -474,20 +468,14 @@ class ThePlatform_Plugin {
 		$account_is_verified = $tp_api->verify_account_settings();
 		if ( $account_is_verified ) {
 
-			if ( isset( $input['default_player_name'] ) && strpos( $input['default_player_name'], '|' ) !== false ) {
-				$ids                          = explode( '|', $input['default_player_name'] );
-				$input['default_player_name'] = $ids[0];
-				$input['default_player_pid']  = $ids[1];
-			}
-
 			// If the account is selected, but no player has been set, use the first
 			// returned as the default.
-			if ( ! isset( $input['default_player_name'] ) || empty( $input['default_player_name'] ) ) {
-					$players                      = $tp_api->get_players();
-					$player                       = $players[0];
-					$input['default_player_name'] = $player['title'];
-					$input['default_player_pid']  = $player['pid'];
-			}
+			// if ( ! isset( $input['default_player_name'] ) || empty( $input['default_player_name'] ) ) {
+			// 		$players                      = $tp_api->get_players();
+			// 		$player                       = $players[0];
+			// 		$input['default_player_name'] = $player['title'];
+			// 		$input['default_player_pid']  = $player['pid'];
+			// }
 
 			// If the account is selected, but no upload server has been set, use the first
 			// returned as the default.
