@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'TP_PLUGIN_VERSION', '2.0.0' );
+define( 'TP_PLUGIN_VERSION', '2.1.0' );
 define( 'TP_PREFERENCES_OPTIONS_KEY', 'theplatform_preferences_options' );
 define( 'TP_ADVANCED_OPTIONS_KEY', 'theplatform_advanced_options' );
 define( 'TP_ACCOUNT_OPTIONS_KEY', 'theplatform_account_options' );

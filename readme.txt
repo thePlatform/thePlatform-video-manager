@@ -3,7 +3,7 @@ Developed By: thePlatform LLC
 Tags: embedding, video, embed, portal, theplatform, shortcode
 Requires at least: 3.7
 Tested up to: 4.2
-Stable tag: 2.0.0
+Stable tag: 2.1.0
 Contributors: thePlatform
 
 Manage your content hosted by thePlatform and embed media in WordPress posts.
@@ -23,12 +23,15 @@ Upload media to your mpx account
 
 == Changelog ==
 
+= 2.1.0 =
+Simplified account settings
+
 = 2.0.0 =
 Removed 3rd party libraries in favor of native Wordpress look and feel
 Refactor the plugin to prevent incompatabilities with other Wordpress plugins
 Simplified user capabilities
 
-= 1.4.0 = 
+= 1.4.0 =
 Added the ability to Publish, Revoke and Add Files to existing Media via the Edit dialog
 Added Thumbnailing functionality
 Support sorting search results
@@ -48,7 +51,7 @@ Allow multiple files to be uploaded
 Complete update to the plugin UX. Fixed numerous layouting issues across all the different pages
 The video upload dialog has been completely redesigned
 Video uploads should no longer fail randomly
-Support a wider range of file formats 
+Support a wider range of file formats
 Admins can choose the where the embed button should appear - media_buttons, tinymce plugin or both
 Fixed an issue where the shortcode did not append correctly in the text editor
 Accessing the plugin settings is now about 40% faster
@@ -58,8 +61,8 @@ Fixed the autoPlay shortcode attribute
 Admins can choose the Player embed type - either full player or a single embedded player
 Disabled players no longer show up in the Players dropdown
 
-= 1.2.3 = 
-Fix uploads sporadically not working in HTTPS 
+= 1.2.3 =
+Fix uploads sporadically not working in HTTPS
 
 = 1.2.2 =
 Changed thePlatform's menu order number
@@ -148,7 +151,6 @@ This plugin requires an account with thePlatform's mpx. Please contact your Acco
 = mpx Account Options =
 mpx Username - The mpx username to use for all of the plugin capabilities
 mpx Password - The password for the entered mpx username
-mpx Region - The region for the mpx account
 mpx Account - The mpx account to upload and retrieve media from
 
 = Embedding Preferences =
@@ -175,5 +177,5 @@ tp_full_embed_url - The player URL with all parameters, applied after tp_base_em
 tp_embed_code - The complete embed code, with surrounding HTML, applied after tp_full_embed_url
 tp_rss_embed_code - The full embed code used for a RSS feed
 tp_editor_cap, default - 'edit_posts' - Edit mpx Media
-tp_uploader_cap - default - 'upload_files' - Upload mpx media	
+tp_uploader_cap - default - 'upload_files' - Upload mpx media
 tp_admin_cap, default - 'manage_options' - Manage thePlatform's plugin settings
