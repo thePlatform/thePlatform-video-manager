@@ -648,7 +648,7 @@ class ThePlatform_Plugin {
 			$this->advanced = get_option( TP_ADVANCED_OPTIONS_KEY );
 		}
 
-		list( $account, $width, $height, $media, $player, $mute, $autoplay, $loop, $tag, $embedded, $params, $playall, $instance ) = array_values( shortcode_atts( array(
+		list( $account, $width, $height, $media, $player, $mute, $autoplay, $tag, $embedded, $params, $playall, $instance ) = array_values( shortcode_atts( array(
 				'account'  => '',
 				'width'    => '',
 				'height'   => '',
@@ -656,7 +656,6 @@ class ThePlatform_Plugin {
 				'player'   => '',
 				'mute'     => '',
 				'autoplay' => '',
-				'loop'     => '',
 				'tag'      => '',
 				'embedded' => '',
 				'params'   => '',
@@ -714,7 +713,7 @@ class ThePlatform_Plugin {
 
 
 		if ( ! is_feed() ) {
-			$output = $this->get_embed_shortcode( $account, $media, $player, $width, $height, $autoplay, $tag, $embedded, $loop, $mute, $params, $playall, $instance );
+			$output = $this->get_embed_shortcode( $account, $media, $player, $width, $height, $autoplay, $tag, $embedded, $mute, $params, $playall, $instance );
 			$output = apply_filters( 'tp_embed_code', $output );
 		} else {
 			switch ( $this->preferences['rss_embed_type'] ) {
@@ -722,10 +721,10 @@ class ThePlatform_Plugin {
 					$output = '[Sorry. This video cannot be displayed in this feed. <a href="' . get_permalink() . '">View your video here.]</a>';
 					break;
 				case 'iframe':
-					$output = $this->get_embed_shortcode( $account, $media, $player, $width, $height, $autoplay, 'iframe', $embedded, $loop, $mute, $params );
+					$output = $this->get_embed_shortcode( $account, $media, $player, $width, $height, $autoplay, 'iframe', $embedded, $mute, $params, $playall, $instance );
 					break;
 				case 'script':
-					$output = $this->get_embed_shortcode( $account, $media, $player, $width, $height, $autoplay, 'script', $embedded, $loop, $mute, $params );
+					$output = $this->get_embed_shortcode( $account, $media, $player, $width, $height, $autoplay, 'script', $embedded, $mute, $params, $playall, $instance );
 					break;
 				default:
 					$output = '[Sorry. This video cannot be displayed in this feed. <a href="' . get_permalink() . '">View your video here.]</a>';
@@ -774,13 +773,12 @@ class ThePlatform_Plugin {
 	 * @param boolean $autoplay Whether or not to loop the embedded media automatically
 	 * @param boolean $tag script or iframe embed tag style
 	 * @param boolean $embedded Whether the embed code will have /embed/ in the URI
-	 * @param boolean $loop Set the embedded media to loop, false by default
 	 * @param boolean $mute Whether or not to mute the audio channel of the embedded media asset, false by default
 	 * @param string $params Any additional parameters to add to the embed code
 	 *
 	 * @return string An iframe tag sourced from the selected media embed URL
 	 */
-	function get_embed_shortcode( $accountPID, $releasePID, $playerPID, $player_width, $player_height, $autoplay, $tag, $embedded, $loop = 'false', $mute = 'false', $params = '', $playall = 'false', $instance = '' ) {
+	function get_embed_shortcode( $accountPID, $releasePID, $playerPID, $player_width, $player_height, $autoplay, $tag, $embedded, $mute = 'false', $params = '', $playall = 'false', $instance = '' ) {
 
 		$url = TP_API_PLAYER_EMBED_BASE_URL . urlencode( $accountPID ) . '/' . urlencode( $playerPID );
 
@@ -796,10 +794,6 @@ class ThePlatform_Plugin {
 			$url .= '?form=javascript';
 		} else {
 			$url .= '?form=html';
-		}
-
-		if ( $loop !== "false" ) {
-			$url .= "&loop=true";
 		}
 
 		if ( $autoplay !== "false" ) {
