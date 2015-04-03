@@ -59,7 +59,6 @@ class ThePlatform_Proxy {
 		if ( empty( $action ) ) {
 			check_admin_referer( 'theplatform-ajax-nonce' );
 		} else {
-			// die($action);
 			check_admin_referer( 'theplatform-ajax-nonce-' . $action );
 		}
 
