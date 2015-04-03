@@ -453,42 +453,42 @@ class ThePlatform_Plugin {
 		$tp_api   = new ThePlatform_API;
 		$defaults = TP_ACCOUNT_OPTIONS_DEFAULTS();
 
-		if ( ! is_array( $input ) || $input['mpx_username'] === 'mpx/' ) {
+		if ( ! is_array( $input ) ) {
 			return $defaults;
 		}
 
-		$account_is_verified = $tp_api->verify_account_settings();
-		if ( $account_is_verified ) {
-			$region              = $tp_api->get_account_region( $input['mpx_account_id'] );
-			$input['mpx_region'] = $region;
+		// On login error, just return the username
+		$account_is_verified = $tp_api->verify_account_settings( $input['mpx_password'] );
+		if ( ! $account_is_verified ) {
+			$defaults['mpx_username'] = $input['mpx_username'];
+			return $defaults;
 		}
+
+		// Set the account region
+		$region              = $tp_api->get_account_region( $input['mpx_account_id'] );
+		$input['mpx_region'] = $region;
 
 		foreach ( $input as $key => $value ) {
 			$input[ $key ] = sanitize_text_field( $value );
 		}
 
+		// Check if the acconut options changed, and reset the account dependend settings.
 		// If username, account id, or region have changed, reset settings to default
 		$old_preferences = get_option( TP_ACCOUNT_OPTIONS_KEY );
 		if ( $old_preferences ) {
-			$updates = false;
-			// If the username changes, reset all preferences except user/pass
-			if ( $this->theplatform_setting_changed( 'mpx_username', $old_preferences, $input ) ) {
-				$input['mpx_region']      = $defaults['mpx_region'];
-				$input['mpx_account_pid'] = $defaults['mpx_account_pid'];
-				$input['mpx_account_id']  = $defaults['mpx_account_id'];
-				$updates                  = true;
-			}
 
-			// If the account changed, reset all preferences, but keep the new account settings
+			// If the account changed, reset all preferences that are account specific
 			if ( $this->theplatform_setting_changed( 'mpx_account_id', $old_preferences, $input ) ) {
-				$updates = true;
-			}
-			// Clear old options
-			if ( $updates ) {
-				delete_option( TP_PREFERENCES_OPTIONS_KEY );
+				$preferences                         = get_option( TP_PREFERENCES_OPTIONS_KEY );
+				$preferences['default_player_name']  = '';
+				$preferences['default_player_pid']   = '';
+				$preferences['mpx_server_id']        = '';
+				$preferences['default_publish_id']   = 'tp_wp_none';
+				$preferences['thumbnail_profile_id'] = 'tp_wp_none';
+				$preferences['user_id_customfield']  = '(None)';
+
+				update_option( TP_PREFERENCES_OPTIONS_KEY, $preferences );
 				delete_option( TP_CUSTOM_METADATA_OPTIONS_KEY );
-				delete_option( TP_BASIC_METADATA_OPTIONS_KEY );
-				delete_option( TP_TOKEN_OPTIONS_KEY );
 			}
 		}
 
@@ -503,24 +503,11 @@ class ThePlatform_Plugin {
 	 * @return array A cleaned up copy of the array, invalid values will be cleared.
 	 */
 	function theplatform_preferences_options_validate( $input ) {
-		require_once( dirname( __FILE__ ) . '/thePlatform-API.php' );
-		$tp_api = new ThePlatform_API;
-
-		$account_is_verified = $tp_api->verify_account_settings();
-		if ( $account_is_verified ) {
-
-			// If the account is selected, but no upload server has been set, use the first
-			// returned as the default.
-			if ( ! isset( $input['mpx_server_id'] ) || empty ( $input['mpx_server_id'] ) ) {
-				$input['mpx_server_id'] = 'DEFAULT_SERVER';
-			}
-
-			foreach ( $input as $key => $value ) {
-				if ( $key == 'videos_per_page' || $key === 'default_width' || $key === 'default_height' ) {
-					$input[ $key ] = intval( $value );
-				} else {
-					$input[ $key ] = sanitize_text_field( $value );
-				}
+		foreach ( $input as $key => $value ) {
+			if ( $key === 'default_width' || $key === 'default_height' ) {
+				$input[ $key ] = intval( $value );
+			} else {
+				$input[ $key ] = sanitize_text_field( $value );
 			}
 		}
 

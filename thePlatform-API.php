@@ -185,8 +185,12 @@ class ThePlatform_API {
 	 * Construct a Basic Authorization header
 	 * @return array
 	 */
-	private function basicAuthHeader() {
+	private function basicAuthHeader( $password = false ) {
 		$this->get_account();
+
+		if ( $password === false ) {
+			$password = $this->account['mpx_password'];
+		}
 
 		$username = $this->account['mpx_username'];
 
@@ -194,7 +198,7 @@ class ThePlatform_API {
 			$username = 'mpx/' . $username;
 		}
 
-		$encoded = base64_encode( $username . ':' . $this->account['mpx_password'] );
+		$encoded = base64_encode( $username . ':' . $password );
 
 		$args = array(
 			'headers' => array(
@@ -1130,14 +1134,14 @@ class ThePlatform_API {
 	 * Used to verify the account server settings on the server side
 	 * @return type
 	 */
-	function verify_account_settings() {
+	function verify_account_settings( $password = false ) {
 		$this->get_account();
 
 		if ( ! $this->account ) {
 			return false;
 		}
 
-		$response = ThePlatform_API_HTTP::get( TP_API_SIGNIN_URL, $this->basicAuthHeader() );
+		$response = ThePlatform_API_HTTP::get( TP_API_SIGNIN_URL, $this->basicAuthHeader( $password ) );
 
 		$payload = $this->decode_json_from_server( $response, false );
 
