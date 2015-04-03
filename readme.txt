@@ -24,6 +24,8 @@ Upload media to your mpx account
 == Changelog ==
 
 = 2.1.0 =
+Added Advanced Settings
+Added new shortcode parameters
 Simplified account settings
 
 = 2.0.0 =
@@ -140,9 +142,10 @@ width	 - (optional) - Player width, if omitted the default value will be taken f
 height	 - (optional) - Player height, if omitted the default value will be taken from the embedding preferences
 mute	 - (optional) - Force the player to be muted
 autoplay - (optional) - Force autoplay on /embed/ players, if omitted the default value will be taken from the embedding preferences
-loop	 - (optional) - Loop the release
 tag		 - (optional) - iframe/script, if omitted the value will be taken from the embedding preferences
 embedded - (optional) - true/false, if true the player will have /embed in the URI
+playall - (optional) - true/false, if true, the player will attempt to play all videos in its feed
+instance - (optional) - Appends the value as an instance parameter on the player
 params	 - (optional) - Custom string that will be appended to the embed URL
 
 == Configuration ==
@@ -156,20 +159,26 @@ mpx Account - The mpx account to upload and retrieve media from
 = Embedding Preferences =
 Default Player - The default player used for embedding and in the Media Browser
 Embed Tag Type - IFrame or Script embed
+Media Embed Type - Embed Media by the Media PID, Release PID or Media GUID.
 Player Embed Type - Video Only (/embed/) or Full Player
 RSS Embed Type - In an RSS feed, provide a link back to the Article, or an iframe/script tag
 Force Autoplay - Pass the autoplay parameter to embedded players
 Default Player Width - Initially based on the current theme content width
-Default Player Height - a 1.78 aspect ration value based on the content width
+Default Player Height - a 1.78 aspect ratio value based on the content width
 
 = General Preferences =
 Filter Users Own Video - Filter by the User ID custom field, ignored if the User ID is blank
-User ID Custom Field - Name of the Custom Field to store the WordPress User ID, (None) to disable
+User ID Custom Field - Name of the Custom Field to store the Wordpress User ID, (None) to disable
 Show User ID as - If the User ID Custom Field is visible to editors, we will substitute it by either the user Full Name, Email, Nickname or Username
-Plugin Embed button type - Determine if thePlatform button should appear as a media_button, a TinyMCE button or both
+Plugin Embed button type - Determine if thePlatform button should appear as a media_button, a TinyMCE button, both or not at all
 mpx Upload Server - Default mpx server to upload new media to, Default Server will attempt to intelligently pick a server
 Default Publish Profile - If set, uploaded media will automatically publish to the selected profile
 Thumbnail Encoding Profile - The Encoding Profile to use when generating new thumbnails via the plugin
+
+= Advanced Settings =
+Media per Page - The total number of Media to return for each page in the Media Browser
+Upload Fragment Size - Controls the size of each file fragments during upload. Smaller fragments may be faster on small videos.
+Append Players with a random Instance parameter - This will automatically append an Instance parameter on every player when the shortcode is evaluated
 
 = Filters =
 tp_base_embed_url - Just the player URL
