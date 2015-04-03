@@ -101,7 +101,7 @@
 
             if (response.success) {
                 $('#verify-account-dashicon').removeClass('dashicons-no').addClass('dashicons-yes');
-
+                $("#mpx_password").css('border-color', '');
                 // Show the account field and set the values from the ajax resposne
                 var accounts = response.data;
                 $accountIdField = $('#mpx_account_id');
@@ -116,6 +116,7 @@
                 $accountIdField.parent().parent().show();
             } else {
                 $('#verify-account-dashicon').removeClass('dashicons-yes').addClass('dashicons-no');
+                $("#mpx_password").attr('placeholder', 'Invalid Password').css('border-color', 'red').val('');
             }
         });
     }
@@ -194,9 +195,17 @@
             $('.hidden-option').each(function () {
                 $(this).parent().parent().hide();
             });
-            
+
             // Validate account information in plugin settings fields by logging in to mpx
             $("#verify-account-button").click(authenticate);
+
+            var $passwordField = $('#mpx_password');
+
+            if ($passwordField) {
+              if ($passwordField.val() === '' && $('#mpx_username').val() !== '') {
+                $passwordField.attr('placeholder', 'Invalid Password').css('border-color', 'red');
+              }
+            }
         }
     });
 })(jQuery);
