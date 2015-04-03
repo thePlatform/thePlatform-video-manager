@@ -30,8 +30,7 @@ require_once( dirname( __FILE__ ) . '/thePlatform-proxy.php' );
 	window.onmessage = function (e) {
 		if (e.data.source == 'theplatform_upload_data') {
 			var uploaderData = e.data;
-			var theplatformUploader = new TheplatformUploader(uploaderData.files, uploaderData.params, uploaderData.custom_params, uploaderData.profile, uploaderData.server);
+			var theplatformUploader = new TheplatformUploader(uploaderData.files, uploaderData.params, uploaderData.custom_params, uploaderData.profile, uploaderData.server, uploaderData.fragmentSize);
 		}
 	};
 </script>
-

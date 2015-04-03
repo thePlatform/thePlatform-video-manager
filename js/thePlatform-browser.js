@@ -317,7 +317,7 @@ var theplatform_browser = (function ($) {
             if (me.viewLoading === true) {
                 return;
             }
-            var MAX_RESULTS = 20;
+            var MAX_RESULTS = tpHelper.maxResults;
             $('.spinner').show(); // show loading before we call getVideos
             var theRange = ((page - 1) * MAX_RESULTS + 1) + '-' + (page * MAX_RESULTS);
 

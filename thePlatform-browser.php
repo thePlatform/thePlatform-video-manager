@@ -38,6 +38,7 @@ $tp_html = new ThePlatform_HTML();
 
 $preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
 $account     = get_option( TP_ACCOUNT_OPTIONS_KEY );
+$advanced    = get_option( TP_ADVANCED_OPTIONS_KEY );
 
 global $page_hook;
 $IS_EMBED = $page_hook != 'toplevel_page_theplatform';
@@ -115,6 +116,7 @@ if ( ! $IS_EMBED && current_user_can( $tp_editor_cap )) {
 		tpHelper.isEmbed = <?php echo json_encode( $IS_EMBED ); ?>;
 		tpHelper.mediaEmbedType = <?php echo json_encode( $preferences['media_embed_type'] ); ?>;
 		tpHelper.selectedCategory = '';
+		tpHelper.maxResults = <?php echo json_encode( $advanced['media_page_size'] ); ?>;
 		tpHelper.queryString = '';
 		tpHelper.currentPage = 1;
 	</script>

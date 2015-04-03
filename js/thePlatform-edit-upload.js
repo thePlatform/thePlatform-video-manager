@@ -339,6 +339,7 @@ var theplatform_edit = (function ($) {
 
             var profile = $('.upload_profile');
             var server = $('.server_id');
+            var fragmentSize = $('#mpx_fragment_size').val();
 
             var upload_window = window.open(tp_edit_upload_local.uploader_window_url, '_blank', 'menubar=no,location=no,resizable=no,scrollbars=no,status=no,width=700,height=180');
 
@@ -353,7 +354,8 @@ var theplatform_edit = (function ($) {
                 custom_params: JSON.stringify(custom_params),
                 profile: profile.val(),
                 server: server.val(),
-                source: 'theplatform_upload_data'
+                source: 'theplatform_upload_data',
+                fragmentSize: fragmentSize
             };
 
             window.onmessage = function (e) {
@@ -374,6 +376,7 @@ var theplatform_edit = (function ($) {
 
             var profile = $('.upload_profile');
             var server = $('.server_id');
+            var fragmentSize = $('#mpx_fragment_size').val();
 
             var params = {
                 id: tpHelper.mediaId
@@ -391,7 +394,8 @@ var theplatform_edit = (function ($) {
                 custom_params: JSON.stringify(''),
                 profile: profile.val(),
                 server: server.val(),
-                source: 'theplatform_upload_data'
+                source: 'theplatform_upload_data',
+                fragmentSize: fragmentSize
             };
 
             window.onmessage = function (e) {

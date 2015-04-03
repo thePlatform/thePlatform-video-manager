@@ -202,9 +202,9 @@
             var $passwordField = $('#mpx_password');
 
             if ($passwordField) {
-              if ($passwordField.val() === '' && $('#mpx_username').val() !== '') {
-                $passwordField.attr('placeholder', 'Invalid Password').css('border-color', 'red');
-              }
+                if ($passwordField.val() === '' && $('#mpx_username').val() !== '') {
+                    $passwordField.attr('placeholder', 'Invalid Password').css('border-color', 'red');
+                }
             }
         }
     });

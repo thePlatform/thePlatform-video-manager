@@ -396,6 +396,10 @@ class ThePlatform_Plugin {
 			$this,
 			'theplatform_dropdown_options_validate'
 		) );
+		register_setting( TP_ADVANCED_OPTIONS_KEY, TP_ADVANCED_OPTIONS_KEY, array(
+			$this,
+			'theplatform_advanced_options_validate'
+		) );
 		register_setting( TP_TOKEN_OPTIONS_KEY, TP_TOKEN_OPTIONS_KEY, 'strval' );
 	}
 
@@ -461,6 +465,7 @@ class ThePlatform_Plugin {
 		$account_is_verified = $tp_api->verify_account_settings( $input['mpx_password'] );
 		if ( ! $account_is_verified ) {
 			$defaults['mpx_username'] = $input['mpx_username'];
+
 			return $defaults;
 		}
 
@@ -509,6 +514,21 @@ class ThePlatform_Plugin {
 			} else {
 				$input[ $key ] = sanitize_text_field( $value );
 			}
+		}
+
+		return $input;
+	}
+
+	/**
+	 * Validate mpx Settings for invalid input
+	 *
+	 * @param array $input Passed by Wordpress, an Array of mpx options
+	 *
+	 * @return array A cleaned up copy of the array, invalid values will be cleared.
+	 */
+	function theplatform_advanced_options_validate( $input ) {
+		foreach ( $input as $key => $value ) {
+			$input[ $key ] = sanitize_text_field( $value );
 		}
 
 		return $input;
@@ -624,7 +644,11 @@ class ThePlatform_Plugin {
 			$this->account = get_option( TP_ACCOUNT_OPTIONS_KEY );
 		}
 
-		list( $account, $width, $height, $media, $player, $mute, $autoplay, $loop, $tag, $embedded, $params ) = array_values( shortcode_atts( array(
+		if ( ! isset( $this->advanced ) ) {
+			$this->advanced = get_option( TP_ADVANCED_OPTIONS_KEY );
+		}
+
+		list( $account, $width, $height, $media, $player, $mute, $autoplay, $loop, $tag, $embedded, $params, $playall, $instance ) = array_values( shortcode_atts( array(
 				'account'  => '',
 				'width'    => '',
 				'height'   => '',
@@ -635,7 +659,9 @@ class ThePlatform_Plugin {
 				'loop'     => '',
 				'tag'      => '',
 				'embedded' => '',
-				'params'   => ''
+				'params'   => '',
+				'playall'  => '',
+				'instance' => '',
 			), $atts
 			)
 		);
@@ -668,6 +694,7 @@ class ThePlatform_Plugin {
 			'iframe',
 			'script'
 		) );
+		$playall  = $this->check_shortcode_parameter( $playall, 'false', array( 'true', 'false' ) );
 
 		if ( empty( $media ) ) {
 			return '<!--Syntax Error: Required Media parameter missing. -->';
@@ -681,9 +708,13 @@ class ThePlatform_Plugin {
 			$account = $this->account['mpx_account_pid'];
 		}
 
+		if ( empty ( $instance ) && $this->advanced['append_instance'] === 'true' ) {
+			$instance = mt_rand();
+		}
+
 
 		if ( ! is_feed() ) {
-			$output = $this->get_embed_shortcode( $account, $media, $player, $width, $height, $autoplay, $tag, $embedded, $loop, $mute, $params );
+			$output = $this->get_embed_shortcode( $account, $media, $player, $width, $height, $autoplay, $tag, $embedded, $loop, $mute, $params, $playall, $instance );
 			$output = apply_filters( 'tp_embed_code', $output );
 		} else {
 			switch ( $this->preferences['rss_embed_type'] ) {
@@ -749,7 +780,7 @@ class ThePlatform_Plugin {
 	 *
 	 * @return string An iframe tag sourced from the selected media embed URL
 	 */
-	function get_embed_shortcode( $accountPID, $releasePID, $playerPID, $player_width, $player_height, $autoplay, $tag, $embedded, $loop = false, $mute = false, $params = '' ) {
+	function get_embed_shortcode( $accountPID, $releasePID, $playerPID, $player_width, $player_height, $autoplay, $tag, $embedded, $loop = 'false', $mute = 'false', $params = '', $playall = 'false', $instance = '' ) {
 
 		$url = TP_API_PLAYER_EMBED_BASE_URL . urlencode( $accountPID ) . '/' . urlencode( $playerPID );
 
@@ -781,6 +812,14 @@ class ThePlatform_Plugin {
 
 		if ( $params !== '' ) {
 			$url .= '&' . $params;
+		}
+
+		if ( $instance !== '' ) {
+			$url .= '&instance=' . $instance;
+		}
+
+		if ( $playall !== 'false' ) {
+			$url .= '&playAll=true';
 		}
 
 		if ( $embedded == 'false' && $tag == 'script' ) {

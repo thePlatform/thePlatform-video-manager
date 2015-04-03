@@ -469,10 +469,10 @@ TheplatformUploader = (function () {
     /**
      @function constructor Inform the API proxy to create placeholder media assets in mpx and begin uploading
      */
-    function TheplatformUploader(files, fields, custom_fields, profile, server) {
+    function TheplatformUploader(files, fields, custom_fields, profile, server, fragmentSize) {
         var me = this;
 
-        this.fragSize = 5000000; // 5 Mb
+        this.fragSize = fragmentSize;
         var splashHtml =
             '<div class="postbox">' +
             '<p class="lead">Initalizing upload</p>' +
@@ -509,6 +509,7 @@ TheplatformUploader = (function () {
         this.server = server;
         this.max_uploads = 3;
         this.current_uploads = 0;
+
 
         this.prepareForUpload();
     }
