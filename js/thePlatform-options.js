@@ -154,10 +154,6 @@
     }
 
     function configure_pid_fields() {
-        $('.hidden-option').each(function () {
-            $(this).parent().parent().hide();
-        });
-
         if ($('#mpx_account_id option:selected').length !== 0) {
 
             $('#mpx_account_pid').attr('value', $('#mpx_account_id option:selected').data('pid'));
@@ -194,6 +190,11 @@
         if (TP_PAGE_KEY == 'TP_PREFERENCES') {
             configure_pid_fields();
 
+            //Hide hidden setting fields
+            $('.hidden-option').each(function () {
+                $(this).parent().parent().hide();
+            });
+            
             // Validate account information in plugin settings fields by logging in to mpx
             $("#verify-account-button").click(authenticate);
         }
