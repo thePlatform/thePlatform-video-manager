@@ -213,7 +213,7 @@ class ThePlatform_API {
 	 * Convert a MIME type to an mpx-compliant format identifier
 	 *
 	 * @param string $mime A MIME-type string
-	 * @param string extension The file extension for fallback
+	 * @param string $extension The file extension for fallback
 	 *
 	 * @return string mpx-compliant format string
 	 */
