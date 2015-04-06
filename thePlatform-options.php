@@ -53,7 +53,11 @@ class ThePlatform_Options {
 		$this->register_preferences_options();
 		$this->register_basic_metadata_options();
 		$this->register_custom_metadata_options();
-		$this->register_advanced_options();
+		
+		$showAdvanced = apply_filters( TP_SHOW_ADVANCED_OPTIONS, false );
+		if ( $showAdvanced === true ) {
+			$this->register_advanced_options();
+		}
 
 		//Render the page
 		$this->plugin_options_page();

@@ -35,6 +35,7 @@ define( 'TP_UPLOADER_CAP', 'tp_uploader_cap' );
 define( 'TP_ADMIN_DEFAULT_CAP', 'manage_options' );
 define( 'TP_EDITOR_DEFAULT_CAP', 'edit_posts' );
 define( 'TP_UPLOADER_DEFAULT_CAP', 'upload_files' );
+define( 'TP_SHOW_ADVANCED_OPTIONS', 'tp_show_advanced_options' );
 
 function TP_MANIFEST_FORMATS() {
 	return array(

@@ -378,7 +378,7 @@ class ThePlatform_API {
 		$data = $this->decode_json_from_server( $response );
 
 		if ( array_key_exists( 'success', $data ) && $data['success'] == false ) {
-			return array( "entries" => [ ] );
+			return array( "entries" => array() );
 		}
 
 		return $data;
