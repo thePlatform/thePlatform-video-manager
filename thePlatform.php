@@ -461,8 +461,8 @@ class ThePlatform_Plugin {
 			return $defaults;
 		}
 
-		// On login error, just return the username
-		$account_is_verified = $tp_api->verify_account_settings( $input['mpx_password'] );
+		// On login error, just return the username		
+		$account_is_verified = $tp_api->verify_account_settings( $input['mpx_username'], $input['mpx_password'] );
 		if ( ! $account_is_verified ) {
 			$defaults['mpx_username'] = $input['mpx_username'];
 
@@ -481,7 +481,6 @@ class ThePlatform_Plugin {
 		// If username, account id, or region have changed, reset settings to default
 		$old_preferences = get_option( TP_ACCOUNT_OPTIONS_KEY );
 		if ( $old_preferences ) {
-
 			// If the account changed, reset all preferences that are account specific
 			if ( $this->theplatform_setting_changed( 'mpx_account_id', $old_preferences, $input ) ) {
 				$preferences                         = get_option( TP_PREFERENCES_OPTIONS_KEY );

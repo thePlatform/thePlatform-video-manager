@@ -220,18 +220,21 @@ function TP_ADVANCED_OPTIONS_FIELDS() {
 					'type'   => 'select',
 					'values' => array( '10' => 10, '20' => 20, '30' => 30 )
 				),
-				array( 'id'     => 'file_fragment_size',
-				       'title'  => 'Upload Fragment Size',
-				       'type'   => 'select',
-				       'values' => array( '1 MB'               => 1000000,
-				                          '5 MB (Recommended)' => 5000000,
-				                          '10 MB'              => 10000000,
-				                          '15 MB'              => 15000000
-				       )
+				array(
+					'id'     => 'file_fragment_size',
+					'title'  => 'Upload Fragment Size',
+					'type'   => 'select',
+					'values' => array(
+						'1 MB'               => 1000000,
+						'5 MB (Recommended)' => 5000000,
+						'10 MB'              => 10000000,
+						'15 MB'              => 15000000
+					)
 				),
-				array( 'id'    => 'append_instance',
-				       'title' => 'Append Players with a random Instance parameter',
-				       'type'  => 'boolean'
+				array(
+					'id'    => 'append_instance',
+					'title' => 'Append Players with a random Instance parameter',
+					'type'  => 'boolean'
 				)
 			)
 		)

@@ -185,14 +185,7 @@ class ThePlatform_API {
 	 * Construct a Basic Authorization header
 	 * @return array
 	 */
-	private function basicAuthHeader( $password = false ) {
-		$this->get_account();
-
-		if ( $password === false ) {
-			$password = $this->account['mpx_password'];
-		}
-
-		$username = $this->account['mpx_username'];
+	private function basicAuthHeader( $username, $password ) {
 
 		if ( strpos( $username, 'mpx/' ) === false ) {
 			$username = 'mpx/' . $username;
@@ -269,9 +262,15 @@ class ThePlatform_API {
 	 * @return string                 Active mpx token
 	 */
 	function mpx_signin( $forceRefresh = false, $updateOptions = true ) {
+		$this->get_account();
+
+		if ( ! $this->account ) {
+			return false;
+		}
+
 		$token = get_option( TP_TOKEN_OPTIONS_KEY );
 		if ( $forceRefresh == true || $token == false ) {
-			$response = ThePlatform_API_HTTP::get( TP_API_SIGNIN_URL, $this->basicAuthHeader() );
+			$response = ThePlatform_API_HTTP::get( TP_API_SIGNIN_URL, $this->basicAuthHeader( $this->account['mpx_username'], $this->account['mpx_password'] ) );
 
 			if ( is_wp_error( $response ) ) {
 				return false;
@@ -1134,14 +1133,8 @@ class ThePlatform_API {
 	 * Used to verify the account server settings on the server side
 	 * @return type
 	 */
-	function verify_account_settings( $password = false ) {
-		$this->get_account();
-
-		if ( ! $this->account ) {
-			return false;
-		}
-
-		$response = ThePlatform_API_HTTP::get( TP_API_SIGNIN_URL, $this->basicAuthHeader( $password ) );
+	function verify_account_settings( $username, $password ) {
+		$response = ThePlatform_API_HTTP::get( TP_API_SIGNIN_URL, $this->basicAuthHeader( $username, $password ) );
 
 		$payload = $this->decode_json_from_server( $response, false );
 

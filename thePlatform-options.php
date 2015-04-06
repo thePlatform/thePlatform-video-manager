@@ -53,7 +53,7 @@ class ThePlatform_Options {
 		$this->register_preferences_options();
 		$this->register_basic_metadata_options();
 		$this->register_custom_metadata_options();
-		
+
 		$showAdvanced = apply_filters( TP_SHOW_ADVANCED_OPTIONS, false );
 		if ( $showAdvanced === true ) {
 			$this->register_advanced_options();
@@ -104,7 +104,7 @@ class ThePlatform_Options {
 			update_option( TP_ADVANCED_OPTIONS_KEY, TP_ADVANCED_OPTIONS_DEFAULTS() );
 		}
 
-		$this->account_is_verified = $this->tp_api->verify_account_settings();
+		$this->account_is_verified = $this->tp_api->verify_account_settings( $this->account_options['mpx_username'], $this->account_options['mpx_password'] );
 
 	}
 
