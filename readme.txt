@@ -188,3 +188,4 @@ tp_rss_embed_code - The full embed code used for a RSS feed
 tp_editor_cap, default - 'edit_posts' - Edit mpx Media
 tp_uploader_cap - default - 'upload_files' - Upload mpx media
 tp_admin_cap, default - 'manage_options' - Manage thePlatform's plugin settings
+tp_show_advanced_options, default - false - Boolean to enable advanced settings, which are hidden by default
