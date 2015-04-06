@@ -105,6 +105,11 @@
                 // Show the account field and set the values from the ajax resposne
                 var accounts = response.data;
                 $accountIdField = $('#mpx_account_id');
+
+                if ($accountIdField.find('option').length > 0) {
+                  return;
+                }
+
                 for (var i = 0; i < accounts.length; i++) {
                     var option = document.createElement('option');
                     option.setAttribute('data-pid', accounts[i].pid);
@@ -114,9 +119,11 @@
                 }
 
                 $accountIdField.parent().parent().show();
+
+                $('#mpx_account_pid').attr('value', $accountIdField.find('option:selected').data('pid'));
             } else {
                 $('#verify-account-dashicon').removeClass('dashicons-yes').addClass('dashicons-no');
-                $("#mpx_password").attr('placeholder', 'Invalid Password').css('border-color', 'red').val('');
+                $("#mpx_password").attr('placeholder', 'Invalid Username or Password').css('border-color', 'red').val('');
             }
         });
     }
@@ -203,7 +210,7 @@
 
             if ($passwordField) {
                 if ($passwordField.val() === '' && $('#mpx_username').val() !== '') {
-                    $passwordField.attr('placeholder', 'Invalid Password').css('border-color', 'red');
+                    $passwordField.attr('placeholder', 'Invalid Username or Password').css('border-color', 'red');
                 }
             }
         }
