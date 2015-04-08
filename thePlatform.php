@@ -461,7 +461,7 @@ class ThePlatform_Plugin {
 			return $defaults;
 		}
 
-		// On login error, just return the username		
+		// On login error, just return the username
 		$account_is_verified = $tp_api->verify_account_settings( $input['mpx_username'], $input['mpx_password'] );
 		if ( ! $account_is_verified ) {
 			$defaults['mpx_username'] = $input['mpx_username'];
@@ -678,8 +678,7 @@ class ThePlatform_Plugin {
 			$height = floor( $width * 9 / 16 );
 		}
 
-		$mute     = $this->check_shortcode_parameter( $mute, 'false', array( 'true', 'false' ) );
-		$loop     = $this->check_shortcode_parameter( $loop, 'false', array( 'true', 'false' ) );
+		$mute     = $this->check_shortcode_parameter( $mute, 'false', array( 'true', 'false' ) );		
 		$autoplay = $this->check_shortcode_parameter( $autoplay, $this->preferences['autoplay'], array(
 			'false',
 			'true'
@@ -809,6 +808,8 @@ class ThePlatform_Plugin {
 
 		if ( $instance !== '' ) {
 			$url .= '&instance=' . $instance;
+		} else {
+			$instance = mt_rand();
 		}
 
 		if ( $playall !== 'false' ) {
@@ -824,7 +825,7 @@ class ThePlatform_Plugin {
 		if ( $tag == "script" ) {
 			return '<div class="tpEmbed" style="width:' . esc_attr( $player_width ) . 'px; height:' . esc_attr( $player_height ) . 'px;"><script type="text/javascript" src="' . esc_url_raw( $url ) . '"></script></div>';
 		} else { //Assume iframe
-			return '<iframe class="tpEmbed" src="' . esc_url( $url ) . '" height="' . esc_attr( $player_height ) . '" width="' . esc_attr( $player_width ) . '" frameBorder="0" seamless="seamless" allowFullScreen></iframe>';
+			return '<iframe id="player' . $instance . '" class="tpEmbed" src="' . esc_url( $url ) . '" height="' . esc_attr( $player_height ) . '" width="' . esc_attr( $player_width ) . '" frameBorder="0" seamless="seamless" allowFullScreen></iframe>';
 		}
 	}
 }
