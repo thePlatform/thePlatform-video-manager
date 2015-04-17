@@ -41,20 +41,27 @@
             });
         });
 
+        var colSource = $("#column-template").html();
+        var colTemplate = _.template(colSource);
         for (var colName in cols) {
-            $dragColumnsContainer.append(
-                '<div class="colContainer">' +
-                '<h3>' + capitalize(colName) + '</h3>' +
-                '<ul data-col="' + colName + '" class="sortable"></ul>' +
-                '</div>'
-            );
+            var column = colTemplate({
+                colName: colName
+            });
+
+            $dragColumnsContainer.append(column);
             var $col = $('ul[data-col=' + colName + ']');
             for (var i in cols[colName]) {
                 var field = cols[colName][i];
-                $col.append('<li data-id="' + field.id + '" data-userfield="' + field.userfield + '">' + field.name + '</li>');
+                var $li = $('<li />');
+                $li.data('id', field.id);
+                $li.data('userfield', field.userfield);
+                $li.text(field.name);
+                $col.append($li);
             }
         }
-        $dragColumnsContainer.append('<div class="clear"></div>');
+        $clear = $('<div />');
+        $clear.addClass('clear');
+        $dragColumnsContainer.append($clear);
 
         $(".sortable").sortable({
             items: "li:not([data-id=title])",
@@ -107,7 +114,7 @@
                 $accountIdField = $('#mpx_account_id');
 
                 if ($accountIdField.find('option').length > 0) {
-                  return;
+                    return;
                 }
 
                 for (var i = 0; i < accounts.length; i++) {

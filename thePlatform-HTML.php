@@ -85,7 +85,7 @@ class ThePlatform_HTML {
 			<div class="tpPlayer" id="player"
 			     tp:allowFullScreen="true"
 			     tp:skinUrl="//pdk.theplatform.com/current/pdk/skins/flat/flat.json"
-			     tp:layoutUrl="<?php echo esc_attr( plugins_url( '/assets/layout.xml', __FILE__ ) ) ?>"
+			     tp:layoutUrl="<?php echo esc_url( plugins_url( '/assets/layout.xml', __FILE__ ) ) ?>"
 			     tp:showFullTime="true"
 			     tp:controlBackgroundColor="0xbbbbbb"
 			     tp:backgroundColor="0xbbbbbb"

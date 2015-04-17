@@ -431,7 +431,11 @@ var theplatform_browser = (function ($) {
                     value = Formatting.secondsToDuration(value);
                     break;
                 case 'Link':
-                    value = '<a href="' + value.href + '" target="_blank">' + value.title + '</a>';
+                    var a = document.createElement('a');
+                    a.href = value.href;
+                    a.target = '_blank';
+                    a.text = value.title;
+                    value = a;
                     break;
             }
             return value;

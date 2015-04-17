@@ -716,7 +716,7 @@ class ThePlatform_Plugin {
 		} else {
 			switch ( $this->preferences['rss_embed_type'] ) {
 				case 'article':
-					$output = '[Sorry. This video cannot be displayed in this feed. <a href="' . get_permalink() . '">View your video here.]</a>';
+					$output = '[Sorry. This video cannot be displayed in this feed. <a href="' . esc_url( get_permalink() ) . '">View your video here.]</a>';
 					break;
 				case 'iframe':
 					$output = $this->get_embed_shortcode( $account, $media, $player, $width, $height, $autoplay, 'iframe', $embedded, $mute, $params, $playall, $instance );
@@ -725,7 +725,7 @@ class ThePlatform_Plugin {
 					$output = $this->get_embed_shortcode( $account, $media, $player, $width, $height, $autoplay, 'script', $embedded, $mute, $params, $playall, $instance );
 					break;
 				default:
-					$output = '[Sorry. This video cannot be displayed in this feed. <a href="' . get_permalink() . '">View your video here.]</a>';
+					$output = '[Sorry. This video cannot be displayed in this feed. <a href="' . esc_url( get_permalink() ) . '">View your video here.]</a>';
 					break;
 			}
 			$output = apply_filters( 'tp_rss_embed_code', $output );
@@ -789,17 +789,17 @@ class ThePlatform_Plugin {
 		$url = apply_filters( 'tp_base_embed_url', $url );
 
 		if ( $tag == 'script' ) {
-			$url .= '?form=javascript';
+			$url = add_query_arg( 'form', 'javascript', $url );
 		} else {
-			$url .= '?form=html';
+			$url = add_query_arg( 'form', 'html', $url );
 		}
 
 		if ( $autoplay !== "false" ) {
-			$url .= "&autoPlay=true";
+			$url = add_query_arg( 'autoPlay', 'true', $url );
 		}
 
 		if ( $mute !== "false" ) {
-			$url .= "&mute=true";
+			$url = add_query_arg( 'mute', 'true', $url );
 		}
 
 		if ( $params !== '' ) {
@@ -807,25 +807,25 @@ class ThePlatform_Plugin {
 		}
 
 		if ( $instance !== '' ) {
-			$url .= '&instance=' . $instance;
+			$url = add_query_arg( 'instance', $instance );
 		} else {
 			$instance = mt_rand();
 		}
 
 		if ( $playall !== 'false' ) {
-			$url .= '&playAll=true';
+			$url = add_query_arg( 'playAll', 'true' );
 		}
 
 		if ( $embedded == 'false' && $tag == 'script' ) {
-			$url .= '&videoHeight=' . $player_height . '&videoWidth=' . $player_width;
+			$url = add_query_arg( array( 'videoHeight' => $player_height, 'videoWidth' => $player_width ), $url );
 		}
 
 		$url = apply_filters( 'tp_full_embed_url', $url );
 
 		if ( $tag == "script" ) {
-			return '<div class="tpEmbed" style="width:' . esc_attr( $player_width ) . 'px; height:' . esc_attr( $player_height ) . 'px;"><script type="text/javascript" src="' . esc_url_raw( $url ) . '"></script></div>';
+			return '<div class="tpEmbed" style="width:' . esc_attr( $player_width ) . 'px; height:' . esc_attr( $player_height ) . 'px;"><script type="text/javascript" src="' . esc_url( $url ) . '"></script></div>';
 		} else { //Assume iframe
-			return '<iframe id="player' . $instance . '" class="tpEmbed" src="' . esc_url( $url ) . '" height="' . esc_attr( $player_height ) . '" width="' . esc_attr( $player_width ) . '" frameBorder="0" seamless="seamless" allowFullScreen></iframe>';
+			return '<iframe id="player' . esc_attr( $instance ) . '" class="tpEmbed" src="' . esc_url( $url ) . '" height="' . esc_attr( $player_height ) . '" width="' . esc_attr( $player_width ) . '" frameBorder="0" seamless="seamless" allowFullScreen></iframe>';
 		}
 	}
 }

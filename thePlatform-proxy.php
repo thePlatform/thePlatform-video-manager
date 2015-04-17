@@ -173,7 +173,7 @@ class ThePlatform_Proxy {
 	 * @return int The newly created WordPress Thumbnail ID
 	 */
 	public function set_thumbnail( $url, $post_id ) {
-		$file = download_url( $url );
+		$file = download_url( esc_url_raw( $url ) );
 
 		preg_match( '/[^\?]+\.(jpg|JPG|jpe|JPE|jpeg|JPEG|gif|GIF|png|PNG)/', $url, $matches );
 		$file_array['name']     = basename( $matches[0] );

@@ -108,7 +108,6 @@ class ThePlatform_API_HTTP {
 	 * @return wp_response Results of the POST request
 	 */
 	static function post( $url, $data, $isJSON = true, $method = 'POST' ) {
-		$escapedUrl   = esc_url_raw( $url );
 		$default_data = array(
 			'method'  => $method,
 			'timeout' => 10,
@@ -120,7 +119,7 @@ class ThePlatform_API_HTTP {
 
 		$args = array_merge( $default_data, $data );
 
-		$response = wp_remote_post( $escapedUrl, $args );
+		$response = wp_remote_post( esc_url_raw( $url ), $args );
 
 		$newUrl = ThePlatform_API_HTTP::check_for_auth_error( $response, $url );
 
@@ -282,7 +281,7 @@ class ThePlatform_API {
 			if ( $updateOptions == false ) {
 				return $token;
 			} else {
-				update_option( TP_TOKEN_OPTIONS_KEY, $token );
+				update_option( TP_TOKEN_OPTIONS_KEY, sanitize_text_field( $token ) );
 			}
 		}
 
@@ -1143,7 +1142,7 @@ class ThePlatform_API {
 		}
 
 		if ( ! array_key_exists( 'isException', $payload ) ) {
-			update_option( TP_TOKEN_OPTIONS_KEY, $payload['signInResponse']['token'] );
+			update_option( TP_TOKEN_OPTIONS_KEY, sanitize_text_field( $payload['signInResponse']['token'] ) );
 
 			return true;
 		} else {
