@@ -678,7 +678,7 @@ class ThePlatform_Plugin {
 			$height = floor( $width * 9 / 16 );
 		}
 
-		$mute     = $this->check_shortcode_parameter( $mute, 'false', array( 'true', 'false' ) );		
+		$mute     = $this->check_shortcode_parameter( $mute, 'false', array( 'true', 'false' ) );
 		$autoplay = $this->check_shortcode_parameter( $autoplay, $this->preferences['autoplay'], array(
 			'false',
 			'true'
