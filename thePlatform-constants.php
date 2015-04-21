@@ -72,7 +72,7 @@ function TP_PREFERENCES_OPTIONS_DEFAULTS() {
 		'rss_embed_type'       => 'article',
 		'default_width'        => intval( $GLOBALS['content_width'] ),
 		'default_height'       => intval( ( $GLOBALS['content_width'] / 16 ) * 9 ),
-		'player_embed_type'    => 'embed',
+		'player_embed_type'    => 'true',
 		'embed_hook'           => 'tinymce',
 		'media_embed_type'     => 'pid'
 	);
