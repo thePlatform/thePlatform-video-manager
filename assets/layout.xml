@@ -1,0 +1,22 @@
+<controls>
+    <region id="tpAdCountdownRegion">
+        <row id="tpAdCountdownContainer">
+            <control id="tpAdCountdown" />
+        </row>
+    </region>
+    <region id="tpBottomFloatRegion" alpha="85">
+        <row height="10">
+            <control id="tpScrubber" height="10" />
+        </row>
+        <row>
+            <control id="tpPlay" />
+            <spacer/>
+            <control id="tpCurrentTime" />
+            <control id="tpTimeDivider" />
+            <control id="tpTotalTime" />
+            <spacer percentWidth="100" />
+            <control id="tpVolumeSlider" />
+            <control id="tpFullScreen" />
+        </row>
+    </region>
+</controls>
