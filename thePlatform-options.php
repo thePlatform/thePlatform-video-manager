@@ -20,6 +20,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+
+?>
+	<script id="column-template" type="text/template">
+		<div class="colContainer">
+			<h3><%= _.template.formatColName(colName) %></h3>
+			<ul data-col="<%= colName %>" class="sortable"></ul>
+		</div>
+	</script> <?php
+
 $tp_admin_cap = apply_filters( TP_ADMIN_CAP, TP_ADMIN_DEFAULT_CAP );
 if ( ! current_user_can( $tp_admin_cap ) ) {
 	wp_die( '<div class="error"><p>You do not have sufficient permissions to manage this plugin</p></div>' );
@@ -83,7 +92,7 @@ class ThePlatform_Options {
 		$this->upload_options      = get_option( TP_BASIC_METADATA_OPTIONS_KEY, array() );
 		$this->advanced_options    = get_option( TP_ADVANCED_OPTIONS_KEY, array() );
 
-		// Initialize option defaults				
+		// Initialize option defaults
 		$this->account_options = array_merge( TP_ACCOUNT_OPTIONS_DEFAULTS(), $this->account_options );
 
 		if ( empty( $this->upload_options ) ) {
@@ -154,14 +163,14 @@ class ThePlatform_Options {
 
 	function parse_options_fields( $settings, $options, $options_key ) {
 		foreach ( $settings as $section ) {
-			add_settings_section( $section['id'], $section['title'], array( $this, $section['callback'] ), $options_key );
+			add_settings_section( $section['id'], esc_html( $section['title'] ), array( $this, $section['callback'] ), $options_key );
 			foreach ( $section['fields'] as $field ) {
 				if ( $field['type'] === 'callback' ) {
 					$callback = 'field_' . $field['id'] . '_option';
 				} else {
 					$callback = 'field_' . $field['type'] . '_option';
 				}
-				add_settings_field( $field['id'], $field['title'], array( $this, $callback ), $options_key, $section['id'], array( 'field' => $field, 'options' => $options, 'key' => $options_key ) );
+				add_settings_field( $field['id'], esc_html( $field['title'] ), array( $this, $callback ), $options_key, $section['id'], array( 'field' => $field, 'options' => $options, 'key' => $options_key ) );
 			}
 		}
 	}
@@ -172,7 +181,7 @@ class ThePlatform_Options {
 	 */
 	function register_custom_metadata_options() {
 
-		//Check for uninitialized options	
+		//Check for uninitialized options
 		if ( ! $this->account_is_verified || ! $this->region_is_verified ) {
 			return;
 		}
@@ -186,7 +195,7 @@ class ThePlatform_Options {
 				$this->metadata_options[ $field['id'] ] = 'hide';
 			}
 
-			add_settings_field( $field['id'], $field['title'], array( $this, 'field_custom_metadata_option' ), TP_CUSTOM_METADATA_OPTIONS_KEY, 'section_metadata_options', $field );
+			add_settings_field( $field['id'], esc_html( $field['title'] ), array( $this, 'field_custom_metadata_option' ), TP_CUSTOM_METADATA_OPTIONS_KEY, 'section_metadata_options', $field );
 		}
 	}
 
@@ -213,7 +222,7 @@ class ThePlatform_Options {
 
 			$field_title = ( strstr( $field, '$' ) !== false ) ? substr( strstr( $field, '$' ), 1 ) : $field;
 
-			add_settings_field( $field, ucfirst( $field_title ), array( $this, 'field_basic_metadata_option' ), TP_BASIC_METADATA_OPTIONS_KEY, 'section_upload_options', array( 'field' => $field ) );
+			add_settings_field( $field, esc_html( ucfirst( $field_title ) ), array( $this, 'field_basic_metadata_option' ), TP_BASIC_METADATA_OPTIONS_KEY, 'section_upload_options', array( 'field' => $field ) );
 		}
 	}
 
@@ -487,6 +496,9 @@ class ThePlatform_Options {
 	function plugin_options_page() {
 		$tab = isset( $_GET['tab'] ) ? $_GET['tab'] : TP_ACCOUNT_OPTIONS_KEY;
 
+		if ( ! in_array( $tab, array( TP_ACCOUNT_OPTIONS_KEY, TP_PREFERENCES_OPTIONS_KEY, TP_CUSTOM_METADATA_OPTIONS_KEY, TP_BASIC_METADATA_OPTIONS_KEY ) ) ) {
+			return;
+		}
 		?>
 		<div class="wrap">
 			<?php $this->plugin_options_tabs(); ?>
@@ -498,7 +510,7 @@ class ThePlatform_Options {
 				?>
 			</form>
 		</div>
-	<?php
+		<?php
 	}
 
 	/**
@@ -513,7 +525,7 @@ class ThePlatform_Options {
 		foreach ( $this->plugin_settings_tabs as $tab_key => $tab_caption ) {
 			$active = $current_tab == $tab_key ? 'nav-tab-active' : '';
 			$url    = '?page=' . $this->plugin_options_key . '&tab=' . $tab_key;
-			echo '<a class="nav-tab ' . esc_attr( $active ) . '" href="' . esc_url( $url ) . '">' . $tab_caption . '</a>';
+			echo '<a class="nav-tab ' . esc_attr( $active ) . '" href="' . esc_url( $url ) . '">' . esc_html( $tab_caption ) . '</a>';
 		}
 		echo '</h2>';
 	}
@@ -524,4 +536,3 @@ if ( ! class_exists( 'ThePlatform_API' ) ) {
 }
 
 new ThePlatform_Options;
-		

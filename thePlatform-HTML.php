@@ -85,7 +85,7 @@ class ThePlatform_HTML {
 			<div class="tpPlayer" id="player"
 			     tp:allowFullScreen="true"
 			     tp:skinUrl="//pdk.theplatform.com/current/pdk/skins/flat/flat.json"
-			     tp:layoutUrl="<?php echo esc_attr( plugins_url( '/assets/layout.xml', __FILE__ ) ) ?>"
+			     tp:layoutUrl="<?php echo esc_url( plugins_url( '/assets/layout.xml', __FILE__ ) ) ?>"
 			     tp:showFullTime="true"
 			     tp:controlBackgroundColor="0xbbbbbb"
 			     tp:backgroundColor="0xbbbbbb"
@@ -408,7 +408,7 @@ class ThePlatform_HTML {
 				echo '<a href="#revoke_content" class="nav-tab">Revoke</a>';
 			} ?>
 		</h2>
-	<?php
+		<?php
 	}
 
 	function edit_tabs_content() {
@@ -431,16 +431,16 @@ class ThePlatform_HTML {
 		$html .= '</select></div>';
 		echo $html;
 		?>
-            </div>          
+            </div>
         </div>
         <div class="form-row" style="margin-top: 10px;">
             <div class="column-third">
                 <button id="theplatform_publish_button" class="tp-input button button-primary" type="button" name="theplatform-publish-button">Publish</button>
-            </div>                      
+            </div>
         </div>
     </div>
      <div class="tab-pane" id="revoke_content">
-        <div class="form-row">           
+        <div class="form-row">
             <div class="column-third">
                 <div class="tp-form-group">
                     <label class="tp-label" for="publish_status">Currently Published Profiles</label>
@@ -449,10 +449,10 @@ class ThePlatform_HTML {
                 </div>
             </div>
         </div>
-        <div class="form-row" style="margin-top: 10px;">         
+        <div class="form-row" style="margin-top: 10px;">
             <div class="column-third">
                 <button id="theplatform_revoke_button" class="tp-input button button-primary" type="button" name="theplatform-revoke-button">Revoke</button>
-            </div>          
+            </div>
         </div>
     </div>
   <?php
@@ -467,7 +467,7 @@ class ThePlatform_HTML {
 				<select id="selectpick-sort">
 					<option value="updated">Updated</option>
 					<option value="added">Added</option>
-					<option value="title">Title</option>					
+					<option value="title">Title</option>
 				</select>
 
 				<label for="selectpick-order">Order By:</label>

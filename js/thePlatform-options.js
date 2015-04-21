@@ -41,20 +41,27 @@
             });
         });
 
+        var colSource = $("#column-template").html();
+        var colTemplate = _.template(colSource);
         for (var colName in cols) {
-            $dragColumnsContainer.append(
-                '<div class="colContainer">' +
-                '<h3>' + capitalize(colName) + '</h3>' +
-                '<ul data-col="' + colName + '" class="sortable"></ul>' +
-                '</div>'
-            );
-            var $col = $('ul[data-col=' + colName + ']');
-            for (var i in cols[colName]) {
-                var field = cols[colName][i];
-                $col.append('<li data-id="' + field.id + '" data-userfield="' + field.userfield + '">' + field.name + '</li>');
-            }
+          var column = colTemplate({
+              colName: colName
+          });
+
+          $dragColumnsContainer.append(column);
+          var $col = $('ul[data-col=' + colName + ']');
+          for (var i in cols[colName]) {
+              var field = cols[colName][i];
+              var $li = $('<li />');
+              $li.data('id', field.id);
+              $li.data('userfield', field.userfield);
+              $li.text(field.name);
+              $col.append($li);
+          }
         }
-        $dragColumnsContainer.append('<div class="clear"></div>');
+        $clear = $('<div />');
+        $clear.addClass('clear');
+        $dragColumnsContainer.append($clear);
 
         $(".sortable").sortable({
             items: "li:not([data-id=title])",
@@ -156,7 +163,7 @@
             $('#mpx_server_id').parent().parent().hide();
         }
 
-        //Set up the PID for the mpx account on change in the Settings page 
+        //Set up the PID for the mpx account on change in the Settings page
         $('#mpx_account_id').change(function () {
             $('#mpx_account_pid').val($('#mpx_account_id option:selected').val().split('|')[1]);
         });
@@ -166,6 +173,10 @@
             $('#default_player_pid').val($('#default_player_name option:selected').val().split('|')[1]);
         });
     }
+
+    _.template.formatColName = function (colName) {
+        return colName[0].toUpperCase() + colName.slice(1);
+    };
 
     $(document).ready(function () {
         var TP_PAGE_KEY = $('#TP_PAGE_KEY').text();

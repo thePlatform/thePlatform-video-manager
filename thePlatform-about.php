@@ -64,7 +64,7 @@ if ( current_user_can( $tp_admin_cap ) ) {
 
 	// Administrators only should be able to delete all of the plugin settings
 	if ( current_user_can( $tp_admin_cap ) ) {
-		echo '<form name="delete_settings" action="' . esc_attr( admin_url( "admin.php?page=theplatform-about" ) ) . '" method="post"><input type="hidden" name="delete" value="delete">';
+		echo '<form name="delete_settings" action="' . esc_url( admin_url( "admin.php?page=theplatform-about" ) ) . '" method="post"><input type="hidden" name="delete" value="delete">';
 		wp_nonce_field( 'theplatform_delete_settings_nonce' );
 		submit_button( 'Reset Plugin Settings' );
 		echo '</form>';
@@ -78,8 +78,6 @@ if ( current_user_can( $tp_admin_cap ) ) {
 				e.preventDefault();
 				clicked = true;
 				jQuery(this).val('Click Again to Confirm');
-			} else {
-
 			}
 		});
 	</script>

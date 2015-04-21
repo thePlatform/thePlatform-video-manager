@@ -116,7 +116,7 @@ class ThePlatform_Plugin {
 	 * @param  string $hook Page hook
 	 */
 	function admin_enqueue_scripts( $hook ) {
-		// Media Browser		
+		// Media Browser
 		if ( $hook == 'toplevel_page_theplatform' || $hook == 'media-upload-popup' ) {
 			wp_enqueue_script( 'tp_browser_js' );
 			wp_enqueue_style( 'tp_browser_css' );
@@ -143,7 +143,7 @@ class ThePlatform_Plugin {
 		wp_register_script( 'tp_edit_upload_js', plugins_url( '/js/thePlatform-edit-upload.js', __FILE__ ), array( 'jquery' ) );
 		wp_register_script( 'tp_file_uploader_js', plugins_url( '/js/theplatform-uploader.js', __FILE__ ), array( 'jquery', 'tp_nprogress_js' ) );
 		wp_register_script( 'tp_browser_js', plugins_url( '/js/thePlatform-browser.js', __FILE__ ), array( 'jquery', 'underscore', 'jquery-ui-dialog', 'tp_holder_js', 'tp_pdk_js', 'tp_edit_upload_js' ) );
-		wp_register_script( 'tp_options_js', plugins_url( '/js/thePlatform-options.js', __FILE__ ), array( 'jquery', 'jquery-ui-sortable' ) );
+		wp_register_script( 'tp_options_js', plugins_url( '/js/thePlatform-options.js', __FILE__ ), array( 'jquery', 'jquery-ui-sortable', 'underscore' ) );
 		wp_register_script( 'tp_media_button_js', plugins_url( '/js/thePlatform-media-button.js', __FILE__ ) );
 
 		wp_localize_script( 'tp_edit_upload_js', 'tp_edit_upload_local', array(
@@ -672,7 +672,7 @@ class ThePlatform_Plugin {
 		} else {
 			switch ( $this->preferences['rss_embed_type'] ) {
 				case 'article':
-					$output = '[Sorry. This video cannot be displayed in this feed. <a href="' . get_permalink() . '">View your video here.]</a>';
+					$output = '[Sorry. This video cannot be displayed in this feed. <a href="' . esc_url( get_permalink() ) . '">View your video here.]</a>';
 					break;
 				case 'iframe':
 					$output = $this->get_embed_shortcode( $account, $media, $player, $width, $height, $autoplay, 'iframe', $embedded, $loop, $mute, $params );
@@ -681,7 +681,7 @@ class ThePlatform_Plugin {
 					$output = $this->get_embed_shortcode( $account, $media, $player, $width, $height, $autoplay, 'script', $embedded, $loop, $mute, $params );
 					break;
 				default:
-					$output = '[Sorry. This video cannot be displayed in this feed. <a href="' . get_permalink() . '">View your video here.]</a>';
+					$output = '[Sorry. This video cannot be displayed in this feed. <a href="' . esc_url( get_permalink() ) . '">View your video here.]</a>';
 					break;
 			}
 			$output = apply_filters( 'tp_rss_embed_code', $output );
@@ -746,21 +746,21 @@ class ThePlatform_Plugin {
 		$url = apply_filters( 'tp_base_embed_url', $url );
 
 		if ( $tag == 'script' ) {
-			$url .= '?form=javascript';
+			$url = add_query_arg( 'form', 'javascript', $url );
 		} else {
-			$url .= '?form=html';
+			$url = add_query_arg( 'form', 'html', $url );
 		}
 
 		if ( $loop !== "false" ) {
-			$url .= "&loop=true";
+			$url = add_query_arg( 'loop', 'true', $url );
 		}
 
 		if ( $autoplay !== "false" ) {
-			$url .= "&autoPlay=true";
+			$url = add_query_arg( 'autoPlay', 'true', $url );
 		}
 
 		if ( $mute !== "false" ) {
-			$url .= "&mute=true";
+			$url = add_query_arg( 'mute', 'true', $url );
 		}
 
 		if ( $params !== '' ) {
@@ -768,14 +768,14 @@ class ThePlatform_Plugin {
 		}
 
 		if ( $embedded == 'false' && $tag == 'script' ) {
-			$url .= '&videoHeight=' . $player_height . '&videoWidth=' . $player_width;
+			$url = add_query_arg( array( 'videoHeight' => $player_height, 'videoWidth' => $player_width ), $url );
 		}
 
 		$url = apply_filters( 'tp_full_embed_url', $url );
 
 		if ( $tag == "script" ) {
-			return '<div class="tpEmbed" style="width:' . esc_attr( $player_width ) . 'px; height:' . esc_attr( $player_height ) . 'px;"><script type="text/javascript" src="' . esc_url_raw( $url ) . '"></script></div>';
-		} else { //Assume iframe			
+			return '<div class="tpEmbed" style="width:' . esc_attr( $player_width ) . 'px; height:' . esc_attr( $player_height ) . 'px;"><script type="text/javascript" src="' . esc_url( $url ) . '"></script></div>';
+		} else { //Assume iframe
 			return '<iframe class="tpEmbed" src="' . esc_url( $url ) . '" height="' . esc_attr( $player_height ) . '" width="' . esc_attr( $player_width ) . '" frameBorder="0" seamless="seamless" allowFullScreen></iframe>';
 		}
 	}
