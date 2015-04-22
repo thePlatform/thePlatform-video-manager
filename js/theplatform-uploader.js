@@ -56,7 +56,7 @@ TheplatformUploader = (function () {
                 if (me._mediaId === undefined) {
                     me.message("Media created with id: " + data.mediaId);
                 }
-                me.uploadUrl = data.uploadUrl;
+                me.uploadUrl = data.uploadUrl.replace(/http(s)?:/, '');
                 me.token = data.token;
                 me.account = data.account;
                 me._mediaId = data.mediaId;

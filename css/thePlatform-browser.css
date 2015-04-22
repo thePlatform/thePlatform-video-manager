@@ -19,6 +19,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
     width: 128px;
     height: 72px;
 }
+
+.tp-nav {
+  height: 30px !important;
+}
 #modal-player {
     position: relative;
     width: 100%;
@@ -154,6 +158,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   border-radius: 50%;
 
   -webkit-animation: nprogress-spinner 400ms linear infinite;
+  -moz-animation: nprogress-spinner 400ms linear infinite;
           animation: nprogress-spinner 400ms linear infinite;
 }
 .tp-field {
