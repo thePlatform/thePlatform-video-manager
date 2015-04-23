@@ -58,7 +58,7 @@ class ThePlatform_HTML {
 	}
 
 	function pagination( $position ) { ?>
-		<div class="tablenav <?php echo esc_attr( $position ) ?>">
+		<div class="tp-nav tablenav <?php echo esc_attr( $position ) ?>">
 			<div class="tablenav-pages">
 				<span class="displaying-num">0 items</span>
 			        <span class="pagination-links">
@@ -85,7 +85,7 @@ class ThePlatform_HTML {
 			<div class="tpPlayer" id="player"
 			     tp:allowFullScreen="true"
 			     tp:skinUrl="//pdk.theplatform.com/current/pdk/skins/flat/flat.json"
-			     tp:layoutUrl="<?php echo esc_url( plugins_url( '/assets/layout.xml', __FILE__ ) ) ?>"
+			     tp:layout="&lt;?xml version=&#39;1.0&#39; encoding=&#39;UTF-8&#39; ?&gt;&lt;controls&gt;&lt;region id=&quot;tpAdCountdownRegion&quot;&gt;&lt;row id=&quot;tpAdCountdownContainer&quot;&gt;&lt;control id=&quot;tpAdCountdown&quot;&gt;&lt;/control&gt;&lt;/row&gt;&lt;/region&gt;&lt;region id=&quot;tpBottomFloatRegion&quot; alpha=&quot;85&quot;&gt;&lt;row height=&quot;10&quot;&gt;&lt;control id=&quot;tpScrubber&quot; height=&quot;10&quot;&gt;&lt;/control&gt;&lt;/row&gt;&lt;row&gt;&lt;control id=&quot;tpPlay&quot;&gt;&lt;/control&gt;&lt;spacer&gt;&lt;/spacer&gt;&lt;control id=&quot;tpCurrentTime&quot;&gt;&lt;/control&gt;&lt;control id=&quot;tpTimeDivider&quot;&gt;&lt;/control&gt;&lt;control id=&quot;tpTotalTime&quot;&gt;&lt;/control&gt;&lt;spacer percentWidth=&quot;100&quot;&gt;&lt;/spacer&gt;&lt;control id=&quot;tpVolumeSlider&quot;&gt;&lt;/control&gt;&lt;control id=&quot;tpFullScreen&quot;&gt;&lt;/control&gt;&lt;/row&gt;&lt;/region&gt;&lt;/controls&gt;"
 			     tp:showFullTime="true"
 			     tp:controlBackgroundColor="0xbbbbbb"
 			     tp:backgroundColor="0xbbbbbb"
