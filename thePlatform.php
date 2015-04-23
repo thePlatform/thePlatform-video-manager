@@ -803,10 +803,6 @@ class ThePlatform_Plugin {
 			$url = add_query_arg( 'mute', 'true', $url );
 		}
 
-		if ( $params !== '' ) {
-			$url .= '&' . $params;
-		}
-
 		if ( $instance !== '' ) {
 			$url = add_query_arg( 'instance', $instance );
 		} else {
@@ -819,6 +815,10 @@ class ThePlatform_Plugin {
 
 		if ( $embedded == 'false' && $tag == 'script' ) {
 			$url = add_query_arg( array( 'videoHeight' => $player_height, 'videoWidth' => $player_width ), $url );
+		}
+
+		if ( $params !== '' ) {
+			$url .= '&' . $params;
 		}
 
 		$url = apply_filters( 'tp_full_embed_url', $url );
