@@ -155,7 +155,8 @@ class ThePlatform_Plugin {
 		) );
 		wp_register_script( 'tp_options_js', plugins_url( '/js/thePlatform-options.js', __FILE__ ), array(
 			'jquery',
-			'jquery-ui-sortable'
+			'jquery-ui-sortable',
+			'underscore'
 		) );
 		wp_register_script( 'tp_media_button_js', plugins_url( '/js/thePlatform-media-button.js', __FILE__ ) );
 

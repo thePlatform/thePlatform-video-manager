@@ -55,6 +55,9 @@
                 var $li = $('<li />');
                 $li.data('id', field.id);
                 $li.data('userfield', field.userfield);
+                if (field.id == 'title') {
+                  $li.addClass('unsortable');
+                }
                 $li.text(field.name);
                 $col.append($li);
             }
@@ -64,7 +67,7 @@
         $dragColumnsContainer.append($clear);
 
         $(".sortable").sortable({
-            items: "li:not([data-id=title])",
+            items: "li:not(.unsortable)",
             connectWith: ".sortable",
             receive: function (e, ui) {
                 var receiver = $(e.target).data('col');
@@ -194,6 +197,10 @@
             $('#default_player_pid').attr('value', $('#default_player_name option:selected').data('pid'));
         });
     }
+
+    _.template.formatColName = function (colName) {
+        return colName[0].toUpperCase() + colName.slice(1);
+    };
 
     $(document).ready(function () {
         var TP_PAGE_KEY = $('#TP_PAGE_KEY').text();
