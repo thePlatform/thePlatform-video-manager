@@ -28,13 +28,22 @@ Removed 3rd party libraries in favor of native Wordpress look and feel
 Refactor the plugin to prevent incompatabilities with other Wordpress plugins
 Simplified user capabilities
 
-= 1.4.0 = 
+= 1.4.0 =
 Added the ability to Publish, Revoke and Add Files to existing Media via the Edit dialog
 Added Thumbnailing functionality
 Support sorting search results
 Updating media no longer requires to refresh the entire media browser
 Added a button to reset plugin settings in the About page
 Uploads have been greatly sped up
+
+= 1.3.4 =
+Clear BOMs from UTF8 strings as needed
+Add placeholders on form text fields
+Hide mediabutton if jQueryUI.dialog is not avaialble
+
+= 1.3.3 =
+Set default media embed type to release
+Add a tpEmbed class to our embed dialogs
 
 = 1.3.2 =
 Fixed uploads in Firefox
@@ -48,7 +57,7 @@ Allow multiple files to be uploaded
 Complete update to the plugin UX. Fixed numerous layouting issues across all the different pages
 The video upload dialog has been completely redesigned
 Video uploads should no longer fail randomly
-Support a wider range of file formats 
+Support a wider range of file formats
 Admins can choose the where the embed button should appear - media_buttons, tinymce plugin or both
 Fixed an issue where the shortcode did not append correctly in the text editor
 Accessing the plugin settings is now about 40% faster
@@ -58,8 +67,8 @@ Fixed the autoPlay shortcode attribute
 Admins can choose the Player embed type - either full player or a single embedded player
 Disabled players no longer show up in the Players dropdown
 
-= 1.2.3 = 
-Fix uploads sporadically not working in HTTPS 
+= 1.2.3 =
+Fix uploads sporadically not working in HTTPS
 
 = 1.2.2 =
 Changed thePlatform's menu order number
@@ -175,5 +184,5 @@ tp_full_embed_url - The player URL with all parameters, applied after tp_base_em
 tp_embed_code - The complete embed code, with surrounding HTML, applied after tp_full_embed_url
 tp_rss_embed_code - The full embed code used for a RSS feed
 tp_editor_cap, default - 'edit_posts' - Edit mpx Media
-tp_uploader_cap - default - 'upload_files' - Upload mpx media	
+tp_uploader_cap - default - 'upload_files' - Upload mpx media
 tp_admin_cap, default - 'manage_options' - Manage thePlatform's plugin settings
