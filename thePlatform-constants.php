@@ -58,23 +58,24 @@ function TP_ACCOUNT_OPTIONS_DEFAULTS() {
 
 function TP_PREFERENCES_OPTIONS_DEFAULTS() {
 	return array(
-		'plugin_version'       => TP_PLUGIN_VERSION,
-		'embed_tag_type'       => 'iframe',
-		'default_player_name'  => '',
-		'default_player_pid'   => '',
-		'mpx_server_id'        => 'DEFAULT_SERVER',
-		'default_publish_id'   => 'tp_wp_none',
-		'thumbnail_profile_id' => 'tp_wp_none',
-		'user_id_customfield'  => '(None)',
-		'transform_user_id_to' => 'nickname',
-		'filter_by_user_id'    => 'false',
-		'autoplay'             => 'true',
-		'rss_embed_type'       => 'article',
-		'default_width'        => intval( $GLOBALS['content_width'] ),
-		'default_height'       => intval( ( $GLOBALS['content_width'] / 16 ) * 9 ),
-		'player_embed_type'    => 'true',
-		'embed_hook'           => 'tinymce',
-		'media_embed_type'     => 'pid'
+		'plugin_version'              => TP_PLUGIN_VERSION,
+		'embed_tag_type'              => 'iframe',
+		'default_player_name'         => '',
+		'default_player_pid'          => '',
+		'mpx_server_id'               => 'DEFAULT_SERVER',
+		'default_publish_id'          => 'tp_wp_none',
+		'thumbnail_profile_id'        => 'tp_wp_none',
+		'user_id_customfield'         => '(None)',
+		'transform_user_id_to'        => 'nickname',
+		'filter_by_user_id'           => 'false',
+		'autoplay'                    => 'true',
+		'rss_embed_type'              => 'article',
+		'default_width'               => intval( $GLOBALS['content_width'] ),
+		'default_height'              => intval( ( $GLOBALS['content_width'] / 16 ) * 9 ),
+		'player_embed_type'           => 'true',
+		'embed_hook'                  => 'tinymce',
+		'media_embed_type'            => 'pid',
+		'enqueue_external_controller' => 'false'
 	);
 }
 
@@ -129,6 +130,11 @@ function TP_PREFERENCES_OPTIONS_FIELDS() {
 					'title'  => 'Embed Tag Type',
 					'type'   => 'select',
 					'values' => array( 'IFrame' => 'iframe', 'Script' => 'script' ),
+				),
+				array(
+					'id'    => 'enqueue_external_controller',
+					'title' => 'Enqueue PDK External Controller',
+					'type'  => 'boolean'
 				),
 				array(
 					'id'     => 'media_embed_type',

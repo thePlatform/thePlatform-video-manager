@@ -62,6 +62,7 @@ class ThePlatform_Plugin {
 		add_action( 'admin_init', array( $this, 'register_scripts' ) );
 		add_action( 'admin_init', array( $this, 'theplatform_register_plugin_settings' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_external_controller' ) );
 
 		if ( current_user_can( $this->tp_editor_cap ) ) {
 			add_filter( 'media_upload_tabs', array( $this, 'tp_upload_tab' ) );
@@ -130,6 +131,18 @@ class ThePlatform_Plugin {
 		if ( $hook == 'admin_page_theplatform-upload-window' ) {
 			wp_enqueue_script( 'tp_file_uploader_js' );
 			wp_enqueue_style( 'tp_file_uploader_css' );
+		}
+	}
+
+	function enqueue_external_controller( $hook ) {
+		$preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
+
+		if ( $preferences === false ) {
+			return;
+		}
+
+		if ( $preferences['enqueue_external_controller'] == 'true' ) {
+			wp_enqueue_script( 'tp_pdk_external_controller_js', '//pdk.theplatform.com/pdk/tpPdkController.js' );
 		}
 	}
 
@@ -348,8 +361,7 @@ class ThePlatform_Plugin {
 		update_option( TP_BASIC_METADATA_OPTIONS_KEY, array_merge( TP_BASIC_METADATA_OPTIONS_DEFAULTS(), get_option( TP_BASIC_METADATA_OPTIONS_KEY, array() ) ) );
 
 		// We had a messy update with 1.2.2/1.3.0, let's clean up
-		if ( ( $oldVersion['major'] == '1' && $oldVersion['minor'] == '2' && $oldVersion['patch'] == '2' ) ||
-		     ( $oldVersion['major'] == '1' && $oldVersion['minor'] == '3' && $oldVersion['patch'] == '0' )
+		if ( ( $oldVersion['major'] == '1' && $oldVersion['minor'] == '2' && $oldVersion['patch'] == '2' ) || ( $oldVersion['major'] == '1' && $oldVersion['minor'] == '3' && $oldVersion['patch'] == '0' )
 		) {
 			$basicMetadataFields  = get_option( TP_BASIC_METADATA_OPTIONS_KEY, array() );
 			$customMetadataFields = get_option( TP_CUSTOM_METADATA_OPTIONS_KEY, array() );
@@ -357,8 +369,7 @@ class ThePlatform_Plugin {
 		}
 
 		// Move account settings from preferences (1.2.0)
-		if ( ( $oldVersion['major'] == '1' && $oldVersion['minor'] < '2' ) &&
-		     ( $newVersion['major'] > '1' || ( $newVersion['major'] >= '1' && $newVersion['minor'] >= '2' ) )
+		if ( ( $oldVersion['major'] == '1' && $oldVersion['minor'] < '2' ) && ( $newVersion['major'] > '1' || ( $newVersion['major'] >= '1' && $newVersion['minor'] >= '2' ) )
 		) {
 			$preferences = get_option( TP_PREFERENCES_OPTIONS_KEY, array() );
 			if ( array_key_exists( 'mpx_account_id', $preferences ) ) {
@@ -661,9 +672,7 @@ class ThePlatform_Plugin {
 				'params'   => '',
 				'playall'  => '',
 				'instance' => '',
-			), $atts
-			)
-		);
+			), $atts ) );
 
 		if ( empty( $width ) ) {
 			$width = (int) $this->preferences['default_width'];
