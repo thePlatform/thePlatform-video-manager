@@ -133,7 +133,7 @@ function TP_PREFERENCES_OPTIONS_FIELDS() {
 				),
 				array(
 					'id'    => 'enqueue_external_controller',
-					'title' => 'Enqueue PDK External Controller',
+					'title' => 'Use PDK External Controller',
 					'type'  => 'boolean'
 				),
 				array(

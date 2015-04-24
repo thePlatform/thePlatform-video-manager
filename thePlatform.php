@@ -62,7 +62,6 @@ class ThePlatform_Plugin {
 		add_action( 'admin_init', array( $this, 'register_scripts' ) );
 		add_action( 'admin_init', array( $this, 'theplatform_register_plugin_settings' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
-		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_external_controller' ) );
 
 		if ( current_user_can( $this->tp_editor_cap ) ) {
 			add_filter( 'media_upload_tabs', array( $this, 'tp_upload_tab' ) );
@@ -131,18 +130,6 @@ class ThePlatform_Plugin {
 		if ( $hook == 'admin_page_theplatform-upload-window' ) {
 			wp_enqueue_script( 'tp_file_uploader_js' );
 			wp_enqueue_style( 'tp_file_uploader_css' );
-		}
-	}
-
-	function enqueue_external_controller( $hook ) {
-		$preferences = get_option( TP_PREFERENCES_OPTIONS_KEY );
-
-		if ( $preferences === false ) {
-			return;
-		}
-
-		if ( $preferences['enqueue_external_controller'] == 'true' ) {
-			wp_enqueue_script( 'tp_pdk_external_controller_js', '//pdk.theplatform.com/pdk/tpPdkController.js' );
 		}
 	}
 
@@ -660,19 +647,19 @@ class ThePlatform_Plugin {
 		}
 
 		list( $account, $width, $height, $media, $player, $mute, $autoplay, $tag, $embedded, $params, $playall, $instance ) = array_values( shortcode_atts( array(
-				'account'  => '',
-				'width'    => '',
-				'height'   => '',
-				'media'    => '',
-				'player'   => '',
-				'mute'     => '',
-				'autoplay' => '',
-				'tag'      => '',
-				'embedded' => '',
-				'params'   => '',
-				'playall'  => '',
-				'instance' => '',
-			), $atts ) );
+			'account'  => '',
+			'width'    => '',
+			'height'   => '',
+			'media'    => '',
+			'player'   => '',
+			'mute'     => '',
+			'autoplay' => '',
+			'tag'      => '',
+			'embedded' => '',
+			'params'   => '',
+			'playall'  => '',
+			'instance' => '',
+		), $atts ) );
 
 		if ( empty( $width ) ) {
 			$width = (int) $this->preferences['default_width'];
@@ -717,6 +704,10 @@ class ThePlatform_Plugin {
 
 		if ( empty ( $instance ) && $this->advanced['append_instance'] === 'true' ) {
 			$instance = mt_rand();
+		}
+
+		if ( $this->preferences['enqueue_external_controller'] == 'true' && $tag == 'iframe' ) {
+			wp_enqueue_script( 'tp_pdk_external_controller_js', '//pdk.theplatform.com/pdk/tpPdkController.js' );
 		}
 
 

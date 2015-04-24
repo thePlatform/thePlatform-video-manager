@@ -17,11 +17,10 @@ Copy the folder "thePlatform-video-manager" with all included files into the "wp
 
 # == Screenshots ==
 
-1. thePlatform's Setting screen
-2. View your media library, search for videos, and sort the returned media set
-3. Modify video metadata
+1. Manage and Edit Media in mpx
+2. Upload Media to mpx directly from WordPress
+3. Choosing different metadata fields
 4. Easily embed videos from mpx into your posts
-5. Upload media to your mpx account
 
 # == Changelog ==
 
@@ -29,6 +28,7 @@ Copy the folder "thePlatform-video-manager" with all included files into the "wp
 * Added Advanced Settings
 * Added new shortcode parameters
 * Simplified account settings
+* Added a new option to embed the PDK external controller in posts with our video player
 
 ## = 2.0.0 =
 * Removed 3rd party libraries in favor of native Wordpress look and feel
@@ -161,6 +161,7 @@ This plugin requires an account with thePlatform's mpx. Please contact your Acco
 ## = Embedding Preferences =
 * Default Player - The default player used for embedding and in the Media Browser
 * Embed Tag Type - IFrame or Script embed
+* Use PDK External Controller - Load the external controller in posts that have our player as an IFrame
 * Media Embed Type - Embed Media by the Media PID, Release PID or Media GUID.
 * Player Embed Type - Video Only (/embed/) or Full Player
 * RSS Embed Type - In an RSS feed, provide a link back to the Article, or an iframe/script tag
