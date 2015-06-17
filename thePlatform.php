@@ -804,13 +804,13 @@ class ThePlatform_Plugin {
 		}
 
 		if ( $instance !== '' ) {
-			$url = add_query_arg( 'instance', $instance );
+			$url = add_query_arg( 'instance', $instance, $url );
 		} else {
 			$instance = mt_rand();
 		}
 
 		if ( $playall !== 'false' ) {
-			$url = add_query_arg( 'playAll', 'true' );
+			$url = add_query_arg( 'playAll', 'true', $url );
 		}
 
 		if ( $embedded == 'false' && $tag == 'script' ) {
