@@ -910,7 +910,7 @@ class ThePlatform_API {
 			$token = $this->mpx_signin();
 		}
 
-		$url = TP_API_ACCESS_ACCOUNT_ENDPOINT . '&token=' . $token . '&byDisabled=false&fields=title,pid,id&sort=title&range=1-1000';
+		$url = TP_API_ACCESS_ACCOUNT_ENDPOINT . '&token=' . $token . '&byDisabled=false&fields=title,pid,id&sort=title&range=1-2000';
 
 		$response = ThePlatform_API_HTTP::get( $url );
 
