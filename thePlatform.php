@@ -1,6 +1,6 @@
 <?php
 /*
-  Plugin Name: thePlatform Video Manager
+  Plugin Name: MediaAMP Video Manager
   Plugin URI: http://theplatform.com/
   Description: Manage video assets hosted in thePlatform mpx from within WordPress.
   Version: 2.0.0
@@ -22,6 +22,15 @@
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+  Changes
+  ========================================
+
+  qaz2wsx3@uw.edu: changed the shortcode from [theplatform] to [mediaamp]
+                   changed the text of the menus
+                   chagned the name of the plugin to MediaAMP Video Manager
+                   changed the link that is referenced by the plugin site & author to http://mpx.mediaamp.org/ 
+
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -73,6 +82,7 @@ class ThePlatform_Plugin {
 		}
 
 		add_shortcode( 'theplatform', array( $this, 'shortcode' ) );
+
 	}
 
 	/**
@@ -603,6 +613,7 @@ class ThePlatform_Plugin {
 	 * @param array $atts Shortcode attributes
 	 *
 	 * @return string thePlatform video embed shortcode
+
 	 */
 	function shortcode( $atts ) {
 		if ( ! class_exists( 'ThePlatform_API' ) ) {
@@ -686,7 +697,6 @@ class ThePlatform_Plugin {
 			}
 			$output = apply_filters( 'tp_rss_embed_code', $output );
 		}
-
 		return $output;
 	}
 

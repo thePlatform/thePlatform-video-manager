@@ -6,6 +6,7 @@ Tested up to: 4.2
 Stable tag: 2.0.0
 
 Manage your content hosted by thePlatform and embed media in WordPress posts.
+* This edition of the plug-in has been rebranded for MediaAMP.
 
 # == Description ==
 View your content hosted by thePlatform and easily embed videos from your
@@ -187,4 +188,5 @@ This plugin requires an account with thePlatform's mpx. Please contact your Acco
 * tp_rss_embed_code - The full embed code used for a RSS feed
 * tp_editor_cap, default - 'edit_posts' - Edit mpx Media
 * tp_uploader_cap - default - 'upload_files' - Upload mpx media
+
 * tp_admin_cap, default - 'manage_options' - Manage thePlatform's plugin settings

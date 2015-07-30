@@ -1,6 +1,7 @@
 === thePlatform Video Manager ===
 Developed By: thePlatform LLC
 Tags: embedding, video, embed, portal, theplatform, shortcode
+
 Requires at least: 3.7
 Tested up to: 4.2
 Stable tag: 2.0.0
@@ -185,4 +186,5 @@ tp_embed_code - The complete embed code, with surrounding HTML, applied after tp
 tp_rss_embed_code - The full embed code used for a RSS feed
 tp_editor_cap, default - 'edit_posts' - Edit mpx Media
 tp_uploader_cap - default - 'upload_files' - Upload mpx media
+
 tp_admin_cap, default - 'manage_options' - Manage thePlatform's plugin settings

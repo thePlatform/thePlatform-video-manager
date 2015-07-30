@@ -2,6 +2,7 @@
 /* thePlatform Video Manager Wordpress Plugin
   Copyright (C) 2013-2015 thePlatform, LLC
 
+
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation; either version 2 of the License, or
@@ -14,7 +15,15 @@
 
   You should have received a copy of the GNU General Public License along
   with this program; if not, write to the Free Software Foundation, Inc.,
-  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
+  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. 
+
+  Changes
+  ========================================
+
+  qaz2wsx3@uw.edu: changed the reference of thePlatform to MediaAMP in 
+  some texts that will be displayed
+
+*/
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -120,7 +129,7 @@ class ThePlatform_Options {
 
 			if ( $this->account_options['mpx_username'] != 'mpx/' ) {
 				echo '<div id="message" class="error">';
-				echo '<p><strong>Sign in to thePlatform failed, please check your account settings.</strong></p>';
+				echo '<p><strong>Sign in to MediaAMP failed, please check your account settings.</strong></p>';
 				echo '</div>';
 			}
 		}
@@ -230,8 +239,8 @@ class ThePlatform_Options {
 	 * Provide a description to the mpx Account Settings Section
 	 */
 	function section_mpx_account_desc() {
-		echo 'Set your mpx credentials and Account. If you do not have an account, please reach out to thePlatform.';
-		echo '<div id="TP_PAGE_KEY" style="display: none;">TP_PREFERENCES</div>';
+
+		echo 'Set your MPX credentials and Account. If you do not have an account, please reach out to MediaAMP.';
 	}
 
 	/**
@@ -484,7 +493,7 @@ class ThePlatform_Options {
 	 * using the plugin_options_page method.
 	 */
 	function add_admin_menus() {
-		add_options_page( 'thePlatform Plugin Settings', 'thePlatform', 'manage_options', $this->plugin_options_key, array( $this, 'plugin_options_page' ) );
+		add_options_page( 'MediaAMP Plugin Settings', 'MediaAMP', 'manage_options', $this->plugin_options_key, array( $this, 'plugin_options_page' ) );
 	}
 
 	/**

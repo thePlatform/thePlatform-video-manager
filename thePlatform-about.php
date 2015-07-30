@@ -3,6 +3,7 @@
 /* thePlatform Video Manager Wordpress Plugin
   Copyright (C) 2013-2015 thePlatform LLC.
 
+
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation; either version 2 of the License, or
@@ -15,7 +16,15 @@
 
   You should have received a copy of the GNU General Public License along
   with this program; if not, write to the Free Software Foundation, Inc.,
-  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
+  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. 
+
+  Changes
+  ==============================
+  
+  qaz2wsx3@uw.edu: Changed the link of github repository to uw-it-aca/thePlatform-video-manager
+ qaz2wsx3@uw.edu: Added a notice that the plugin has been rebranded for MediaAMP
+
+*/
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -39,46 +48,35 @@ if ( current_user_can( $tp_admin_cap ) ) {
 }
 
 ?>
-<div class="wrap">
-	<h2>thePlatform Video Manager</h2>
 
-	<p>Version <?php echo TP_PLUGIN_VERSION; ?><br>
-		Copyright (C) 2013-<?php echo date( "Y" ); ?> thePlatform LLC.<br>
-	</p>
+<style>
+	
+</style>
+<p> MediaAMP Video Manager Wordpress Plugin version <?php echo TP_PLUGIN_VERSION; ?><br>
+	Copyright (C) 2013-<?php echo date("Y"); ?> thePlatform for Media Inc.<br>
+    This edition of the plug-in has been rebranded for MediaAMP.<br>
+</p>
 
-	<p>The latest version of the plugin can be found at our GitHub repository:
-		<a href="https://github.com/thePlatform/thePlatform-video-manager">thePlatform-video-manager</a>
-	</p>
+<p>The latest version of the plugin can be found at our GitHub repository:
+	<a href="https://github.com/uw-it-aca/thePlatform-video-manager">uw-it-aca/thePlatform-video-manager</a>
+</p>
 
-	<p>The following libraries are used under their respective licenses:<br>
-		Holder - 2.3.1 - client side image placeholders<br>
-		(c) 2012-<?php echo date( "Y" ); ?> <a href="http://imsky.co">Ivan Malopinsky</a>
-	</p>
+<p>The following libraries are used under their respective licenses:<br>
+	Holder - 2.3.1 - client side image placeholders<br>
+	(c) 2012-2014 <a href="http://imsky.co">Ivan Malopinsky</a>
+</p>
 
-	<p>
-		NProgress<br>
-		Copyright (c) 2013-<?php echo date( "Y" ); ?> <a href="http://ricostacruz.com/nprogress/">Rico Sta. Cruz</a>
-	</p>
+<p>
+	Bootstrap<br>
+	Copyright (c) 2011-2014 <a href="http://getbootstrap.com/">Twitter, Inc</a>
+</p>
 
-	<?php
+<p>
+	jQuery infiniteScroll<br>
+	Copyright (c) 2010 <a href="https://github.com/denniscalazans/jquery-infinitescroll">DIY Co</a>
+</p>
 
-	// Administrators only should be able to delete all of the plugin settings
-	if ( current_user_can( $tp_admin_cap ) ) {
-		echo '<form name="delete_settings" action="' . esc_url( admin_url( "admin.php?page=theplatform-about" ) ) . '" method="post"><input type="hidden" name="delete" value="delete">';
-		wp_nonce_field( 'theplatform_delete_settings_nonce' );
-		submit_button( 'Reset Plugin Settings' );
-		echo '</form>';
-	}
-	?>
-
-	<script type="text/javascript">
-		var clicked = false;
-		jQuery('#submit').click(function (e) {
-			if (!clicked) {
-				e.preventDefault();
-				clicked = true;
-				jQuery(this).val('Click Again to Confirm');
-			}
-		});
-	</script>
-</div>
+<p>
+  NProgress<br>
+  Copyright (c) 2013-2014 <a href="http://ricostacruz.com/nprogress/">Rico Sta. Cruz</a>
+</p>
