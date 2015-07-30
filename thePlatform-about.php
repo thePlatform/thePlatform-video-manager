@@ -1,7 +1,8 @@
 <?php
 
 /* thePlatform Video Manager Wordpress Plugin
-  Copyright (C) 2013-2014 thePlatform for Media Inc.
+  Copyright (C) 2013-2015 thePlatform LLC.
+
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -25,7 +26,29 @@
 
 */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+$tp_admin_cap = apply_filters( TP_ADMIN_CAP, TP_ADMIN_DEFAULT_CAP );
+
+if ( current_user_can( $tp_admin_cap ) ) {
+
+	if ( isset( $_POST['delete'] ) ) {
+		check_admin_referer( 'theplatform_delete_settings_nonce' );
+
+		delete_option( TP_ACCOUNT_OPTIONS_KEY );
+		delete_option( TP_PREFERENCES_OPTIONS_KEY );
+		delete_option( TP_CUSTOM_METADATA_OPTIONS_KEY );
+		delete_option( TP_BASIC_METADATA_OPTIONS_KEY );
+		delete_option( TP_TOKEN_OPTIONS_KEY );
+
+		echo '<div id="message" class="updated"><p>All plugin settings have been reset</p></div>';
+	}
+}
+
 ?>
+
 <style>
 	
 </style>

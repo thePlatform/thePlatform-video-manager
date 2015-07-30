@@ -1,7 +1,8 @@
 <?php
 
 /* thePlatform Video Manager Wordpress Plugin
-  Copyright (C) 2013-2014 thePlatform for Media Inc.
+  Copyright (C) 2013-2015 thePlatform, LLC
+
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -17,6 +18,10 @@
   with this program; if not, write to the Free Software Foundation, Inc.,
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Class ThePlatform_URLs
  * This was added to support regions other than the US.
@@ -27,11 +32,11 @@
 class ThePlatform_URLs {
 
 	/**
-	 * Define MPX endpoints and associated parameters
+	 * Define mpx endpoints and associated parameters
 	 */
 	function __construct( $preference_key ) {
 		$region = $this->getRegion( $preference_key );
-		if ( !in_array( $region, TP_REGIONS(), TRUE) ) {
+		if ( ! in_array( $region, TP_REGIONS(), true ) ) {
 			$region = 'us';
 		}
 		// Set the base URLs based on the region
@@ -43,9 +48,11 @@ class ThePlatform_URLs {
 				define( 'TP_API_ACCESS_BASE_URL', 'http://access.auth.theplatform.com/' );
 				define( 'TP_API_WORKFLOW_BASE_URL', 'http://data.workflow.theplatform.com/workflow/data/' );
 				define( 'TP_API_PUBLISH_BASE_URL', 'http://publish.theplatform.com/web/Publish/publish?schema=1.2&form=json' );
+				define( 'TP_API_REVOKE_BASE_URL', 'http://publish.theplatform.com/web/Publish/revoke?schema=1.2&form=json' );
 				define( 'TP_API_PUBLISH_DATA_BASE_URL', 'http://data.publish.theplatform.com/publish/data/' );
 				define( 'TP_API_FMS_BASE_URL', 'http://fms.theplatform.com/web/FileManagement/' );
 				define( 'TP_API_PLAYER_EMBED_BASE_URL', '//player.theplatform.com/p/' );
+				define( 'TP_API_TASK_BASE_URL', 'http://data.task.theplatform.com/task/data/' );
 				break;
 			case 'eu':
 				define( 'TP_API_ADMIN_IDENTITY_BASE_URL', 'https://identity.auth.theplatform.eu/idm/web/Authentication/' );
@@ -54,9 +61,11 @@ class ThePlatform_URLs {
 				define( 'TP_API_ACCESS_BASE_URL', 'http://access.auth.theplatform.eu/' );
 				define( 'TP_API_WORKFLOW_BASE_URL', 'http://data.workflow.theplatform.eu/workflow/data/' );
 				define( 'TP_API_PUBLISH_BASE_URL', 'http://publish.theplatform.eu/web/Publish/publish?schema=1.2&form=json' );
+				define( 'TP_API_REVOKE_BASE_URL', 'http://publish.theplatform.eu/web/Publish/revoke?schema=1.2&form=json' );
 				define( 'TP_API_PUBLISH_DATA_BASE_URL', 'http://data.publish.theplatform.eu/publish/data/' );
 				define( 'TP_API_FMS_BASE_URL', 'http://fms.theplatform.eu/web/FileManagement/' );
 				define( 'TP_API_PLAYER_EMBED_BASE_URL', '//player.theplatform.eu/p/' );
+				define( 'TP_API_TASK_BASE_URL', 'http://data.task.theplatform.eu/task/data/' );
 				break;
 			default:
 				wp_die( 'Invalid Region. Cannot match on region: ' . $region );
@@ -67,11 +76,11 @@ class ThePlatform_URLs {
 		define( 'TP_API_FORMATS_XML_URL', 'http://web.theplatform.com/descriptors/enums/format.xml' );
 
 		// Identity Management Service URLs
-		define( 'TP_API_SIGNIN_URL', TP_API_ADMIN_IDENTITY_BASE_URL . 'signIn?schema=1.0&form=json&_duration=86400000&_idleTimeout=3600000&wpVersion=' . TP_PLUGIN_VERSION );
-		define( 'TP_API_SIGNOUT_URL', TP_API_ADMIN_IDENTITY_BASE_URL . 'signOut?schema=1.0&form=json&_token=' );
+		define( 'TP_API_SIGNIN_URL', TP_API_ADMIN_IDENTITY_BASE_URL . 'signIn?schema=1.0&form=json&wpVersion=' . TP_PLUGIN_VERSION );
 
 		// Media Data Service URLs
-		define( 'TP_API_MEDIA_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Media?schema=1.7.0&form=cjson' );
+		define( 'TP_API_MEDIA_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Media?schema=1.7.0&searchSchema=1.0&form=cjson' );
+		define( 'TP_API_MEDIA_FILE_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'MediaFile?schema=1.7.0&form=cjson' );
 		define( 'TP_API_MEDIA_FIELD_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Media/Field?schema=1.7.0&form=cjson' );
 		define( 'TP_API_MEDIA_SERVER_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Server?schema=1.7.0&form=cjson' );
 		define( 'TP_API_MEDIA_RELEASE_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Release?schema=1.7.0&form=cjson' );
@@ -91,15 +100,22 @@ class ThePlatform_URLs {
 		define( 'TP_API_WORKFLOW_PROFILE_RESULT_ENDPOINT', TP_API_WORKFLOW_BASE_URL . 'ProfileResult?schema=1.0&form=cjson' );
 
 		// Publish Data Service URLs
-		define( 'TP_API_PUBLISH_PROFILE_ENDPOINT', TP_API_PUBLISH_DATA_BASE_URL . 'PublishProfile?schema=1.5.0&form=json' );
+		define( 'TP_API_PUBLISH_PROFILE_ENDPOINT', TP_API_PUBLISH_DATA_BASE_URL . 'PublishProfile?schema=1.8.0&form=json' );
+
+		// Task Data Service URLs
+		define( 'TP_API_TASK_TEMPLATE_ENDPOINT', TP_API_TASK_BASE_URL . 'TaskTemplate?schema=1.3.0&form=cjson' );
 
 		// FMS URLs
-		define( 'TP_API_FMS_GET_UPLOAD_URLS_ENDPOINT', TP_API_FMS_BASE_URL . 'getUploadUrls?schema=1.4&form=json' );
+		define( 'TP_API_FMS_GET_UPLOAD_URLS_ENDPOINT', TP_API_FMS_BASE_URL . 'getUploadUrls?schema=1.5&form=json' );
+		define( 'TP_API_FMS_GENERATE_THUMBNAIL_ENDPOINT', TP_API_FMS_BASE_URL . 'generateNewFiles?schema=1.5&form=json' );
+
 	}
 
 	/**
 	 * Determine the region based the plugin's preferences
+	 *
 	 * @param  string $preference_key Our plugin's preference key
+	 *
 	 * @return string                 The current region, either us or eu
 	 */
 	private function getRegion( $preference_key ) {
@@ -111,6 +127,7 @@ class ThePlatform_URLs {
 		} else {
 			$region = 'us';
 		}
+
 		return $region;
 	}
 }
