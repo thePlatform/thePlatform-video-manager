@@ -118,25 +118,25 @@ function TP_CUSTOM_FIELDS_TYPES() {
 
 function TP_REGISTRY_SERVICE_NAMES() {
 	return array(
-		"User Data Service" => '',
-		"Access Data Service" => '',
+		"User Data Service"              => '',
+		"Access Data Service"            => '',
 		"Publish Data Service read-only" => '',
-		"Task Service read-only" => '',
-		"Workflow Data Service" => '',
-		"Player Service" => '',
-		"Media Data Service read-only" => '',
-		"Publish Service" => '',
-		"Player Data Service" => '',
-		"Selector Web Service" => '',
-		"Task Service" => '',
-		"User Data Service master" => '',
-		"Publish Data Service" => '',
-		"File Management Service" => '',
-		"Ingest Service" => '',
-		"Media Data Service" => '',
-		"Selector Service" => '',
-		"PDK" => '',
-		"Static Web Files" => ''
+		"Task Service read-only"         => '',
+		"Workflow Data Service"          => '',
+		"Player Service"                 => '',
+		"Media Data Service read-only"   => '',
+		"Publish Service"                => '',
+		"Player Data Service"            => '',
+		"Selector Web Service"           => '',
+		"Task Service"                   => '',
+		"User Data Service master"       => '',
+		"Publish Data Service"           => '',
+		"File Management Service"        => '',
+		"Ingest Service"                 => '',
+		"Media Data Service"             => '',
+		"Selector Service"               => '',
+		"PDK"                            => '',
+		"Static Web Files"               => ''
 	);
 }
 

@@ -339,8 +339,7 @@ class ThePlatform_Plugin {
 		update_option( TP_BASIC_METADATA_OPTIONS_KEY, array_merge( TP_BASIC_METADATA_OPTIONS_DEFAULTS(), get_option( TP_BASIC_METADATA_OPTIONS_KEY, array() ) ) );
 
 		// Move account settings from preferences (1.2.0)
-		if ( ( $oldVersion['major'] == '1' && $oldVersion['minor'] < '2' ) && ( $newVersion['major'] > '1' || ( $newVersion['major'] >= '1' && $newVersion['minor'] >= '2' ) )
-		) {
+		if ( ( $oldVersion['major'] == '1' && $oldVersion['minor'] < '2' ) && ( $newVersion['major'] > '1' || ( $newVersion['major'] >= '1' && $newVersion['minor'] >= '2' ) ) ) {
 			$preferences = get_option( TP_PREFERENCES_OPTIONS_KEY, array() );
 			if ( array_key_exists( 'mpx_account_id', $preferences ) ) {
 				$accountSettings = TP_ACCOUNT_OPTIONS_DEFAULTS();
@@ -457,8 +456,8 @@ class ThePlatform_Plugin {
 		}
 
 		// Set the account registry
-		$registry = $tp_api->get_account_registry( $input['mpx_account_id'], $input['mpx_username'], $input['mpx_password'] );
-		$services = TP_REGISTRY_SERVICE_NAMES();
+		$registry    = $tp_api->get_account_registry( $input['mpx_account_id'], $input['mpx_username'], $input['mpx_password'] );
+		$services    = TP_REGISTRY_SERVICE_NAMES();
 		$serviceUrls = array_intersect_key( $registry, $services );
 		update_option( TP_REGISTRY_OPTIONS_KEY, $serviceUrls );
 
@@ -787,7 +786,7 @@ class ThePlatform_Plugin {
 		$url = TP_API_PLAYER_EMBED_BASE_URL . '/p' . urlencode( $accountPID ) . '/' . urlencode( $playerPID );
 
 		// Remove HTTP(S) from the player url
-		$url = preg_replace('#^https?:#', '', $url);
+		$url = preg_replace( '#^https?:#', '', $url );
 
 		if ( $embedded === 'true' ) {
 			$url .= '/embed';

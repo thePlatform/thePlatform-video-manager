@@ -334,8 +334,7 @@ class ThePlatform_API {
 
 		$payload = array_merge( array(
 			'$xmlns' => array_merge( array(), $custom_field_ns )
-		), array_merge( $fields, $custom_field_values )
-		);
+		), array_merge( $fields, $custom_field_values ) );
 
 		$url = TP_API_MEDIA_ENDPOINT;
 		$url .= '&account=' . $this->get_mpx_account_id();

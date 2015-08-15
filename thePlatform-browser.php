@@ -103,7 +103,7 @@ $IS_EMBED = $page_hook != 'toplevel_page_theplatform';
 </div><!-- .wrap -->
 
 <?php
-if ( ! $IS_EMBED && current_user_can( $tp_editor_cap )) {
+if ( ! $IS_EMBED && current_user_can( $tp_editor_cap ) ) {
 ?>
 <div id="tp-edit-dialog">
 	<?php require_once( dirname( __FILE__ ) . '/thePlatform-edit-upload.php' ); ?>

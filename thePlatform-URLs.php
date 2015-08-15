@@ -38,27 +38,27 @@ class ThePlatform_URLs {
 		define( 'TP_API_ADMIN_IDENTITY_MASTER_BASE_URL', 'https://identity.auth.theplatform.com/idm' );
 
 		// Registry URLs
-		define ( 'TP_API_RESOLVE_REGISTRY', TP_API_ACCESS_MASTER_BASE_URL . '/web/Registry/resolveDomain?schema=1.0&form=json' );
+		define( 'TP_API_RESOLVE_REGISTRY', TP_API_ACCESS_MASTER_BASE_URL . '/web/Registry/resolveDomain?schema=1.0&form=json' );
 
 		if ( ! $serviceUrls ) {
 			define( 'TP_API_SIGNIN_URL', TP_API_ADMIN_IDENTITY_MASTER_BASE_URL . '/web/Authentication/signIn?schema=1.0&form=json&wpVersion=' . TP_PLUGIN_VERSION );
 			define( 'TP_API_ACCESS_ACCOUNT_ENDPOINT', TP_API_ACCESS_MASTER_BASE_URL . '/data/Account?schema=1.3.0&form=cjson' );
 			define( 'TP_API_ACCESS_ACCOUNT_LOOKUP_ENDPOINT', TP_API_ACCESS_MASTER_BASE_URL . '/web/Lookup/getAccountInfoByIds?schema=1.0&form=json' );
+
 			return;
 		}
 
 		define( 'TP_API_ADMIN_IDENTITY_BASE_URL', $serviceUrls['User Data Service'] );
-		define( 'TP_API_MEDIA_DATA_BASE_URL', $serviceUrls['Media Data Service']  );
-		define( 'TP_API_PLAYER_BASE_URL', $serviceUrls['Player Data Service']  );
-		define( 'TP_API_ACCESS_BASE_URL', $serviceUrls['Access Data Service']  );
-		define( 'TP_API_WORKFLOW_BASE_URL', $serviceUrls['Workflow Data Service']  );
-		define( 'TP_API_PUBLISH_BASE_URL', $serviceUrls['Publish Service']  );
-		define( 'TP_API_PUBLISH_DATA_BASE_URL', $serviceUrls['Publish Data Service']  );
+		define( 'TP_API_MEDIA_DATA_BASE_URL', $serviceUrls['Media Data Service'] );
+		define( 'TP_API_PLAYER_BASE_URL', $serviceUrls['Player Data Service'] );
+		define( 'TP_API_ACCESS_BASE_URL', $serviceUrls['Access Data Service'] );
+		define( 'TP_API_WORKFLOW_BASE_URL', $serviceUrls['Workflow Data Service'] );
+		define( 'TP_API_PUBLISH_BASE_URL', $serviceUrls['Publish Service'] );
+		define( 'TP_API_PUBLISH_DATA_BASE_URL', $serviceUrls['Publish Data Service'] );
 		define( 'TP_API_FMS_BASE_URL', $serviceUrls['File Management Service'] );
-		define( 'TP_API_PLAYER_EMBED_BASE_URL', $serviceUrls['Player Service']  );
-		define( 'TP_API_TASK_BASE_URL', $serviceUrls['Task Service']  );
-		define( 'TP_API_STATIC_WEB_BASE_URL', $serviceUrls['Static Web Files']  );
-
+		define( 'TP_API_PLAYER_EMBED_BASE_URL', $serviceUrls['Player Service'] );
+		define( 'TP_API_TASK_BASE_URL', $serviceUrls['Task Service'] );
+		define( 'TP_API_STATIC_WEB_BASE_URL', $serviceUrls['Static Web Files'] );
 
 
 		// XML File containing format definitions

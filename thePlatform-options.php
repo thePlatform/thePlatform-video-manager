@@ -514,7 +514,7 @@ class ThePlatform_Options {
 				?>
 			</form>
 		</div>
-	<?php
+		<?php
 	}
 
 	/**
