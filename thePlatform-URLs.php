@@ -23,108 +23,82 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Class ThePlatform_URLs
- * This was added to support regions other than the US.
- * Constants are already used throughout the plugin, so rather than
- * change that, this will define them once when the plugin is started
- * but use the region to determine the base URLs.
+ * This class is responsible of retrieving the Service URLs from the account registry
  */
 class ThePlatform_URLs {
 
 	/**
 	 * Define mpx endpoints and associated parameters
 	 */
-	function __construct( $preference_key ) {
-		$region = $this->getRegion( $preference_key );
-		if ( ! in_array( $region, TP_REGIONS(), true ) ) {
-			$region = 'US1';
-		}
+	function __construct() {
 		// Set the base URLs based on the region
-		switch ( $region ) {
-			case 'US1':
-				define( 'TP_API_ADMIN_IDENTITY_BASE_URL', 'https://identity.auth.theplatform.com/idm/web/Authentication/' );
-				define( 'TP_API_MEDIA_DATA_BASE_URL', 'http://data.media.theplatform.com/media/data/' );
-				define( 'TP_API_PLAYER_BASE_URL', 'http://data.player.theplatform.com/player/data/' );
-				define( 'TP_API_ACCESS_BASE_URL', 'http://access.auth.theplatform.com/' );
-				define( 'TP_API_WORKFLOW_BASE_URL', 'http://data.workflow.theplatform.com/workflow/data/' );
-				define( 'TP_API_PUBLISH_BASE_URL', 'http://publish.theplatform.com/web/Publish/publish?schema=1.2&form=json' );
-				define( 'TP_API_REVOKE_BASE_URL', 'http://publish.theplatform.com/web/Publish/revoke?schema=1.2&form=json' );
-				define( 'TP_API_PUBLISH_DATA_BASE_URL', 'http://data.publish.theplatform.com/publish/data/' );
-				define( 'TP_API_FMS_BASE_URL', 'http://fms.theplatform.com/web/FileManagement/' );
-				define( 'TP_API_PLAYER_EMBED_BASE_URL', '//player.theplatform.com/p/' );
-				define( 'TP_API_TASK_BASE_URL', 'http://data.task.theplatform.com/task/data/' );
-				break;
-			case 'EU3':
-				define( 'TP_API_ADMIN_IDENTITY_BASE_URL', 'https://identity.auth.theplatform.eu/idm/web/Authentication/' );
-				define( 'TP_API_MEDIA_DATA_BASE_URL', 'http://data.media.theplatform.eu/media/data/' );
-				define( 'TP_API_PLAYER_BASE_URL', 'http://data.player.theplatform.eu/player/data/' );
-				define( 'TP_API_ACCESS_BASE_URL', 'http://access.auth.theplatform.eu/' );
-				define( 'TP_API_WORKFLOW_BASE_URL', 'http://data.workflow.theplatform.eu/workflow/data/' );
-				define( 'TP_API_PUBLISH_BASE_URL', 'http://publish.theplatform.eu/web/Publish/publish?schema=1.2&form=json' );
-				define( 'TP_API_REVOKE_BASE_URL', 'http://publish.theplatform.eu/web/Publish/revoke?schema=1.2&form=json' );
-				define( 'TP_API_PUBLISH_DATA_BASE_URL', 'http://data.publish.theplatform.eu/publish/data/' );
-				define( 'TP_API_FMS_BASE_URL', 'http://fms.theplatform.eu/web/FileManagement/' );
-				define( 'TP_API_PLAYER_EMBED_BASE_URL', '//player.theplatform.eu/p/' );
-				define( 'TP_API_TASK_BASE_URL', 'http://data.task.theplatform.eu/task/data/' );
-				break;
-			default:
-				wp_die( 'Invalid Region. Cannot match on region: ' . $region );
-				break;
+		$serviceUrls = get_option( TP_REGISTRY_OPTIONS_KEY );
+
+		define( 'TP_API_ACCESS_MASTER_BASE_URL', 'http://access.auth.theplatform.com' );
+		define( 'TP_API_ADMIN_IDENTITY_MASTER_BASE_URL', 'https://identity.auth.theplatform.com/idm' );
+
+		// Registry URLs
+		define ( 'TP_API_RESOLVE_REGISTRY', TP_API_ACCESS_MASTER_BASE_URL . '/web/Registry/resolveDomain?schema=1.0&form=json' );
+
+		if ( ! $serviceUrls ) {
+			define( 'TP_API_SIGNIN_URL', TP_API_ADMIN_IDENTITY_MASTER_BASE_URL . '/web/Authentication/signIn?schema=1.0&form=json&wpVersion=' . TP_PLUGIN_VERSION );
+			define( 'TP_API_ACCESS_ACCOUNT_ENDPOINT', TP_API_ACCESS_MASTER_BASE_URL . '/data/Account?schema=1.3.0&form=cjson' );
+			define( 'TP_API_ACCESS_ACCOUNT_LOOKUP_ENDPOINT', TP_API_ACCESS_MASTER_BASE_URL . '/web/Lookup/getAccountInfoByIds?schema=1.0&form=json' );
+			return;
 		}
+
+		define( 'TP_API_ADMIN_IDENTITY_BASE_URL', $serviceUrls['User Data Service'] );
+		define( 'TP_API_MEDIA_DATA_BASE_URL', $serviceUrls['Media Data Service']  );
+		define( 'TP_API_PLAYER_BASE_URL', $serviceUrls['Player Data Service']  );
+		define( 'TP_API_ACCESS_BASE_URL', $serviceUrls['Access Data Service']  );
+		define( 'TP_API_WORKFLOW_BASE_URL', $serviceUrls['Workflow Data Service']  );
+		define( 'TP_API_PUBLISH_BASE_URL', $serviceUrls['Publish Service']  );
+		define( 'TP_API_PUBLISH_DATA_BASE_URL', $serviceUrls['Publish Data Service']  );
+		define( 'TP_API_FMS_BASE_URL', $serviceUrls['File Management Service'] );
+		define( 'TP_API_PLAYER_EMBED_BASE_URL', $serviceUrls['Player Service']  );
+		define( 'TP_API_TASK_BASE_URL', $serviceUrls['Task Service']  );
+		define( 'TP_API_STATIC_WEB_BASE_URL', $serviceUrls['Static Web Files']  );
+
+
 
 		// XML File containing format definitions
-		define( 'TP_API_FORMATS_XML_URL', 'http://web.theplatform.com/descriptors/enums/format.xml' );
+		define( 'TP_API_FORMATS_XML_URL', TP_API_STATIC_WEB_BASE_URL . '/descriptors/enums/format.xml' );
 
 		// Identity Management Service URLs
-		define( 'TP_API_SIGNIN_URL', TP_API_ADMIN_IDENTITY_BASE_URL . 'signIn?schema=1.0&form=json&wpVersion=' . TP_PLUGIN_VERSION );
+		define( 'TP_API_SIGNIN_URL', TP_API_ADMIN_IDENTITY_BASE_URL . '/web/Authentication/signIn?schema=1.0&form=json&wpVersion=' . TP_PLUGIN_VERSION );
 
 		// Media Data Service URLs
-		define( 'TP_API_MEDIA_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Media?schema=1.7.0&searchSchema=1.0&form=cjson' );
-		define( 'TP_API_MEDIA_FILE_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'MediaFile?schema=1.7.0&form=cjson' );
-		define( 'TP_API_MEDIA_FIELD_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Media/Field?schema=1.7.0&form=cjson' );
-		define( 'TP_API_MEDIA_SERVER_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Server?schema=1.7.0&form=cjson' );
-		define( 'TP_API_MEDIA_RELEASE_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Release?schema=1.7.0&form=cjson' );
-		define( 'TP_API_MEDIA_CATEGORY_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'Category?schema=1.7.0&form=cjson' );
-		define( 'TP_API_MEDIA_ACCOUNTSETTINGS_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . 'AccountSettings?schema=1.7.0&form=cjson' );
+		define( 'TP_API_MEDIA_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . '/data/Media?schema=1.7.0&searchSchema=1.0&form=cjson' );
+		define( 'TP_API_MEDIA_FILE_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . '/data/MediaFile?schema=1.7.0&form=cjson' );
+		define( 'TP_API_MEDIA_FIELD_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . '/data/Media/Field?schema=1.7.0&form=cjson' );
+		define( 'TP_API_MEDIA_SERVER_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . '/data/Server?schema=1.7.0&form=cjson' );
+		define( 'TP_API_MEDIA_RELEASE_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . '/data/Release?schema=1.7.0&form=cjson' );
+		define( 'TP_API_MEDIA_CATEGORY_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . '/data/Category?schema=1.7.0&form=cjson' );
+		define( 'TP_API_MEDIA_ACCOUNTSETTINGS_ENDPOINT', TP_API_MEDIA_DATA_BASE_URL . '/data/AccountSettings?schema=1.7.0&form=cjson' );
 
 		// Player Data Service URLs
-		define( 'TP_API_PLAYER_PLAYER_ENDPOINT', TP_API_PLAYER_BASE_URL . 'Player?schema=1.3.0&form=cjson' );
+		define( 'TP_API_PLAYER_PLAYER_ENDPOINT', TP_API_PLAYER_BASE_URL . '/data/Player?schema=1.3.0&form=cjson' );
 
 		// Access Data Service URLs
-		define( 'TP_API_ACCESS_ACCOUNT_ENDPOINT', TP_API_ACCESS_BASE_URL . 'data/Account?schema=1.3.0&form=cjson' );
-		define( 'TP_API_ACCESS_ACCOUNT_LOOKUP_ENDPOINT', TP_API_ACCESS_BASE_URL . 'web/Lookup/getAccountInfoByIds?schema=1.0&form=json' );
+		define( 'TP_API_ACCESS_ACCOUNT_ENDPOINT', TP_API_ACCESS_BASE_URL . '/data/Account?schema=1.3.0&form=cjson' );
+		define( 'TP_API_ACCESS_ACCOUNT_LOOKUP_ENDPOINT', TP_API_ACCESS_BASE_URL . '/web/Lookup/getAccountInfoByIds?schema=1.0&form=json' );
 
 		// Workflow Data Service URLs
-		define( 'TP_API_WORKFLOW_PROFILE_RESULT_ENDPOINT', TP_API_WORKFLOW_BASE_URL . 'ProfileResult?schema=1.0&form=cjson' );
+		define( 'TP_API_WORKFLOW_PROFILE_RESULT_ENDPOINT', TP_API_WORKFLOW_BASE_URL . '/data/ProfileResult?schema=1.0&form=cjson' );
 
 		// Publish Data Service URLs
-		define( 'TP_API_PUBLISH_PROFILE_ENDPOINT', TP_API_PUBLISH_DATA_BASE_URL . 'PublishProfile?schema=1.8.0&form=json' );
+		define( 'TP_API_PUBLISH_PROFILE_ENDPOINT', TP_API_PUBLISH_DATA_BASE_URL . '/data/PublishProfile?schema=1.8.0&form=json' );
+		define( 'TP_API_PUBLISH_PUBLISH_ENDPOINT', TP_API_PUBLISH_BASE_URL . '/web/Publish/publish?schema=1.2&form=json' );
+		define( 'TP_API_PUBLISH_REVOKE_ENDPOINT', TP_API_PUBLISH_BASE_URL . '/web/Publish/revoke?schema=1.2&form=json' );
 
 		// Task Data Service URLs
-		define( 'TP_API_TASK_TEMPLATE_ENDPOINT', TP_API_TASK_BASE_URL . 'TaskTemplate?schema=1.3.0&form=cjson' );
+		define( 'TP_API_TASK_TEMPLATE_ENDPOINT', TP_API_TASK_BASE_URL . '/data/TaskTemplate?schema=1.3.0&form=cjson' );
 
 		// FMS URLs
-		define( 'TP_API_FMS_GET_UPLOAD_URLS_ENDPOINT', TP_API_FMS_BASE_URL . 'getUploadUrls?schema=1.5&form=json' );
-		define( 'TP_API_FMS_GENERATE_THUMBNAIL_ENDPOINT', TP_API_FMS_BASE_URL . 'generateNewFiles?schema=1.5&form=json' );
-
+		define( 'TP_API_FMS_GET_UPLOAD_URLS_ENDPOINT', TP_API_FMS_BASE_URL . '/web/FileManagement/getUploadUrls?schema=1.5&form=json' );
+		define( 'TP_API_FMS_GENERATE_THUMBNAIL_ENDPOINT', TP_API_FMS_BASE_URL . '/web/FileManagement/generateNewFiles?schema=1.5&form=json' );
 	}
 
-	/**
-	 * Determine the region based the plugin's preferences
-	 *
-	 * @param  string $preference_key Our plugin's preference key
-	 *
-	 * @return string                 The current region, either us or eu
-	 */
-	private function getRegion( $preference_key ) {
-		$preferences = get_option( $preference_key );
-		if ( $preferences && isset( $preferences['mpx_region'] ) && strlen( $preferences['mpx_region'] ) ) {
-			$region = $preferences['mpx_region'];
-		} else {
-			$region = 'US1';
-		}
-
-		return $region;
-	}
 }
 
-new ThePlatform_URLs( TP_ACCOUNT_OPTIONS_KEY );
+new ThePlatform_URLs();

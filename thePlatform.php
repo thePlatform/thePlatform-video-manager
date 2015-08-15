@@ -334,26 +334,9 @@ class ThePlatform_Plugin {
 		$newPreferences                   = array_merge( TP_PREFERENCES_OPTIONS_DEFAULTS(), get_option( TP_PREFERENCES_OPTIONS_KEY, array() ) );
 		$newPreferences['plugin_version'] = TP_PLUGIN_VERSION;
 
-		// Update the region value
-		$newAccount = array_merge( TP_ACCOUNT_OPTIONS_DEFAULTS(), get_option( TP_ACCOUNT_OPTIONS_KEY, array() ) );
-		$region     = $newAccount['mpx_region'];
-		if ( $region === 'us|us' || $region === 'us' ) {
-			$newAccount['mpx_region'] = 'US1';
-		} else if ( $region === 'eu|eu' || $region === 'eu' ) {
-			$newAccount['mpx_region'] = 'EU3';
-		}
-
 		update_option( TP_PREFERENCES_OPTIONS_KEY, $newPreferences );
 		update_option( TP_ACCOUNT_OPTIONS_KEY, $newAccount );
 		update_option( TP_BASIC_METADATA_OPTIONS_KEY, array_merge( TP_BASIC_METADATA_OPTIONS_DEFAULTS(), get_option( TP_BASIC_METADATA_OPTIONS_KEY, array() ) ) );
-
-		// We had a messy update with 1.2.2/1.3.0, let's clean up
-		if ( ( $oldVersion['major'] == '1' && $oldVersion['minor'] == '2' && $oldVersion['patch'] == '2' ) || ( $oldVersion['major'] == '1' && $oldVersion['minor'] == '3' && $oldVersion['patch'] == '0' )
-		) {
-			$basicMetadataFields  = get_option( TP_BASIC_METADATA_OPTIONS_KEY, array() );
-			$customMetadataFields = get_option( TP_CUSTOM_METADATA_OPTIONS_KEY, array() );
-			update_option( TP_BASIC_METADATA_OPTIONS_KEY, array_diff_assoc( $basicMetadataFields, $customMetadataFields ) );
-		}
 
 		// Move account settings from preferences (1.2.0)
 		if ( ( $oldVersion['major'] == '1' && $oldVersion['minor'] < '2' ) && ( $newVersion['major'] > '1' || ( $newVersion['major'] >= '1' && $newVersion['minor'] >= '2' ) )
@@ -369,6 +352,7 @@ class ThePlatform_Plugin {
 				update_option( TP_ACCOUNT_OPTIONS_KEY, $accountSettings );
 			}
 		}
+
 	}
 
 	/**
@@ -398,6 +382,10 @@ class ThePlatform_Plugin {
 		register_setting( TP_ADVANCED_OPTIONS_KEY, TP_ADVANCED_OPTIONS_KEY, array(
 			$this,
 			'theplatform_advanced_options_validate'
+		) );
+		register_setting( TP_REGISTRY_OPTIONS_KEY, TP_REGISTRY_OPTIONS_KEY, array(
+			$this,
+			'theplatform_registry_options_validate'
 		) );
 		register_setting( TP_TOKEN_OPTIONS_KEY, TP_TOKEN_OPTIONS_KEY, 'strval' );
 	}
@@ -468,9 +456,11 @@ class ThePlatform_Plugin {
 			return $defaults;
 		}
 
-		// Set the account region
-		$region              = $tp_api->get_account_region( $input['mpx_account_id'] );
-		$input['mpx_region'] = $region;
+		// Set the account registry
+		$registry = $tp_api->get_account_registry( $input['mpx_account_id'], $input['mpx_username'], $input['mpx_password'] );
+		$services = TP_REGISTRY_SERVICE_NAMES();
+		$serviceUrls = array_intersect_key( $registry, $services );
+		update_option( TP_REGISTRY_OPTIONS_KEY, $serviceUrls );
 
 		foreach ( $input as $key => $value ) {
 			$input[ $key ] = sanitize_text_field( $value );
@@ -527,6 +517,21 @@ class ThePlatform_Plugin {
 	function theplatform_advanced_options_validate( $input ) {
 		foreach ( $input as $key => $value ) {
 			$input[ $key ] = sanitize_text_field( $value );
+		}
+
+		return $input;
+	}
+
+	/**
+	 * Validate mpx Settings for invalid input
+	 *
+	 * @param array $input Passed by Wordpress, an Array of mpx options
+	 *
+	 * @return array A cleaned up copy of the array, invalid values will be cleared.
+	 */
+	function theplatform_registry_options_validate( $input ) {
+		foreach ( $input as $key => $value ) {
+			$input[ $key ] = strval( $value );
 		}
 
 		return $input;
@@ -779,7 +784,10 @@ class ThePlatform_Plugin {
 	 */
 	function get_embed_shortcode( $accountPID, $releasePID, $playerPID, $player_width, $player_height, $autoplay, $tag, $embedded, $mute = 'false', $params = '', $playall = 'false', $instance = '' ) {
 
-		$url = TP_API_PLAYER_EMBED_BASE_URL . urlencode( $accountPID ) . '/' . urlencode( $playerPID );
+		$url = TP_API_PLAYER_EMBED_BASE_URL . '/p' . urlencode( $accountPID ) . '/' . urlencode( $playerPID );
+
+		// Remove HTTP(S) from the player url
+		$url = preg_replace('#^https?:#', '', $url);
 
 		if ( $embedded === 'true' ) {
 			$url .= '/embed';

@@ -33,6 +33,7 @@ if ( current_user_can( $tp_admin_cap ) ) {
 		delete_option( TP_CUSTOM_METADATA_OPTIONS_KEY );
 		delete_option( TP_BASIC_METADATA_OPTIONS_KEY );
 		delete_option( TP_TOKEN_OPTIONS_KEY );
+		delete_option( TP_REGISTRY_OPTIONS_KEY );
 
 		echo '<div id="message" class="updated"><p>All plugin settings have been reset</p></div>';
 	}

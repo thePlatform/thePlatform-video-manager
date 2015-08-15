@@ -653,7 +653,7 @@ class ThePlatform_API {
 		$profileId = $_POST['profile'];
 		$mediaId   = $_POST['mediaId'];
 
-		$publishUrl = TP_API_PUBLISH_BASE_URL;
+		$publishUrl = TP_API_PUBLISH_PUBLISH_ENDPOINT;
 		$publishUrl .= '&token=' . urlencode( $token );
 		$publishUrl .= '&account=' . urlencode( $_POST['account'] );
 		$publishUrl .= '&_mediaId=' . urlencode( $mediaId );
@@ -672,7 +672,7 @@ class ThePlatform_API {
 		$profileId = $_POST['profile'];
 		$mediaId   = $_POST['mediaId'];
 
-		$publishUrl = TP_API_REVOKE_BASE_URL;
+		$publishUrl = TP_API_PUBLISH_REVOKE_ENDPOINT;
 		$publishUrl .= '&token=' . urlencode( $token );
 		$publishUrl .= '&account=' . urlencode( $_POST['account'] );
 		$publishUrl .= '&_mediaId=' . urlencode( $mediaId );
@@ -1150,18 +1150,14 @@ class ThePlatform_API {
 		}
 	}
 
-	/**
-	 * Get the selected account region
-	 * @return bool True if the account is within the same region
-	 */
-	function get_account_region( $accountId = false ) {
+	function get_account_registry( $accountId = false ) {
 		if ( ! $accountId || empty( $accountId ) ) {
 			return false;
 		}
 
-		$token = $this->mpx_signin();
+		$token = get_option( TP_TOKEN_OPTIONS_KEY );
 
-		$url = TP_API_ACCESS_ACCOUNT_LOOKUP_ENDPOINT . '&token=' . $token . '&_accountIds[0]=' . urlencode( $accountId );
+		$url = TP_API_RESOLVE_REGISTRY . '&token=' . $token . '&_accountId=' . urlencode( $accountId );
 
 		$response = ThePlatform_API_HTTP::get( $url );
 		$data     = $this->decode_json_from_server( $response, false );
@@ -1170,7 +1166,7 @@ class ThePlatform_API {
 			return false;
 		}
 
-		return $data['getAccountInfoByIdsResponse'][0]['region'];
+		return $data['resolveDomainResponse'];
 	}
 
 	/**

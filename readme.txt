@@ -26,6 +26,7 @@ Easily embed videos from mpx into your posts
 Added Advanced Settings
 Added new shortcode parameters
 Simplified account settings
+Load Data Service URLs from the Account Registry
 Added a new option to embed the PDK external controller in posts with our video player
 
 = 2.0.0 =
