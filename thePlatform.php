@@ -334,6 +334,8 @@ class ThePlatform_Plugin {
 		$newPreferences                   = array_merge( TP_PREFERENCES_OPTIONS_DEFAULTS(), get_option( TP_PREFERENCES_OPTIONS_KEY, array() ) );
 		$newPreferences['plugin_version'] = TP_PLUGIN_VERSION;
 
+		$newAccount                 		  = array_merge( TP_ACCOUNT_OPTIONS_DEFAULTS(), get_option( TP_ACCOUNT_OPTIONS_KEY, array() ) );
+
 		update_option( TP_PREFERENCES_OPTIONS_KEY, $newPreferences );
 		update_option( TP_ACCOUNT_OPTIONS_KEY, $newAccount );
 		update_option( TP_BASIC_METADATA_OPTIONS_KEY, array_merge( TP_BASIC_METADATA_OPTIONS_DEFAULTS(), get_option( TP_BASIC_METADATA_OPTIONS_KEY, array() ) ) );
