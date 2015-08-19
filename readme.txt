@@ -2,7 +2,7 @@
 Developed By: thePlatform LLC
 Tags: embedding, video, embed, portal, theplatform, shortcode
 Requires at least: 3.7
-Tested up to: 4.2
+Tested up to: 4.3
 Stable tag: 2.1.0
 Contributors: thePlatform
 
