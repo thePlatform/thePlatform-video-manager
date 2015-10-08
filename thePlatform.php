@@ -785,7 +785,7 @@ class ThePlatform_Plugin {
 	 */
 	function get_embed_shortcode( $accountPID, $releasePID, $playerPID, $player_width, $player_height, $autoplay, $tag, $embedded, $mute = 'false', $params = '', $playall = 'false', $instance = '' ) {
 
-		$url = TP_API_PLAYER_EMBED_BASE_URL . '/p' . urlencode( $accountPID ) . '/' . urlencode( $playerPID );
+		$url = TP_API_PLAYER_EMBED_BASE_URL . '/p/' . urlencode( $accountPID ) . '/' . urlencode( $playerPID );
 
 		// Remove HTTP(S) from the player url
 		$url = preg_replace( '#^https?:#', '', $url );
