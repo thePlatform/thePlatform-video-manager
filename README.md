@@ -105,6 +105,7 @@ Copy the folder "thePlatform-video-manager" with all included files into the "wp
 	* 'tp_uploader_cap' - 'upload_files' - Upload mpx media
 	* 'tp_admin_cap', 'manage_options' - Manage thePlatform's plugin settings
 * Moved the embedding button into a TinyMCE plugin
+
 ## = 1.1.1 =
 * Fixed an issue where files would not always upload
 
@@ -192,4 +193,3 @@ This plugin requires an account with thePlatform's mpx. Please contact your Acco
 * tp_editor_cap, default - 'edit_posts' - Edit mpx Media
 * tp_uploader_cap - default - 'upload_files' - Upload mpx media
 * tp_admin_cap, default - 'manage_options' - Manage thePlatform's plugin settings
-* tp_show_advanced_options, default - false - Boolean to enable advanced settings, which are hidden by default
