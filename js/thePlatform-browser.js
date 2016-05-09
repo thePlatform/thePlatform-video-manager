@@ -522,10 +522,14 @@ var theplatform_browser = (function ($) {
         },
         buildMediaQuery: function (data) {
             var queryParams = '';
-            if (data.category)
+            if (data.category) {
+                newcategory = data.category.replace(/\:/g, '\\\:')
+                newcategory = newcategory.replace(/\,/g, '\\,')
+
                 queryParams = queryParams.appendParams({
-                    byCategories: data.category
+                    byCategories: newcategory
                 });
+            }
 
             if (data.search) {
                 queryParams = queryParams.appendParams({
