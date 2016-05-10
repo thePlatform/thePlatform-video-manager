@@ -30,6 +30,7 @@ Copy the folder "thePlatform-video-manager" with all included files into the "wp
 * Simplified account settings
 * Load Data Service URLs from the Account Registry
 * Added a new option to embed the PDK external controller in posts with our video player
+* Fixed bug in which categories containing a colon or comma in their names were not handled correctly during the media fetch
 
 ## = 2.0.0 =
 * Removed 3rd party libraries in favor of native Wordpress look and feel
