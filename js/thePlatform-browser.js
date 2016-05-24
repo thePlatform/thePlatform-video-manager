@@ -533,17 +533,16 @@ var theplatform_browser = (function ($) {
 
             if (data.search) {
                 queryParams = queryParams.appendParams({
-                    q: encodeURIComponent(data.search)
+                    q: data.search
                 });
             }
-
+			
             if (data.sort) {
                 var sortValue = data.sort + data.order;
                 queryParams = queryParams.appendParams({
                     sort: sortValue
                 });
             }
-
             return queryParams;
         },
         getCategoryList: function () {
